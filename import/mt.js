@@ -17,7 +17,6 @@ while ( res.hasNext() ){
 
     var myPost = new Post();
     
-    // TODO: name
     myPost.title = res.entry_title;
     myPost.content = res.entry_text + "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_name;
