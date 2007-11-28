@@ -15,7 +15,7 @@ function index( obj , weights ){
                 z = z.trim();
                 if ( z.length == 0 ) 
                     return;
-                z = stemWord( z );
+                z = Stem.stem( z );
                 if ( ! words.contains( z ) )
                     words.add( z );
             } );

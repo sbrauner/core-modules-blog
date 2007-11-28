@@ -10,56 +10,61 @@
 
 // Release 1
 
-step2list = new Array();
-step2list["ational"]="ate";
-step2list["tional"]="tion";
-step2list["enci"]="ence";
-step2list["anci"]="ance";
-step2list["izer"]="ize";
-step2list["bli"]="ble";
-step2list["alli"]="al";
-step2list["entli"]="ent";
-step2list["eli"]="e";
-step2list["ousli"]="ous";
-step2list["ization"]="ize";
-step2list["ation"]="ate";
-step2list["ator"]="ate";
-step2list["alism"]="al";
-step2list["iveness"]="ive";
-step2list["fulness"]="ful";
-step2list["ousness"]="ous";
-step2list["aliti"]="al";
-step2list["iviti"]="ive";
-step2list["biliti"]="ble";
-step2list["logi"]="log";
 
-step3list = new Array();
-step3list["icate"]="ic";
-step3list["ative"]="";
-step3list["alize"]="al";
-step3list["iciti"]="ic";
-step3list["ical"]="ic";
-step3list["ful"]="";
-step3list["ness"]="";
+Stem = { 
+    step2list : {  
+        ational : "ate" , 
+        tional : "tion" , 
+        enci : "ence" , 
+        anci : "ance" , 
+        izer : "ize" , 
+        bli : "ble" , 
+        alli : "al" , 
+        entli : "ent", 
+        eli : "e" , 
+        ousli : "ous" , 
+        ization : "ize" , 
+        ation : "ate" , 
+        ator : "ate" , 
+        alism : "al" , 
+        iveness : "ive" , 
+        fulness : "ful" , 
+        ousness : "ous" , 
+        aliti : "al" , 
+        iviti : "ive" , 
+        biliti : "ble" ,
+        logi : "log" 
+    } , 
+    
+    step3list : {
+        icate : "ic" , 
+        ative : "" , 
+        alize : "al" , 
+        iciti : "ic" , 
+        ical : "ic" , 
+        ful : "" , 
+        ness : "" 
+    } ,
 
-c = "[^aeiou]";          // consonant
-v = "[aeiouy]";          // vowel
-C = c + "[^aeiouy]*";    // consonant sequence
-V = v + "[aeiou]*";      // vowel sequence
+    c : "[^aeiou]" ,          // consonant
+    v : "[aeiouy]" ,         // vowel
+    C : c + "[^aeiouy]*" ,    // consonant sequence
+    V : v + "[aeiou]*"      // vowel sequence
+};
+    
+Stem.mgr0 = "^(" + Stem.C + ")?" + Stem.V + Stem.C ;                    // [C]VC... is m>0
+Stem.meq1 = "^(" + Stem.C + ")?" + Stem.V + Stem.C + "(" + Stem.V + ")?$" ;  // [C]VC[V] is m=1
+Stem.mgr1 = "^(" + Stem.C + ")?" + Stem.V + Stem.C + Stem.V + Stem.C ;            // [C]VCVC... is m>1
+Stem.s_v = "^(" + Stem.C + ")?" + Stem.v ;                    // vowel in stem
 
-mgr0 = "^(" + C + ")?" + V + C;               // [C]VC... is m>0
-meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$";  // [C]VC[V] is m=1
-mgr1 = "^(" + C + ")?" + V + C + V + C;       // [C]VCVC... is m>1
-s_v   = "^(" + C + ")?" + v;                   // vowel in stem
-
-function stemWord(w) {
+Stem.stem = function(w) {
     var stem;
     var suffix;
     var firstch;
     var origword = w;
-
+        
     if (w.length < 3) { return w; }
-
+        
     var re;
     var re2;
     var re3;
@@ -82,7 +87,7 @@ function stemWord(w) {
     re2 = /^(.+?)(ed|ing)$/;
     if (re.test(w)) {
         var fp = re.exec(w);
-        re = new RegExp(mgr0);
+        re = new RegExp(Stem.mgr0);
         if (re.test(fp[1])) {
             re = /.$/;
             w = w.replace(re,"");
@@ -90,7 +95,7 @@ function stemWord(w) {
     } else if (re2.test(w)) {
         var fp = re2.exec(w);
         stem = fp[1];
-        re2 = new RegExp(s_v);
+        re2 = new RegExp(Stem.s_v);
         if (re2.test(stem)) {
             w = stem;
             re2 = /(at|bl|iz)$/;
@@ -107,7 +112,7 @@ function stemWord(w) {
     if (re.test(w)) {
         var fp = re.exec(w);
         stem = fp[1];
-        re = new RegExp(s_v);
+        re = new RegExp(Stem.s_v);
         if (re.test(stem)) { w = stem + "i"; }
     }
 
@@ -117,9 +122,9 @@ function stemWord(w) {
         var fp = re.exec(w);
         stem = fp[1];
         suffix = fp[2];
-        re = new RegExp(mgr0);
+        re = new RegExp(Stem.mgr0);
         if (re.test(stem)) {
-            w = stem + step2list[suffix];
+            w = stem + Stem.step2list [suffix];
         }
     }
 
@@ -129,9 +134,9 @@ function stemWord(w) {
         var fp = re.exec(w);
         stem = fp[1];
         suffix = fp[2];
-        re = new RegExp(mgr0);
+        re = new RegExp(Stem.mgr0);
         if (re.test(stem)) {
-            w = stem + step3list[suffix];
+            w = stem + Stem.step3list[suffix];
         }
     }
 
@@ -141,14 +146,14 @@ function stemWord(w) {
     if (re.test(w)) {
         var fp = re.exec(w);
         stem = fp[1];
-        re = new RegExp(mgr1);
+        re = new RegExp(Stem.mgr1);
         if (re.test(stem)) {
             w = stem;
         }
     } else if (re2.test(w)) {
         var fp = re2.exec(w);
         stem = fp[1] + fp[2];
-        re2 = new RegExp(mgr1);
+        re2 = new RegExp(Stem.mgr1);
         if (re2.test(stem)) {
             w = stem;
         }
@@ -159,8 +164,8 @@ function stemWord(w) {
     if (re.test(w)) {
         var fp = re.exec(w);
         stem = fp[1];
-        re = new RegExp(mgr1);
-        re2 = new RegExp(meq1);
+        re = new RegExp(Stem.mgr1);
+        re2 = new RegExp(Stem.meq1);
         re3 = new RegExp("^" + C + v + "[^aeiouwxy]$");
         if (re.test(stem) || (re2.test(stem) && !(re3.test(stem)))) {
             w = stem;
@@ -168,7 +173,7 @@ function stemWord(w) {
     }
 
     re = /ll$/;
-    re2 = new RegExp(mgr1);
+    re2 = new RegExp(Stem.mgr1);
     if (re.test(w) && re2.test(w)) {
         re = /.$/;
         w = w.replace(re,"");
@@ -182,4 +187,5 @@ function stemWord(w) {
 
     return w;
 
-}
+};
+
