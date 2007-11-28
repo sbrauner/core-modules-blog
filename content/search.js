@@ -1,5 +1,7 @@
 // search.js
 
+core.text.stem();
+
 Search = { 
     
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
