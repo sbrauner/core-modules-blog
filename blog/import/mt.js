@@ -5,6 +5,9 @@ var baseUrl = "http://www.alleyinsider.com";
 
 // ------
 
+core.blog.post();
+core.content.search();
+
 db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
 
@@ -12,7 +15,7 @@ var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_i
 
 while ( res.hasNext() ){
 
-    var myPost = Object();
+    var myPost = new Post();
     
     // TODO: name
     myPost.title = res.entry_title;
@@ -73,5 +76,6 @@ while ( res.hasNext() ){
                                                  return wholeTag;
                                              } );
     
+    myPost.presave()
     db.blog.posts.save( myPost );
 }

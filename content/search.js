@@ -6,6 +6,13 @@ Search = {
     
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
+    cleanString : function( s ){
+        s = s.trim().toLowerCase();
+        s = Stem.stem( s );
+        s = s.trim();
+        return s;
+    } ,
+
     fixTable : function( table ){
         table.ensureIndex( { _index : 1 } );
     } ,
@@ -21,10 +28,9 @@ Search = {
                 continue;
             
             s.split( Search.wordRegex ).forEach( function( z ){ 
-                    z = z.trim();
+                    z = Search.cleanString( z );
                     if ( z.length == 0 ) 
                         return;
-                    z = Stem.stem( z );
                     if ( ! words.contains( z ) )
                         words.add( z );
                 } );
@@ -43,8 +49,7 @@ Search = {
         var max = 0;
 
         queryString.split( Search.wordRegex ).forEach( function( z ){
-                
-                z = Stem.stem( z.trim() ).trim();
+                z = Search.cleanString( z );                
                 if ( z.length == 0 )
                     return;
                 
@@ -72,7 +77,7 @@ Search = {
         var good = Array();
         all.forEach( function( z ){
                 if ( matchCounts[z] == max ){
-                    good.add( t.find( z ) );
+                    good.add( table.find( z ) );
                     return;
                 }
             } );
