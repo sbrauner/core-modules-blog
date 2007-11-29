@@ -75,6 +75,5 @@ while ( res.hasNext() ){
                                                  return wholeTag;
                                              } );
     
-    myPost.presave()
     db.blog.posts.save( myPost );
 }
