@@ -44,22 +44,25 @@ Search = {
 
     search : function( table , queryString ){
         
+        var fullObjects = Object();
+        
         var matchCounts = Object(); // _id -> num
         var all = Array();
         var max = 0;
-
+        
         queryString.split( Search.wordRegex ).forEach( function( z ){
                 z = Search.cleanString( z );                
                 if ( z.length == 0 )
                     return;
 
-                print( "searching on word : " + z );
-
+                //print( "searching on word : " + z );
                 
-                var res = table.find( { _searchIndex : z } , { _id : CrID() , _searchIndex : true }  );
+                
+                var res = table.find( { _searchIndex : z } );
                 
                 while ( res.hasNext() ){
-                    var temp = res.next()._id.toString();
+                    var tempObject = res.next();
+                    var temp = tempObject._id.toString();
                     
                     if ( matchCounts[temp] )
                         matchCounts[temp]++;
@@ -67,12 +70,15 @@ Search = {
                         matchCounts[temp] = 1;
 
                     max = Math.max( max , matchCounts[temp] );
-
+                    
+                    fullObjects[temp] = tempObject;
                     if ( ! all.contains( temp ) )
                         all.add( temp );
                 }
             } );
         
+        //print( "matchCounts: " + tojson( matchCounts ) );
+
         all.sort( function( l , r ){ 
                 return matchCounts[r] - matchCounts[l];
             } );
@@ -80,7 +86,7 @@ Search = {
         var good = Array();
         all.forEach( function( z ){
                 if ( matchCounts[z] == max ){
-                    good.add( table.findOne( z ) );
+                    good.add( fullObjects[z] );
                     return;
                 }
             } );
