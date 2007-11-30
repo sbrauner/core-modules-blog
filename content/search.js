@@ -52,6 +52,9 @@ Search = {
                 z = Search.cleanString( z );                
                 if ( z.length == 0 )
                     return;
+
+                print( "searching on word : " + z );
+
                 
                 var res = table.find( { _searchIndex : z } , { _id : CrID() , _searchIndex : true }  );
                 
@@ -77,7 +80,7 @@ Search = {
         var good = Array();
         all.forEach( function( z ){
                 if ( matchCounts[z] == max ){
-                    good.add( table.find( z ) );
+                    good.add( table.findOne( z ) );
                     return;
                 }
             } );
