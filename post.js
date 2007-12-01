@@ -1,4 +1,6 @@
 
+core.content.search();
+
 function Post(){
 
 };
@@ -46,4 +48,6 @@ if ( db ){
     posts.ensureIndex( { ts : 1 } );
     posts.ensureIndex( { categories : 1 } );
     posts.setConstructor( Post );
+
+    //Search.fixTable( posts );
 }
