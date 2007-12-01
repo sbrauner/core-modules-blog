@@ -14,7 +14,7 @@ Search = {
     } ,
 
     fixTable : function( table ){
-        table.ensureIndex( { _index : 1 } );
+        table.ensureIndex( { _searchIndex : 1 } );
     } ,
 
     index : function( obj , weights ){
@@ -43,7 +43,6 @@ Search = {
     } ,
 
     search : function( table , queryString ){
-        
         var fullObjects = Object();
         
         var matchCounts = Object(); // _id -> num
@@ -56,7 +55,6 @@ Search = {
                     return;
 
                 //print( "searching on word : " + z );
-                
                 
                 var res = table.find( { _searchIndex : z } );
                 
