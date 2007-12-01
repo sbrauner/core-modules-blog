@@ -16,13 +16,18 @@ var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_i
 while ( res.hasNext() ){
 
     var myPost = new Post();
+
+    myPost.ts = res.entry_authored_on;
+    myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
+    var temp = db.blog.posts.findOne( { name : myPost.name } );
+    if ( temp != null ){
+	myPost = temp;
+    }
     
     myPost.title = res.entry_title;
     myPost.content = res.entry_text + "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_name;
-    myPost.ts = res.entry_authored_on;
     myPost.live = res.entry_status == 2;
-    myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
 
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id );
     while ( comments.hasNext() ){
@@ -74,6 +79,6 @@ while ( res.hasNext() ){
                                                  print( wholeTag );
                                                  return wholeTag;
                                              } );
-    
+
     db.blog.posts.save( myPost );
 }
