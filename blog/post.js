@@ -38,6 +38,12 @@ Post.prototype.getNumComments = function(){
     return this.comments.length;
 };
 
+Post.prototype.addComment = function( newComment ){
+    if ( ! this.comments )
+	this.comments = Array();
+    this.comments.add( newComment );
+}	
+
 Post.prototype.presave = function(){
     Search.index( this , { title : 1 } );
 }
