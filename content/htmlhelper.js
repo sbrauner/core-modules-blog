@@ -13,6 +13,12 @@
    textarea( { name: "fieldname", cols : 40, rows : 20 } );
    _form();
 
+   ul("string");
+   ul(function);
+
+   li(...);
+   
+
  */
 
 function __echoAttribute(x,v) { 
@@ -26,13 +32,10 @@ function A(url, text) {
 
 function a(url,text) { print( A(url,text) ); }
 
-function li(x) { 
-    print('<li>'); print(x); print('</li>\n');
-}
-
+// todo: take extra arguments here and call __finishTag
 function __doTag(name,x) { 
     print('<'); print(name); print('>');
-    if( typeof(x) != 'string' ) { 
+    if( typeof(x) == 'function' ) { 
 	var val = x(); // todo: fix use =='function'
         if( val!=null ) print(val);
     }
@@ -42,6 +45,10 @@ function __doTag(name,x) {
 
 function ul(x) { 
     __doTag("ul",x);
+}
+
+function li(x) { 
+    __doTag("li", x);
 }
 
 function textarea(x) { 
