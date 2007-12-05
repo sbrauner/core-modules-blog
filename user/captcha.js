@@ -14,8 +14,7 @@ Captcha = {
         var id = "asd" + Math.random();
         
         db._captcha.save( { id : id , s : s , ts : Date() } );
-        request.setCookie( "cid" , id );
-        
+        response.addCookie( "cid" , id );
     } ,
     
     valid : function(){
