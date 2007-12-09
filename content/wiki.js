@@ -43,6 +43,8 @@ var Wiki = {
     },
 
     line: function(str) {
+	str = str.trim();
+
 	var newLevel = 0;
 
         if( str.match(/^ *$/) ) { this.outp += "<p>\n"; return; }
@@ -52,7 +54,9 @@ var Wiki = {
 	if( str == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+="</pre>\n"; return; }
 	if( str == "</pre>" ) { this.outp+="</pre>\n"; return; }
 
-	if( str == "<prenh>" ) { this.reLevel(newLevel); this.noWiki++; this.noHtml++; this.outp+="<pre>"; return; }
+	if( str == "<prenh>" ) {
+ 	  this.reLevel(newLevel); this.noWiki=1; this.noHtml=1; this.outp+="<pre>"; return; 
+	}
 	if( str == "<pre>" ) { this.reLevel(newLevel); this.outp+="<pre>"; return; }
 	if( str == "<nowiki>" ) { this.noWiki++; return; } 
 	if( str == "<nohtml>" ) { this.noHtml++; return; } 
