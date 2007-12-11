@@ -75,8 +75,10 @@ function __finishTag(endtag, args) {
 }
 
 function _div() { print("</div>\n"); }
-
 function div(x) {
-    print("<div");
-    __finishTag(_div, arguments);
+    print("<div"); __finishTag(_div, arguments);
 }
+
+function tr(x) { __doTag("tr",x); }
+function td(x) { __doTag("td",x); }
+function th(x) { __doTag("th",x); }
