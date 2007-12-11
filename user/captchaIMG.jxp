@@ -1,0 +1,4 @@
+<%
+    core.user.captcha();
+Captcha.img();
+%>
