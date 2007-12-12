@@ -23,11 +23,15 @@ while ( res.hasNext() ){
     if ( temp != null ){
 	myPost = temp;
     }
+
+    print( myPost.name + "\t" + myPost.ts );
     
     myPost.title = res.entry_title;
     myPost.content = res.entry_text + "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_name;
     myPost.live = res.entry_status == 2;
+
+
 
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id );
     while ( comments.hasNext() ){
@@ -52,14 +56,12 @@ while ( res.hasNext() ){
     myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
                                              function( wholeTag , url ){ 
 
-                                                 print( wholeTag );
                                                  
                                                  if ( url.match( "^/" ) )
                                                      url = baseUrl + url;
                                                  else
-                                                     url = url.replace( /www.alleyinsider.com/ , "static.alleyinsider.com" ); // TODO: temp hack
-                                                 print( "\t" + url );
-                                                 
+                                                     url = url.replace( /www.alleyinsider.com/ , "static.alleyinsider.com" ); // TODO: temp hack get rid of this else
+	                                                 
                                                  var id = null;
 
                                                  var name = url.replace( /^https?:..[^\/]*/ , "" );
@@ -67,7 +69,14 @@ while ( res.hasNext() ){
                                                  if ( ! img ){
                                                      img = { filename : name };
 
-                                                     var f = download( url );
+						     var f = null;
+						     try {
+                                                        f = download( url );
+                                                     }
+						     catch ( dlError ){
+						        print( "error downloading : " + url );
+							return wholeTag;
+						     }
                                                      db._files.save( f );
                                                      
                                                      img.fileId = f._id;
@@ -76,7 +85,6 @@ while ( res.hasNext() ){
                                                  }
                                                  
                                                  wholeTag = wholeTag.replace( /src=["'](.*?)['"]/ , "src=\"/~f?id=" + img.fileId + "\"" );
-                                                 print( wholeTag );
                                                  return wholeTag;
                                              } );
 
