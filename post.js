@@ -55,5 +55,5 @@ if ( db ){
     posts.ensureIndex( { categories : 1 } );
     posts.setConstructor( Post );
 
-    //Search.fixTable( posts );
+    Search.fixTable( posts );
 }
