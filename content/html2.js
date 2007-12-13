@@ -30,11 +30,12 @@ function _genTag(name, args) {
 function td() { return _genTag("td", arguments); }
 function th() { return _genTag("th", arguments); }
 
-function tr(x) { 
+function tr(x,opts) { 
     if( isArray(x) ) { 
+	var elem = opts && opts.header ? "th" : "td";
 	var s = "<tr>";
 	for( var z in x )
-	    s = s + "<td>" + x[z] + "</td>";
+	    s = s + "<" + elem + ">" + x[z] + "</" + elem + ">";
 	return s + "</tr>\n";
     }
     return _genTag("tr", arguments); 

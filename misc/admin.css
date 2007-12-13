@@ -14,6 +14,10 @@ table {
 	margin: 0 auto;
 }
 
+th { 
+	background: #dddddd;
+}
+
 tr {
 	color: #4f6b72;
 	border-right: 1px solid #C1DAD7;
@@ -36,12 +40,6 @@ td {
 	background: #fff;
 	padding: 6px 6px 6px 12px;
 	color: #4f6b72;
-}
-
-
-td {
-	background: #F5FAFA;
-	color: #797268;
 }
 
 th.spec {
