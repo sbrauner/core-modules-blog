@@ -53,10 +53,10 @@ function htmltable(specs) {
  }
 
  // returns the query object to filter by
- this._query = function() { 
+ this._query = function(baseQuery) { 
      if( !this.specs.searchable )
 	 return {};
-     var q = { };
+     var q = baseQuery;
      this.specs.cols.forEach( function(x) {
 	     var s = request[x.name];
 	     if( s ) {
@@ -136,8 +136,8 @@ function htmltable(specs) {
      }
  }
 
- this.find = function() { 
-     return this.specs.ns.find(this._query(), this._fieldsFilter()).limit(300);
+ this.find = function(baseQuery) { 
+     return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).limit(300);
  }
 
  this.dbview = function(cursor) {
