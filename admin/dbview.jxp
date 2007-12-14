@@ -1,0 +1,120 @@
+{
+	
+//    request.applyServletParams( /^\/wiki\/([^\/]+)/ , [ "name" ] );
+	
+/*
+   var wiki = db.wiki;
+    
+    var name = request.name;
+    if ( ! name )
+	name = "Main";    
+
+    var lookup = { name : name };
+
+    var wo = wiki.findOne( lookup );
+
+    if ( ! wo )
+        wo = lookup;
+    
+    if ( request.new_text ){
+        wo.text = request.new_text;
+        wiki.save( wo );
+    }
+*/
+
+}
+<html>
+  <head>
+    <title>dbview</title>
+
+    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
+    <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
+
+  </head>
+<body>
+
+{
+  function outp(x) { 
+    if( typeof x != 'string' ) { 
+      print(x); return;
+    }
+    if( x.length<=20 ) 
+      print(x);
+    else print( x.substring(0,18)+"..." );
+  }
+
+  var top = request.ns == null;
+
+  var ns=top ? ".system.namespaces" : "." + request.ns;
+  var collection = db[ns];
+  var hdr = top ? "All Collections" : "Collection: " + request.ns;
+  if( top )
+    collection.ensureIndex( {name:true} );
+  var rows = collection.find().sort( { name : 1 } ).toArray(100);
+
+  var fields;
+  var thresh = rows.length / 2;
+  if( top )
+    fields = [ 'name' ];
+  else {
+    var f = {};
+    for( var i=0; i < rows.length; i++ ) {
+      for( var e in rows[i] ) {
+        if( f[e] != null ) f[e]++; else f[e] = 0; 
+      }
+    }
+  }
+}
+<h3><%=hdr%></h3>
+<%
+  if( !top ) {
+    print('\n<table class="dbview">');
+    print("<tr>");
+    for( h in f ) { 
+      if( f[h]>thresh ) { print("<th>");print(h);print("</th>"); } 
+    }
+    print("<th></th></tr>\n");
+  }
+
+  for( var i=0; i < rows.length; i++ ) {
+    var obj=rows[i];
+    var idx=top ? obj.name.indexOf("$") : -1; 
+    if( obj.name && idx>=0 ) {
+      print("&nbsp&nbsp&nbsp;index "); print(obj.name.substring(idx)); print("<br>");
+    }
+    else if( top ) {
+%>
+<a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
+<% } else { 
+      print("<tr>");
+      for( h in f ) { 
+        if( f[h]>thresh ) { 
+          print("<td>");
+          outp(obj[h]);
+          print("</td>");
+        }
+      } 
+      for( x in obj ) {
+        if( f[x]<= thresh ) {
+	          print(x); print(": "); outp(obj[x]); print(" ");
+        }
+      }
+      print("<td></td></tr>\n");
+    } 
+  } 
+
+  if( !top ) print("</table>");
+
+  if( rows.length >= 100 )
+    print("<br>Only first 100 displayed");
+
+  if( !top )
+    print('<p>&nbsp;<a href="/admin/dbview">all collections</a>');
+
+%>
+
+
+
+
+</body>
+</html>

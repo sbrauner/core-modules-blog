@@ -18,7 +18,10 @@ while ( res.hasNext() ){
     var myPost = new Post();
 
     myPost.ts = res.entry_authored_on;
-    myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
+    if( res.entry_class == "page" )
+	myPost.name = res.entry_basename;
+    else
+        myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
     var temp = db.blog.posts.findOne( { name : myPost.name } );
     if ( temp != null ){
 	myPost = temp;
@@ -31,8 +34,8 @@ while ( res.hasNext() ){
     myPost.content = res.entry_text + "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_name;
     myPost.live = res.entry_status == 2;
-
-
+    myPost.cls = res.entry_class;
+    myPost.baseName = res.entry_basename;
 
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id );
     while ( comments.hasNext() ){
