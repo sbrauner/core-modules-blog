@@ -43,23 +43,23 @@ var Wiki = {
     },
 
     line: function(str) {
-	str = str.trim();
+	var trimmed = str.trim();
 
 	var newLevel = 0;
 
         if( str.match(/^ *$/) ) { this.outp += "<p>\n"; return; }
 
-	if( str == "</nowiki>" ) { this.noWiki = 0; return; }
-	if( str == "</nohtml>" ) { this.noHtml = 0; return; }
-	if( str == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+="</pre>\n"; return; }
-	if( str == "</pre>" ) { this.outp+="</pre>\n"; return; }
+	if( trimmed == "</nowiki>" ) { this.noWiki = 0; return; }
+	if( trimmed == "</nohtml>" ) { this.noHtml = 0; return; }
+	if( trimmed == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+="</pre>\n"; return; }
+	if( trimmed == "</pre>" ) { this.outp+="</pre>\n"; return; }
 
-	if( str == "<prenh>" ) {
+	if( trimmed == "<prenh>" ) {
  	  this.reLevel(newLevel); this.noWiki=1; this.noHtml=1; this.outp+="<pre>"; return; 
 	}
-	if( str == "<pre>" ) { this.reLevel(newLevel); this.outp+="<pre>"; return; }
-	if( str == "<nowiki>" ) { this.noWiki++; return; } 
-	if( str == "<nohtml>" ) { this.noHtml++; return; } 
+	if( trimmed == "<pre>" ) { this.reLevel(newLevel); this.outp+="<pre>"; return; }
+	if( trimmed == "<nowiki>" ) { this.noWiki++; return; } 
+	if( trimmed == "<nohtml>" ) { this.noHtml++; return; } 
 
 	if( this.noHtml ) {
 	    str = str.replace(/</g, "&lt;");

@@ -24,6 +24,7 @@ while ( res.hasNext() ){
 	myPost = temp;
     }
 
+    myPost.ts = res.entry_authored_on;
     print( myPost.name + "\t" + myPost.ts );
     
     myPost.title = res.entry_title;
