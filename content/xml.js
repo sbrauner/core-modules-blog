@@ -23,7 +23,7 @@ xml = {
         
         if ( obj == null ){
         }
-        else if ( isString( obj ) ){
+        else if ( isString( obj ) || isDate( obj ) ){
             append( obj );
         }
         else if ( isObject( obj ) ){

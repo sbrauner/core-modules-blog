@@ -7,11 +7,14 @@ SYSOUT( request.getRawHeader() );
 
 request.applyServletParams( /.~~.webdav(.*)/ , [ "file" ] );
 if ( ! request.file )
+    request.applyServletParams( /(.*)/ , [ "file" ] );
+
+if ( ! request.file )
     throw "no file:(";
 
 SYSOUT( "file:" + request.file );
 
-var theFile = getFile( request.file );
+var theFile = openFile( request.file );
 
 var method = request.getMethod();
 
@@ -20,28 +23,85 @@ if ( method == "OPTIONS" ){
     response.setHeader( "Dav" , "1,2" );
 }
 else if ( method == "PROPFIND" ){
-    response.setResponseCode( 207 );
-    response.setHeader( "Content-Type" , "text/xml; charset=iso-8859-1" );
-    
-    xmlHeader();
-    
-    
-    var ms = davMultiStatus();
-    
-    propfind( ms , request.file , theFile, 2 );
-    
-    xml.to( print , null , ms );
+
+    if ( theFile.exists() ){
+        response.setResponseCode( 207 );
+        response.setHeader( "Content-Type" , "text/xml; charset=iso-8859-1" );
+        
+        xmlHeader();
+        
+        var ms = davMultiStatus();
+        
+        propfind( ms , request.file , theFile, 1 );
+        
+        xml.to( print , null , ms );
+    }
+    else {
+        response.setResponseCode( 404 );
+    }
 }
 else if ( method == "GET" ){
     if ( theFile.exists() ){
-        SYSOUT( "sending " + theFile + " length::" + theFile.length() );
+        SYSOUT( "sending " + theFile + " length::" + theFile.length );
         response.sendFile( theFile );
     }
     else
         response.setResponseCode( 404 );
 }
+else if ( method == "DELETE" ){
+    if ( theFile.exists() ){
+        if ( ! theFile.remove( true ) ){
+            throw "couldn't delete : " + theFile;
+        }
+    }
+    else {
+        response.setResponseCode( 404 );
+    }
+}
+else if ( method == "MKCOL" ){
+    if ( theFile.exists() ){
+        response.setResponseCode( 405 );
+    }
+    else {
+        if ( ! theFile.mkdirs() ){
+            throw "can't make directory : " + theFile;
+        }
+    }
+}
+else if ( method == "PUT" ){
+    var pd = request.getPostData();
+    if ( ! pd ){
+        theFile.touch();
+    }
+    else {
+        try {
+            pd.writeTo( theFile );
+        }
+        catch ( e ){
+            throw "couldn't do PUT of [" + theFile + "] b/c : " + e;
+        }
+        response.setResponseCode( 201 );
+    }
+}
+else if ( method == "MOVE" ){
+    var to = request.getHeader( "Destination" );
+    if ( ! to )
+        throw ( "no to" );
+    
+    SYSOUT( "a:" + to );
+    to = to.replace( /^https?:..[^\/]+/ , "" );
+    SYSOUT( "b:" + to );
+    to = to.replace( /\/~~.webdav/ , "" );
+    SYSOUT( "c:" + to );
+
+    theFile.renameTo( openFile( to ) );
+    
+}
+else if ( method == "LOCK" || method == "UNLOCK" ) {
+    // ignore
+}
 else {
-    print( "What do i do with:" + method );
+    throw "can't handle : " + method;
 }
 
 function xmlHeader(){
@@ -94,8 +154,8 @@ function propfind( msg , uri , f , depth ){
         }
     }
     else {
-        ps["D:prop"] = { "lp1:getcontentlength" : f.length() , 
-                         "lp1:getlastmodified" : "Thu, 31 May 2007 17:00:21 EDT" , 
+        ps["D:prop"] = { "lp1:getcontentlength" : f.length , 
+                         "lp1:getlastmodified" : f.lastModified().webFormat() ,
                          "D:getcontenttype" : "text/plain"  };
         
     }
@@ -103,6 +163,7 @@ function propfind( msg , uri , f , depth ){
     ps["D:status"] = "HTTP/1.1 200 OK";
 
 }
+
 
 %>
 
