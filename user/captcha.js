@@ -28,14 +28,15 @@ Captcha = {
             return false;
         
         var c = db.user.captcha.findOne( { id : id } );
-        SYSOUT( "c:" + c );
+        SYSOUT( "c:" + tojson( c ) );
         if ( ! c ){
             return false;
         }
 
-        // check time
-        db.user.captcha.remove( c );
+        // TODO: check time
+        //db.user.captcha.remove( c );
         
+	SYSOUT( "request.captcha : " + request.captcha );
         return request.captcha == c.s;
     }
     
