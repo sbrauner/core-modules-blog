@@ -1,0 +1,108 @@
+<% 
+
+    core.content.xml();
+
+SYSOUT( "-----" );
+SYSOUT( request.getRawHeader() );
+
+request.applyServletParams( /.~~.webdav(.*)/ , [ "file" ] );
+if ( ! request.file )
+    throw "no file:(";
+
+SYSOUT( "file:" + request.file );
+
+var theFile = getFile( request.file );
+
+var method = request.getMethod();
+
+if ( method == "OPTIONS" ){
+    response.setHeader( "Allow" , "OPTIONS,GET,PROPFIND,PUT,PROPPATCH" );
+    response.setHeader( "Dav" , "1,2" );
+}
+else if ( method == "PROPFIND" ){
+    response.setResponseCode( 207 );
+    response.setHeader( "Content-Type" , "text/xml; charset=iso-8859-1" );
+    
+    xmlHeader();
+    
+    
+    var ms = davMultiStatus();
+    
+    propfind( ms , request.file , theFile, 2 );
+    
+    xml.to( print , null , ms );
+}
+else if ( method == "GET" ){
+    if ( theFile.exists() ){
+        SYSOUT( "sending " + theFile + " length::" + theFile.length() );
+        response.sendFile( theFile );
+    }
+    else
+        response.setResponseCode( 404 );
+}
+else {
+    print( "What do i do with:" + method );
+}
+
+function xmlHeader(){
+    print( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
+}
+
+function davMultiStatus(){
+    var o = Array();
+
+    o._name = "D:multistatus";
+    o._props = {};
+    o._props["xmlns:D"] = "DAV:";
+    
+    return o;
+}
+
+function davResponse(){
+    var o = Array();
+    o._name = "D:response";
+    o._props = {};
+    o._props["xmlns:lp1"] = "DAV:";
+    o._props["xmlns:lp2"] = "http://apache.org/dav/props/";
+    return o;
+}
+
+
+function propfind( msg , uri , f , depth ){
+    if ( ! depth )
+        depth = 0;
+
+    if ( ! f || ! f.exists() )
+        return;
+            
+    var r = davResponse();
+    msg.push( r );
+    
+    r["D:href"] = "/~~/webdav" + uri;
+    
+    var ps = Object();
+    r["D:propstat"] = ps;    
+
+    if ( f.isDirectory() ){
+        ps["D:prop"] = { "lp1:resourcetype" : { "D:collection" : "" } , 
+                         "D:getcontenttype" : "httpd/unix-directory"  };
+        
+        if ( depth > 0 ){
+            var children = f.listFiles();
+            for ( var i=0; i<children.length; i++ )
+                propfind( msg , uri + children[i].getName() + "/" , children[i] , depth - 1 );
+        }
+    }
+    else {
+        ps["D:prop"] = { "lp1:getcontentlength" : f.length() , 
+                         "lp1:getlastmodified" : "Thu, 31 May 2007 17:00:21 EDT" , 
+                         "D:getcontenttype" : "text/plain"  };
+        
+    }
+    
+    ps["D:status"] = "HTTP/1.1 200 OK";
+
+}
+
+%>
+
