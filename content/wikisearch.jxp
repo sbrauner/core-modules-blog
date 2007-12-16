@@ -1,0 +1,49 @@
+{
+    if( !allowModule.wiki )
+    	return;
+
+    /* determine the base url we are running under.  
+    */
+    var base = request.getURI();
+    base = base.match( /^.*wiki/ ) || '';
+    base += '/';
+
+    core.content.table();
+}
+
+<html>
+  <head>
+    <title>Wiki Search</title>
+    <link rel="stylesheet" href="/~~/misc/admin.css" type="text/css" />
+    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
+    <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
+
+  </head>
+  <body>
+  <a href="<%=base%>">wiki home</a>
+
+{
+ var wiki = db.wiki;
+
+ var tab = new htmltable( 
+  { 
+   ns : wiki,
+   cols : [
+     { name: "name", searchWidth: 32 },
+     { name: "text", searchWidth: 60, 
+         view: function(x){
+	   return x.toString().substring(0, 66).replace(/</g,"&lt;");
+	 }
+     }
+   ],
+   searchable: true,
+   detail: function(obj){ return base + obj.name; },
+  } 
+ );
+
+ tab.dbview( tab.find().sort({name:1}) );
+
+
+}
+
+</body>

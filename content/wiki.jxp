@@ -1,0 +1,204 @@
+{
+    /* wiki.jxp 
+       See also wikisearch.jxp, wiki_html.js.
+    */
+
+    if( !allowModule.wiki )
+    	return;
+
+    core.content.wiki_html();
+    core.content.htmlhelper();
+
+    /* determine the base url we are running under.  
+    */
+    var base = request.getURI();
+    var searchuri;
+    base = base.match( /^.*wiki/ );
+    if( base ) {
+    	searchuri = base + 'search';
+    	base += '/';
+    } else { 
+    	base = '/'; searchuri = '/wikisearch';
+    }
+
+    request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
+	
+    var wiki = db.wiki;
+    
+    var name = request.name;
+    if ( ! name )
+	name = "Main";    
+
+    var lookup = { name : name };
+
+    var wo = wiki.findOne( lookup );
+
+    var notfound = !wo;
+    if ( notfound )
+        wo = lookup;
+    
+    if( request.rename ) { 
+      if( notfound )
+        print("rename: obj not found in db<br>");
+      else if( request.rename == wo.name ) { 
+        print("rename: same name?");
+      }
+      else if( request.rename.length < 1 || wo.name == "Main " || wo.name.match(/^ /) || wo.name.match(/ $/) ) 
+        print("rename: can't rename, error");
+      else { 
+        var existing = wiki.findOne( { name: request.rename } );
+        if( existing )
+          print("rename: " + request.rename + " already exists.");
+        else { 
+          wo.name = request.rename;
+          wiki.save(wo);
+	  response.setResponseCode( 302 );
+	  response.setHeader( "Location" , base + request.rename );
+        }
+      }
+    }
+    else if( request.deleteit ) { 
+      if( wo.name == "Main" )
+        print("no thanks");
+      else if( notfound ) {
+        print("error deleting, hasn't been saved yet");
+      }
+      else { 
+        wiki.remove(wo);
+	response.setResponseCode( 302 );
+	response.setHeader( "Location" , base + wo.name ); // for ourselves to requery to make sure it is gone, and to get out of "POST" mode
+      }
+    }
+
+    if ( request.new_text ){
+        wo.text = request.new_text;
+        wiki.save( wo );
+    }
+
+}
+<html>
+  <head>
+    <title><%= wo.name %></title>
+
+    <script src="/lib/wiky.js"></script>
+    <link rel="stylesheet" href="/~~/misc/wiky.css" type="text/css">
+    <link rel="stylesheet" href="/~~/misc/gitweb.css" type="text/css">
+
+    <script>
+      
+      var editing = <%= request.e ? "true" : "false" %>;
+      
+      function edit(){
+	 window.location = "<%= base+name %>" + "?e=t";
+      }
+      
+      window.onkeydown = function( e ){
+      
+	 if( e.which == 27 ) {
+		document.getElementById('renameform').style.visibility = 'hidden';
+		document.getElementById('deleteform').style.visibility = 'hidden';
+	 }
+         else if ( ! editing && !e.ctrlKey && 
+			document.getElementById('renameform').style.visibility != 'visible' && 
+			document.getElementById('deleteform').style.visibility != 'visible' ) 
+		{
+		if( e.which == 69 )
+			edit();
+		else if( e.which == 82 ) {
+			document.getElementById('renameform').style.visibility = 'visible';
+		}
+		else if( e.which == 83 ) { 
+		        window.location = '<%=searchuri%>';
+		}
+		else if( e.which == 68 ) {
+			document.getElementById('deleteform').style.visibility = 'visible';
+		}
+		else if( e.which == 32 )
+			window.location = '<%=base%>';
+         }
+
+         if ( editing && e.ctrlKey && ( e.which == 13 || e.which == 77 ) ){
+            document.getElementById( "the_form" ).submit();
+         }
+      }
+
+    </script>
+  </head>
+  <body>
+<% var ar=wo.name.split(/[.]/);
+  var nm = "";
+  if( ar.length <= 1 )	
+    nm = wo.name;
+  else {
+    for( i=0; i <ar.length-1; i++) {
+      var tgt="";
+      for( j=0; j <= i; j++ ) {
+	tgt += ar[j];
+	if( j < i ) tgt += ".";
+      }
+      nm=nm+'<a href=\"' + base + tgt + '">' + ar[i] + '</a>.';
+    }
+    nm=nm+ar[ar.length-1];
+  }
+%>
+    <h2><div class="top"><%= nm %></div></h2>
+<div class="help" id="renameform" style="position:absolute; top:50; left:50; z-index:1; padding:15px; border: 1px solid; visibility: hidden; ">
+<form method="POST">
+Rename<p>
+<input type="text" width="40" name="rename" value="<%=wo.name%>"> <input type="submit" value="Go">
+<p>
+Esc=close/cancel
+</form>
+</div>
+<div class="help" id="deleteform" style="position:absolute; top:50; left:50; z-index:1; padding:15px; border: 1px solid; visibility: hidden; ">
+<form method="POST">
+Delete Article - are you sure?<p>
+<input type="hidden" name="deleteit" value="1">
+<input type="submit" value="Delete">
+<p>
+Esc=close/cancel
+</form>
+</div>
+    <% if ( ! request.e ){ %>
+    <div id="main_content" class="main_content" >
+<!--    <div style="border: 1px solid green;" id="main_content" > -->
+      <%= wo.text ? Wiki.toHtml( wo.text ) : "No Article Yet" %>
+    </div>
+    <% } else { %>
+    <div>
+      <form id="the_form" method="POST" action="<%= base+name %>">
+        <input name="action" type="submit" value=" Save "><p>
+        <Textarea rows=40 cols=100 name="new_text" id="the_area"><%= wo.text %></textarea>
+      </form>
+    </div>
+    <% } %>
+<p>
+    <div class="help">
+<div style="text-align: right;">hi <b><%= user %></b></div>
+e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; space: home &nbsp; 
+s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> 
+<br>
+ctrl-enter: saves after editing &nbsp; <a href="<%=base%>help.markup">markup help</a>    
+<hr>
+<b>Child Articles</b>
+<p>
+{
+ var listStyle = true;
+
+ var tgt = /^[^.]*$/;
+ if( wo.name != "Main" )
+        tgt = RegExp("^" + wo.name + "\.[^.]+$");
+
+ var all = wiki.find( { name: tgt } , { name : true } ).sort( { name : 1 } );
+
+ ul( function() { all.toArray().forEach( function(x) {
+  li( A(base+x.name, x.name) );
+ } ) } );
+
+
+}
+
+</div>
+</body>
+
+</html>
