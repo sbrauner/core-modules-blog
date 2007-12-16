@@ -5,7 +5,7 @@
     /* determine the base url we are running under.  
     */
     var base = request.getURI();
-    base = base.match( /^.*wiki/ ) || '';
+    base = base.match( /^.*?wiki/ ) || '';
     base += '/';
 
     core.content.table();
