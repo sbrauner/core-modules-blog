@@ -18,6 +18,12 @@ xml = {
                     append( " " + a + "=\"" + obj._props[a] + "\" " );
                 }
             }
+
+            if ( obj == null ){
+                append( " />" );
+                return;
+            }
+
             append( ">" );
         }
         

@@ -5,9 +5,12 @@
 SYSOUT( "-----" );
 SYSOUT( request.getRawHeader() );
 
-request.applyServletParams( /.~~.webdav(.*)/ , [ "file" ] );
-if ( ! request.file )
+request.applyServletParams( /(.~~.webdav)(.*)/ , [ "root" , "file" ] );
+var root = request.root;
+if ( ! request.file ){
     request.applyServletParams( /(.*)/ , [ "file" ] );
+    root = "";
+}
 
 if ( ! request.file )
     throw "no file:(";
@@ -32,7 +35,7 @@ else if ( method == "PROPFIND" ){
         
         var ms = davMultiStatus();
         
-        propfind( ms , request.file , theFile, 1 );
+        propfind( ms , request.file , theFile, request.getIntHeader( "Depth" , 1 ) );
         
         xml.to( print , null , ms );
     }
@@ -105,6 +108,7 @@ else {
 }
 
 function xmlHeader(){
+    response.getWriter().reset();
     print( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
 }
 
@@ -138,28 +142,44 @@ function propfind( msg , uri , f , depth ){
     var r = davResponse();
     msg.push( r );
     
-    r["D:href"] = "/~~/webdav" + uri;
+    r["D:href"] = root + uri;
     
     var ps = Object();
     r["D:propstat"] = ps;    
 
+    var prop = { 
+        "lp1:getlastmodified" : f.lastModified().webFormat() , 
+        "lp1:getetag" : f.lastModified().getTime() 
+    };
+    ps["D:prop"] = prop;
+
     if ( f.isDirectory() ){
-        ps["D:prop"] = { "lp1:resourcetype" : { "D:collection" : "" } , 
-                         "D:getcontenttype" : "httpd/unix-directory"  };
+        prop["lp1:resourcetype"] = { "D:collection" : null };
+        prop["D:getcontenttype"] = "httpd/unix-directory";
         
         if ( depth > 0 ){
             var children = f.listFiles();
-            for ( var i=0; i<children.length; i++ )
-                propfind( msg , uri + children[i].getName() + "/" , children[i] , depth - 1 );
+            for ( var i=0; i<children.length; i++ ){
+                var nextURI = uri;
+                if ( ! nextURI.endsWith( "/" ) )
+                    nextURI += "/";
+                nextURI += children[i].getName();
+                
+                propfind( msg , nextURI , children[i] , depth - 1 );
+            }
         }
     }
     else {
-        ps["D:prop"] = { "lp1:getcontentlength" : f.length , 
-                         "lp1:getlastmodified" : f.lastModified().webFormat() ,
-                         "D:getcontenttype" : "text/plain"  };
-        
+        prop["lp1:resourcetype"] = null;
+        prop["D:getcontenttype"] = "text/plain";
+
+        prop["lp1:getcontentlength"] =  f.length;
+
     }
     
+    //prop["D:supportedlock"] = null;
+    //prop["D:lockdiscovery"] = null;
+
     ps["D:status"] = "HTTP/1.1 200 OK";
 
 }
