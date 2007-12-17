@@ -43,6 +43,10 @@ Search = {
     } ,
 
     search : function( table , queryString ){
+	
+	var debug = true;
+	if ( debug ) SYSOUT( queryString );
+
         var fullObjects = Object();
         
         var matchCounts = Object(); // _id -> num
@@ -54,7 +58,7 @@ Search = {
                 if ( z.length == 0 )
                     return;
 
-                //print( "searching on word : " + z );
+                if ( debug ) SYSOUT( "\t searching on word : " + z );
                 
                 var res = table.find( { _searchIndex : z } );
                 
@@ -69,6 +73,8 @@ Search = {
 
                     max = Math.max( max , matchCounts[temp] );
                     
+		    if ( debug ) SYSOUT( "\t\t " + temp.title );
+
                     fullObjects[temp] = tempObject;
                     if ( ! all.contains( temp ) )
                         all.add( temp );

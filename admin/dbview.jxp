@@ -1,28 +1,3 @@
-{
-	
-//    request.applyServletParams( /^\/wiki\/([^\/]+)/ , [ "name" ] );
-	
-/*
-   var wiki = db.wiki;
-    
-    var name = request.name;
-    if ( ! name )
-	name = "Main";    
-
-    var lookup = { name : name };
-
-    var wo = wiki.findOne( lookup );
-
-    if ( ! wo )
-        wo = lookup;
-    
-    if ( request.new_text ){
-        wo.text = request.new_text;
-        wiki.save( wo );
-    }
-*/
-
-}
 <html>
   <head>
     <title>dbview</title>
@@ -44,13 +19,25 @@
   }
 
   var top = request.ns == null;
-
+  
   var ns=top ? ".system.namespaces" : "." + request.ns;
   var collection = db[ns];
   var hdr = top ? "All Collections" : "Collection: " + request.ns;
   if( top )
     collection.ensureIndex( {name:true} );
-  var rows = collection.find().sort( { name : 1 } ).toArray(100);
+  var searchObject = {};
+  if ( "admin.10gen.com" != request.getHeader( "Host" ) ){
+	if ( top ){
+		searchObject.name = new RegExp( "^" + db.getName() + "\." );
+	}
+	else {
+		if ( ! request.ns.match( "^" + db.getName() + "\." ) ){
+			print( "you are evil" );
+			return;
+		}
+	}
+  }
+  var rows = collection.find( searchObject ).sort( { name : 1 } ).toArray(100);
 
   var fields;
   var thresh = rows.length / 2;
