@@ -1,14 +1,18 @@
 <% 
 
-var auth = Auth.getUserAndPass( request );
-if ( auth == null ){
-	Auth.reject( response , "webdav" );
-	return;
-}
+    core.user.auth();
 
-if ( auth.user != "abc" || auth.pass != "17" ){
+if ( false ){
+    var auth = Auth.getUserAndPass( request );
+    if ( auth == null ){
 	Auth.reject( response , "webdav" );
 	return;
+    }
+    
+    if ( auth.user != "abc" || auth.pass != "17" ){
+	Auth.reject( response , "webdav" );
+	return;
+    }
 }
 	
 
@@ -55,10 +59,20 @@ else if ( method == "PROPFIND" ){
         response.setResponseCode( 404 );
     }
 }
+else if ( method == "PROPPATCH" ){
+    // TODO
+}
+else if ( method == "PROPFIND" ){
+    // TODO
+}
 else if ( method == "GET" ){
     if ( theFile.exists() ){
-        SYSOUT( "sending " + theFile + " length::" + theFile.length );
-        response.sendFile( theFile );
+        if ( theFile.isDirectory() ){
+        }
+        else {
+            SYSOUT( "sending " + theFile + " length::" + theFile.length );
+            response.sendFile( theFile );
+        }
     }
     else
         response.setResponseCode( 404 );
@@ -85,11 +99,13 @@ else if ( method == "MKCOL" ){
 }
 else if ( method == "PUT" ){
     var pd = request.getPostData();
+    SYSOUT( "PUT : pd=" + ( ! ( ! pd ) ) );
     if ( ! pd ){
         theFile.touch();
     }
     else {
         try {
+            SYSOUT( "writing to " + theFile );
             pd.writeTo( theFile );
         }
         catch ( e ){
@@ -112,12 +128,22 @@ else if ( method == "MOVE" ){
     theFile.renameTo( openFile( to ) );
     
 }
-else if ( method == "LOCK" || method == "UNLOCK" ) {
-    // ignore
+else if ( method == "LOCK" ){
+    xmlHeader();
+
+    var myLock = lock( theFile );
+
+    xml.to( print , null , myLock.obj );
+    response.setHeader( "Lock-Token" , "<" + myLock.token + ">" );
+}
+else if ( method == "UNLOCK" ) {
+    
 }
 else {
     throw "can't handle : " + method;
 }
+
+SYSOUT( response );
 
 function xmlHeader(){
     response.getWriter().reset();
@@ -189,11 +215,29 @@ function propfind( msg , uri , f , depth ){
 
     }
     
-    //prop["D:supportedlock"] = null;
-    //prop["D:lockdiscovery"] = null;
+    prop["D:supportedlock"] = null;
+    prop["D:lockdiscovery"] = null;
 
     ps["D:status"] = "HTTP/1.1 200 OK";
 
+}
+
+function lock( file ){
+    var prop = { _name : "D:prop" , _props : { "xmlns:D" : "DAV:" } };
+    
+    var myLock = {};
+    prop["D:lockdiscovery"] = { "D:activelock" : myLock };
+    
+    myLock["D:locktype"] = { "D:write" : null };
+    myLock["D:lockscope"] = { "D:exclusive" : null };
+    myLock["D:depth"] = { "infinity" : null };
+    
+    var token = "opaquelocktoken:" + Math.random();
+    myLock["D:locktoken"] = { "D:href" : token };
+
+    //<ns0:owner xmlns:ns0="DAV:"><ns0:href>erh-x61s\erh</ns0:href></ns0:owner><D:timeout>Second-3600</D:timeout>
+    
+    return { obj : prop , token : token };
 }
 
 
