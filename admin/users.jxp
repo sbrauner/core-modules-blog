@@ -1,4 +1,5 @@
 <% core.admin.pieces.header(); %>
+<a href="/~~/admin/user.jxp">New User</a>
 <%
 
  var tab = new htmltable( 
@@ -6,9 +7,11 @@
    ns : db.users ,
    cols : [
      { name: "name", searchWidth: 50 },
-     { name: "email" }
+     { name: "email" } ,
+     { name: "permissions" , heading : "admin" , 
+ 	view : function(x,z){ return z.isAdmin() ? "<b>yes</b>" : ""; } }
    ],
-   detailUrl : "" ,
+   detailUrl : "/~~/admin/user.jxp?_id=" ,
    searchable: true
   }
   );

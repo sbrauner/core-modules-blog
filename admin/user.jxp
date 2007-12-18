@@ -1,0 +1,44 @@
+<% core.admin.pieces.header(); %>
+<% 
+var u = null;
+if ( request._id )
+	u = db.users.findOne( { _id : CrID( request._id ) } );
+else
+	u = new User();
+if ( u && request.action == "save"){
+   u.name = request.name;
+   u.email = request.email;
+   u.nickname = request.nickname;
+
+   if ( request.p1 && request.p1.length != 0 ){
+	if ( request.p1 == request.p2 )
+	   u.setPassword( request.p1 )
+	else 
+	   print( "passwords don't match" );
+   }
+
+   db.users.save( u );
+}
+	
+print.setFormObject( u );
+%>
+
+<form method="post">
+  Name: <input name="name"><br>
+  Email: <input name="email"><br>
+  NickName: <input name="nickname"><br>
+---<br>
+  New Password 1: <input type="password" name="p1"><br>
+  New Password 2: <input type="password" name="p2"><br>
+
+
+  <input type="hidden" name="_id">
+  <input type="submit" name="action" value="save">
+</form>
+
+<%
+print.setFormObject( null );
+
+%>
+
+<% core.admin.pieces.footer(); %>

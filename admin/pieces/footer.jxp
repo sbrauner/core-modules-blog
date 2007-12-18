@@ -1,2 +1,4 @@
+<hr>
+you are : <%= user.name %>
 </body>
 </html>

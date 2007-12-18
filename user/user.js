@@ -7,6 +7,9 @@
  *   nickname
  */
 
+if ( User )
+	return;
+
 function User(){
     
 };

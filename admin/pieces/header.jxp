@@ -10,6 +10,7 @@
 		Auth.reject( response );
 	
 	core.content.table();	
+	core.content.forms();	
 %>
 <html>
   <head>
@@ -19,4 +20,7 @@
     <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
 
   </head>
+  <a href="/~~/admin/users.jxp">Users</a> | 
+  <a href="/~~/admin/dbview.jxp">DB</a> 
+  <hr>
 <body>

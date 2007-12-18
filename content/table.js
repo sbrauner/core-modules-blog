@@ -126,7 +126,7 @@ function htmltable(specs) {
 		     print('<a href="' + durl + '">');
 		 }
 		 var view = this.specs.cols[c].view;
-		 print(view ? view(v) : v);
+		 print(view ? view(v,arr[r]) : v);
 		 if( details ) 
 		     print("</a>");
 	     }
