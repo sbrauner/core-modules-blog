@@ -3,24 +3,39 @@
        See also wikisearch.jxp, wiki_html.js.
     */
 
-    if( !allowModule.wiki )
+    if( !allowModule.wiki ) {
+	print("module error 1");
     	return;
+    }
 
     core.content.wiki_html();
     core.content.htmlhelper();
 
     /* determine the base url we are running under.  
     */
-    var base = request.getURI();
-    var searchuri;
-    base = base.match( /^.*?wiki/ );
-    if( base ) {
-    	searchuri = base + 'search';
-    	base += '/';
-    } else { 
-    	base = '/'; searchuri = '/wikisearch';
+    var uri = request.getURI();
+    var searchuri;	
+
+    if( uri.indexOf('~') >= 0 ) {
+        // only allowed if we remapped the url.  otherwise security would be bypassed
+	print("module error 2");
+	return;
+    }
+	
+    var base = uri.match( /^.*?wiki\// );
+    if( !base && uri.match(/wiki/) ) { 
+	response.setResponseCode( 302 );
+	response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
+	return;
     }
 
+    if( base ) {
+    	searchuri = base.replace(/\/$/,'') + 'search';
+    } else { 
+	// wiki is site root url
+    	base = '/'; searchuri = '/wikisearch';
+    }
+   
     request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
 	
     var wiki = db.wiki;
