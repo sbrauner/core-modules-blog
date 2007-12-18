@@ -4,7 +4,7 @@ core.user.auth();
 core.content.xml();
 
 var user = Auth.getUser( request );
-if ( ! user ){
+if ( ! user || ! user.isAdmin() ){
     Auth.reject( response );
     return;
 }

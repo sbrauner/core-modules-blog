@@ -189,7 +189,7 @@ Esc=close/cancel
     <% } %>
 <p>
     <div class="help">
-<div style="text-align: right;">hi <b><%= user %></b></div>
+<div style="text-align: right;">hi <b><%= user.name %></b></div>
 e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; space: home &nbsp; 
 s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> 
 <br>

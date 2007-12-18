@@ -1,4 +1,8 @@
 
+if ( ! User ){
+    core.user.user();
+}
+
 var Auth = {
     
     getUser : function( req ){
@@ -27,12 +31,16 @@ var Auth = {
                 return null;
             
             var name = auth.substring( 0 , idx );
-            var pass = auth.substring( idx + 1 );
-            
-            if ( pass != "17" )
+
+            var user = User.find( name );
+            if ( ! user )
                 return null;
             
-            return name;
+            var pass = auth.substring( idx + 1 );
+            if ( ! user.checkPasswordClearText( pass ) )
+                return null;
+            
+            return user;
         }  ,
         
         reject: function( res , name ){
@@ -70,11 +78,18 @@ var Auth = {
                     things[name] = z;
                 } );
             
-	    var uri = things.uri;
+            if ( ! things.username )
+                return null;
+            
+            var uri = things.uri;
 	    if ( ! uri )
 		uri = req.getURI();
+            
+            var user = User.find( things.username );
+            if ( ! user )
+                return null;
 
-            var ha1 = md5( things.username + ":" + name + ":17" );
+            var ha1 = things.username.match( /@/ ) ? user.pass_ha1_email : user.pass_ha1_name;
             var ha2 = md5( req.getMethod() + ":" + uri );
 
             var r = md5( ha1 + 
@@ -87,7 +102,7 @@ var Auth = {
             if ( r != things.response )
                 return null;
             
-            return things.username;
+            return user;
         } , 
         
         reject : function( res , name ){
