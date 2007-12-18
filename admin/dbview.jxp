@@ -1,13 +1,4 @@
-<html>
-  <head>
-    <title>dbview</title>
-
-    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
-    <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
-
-  </head>
-<body>
-
+<% core.admin.pieces.header(); %>
 {
   function outp(x) { 
     if( typeof x != 'string' ) { 
@@ -101,7 +92,4 @@
 %>
 
 
-
-
-</body>
-</html>
+<% core.admin.pieces.footer(); %>

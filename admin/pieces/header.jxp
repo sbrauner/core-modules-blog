@@ -1,0 +1,22 @@
+<%
+	if ( user == null ){
+		user = Auth.getUser( request );
+
+		if ( user == null )
+			Auth.reject( response );
+	}
+
+	if ( ! user.isAdmin() )
+		Auth.reject( response );
+	
+	core.content.table();	
+%>
+<html>
+  <head>
+    <title>admin</title>
+
+    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
+    <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
+
+  </head>
+<body>

@@ -1,0 +1,19 @@
+<% core.admin.pieces.header(); %>
+<%
+
+ var tab = new htmltable( 
+  { 
+   ns : db.users ,
+   cols : [
+     { name: "name", searchWidth: 50 },
+     { name: "email" }
+   ],
+   detailUrl : "" ,
+   searchable: true
+  }
+  );
+
+ tab.dbview( tab.find().sort({ts:-1}) );
+%>
+
+<% core.admin.pieces.footer(); %>
