@@ -3,9 +3,9 @@
 core.user.auth();
 core.content.xml();
 
-var myAuth = Auth.getUserDigest( request , db.getName() );
-if ( ! myAuth ){
-    Auth.rejectDigest( response , db.getName() );
+var user = Auth.getUser( request );
+if ( ! user ){
+    Auth.reject( response );
     return;
 }
 
