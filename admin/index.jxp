@@ -1,0 +1,5 @@
+<% core.admin.pieces.header(); %>
+
+Welcome <b><%= user.name %></b> to the admin section for <b><%= db.getName() %></b>
+
+<% core.admin.pieces.footer(); %>
