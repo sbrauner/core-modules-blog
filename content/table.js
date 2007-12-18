@@ -5,11 +5,12 @@ Fields in the constructor specification object:
 tabname: name of the table.  used in the html etc. optional if only one table on the page.
 ns: namespace in the db to query
 cols: column specs
-  name: col name
-  searchWidth:
-  heading: prettier name than 'name' for col heading
-  view: function that makes the value for the col pretty
-  type: "boolean" for bool columns.  used by search.
+  name:         col name
+  searchWidth:  width of the input field in the heading
+  heading:      prettier name than 'name' for col heading
+  view:         function that makes the value for the col pretty
+  type:         "boolean" for bool columns.  used by search.
+  queryForm:    translate what the user typed in the input field into db query form
 detailUrl: drill down url prefix.  uses obj id (_id)
 detail: function which takes object and returns detail url
 searchable: if you want it searchable.
@@ -63,11 +64,15 @@ function htmltable(specs) {
 		 s = "" + s;
 		 s = s.trim();
 		 if( s.length > 0 ) {
-		     if( x.type == "boolean" ) {
+		     if( x.queryForm ) { 
+			 var v = x.queryForm(s);
+			 if( v )
+			     q[x.name] = v;
+		     }
+		     else if( x.type == "boolean" ) {
 			 var val = 
-			     s == "true" || s == "True" || s == "t" || s == "T" || s == "1" ||
+			     s == "yes" || s == "y" || s == "true" || s == "True" || s == "t" || s == "T" || s == "1" ||
 			     (x.view && x.view(true) == s);
-			 print("VAL:" + val);
 			 q[x.name] = val;
 		     }
 		     else { 
