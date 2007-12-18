@@ -1,22 +1,13 @@
 <% 
 
-    core.user.auth();
-
-if ( true ){
-    var auth = Auth.getUserAndPass( request );
-    if ( auth == null ){
-	Auth.reject( response , "webdav" );
-	return;
-    }
-    
-    if ( auth.user != "abc" || auth.pass != "17" ){
-	Auth.reject( response , "webdav" );
-	return;
-    }
-}
-	
-
+core.user.auth();
 core.content.xml();
+
+var myAuth = Auth.getUserDigest( request , db.getName() );
+if ( ! myAuth ){
+    Auth.rejectDigest( response , db.getName() );
+    return;
+}
 
 SYSOUT( "-----" );
 SYSOUT( request.getRawHeader() );
