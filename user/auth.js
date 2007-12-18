@@ -70,8 +70,13 @@ var Auth = {
                     things[name] = z;
                 } );
             
+	    var uri = things.uri;
+	    if ( ! uri )
+		uri = req.getURI();
+
             var ha1 = md5( things.username + ":" + name + ":17" );
-            var ha2 = md5( req.getMethod() + ":" + req.getURI() );
+            var ha2 = md5( req.getMethod() + ":" + uri );
+
             var r = md5( ha1 + 
                          ":" + things.nonce + 
                          ":" + things.nc + 
