@@ -73,13 +73,10 @@ var Auth = {
                      ":" + things.qop + 
                      ":" + ha2 );
 
-        SYSOUT( "a:" + r );
-        SYSOUT( "b:" + things.response );
-
         if ( r != things.response )
             return null;
         
-        return "yay";
+        return things.username;
     }
     
 };
