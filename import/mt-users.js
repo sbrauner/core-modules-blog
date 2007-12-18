@@ -1,9 +1,11 @@
 /* 
    import users from a moveable type database
- */
+*/
 
 var db = connect( "alleyinsider" );
 var jdbcDB = jdbc( "mysql://www.alleyinsider.com/alleyinsider_mt" , "dev" , "dv12" );
+
+core.user.user();
 
 /*
 > +-----------------------------+--------------+------+-----+---------+----------------+
@@ -23,13 +25,13 @@ var jdbcDB = jdbc( "mysql://www.alleyinsider.com/alleyinsider_mt" , "dev" , "dv1
 > +-----------------------------+--------------+------+-----+---------+----------------+
 */
 
-var first = true;
-
 var res = jdbcDB.query( "SELECT * FROM mt_author" );
 
 while ( res.hasNext() ) {
 
-    var u = { email: res.author_email };
+    var u = new User();
+    u.email = res.author_email;
+    
     if( !u.email ) {
 	print("blank email? " + res.author_id);
 	continue;
@@ -41,22 +43,37 @@ while ( res.hasNext() ) {
 	u = exist;
     }
 
-    u.author_id = res.author_id;
-    u.api_password = res.author_api_password;
+    u.url = res.author_url;
     u.name = res.author_name;
     u.nickname = res.author_nickname;
+
+    u.mt_author_id = res.author_id;
+    u.mt_api_password = res.author_api_password;
     u.mt_password = res.author_password;
     u.mt_status = res.author_status;
-    u.url = res.author_url;
+
+    u.setPassword( "foo17" );
+
+    var permRes = jdbcDB.query( "SELECT permission_permissions FROM mt_permission WHERE permission_author_id =  "  + res.author_id );
+    while( permRes.hasNext() ){
+        permRes["permission_permissions"].split( /,/ ).forEach(  function( z ){
+                z = z.replace( /[ ,'']/g , "" ); 
+                u.addPermission( z );
+                
+                if ( z == "administer" )
+                    u.addPermission( "admin" );
+
+            } );
+
+        
+    }
 
     print( u.email );
+    print( "\t" + u.permissions );
+    //print( tojson( u ) );
     
     db.users.save( u );
 
-    if( first ) { 
-	first = false;
-	db.users.ensureIndex( { email : 1 } );
-    }
 }
 
 print("done updating db.users");
