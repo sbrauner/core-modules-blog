@@ -1,3 +1,14 @@
+/* 
+   e.g.:
+
+   xml.to( print, "myobjtype", { name: "foo", x : 3 } );
+
+   <myobjtype>
+     <name>foo</name>
+     <x>3</x>
+   </myobjtype>
+
+*/
 
 xml = {
     

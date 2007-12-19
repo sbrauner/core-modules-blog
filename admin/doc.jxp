@@ -1,0 +1,208 @@
+<html>
+  <body>
+
+<%
+ //    if( !allowModule.doc  ) {
+ //        print("module error 1");
+ //        return;
+ //    }
+%>
+
+    <pre>
+
+<%
+    var expand = request.expand;
+
+    function breadcrumbs(f) { 
+	print("<b>");
+
+	var s = f.split('/');
+	var path = '';
+	for( var i = 0; i < s.length-1; i++ ) {
+	    path = path + s[i] + '/';
+	    print('<a href="?f=' + path  + '">' + s[i] + '/</a> ');
+	}
+	print(s[s.length-1]);
+
+	print("</b> &nbsp; ");
+
+	if( !f.endsWith('/') ) {
+	    if( expand ) { %><a href="?f=<%=f%>">collapse</a> <% } else { %><a href="?f=<%=f%>&expand=1">expand</a> <% }
+	}
+	else print("\n");
+	print("\n");
+    }
+
+    function crunch(s) { 
+	var i = s.indexOf('{');
+	if( i < 0 )
+	    return s;
+
+	// todo: handle braces in comments.  not handled yet.
+	var firstBrace = i;
+	var bcount = 1;
+	var lncomment = false;
+	var blockcomment = false;
+	var stringlit = false;
+	var ch = '{';
+	while( 1 ) {
+	    i++;
+	    if( i >= s.length )
+		return s;
+	    var prev = ch;
+	    var ch = s.charAt(i);
+	    if( blockcomment ) { 
+		if( ch == '/' && prev == '*' )
+		    blockcomment = false;
+		continue;
+	    }
+	    if( lncomment ) { 
+		if( ch == '\n' )
+		    lncomment = false;
+		continue;
+	    }
+	    if( ch == '*' && prev == '/' ) { 
+		blockcomment = true;
+		continue;
+	    }
+	    if( ch == '/' && prev == '/' ) { 
+		lncomment = true;
+		continue;
+	    }
+	    if( stringlit ) { 
+		if( ch == '"' && prev != '\\' )
+		    stringlit = false;
+		continue;
+	    }
+	    if( ch == '"' && prev != '\\') {
+		stringlit = ch;
+		continue;
+	    }
+
+	    if( ch == '{' )
+		bcount++;
+	    if( ch == '}' )
+		if( --bcount <= 0 )
+		    break;
+	}
+
+	// braces from firstBrace..i
+	return s.substring(0,firstBrace) + " ... " + s.substring(i+1);
+    }
+
+    function prep(s) { 
+	if( expand ) 
+	    return s;
+
+	var f = s.split(/function/);
+	var n = f.length;
+	var res = "";
+	if( n )
+	    res = f[0];
+	for( var i = 1; i < n; i++ ) { 
+	    //	    res += "FUNCTION";
+	    res = res + "function" + crunch(f[i]);
+	}
+	s = res;
+
+
+	/*
+
+
+	//s = s.replace(/\{\}/, "");
+	var done;
+	while( 1 ) {
+	    done = true;
+	    s = s.replace( /\{[^{}]*\}/, function() { done=false; return "BLOCK" } );
+	    if( done ) break;
+	}
+	
+	var i = 1;
+	while( 1 ) { 
+	    //	    print("\n<hr>pass " + i + "\n");
+	    //	    print(s);
+
+	    done = true;
+	    s = s.replace(/function([^{}]*)\{[^{}]*\}/m, function(x,a) { 
+			//		    print("x=" + x + "\n<hr>");
+			//		    print("a=" + a + "\n<hr>");
+		    done = false;
+		    return "~FUNC~"+a+" ... ";
+		});
+	    if( done ) 
+		break;
+	    i++;
+	}
+	s = s.replace(/~FUNC~/g, "function");
+
+*/
+	return s;
+    }
+
+    function prepLine(s) {
+	s=s.replace(/([ \t]*)core\.(.*?)\( *\) *;/, function(m,a,b) {
+		var path = b.replace(/\./g, '/');
+		return a + '<a href="http://corejs.10gen.com/admin/doc?f=/' + path + '.js">core.' + b + '</a>();';
+	    });
+
+        //s.replace(/( *)(core\.[^ ()\[\];]+\(\)) *;/, '$1<a href="sdf">$2</a>');
+	return s;
+    }
+
+    function show(s) {
+	s = s.replace(/&/g, '&amp;');
+	s = s.replace(/</g, '&lt;');
+
+	var lines = s.split('\n');
+	var str = "";
+	for( var l in lines ) {
+	    var ln = prepLine(lines[l]);
+	    str += ln;
+	    str += '\n';
+	}
+	str = prep(str);
+	print(str);
+    }
+
+
+    if ( request.f ){
+
+	if( request.f == '/' )
+	    print("/\n\n");
+	else
+	    breadcrumbs(request.f);
+
+	if( request.f.endsWith('/') ) {
+
+	    var ff = openFile(request.f);
+	    if( ff ) { 
+		var files = ff.listFiles();
+		for( var i in files ) { 
+		    var fil = "" + files[i];
+		    if( !fil.endsWith('~') && !fil.startsWith('.') ) {
+			var dirchar = (files[i].isDirectory()?'/':'');
+			print( '<a href="?f=' + request.f + fil + dirchar + '">' + files[i] + dirchar + '</a>\n' );
+		    }
+		}
+	    }
+
+	} else {
+
+	    var theFile = openFile( request.f ); 
+	    if ( theFile.exists() ){
+		var data = theFile.getDataAsString();
+		show(data);
+	    }
+	    else {
+		print( "does not exist" );
+	    } 
+	}
+      }
+      else {
+	print( "no file" );
+      }
+%>
+
+    </pre>
+  </body>
+</html>
