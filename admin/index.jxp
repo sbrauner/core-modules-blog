@@ -1,4 +1,4 @@
-<% core.admin.pieces.header(); %>
+<% if ( core.admin.pieces.header() ) return; %>
 
 Welcome <b><%= user.name %></b> to the admin section for <b><%= db.getName() %></b>
 

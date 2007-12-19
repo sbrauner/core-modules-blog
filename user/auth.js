@@ -1,7 +1,5 @@
 
-if ( ! User ){
-    core.user.user();
-}
+core.user.user();
 
 var Auth = {
     

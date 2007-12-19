@@ -1,0 +1,120 @@
+<% if ( core.admin.pieces.header() ) return; %>
+
+<%
+ 
+ if ( request.action == "pull" ){
+	print( "pulling...<br>" );
+	var foo = sysexec( "git pull" );
+	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
+	print( "<hr>" );
+ }
+ else if ( request.action == "push" ){
+	print( "pushing...<br>" );
+	var foo = sysexec( "git push" );
+	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
+	print( "<hr>" );
+ }
+ else if ( request.action == "add" && request.file ){
+	print( "Adding...<br>" );
+	var cmd = "git add ";
+	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+	print( cmd + "<br>" );
+	var foo = sysexec( cmd );
+	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
+	print( "<hr>" );
+ }
+ else if ( request.action == "commit" && request.file ){
+	print( "Commit...<br>" );
+	var cmd = "git commit ";
+	if ( request.msg && request.msg != 0 ){
+		cmd += " -m \"" + request.msg.replace( /['""']/ , " " ) + "\" ";
+	}
+	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+	print( cmd + "<br>" );
+	var foo = sysexec( cmd );
+	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
+	print( "<hr>" );
+ }
+
+
+ var out = sysexec( "git status" ).out;
+ 
+ var types = {};
+ var temp = null;
+
+ out.split( /\n/ ).forEach( function( line ){
+	
+	if ( ! line.match( /^#/ ) )
+		return;
+	line = line.substring(1);
+	
+	if ( line.match( /^ [\w ]+:$/ ) ){
+		var foo = line.replace( /:\s*$/ , ""  ).trim();
+
+		if ( foo == "Changed but not updated" || foo == "Changes to be committed") foo = "commit";
+		else if ( foo == "Untracked files" ) foo = "add";
+		else throw "don't know what [" + foo + "] is";
+
+		temp = types[foo];		
+		if ( ! temp ){
+			temp = [];
+			types[ foo ] = temp;
+		}
+		return;
+	}
+	
+	if ( line.match( /^\s+$/ ) || line.match( /^\s+\(/ ) )
+		return;
+	
+	if ( ! temp )
+		return;
+		
+	line = line.trim().replace( /modified:/ , "" ).trim();
+	line = line.trim().replace( /new file:/ , "" ).trim();
+
+	if ( line.length == 0 ) return;
+
+	temp.push( line.trim() );
+
+	} );
+ %>
+
+<table>
+<% for ( type in types ){ %>
+  
+  <form>
+
+  <tr>
+    <td colspan="2"><%= type %></td>
+  </tr>
+
+  <% types[type].forEach( function( z ){ %>
+  <tr>
+    <td><input type="checkbox" name="file" value="<%= z %>"></td>
+    <td><%= z %></td>
+  </tr>
+  <% } ); %>
+	 
+  <% if ( type == "commit" ){ %>
+  <tr>
+    <td colspan="2">Commit Message <input name="msg" value=""> </td>
+  </tr>
+  <% } %>
+
+  <tr>
+    <td colspan="2"><input type="submit" name="action" value="<%=type  %>"> </td>
+  </tr>
+  
+  </form>
+
+<% } %>
+</table>
+
+<hr>
+
+<form>
+  <input type="submit" name="action" value="pull">
+  <input type="submit" name="action" value="push">
+</form>
+
+<% core.admin.pieces.footer(); %>

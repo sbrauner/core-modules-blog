@@ -68,7 +68,6 @@ User.find = function( thing ){
     return null;
 };
 
-
 if ( db ){
     db.users.setConstructor( User );
     

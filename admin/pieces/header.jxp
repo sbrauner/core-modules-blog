@@ -1,13 +1,13 @@
 <%
-	if ( user == null ){
+
+core.user.auth();
+
+	if ( ! user ){
 		user = Auth.getUser( request );
-
-		if ( user == null )
-			Auth.reject( response );
 	}
-
-	if ( ! user.isAdmin() )
-		Auth.reject( response );
+	
+	if ( ! user || ! user.isAdmin() )
+		return Auth.reject( response );
 	
 	core.content.table();	
 	core.content.forms();	
@@ -21,6 +21,7 @@
 
   </head>
   <a href="/~~/admin/users.jxp">Users</a> | 
-  <a href="/~~/admin/dbview.jxp">DB</a> 
+  <a href="/~~/admin/dbview.jxp">DB</a> |
+  <a href="/~~/admin/gitLocal.jxp">Git Local</a> 
   <hr>
 <body>
