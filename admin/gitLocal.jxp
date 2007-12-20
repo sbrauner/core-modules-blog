@@ -23,6 +23,15 @@
 	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
 	print( "<hr>" );
  }
+ else if ( request.action == "diff" && request.file ){
+	print( "Diffinf...<br>" );
+	var cmd = "git diff ";
+	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+	print( cmd + "<br>" );
+	var foo = sysexec( cmd );
+	print( "\n<pre>\n" + foo.out + "\n---\n" + foo.err + "\n</pre>\n" );
+	print( "<hr>" );
+ }
  else if ( request.action == "commit" && request.file ){
 	if ( ! request.msg )
 		print( "need a message!" );
@@ -109,6 +118,8 @@
   <% if ( type == "commit" ){ %>
   <tr>
     <td colspan="2">Commit Message <input name="msg" value=""> </td>
+  </tr>
+  <tr>
     <td colspan="2"><input type="submit" name="action" value="diff"> </td>
   </tr>
   <% } %>
