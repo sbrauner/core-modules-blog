@@ -59,7 +59,8 @@ var Auth = {
                 return null;
             
             var things = {};
-            
+	    digestThings = things;            
+
             auth = auth.substring( 7 );
             auth.split( /,/ ).forEach( function( z ){ 
                     
@@ -97,6 +98,7 @@ var Auth = {
                          ":" + things.qop + 
                          ":" + ha2 );
             
+	    SYSOUT( r + "\n" + things.response );
             if ( r != things.response )
                 return null;
             
@@ -104,8 +106,13 @@ var Auth = {
         } , 
         
         reject : function( res , name ){
+	    var realm = name;
+	     
+	    if ( digestThings && digestThings.username.match( /@10gen.com/ ) )
+		realm = "admin";
+
             res.setHeader( "WWW-Authenticate" , 
-                           "Digest realm=\"" + name + "\"," +
+                           "Digest realm=\"" + realm + "\"," +
                            " nonce=\"" + md5( Math.random() ) + "\", " +
                            "algorithm=MD5, qop=\"auth\"" );
             res.setResponseCode( 401 );

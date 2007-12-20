@@ -42,8 +42,8 @@ User.prototype.isAdmin = function(){
 User.prototype.hasPermission = function( perm ){
     if ( ! this.permissions )
         return false;
-    
-    return this.permissions.contains( perm.toLowerCase() );
+
+    return this.permissions.contains( perm.toLowerCase() ) || this.permissions.contains( "superadmin" );
 };
 
 User.prototype.addPermission = function( perm ){
@@ -53,19 +53,28 @@ User.prototype.addPermission = function( perm ){
 };
 
 
-User.find = function( thing ){
+User.find = function( thing , theTable ){
+    if ( ! theTable )
+	theTable = db.users;
+ 
+    SYSOUT( thing + " on " + theTable.base + "." + theTable.name );	
 
     if ( ! thing )
         return null;
-    
+	
+    var u = null;    
     if ( thing.match( /@/ ) )
-        return db.users.findOne( { email : thing } );
+        u = theTable.findOne( { email : thing } );
     
-    var u = db.users.findOne( { name : thing } );
-    if ( u )
-        return u;
+    if ( ! u )
+	u = theTable.findOne( { name : thing } );
 
-    return null;
+SYSOUT( "\t" + tojson( u ) );
+
+    if ( ! u && theTable.base != "admin" && thing.match( /@10gen.com/ ) )
+	return User.find( thing , db[".admin.users"] );
+
+    return u;
 };
 
 if ( db ){
