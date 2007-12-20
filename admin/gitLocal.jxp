@@ -24,16 +24,27 @@
 	print( "<hr>" );
  }
  else if ( request.action == "commit" && request.file ){
-	print( "Commit...<br>" );
-	var cmd = "git commit ";
-	if ( request.msg && request.msg != 0 ){
-		cmd += " -m \"" + request.msg.replace( /['""']/ , " " ) + "\" ";
+	if ( ! request.msg )
+		print( "need a message!" );
+	else {
+		print( "Commit...<br>" );
+		var cmd = "git commit -F - ";
+		
+		cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
+		var env = {};
+
+		env.GIT_AUTHOR_NAME = user.name;
+		env.GIT_COMMITTER_NAME = user.name;
+		env.GIT_AUTHOR_EMAIL = user.email;
+		env.GIT_COMMITTER_EMAIL = user.email;
+
+		request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+		print( cmd + "<br>" );
+	
+		var foo = sysexec( cmd , request.msg , env );
+		print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
+		print( "<hr>" );
 	}
-	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-	print( cmd + "<br>" );
-	var foo = sysexec( cmd );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
  }
 
 
