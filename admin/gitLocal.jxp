@@ -109,6 +109,7 @@
   <% if ( type == "commit" ){ %>
   <tr>
     <td colspan="2">Commit Message <input name="msg" value=""> </td>
+    <td colspan="2"><input type="submit" name="action" value="diff"> </td>
   </tr>
   <% } %>
 
