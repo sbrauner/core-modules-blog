@@ -24,8 +24,8 @@ var Wiki = {
     ],
 
     basics: [
-        { r: /'''([^']+)'''/ , s: "<b>$1</b>" }, // '''bold
-        { r: /''([^']+)''/ , s: "<i>$1</i>" } // ''italics'
+        { r: /'''([^']+)'''/g , s: "<b>$1</b>" }, // '''bold
+        { r: /''([^']+)''/g , s: "<i>$1</i>" } // ''italics'
     ],
 
     repl: function(patts, str) {
