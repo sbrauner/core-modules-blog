@@ -10,6 +10,19 @@ if ( u && request.action == "save"){
    u.email = request.email;
    u.nickname = request.nickname;
 
+   var adm = u.permissions&&u.permissions.contains("admin");
+
+   if( adm && !(request.perm == 'admin') ) { 
+       print("<br>revoke admin<br>");
+       if( u.permissions.length>1 ) print("can't revoke, mult permissions, not implemented<br>");
+       else u.permissions = [];
+   }
+   if( !adm && request.perm == 'admin' ) { 
+       print("<br>make admin<br>");
+       if( !u.permissions ) u.permissions = [];
+       u.permissions.push("admin");
+   }
+
    if ( request.p1 && request.p1.length != 0 ){
 	if ( request.p1 == request.p2 )
 	   u.setPassword( request.p1 )
@@ -22,13 +35,15 @@ if ( u && request.action == "save"){
 	
 print.setFormObject( u );
 %>
-
+<br>
 <form method="post">
+  <b>Edit User Object</b><p>
   Name: <input name="name"><br>
   Email: <input name="email"><br>
   NickName: <input name="nickname"><br>
+  <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> >Admin<br>
 ---<br>
-  New Password 1: <input type="password" name="p1"><br>
+  New Password 1: <input type="password" name="p1"> (Leave blank to leave unchanged)<br>
   New Password 2: <input type="password" name="p2"><br>
 
 
