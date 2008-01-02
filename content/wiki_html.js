@@ -3,6 +3,7 @@
 
 var Wiki = {
 
+    prefixRE: null,	
     outp: undefined,
     noWiki : 0,
     noHtml : 0, // normally we allow html tags within the wiki markup
@@ -47,7 +48,7 @@ var Wiki = {
 
 	var newLevel = 0;
 
-        if( str.match(/^ *$/) ) { this.outp += "<p>\n"; return; }
+        if( trimmed.length == 0 ) { this.outp += "<p>\n"; return; }
 
 	if( trimmed == "</nowiki>" ) { this.noWiki = 0; return; }
 	if( trimmed == "</nohtml>" ) { this.noHtml = 0; return; }
@@ -92,8 +93,11 @@ var Wiki = {
 	}
 
 	// links
-	if( str.match(/\[/) )
+	if( str.match(/\[/) ) {
+	    if( this.prefixRE )
+	        str = str.replace(this.prefixRE, '[[');
 	    str = this.repl(this.link, str);
+	}
 
         str = this.repl(this.basics, str);
 
@@ -112,13 +116,19 @@ var Wiki = {
     },
 
     reset: function() { 
+	this.prefixRE = null;
 	this.outp = "";
 	this.noWiki = 0;
 	this.level = 0;
     },
 
-    toHtml: function(str) {
+    toHtml: function(str, prefix) {
 	this.reset();
+	if( prefix && prefix.length ) {
+	  var s = prefix.replace(/\./g, '\.');
+	  this.prefixRE = RegExp("\\[\\[" + s, 'g');
+	}
+
 	var ln = str.split(/\r?\n/);
 	for( i = 0; i < ln.length; i++ ) { 
 	    this.line(ln[i]);
@@ -145,4 +155,5 @@ var Wiki = {
 		 "<ul><ul><ul><li class=\"uuu\">test</li>\n");
     }
 };
+
 

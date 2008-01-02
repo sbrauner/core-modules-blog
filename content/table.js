@@ -10,10 +10,12 @@ cols: column specs
   heading:      prettier name than 'name' for col heading
   view:         function that makes the value for the col pretty
   type:         "boolean" for bool columns.  used by search.
-  queryForm:    translate what the user typed in the input field into db query form
+  queryForm:    translate what the user typed in the input field into db query format
 detailUrl: drill down url prefix.  uses obj id (_id)
 detail: function which takes object and returns detail url
 searchable: if you want it searchable.
+filter: a function, which if specified, returns true if the row from the db should be included for display.  Note you are 
+  generally better off including the condition in the query rather than using this client-side facility.
 
 Example:
 
@@ -26,7 +28,7 @@ var tab = new htmltable(
     { name: "ts" }, 
     { name: "live", view: function(x){return x?"yes":"no";}, searchable: false }
   ],
-  detailUrl: "/editPost?id=",
+  detailUrl: "/editPost?id="
  } 
 );
 
@@ -115,6 +117,8 @@ function htmltable(specs) {
 
      var arr = cursor.toArray();
      for( var r in arr ) {
+   	 if( this.filter && !this.filter(arr[r]) )
+	     continue;
 	 print("<tr>");
 	 for( var c in colnames ) {
 	     var v = arr[r][colnames[c]];
