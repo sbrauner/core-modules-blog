@@ -16,8 +16,10 @@ core.user.auth();
   <head>
     <title>admin</title>
 
-    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
-    <link rel="stylesheet" href="/git/gitweb.css" type="text/css">
+    <link rel="stylesheet" href="/~~/misc/admin.css" type="text/css" />
+<!--    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
+	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">
+-->
 
   </head>
   <a href="/~~/admin/users.jxp">Users</a> | 
