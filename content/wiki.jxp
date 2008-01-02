@@ -3,10 +3,12 @@
        See also wikisearch.jxp, wiki_html.js.
     */
 
-    if( !allowModule.wiki ) {
+    if( ! ( allowModule && allowModule.wiki ) ){
 	print("module error 1");
     	return;
     }
+    var prefix = allowModule.wiki.prefix || "";
+    var readOnly = allowModule.wiki.readOnly;
 
     core.content.wiki_html();
     core.content.htmlhelper();
@@ -40,9 +42,12 @@
 	
     var wiki = db.wiki;
     
-    var name = request.name;
-    if ( ! name )
-	name = "Main";    
+    var displayName = request.name;
+    if ( ! displayName )
+	displayName = "Main";
+    var name = displayName;
+    if( prefix ) 
+	name = prefix + name;
 
     var lookup = { name : name };
 
@@ -52,7 +57,7 @@
     if ( notfound )
         wo = lookup;
     
-    if( request.rename ) { 
+    if( request.rename && !readOnly ) { 
       if( notfound )
         print("rename: obj not found in db<br>");
       else if( request.rename == wo.name ) { 
@@ -72,7 +77,7 @@
         }
       }
     }
-    else if( request.deleteit ) { 
+    else if( request.deleteit && !readOnly ) { 
       if( wo.name == "Main" )
         print("no thanks");
       else if( notfound ) {
@@ -85,7 +90,7 @@
       }
     }
 
-    if ( request.new_text ){
+    if ( request.new_text && !readOnly ){
         wo.text = request.new_text;
         wiki.save( wo );
     }
@@ -93,7 +98,7 @@
 }
 <html>
   <head>
-    <title><%= wo.name %></title>
+    <title><%= displayName %></title>
 
     <script src="/lib/wiky.js"></script>
     <link rel="stylesheet" href="/~~/misc/wiky.css" type="text/css">
@@ -117,17 +122,19 @@
 			document.getElementById('renameform').style.visibility != 'visible' && 
 			document.getElementById('deleteform').style.visibility != 'visible' ) 
 		{
-		if( e.which == 69 )
+		if( e.which == 83 ) { 
+		        window.location = '<%=searchuri%>';
+		}
+<% if( !readOnly ) { %>
+		else if( e.which == 69 ) 
 			edit();
 		else if( e.which == 82 ) {
 			document.getElementById('renameform').style.visibility = 'visible';
 		}
-		else if( e.which == 83 ) { 
-		        window.location = '<%=searchuri%>';
-		}
 		else if( e.which == 68 ) {
 			document.getElementById('deleteform').style.visibility = 'visible';
 		}
+<% } %>
 		else if( e.which == 32 )
 			window.location = '<%=base%>';
          }
@@ -140,10 +147,10 @@
     </script>
   </head>
   <body>
-<% var ar=wo.name.split(/[.]/);
+<% var ar=displayName.split(/[.]/);//wo.name.split(/[.]/);
   var nm = "";
   if( ar.length <= 1 )	
-    nm = wo.name;
+    nm = displayName;
   else {
     for( i=0; i <ar.length-1; i++) {
       var tgt="";
@@ -177,7 +184,7 @@ Esc=close/cancel
     <% if ( ! request.e ){ %>
     <div id="main_content" class="main_content" >
 <!--    <div style="border: 1px solid green;" id="main_content" > -->
-      <%= wo.text ? Wiki.toHtml( wo.text ) : "No Article Yet" %>
+      <%= wo.text ? Wiki.toHtml( wo.text, prefix ) : "No Article Yet" %>
     </div>
     <% } else { %>
     <div>
@@ -189,25 +196,38 @@ Esc=close/cancel
     <% } %>
 <p>
     <div class="help">
+<% if( user ) { %>
 <div style="text-align: right;">hi <b><%= user.name %></b></div>
-e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; space: home &nbsp; 
+e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; <% } %>space: home &nbsp; 
 s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> 
+<% if( user ) { %>
 <br>
 ctrl-enter: saves after editing &nbsp; <a href="<%=base%>help.markup">markup help</a>    
+<% } %>
 <hr>
 <b>Child Articles</b>
 <p>
 {
  var listStyle = true;
+ var prefixRE = null;
+ if( prefix.length ) {
+    	var s = prefix.replace(/\./g, '\.');
+	prefixRE = RegExp(s);
+ }
 
  var tgt = /^[^.]*$/;
- if( wo.name != "Main" )
+ if( displayName != "Main" )
         tgt = RegExp("^" + wo.name + "\.[^.]+$");
+ else if( prefix )
+        tgt = RegExp("^" + prefix + "\.[^.]+$");
 
  var all = wiki.find( { name: tgt } , { name : true } ).sort( { name : 1 } );
 
  ul( function() { all.toArray().forEach( function(x) {
-  li( A(base+x.name, x.name) );
+  var s = x.name;
+  if( prefixRE )
+    s = s.replace(prefixRE, '');
+  li( A(base+s, s) );
  } ) } );
 
 
