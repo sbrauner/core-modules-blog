@@ -62,21 +62,33 @@ var Auth = {
 	    digestThings = things;            
 
             auth = auth.substring( 7 );
-            auth.split( /,/ ).forEach( function( z ){ 
-                    
-                    z = z.trim();
-                    var idx = z.indexOf( "=" );
-                    if ( idx < 0 )
-                        return;
-                    var name = z.substring( 0 , idx );
-                    z = z.substring( idx + 1 ).trim();
-                    if ( z.startsWith( "\"" ) &&
-                         z.endsWith( "\"" ) )
-                        z = z.substring( 1 , z.length - 1 );
-                    
-                    things[name] = z;
-                } );
-            
+	    
+	    var idx = auth.indexOf( "=" );
+	    while ( idx > 0 ){
+		var name = auth.substring( 0 , idx ).trim();
+		var val = null;
+
+		auth = auth.substring( idx + 1 ).trim();
+		if ( auth.startsWith( "\"" ) ){
+		    auth = auth.substring(1);
+		    idx = auth.indexOf( "\"" );
+		    val = auth.substring( 0 , idx );
+		    auth = auth.substring( idx + 1 ).trim();
+		}
+		else {
+		    idx = auth.indexOf( " " );
+		    val = auth.substring( 0 , idx );
+		    if ( val.endsWith( "," ) )
+			val = val.substring( 0 , val.length - 1 );
+		    auth = auth.substring( idx + 1 ).trim();
+		}
+
+		things[name] = val;
+		if ( auth.startsWith( "," ) )
+		    auth = auth.substring( 1 ).trim();
+		idx = auth.indexOf( "=" );
+	    }
+
             if ( ! things.username )
                 return null;
             
@@ -108,8 +120,8 @@ var Auth = {
         reject : function( res , name ){
 	    var realm = name;
 	     
-	    if ( digestThings && digestThings.username.match( /@10gen.com/ ) )
-		realm = "admin";
+	    if ( request != null && "11" == request.getCookie( "__sudo" ) )
+		realm = "admin";	
 
             res.setHeader( "WWW-Authenticate" , 
                            "Digest realm=\"" + realm + "\"," +
