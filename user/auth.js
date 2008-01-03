@@ -7,8 +7,8 @@ var Auth = {
         return Auth.digest.getUser( req , db.getName() );
     } ,
 
-    reject : function( res ){
-        return Auth.digest.reject( res , db.getName() );
+    reject : function( req , res ){
+        return Auth.digest.reject( req , res , db.getName() );
     } ,
 
     basic : { 
@@ -41,7 +41,7 @@ var Auth = {
             return user;
         }  ,
         
-        reject: function( res , name ){
+        reject: function( req , res , name ){
             res.setHeader( "WWW-Authenticate" , "Basic realm=\"" + name + "\"" );
             res.setResponseCode( 401 );
             return "no";
@@ -117,10 +117,10 @@ var Auth = {
             return user;
         } , 
         
-        reject : function( res , name ){
+        reject : function( req , res , name ){
 	    var realm = name;
 	     
-	    if ( request != null && "11" == request.getCookie( "__sudo" ) )
+	    if ( req != null && "11" == req.getCookie( "__sudo" ) )
 		realm = "admin";	
 
             res.setHeader( "WWW-Authenticate" , 

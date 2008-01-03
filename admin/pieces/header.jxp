@@ -7,7 +7,7 @@ core.user.auth();
 	}
 	
 	if ( ! user || ! user.isAdmin() )
-		return Auth.reject( response );
+	    return Auth.reject( request , response );
 	
 	core.content.table();	
 	core.content.forms();	
@@ -24,6 +24,8 @@ core.user.auth();
   </head>
   <a href="/~~/admin/users.jxp">Users</a> | 
   <a href="/~~/admin/dbview.jxp">DB</a> |
-  <a href="/~~/admin/gitLocal.jxp">Git Local</a> 
+  <a href="/~~/admin/gitLocal.jxp">Git Local</a> |
+  <a href="/~~/admin/doc.jxp?f=/">Doc Tool</a> | 
+  <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a>
   <hr>
 <body>
