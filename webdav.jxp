@@ -4,8 +4,8 @@ core.user.auth();
 core.content.xml();
 
 var user = Auth.getUser( request );
-if ( ! user ) return Auth.reject( response );
-if ( ! user.isAdmin() ) return Auth.reject( response );
+if ( ! user ) return Auth.reject( request , response );
+if ( ! user.isAdmin() ) return Auth.reject( request , response );
 
 SYSOUT( "-----" );
 SYSOUT( request.getRawHeader() );
