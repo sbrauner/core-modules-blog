@@ -76,7 +76,18 @@ var Auth = {
 		    auth = auth.substring( idx + 1 ).trim();
 		}
 		else {
-		    idx = auth.indexOf( " " );
+		    var spaceidx = auth.indexOf( " " );
+		    var commaidx = auth.indexOf( "," );
+		    
+		    if ( spaceidx < 0 && commaidx < 0 )
+			idx = auth.length;
+		    else if ( spaceidx < 0 )
+			idx = commaidx;
+		    else if ( commaidx < 0 )
+			idx = spaceidx;
+		    else
+			idx = Math.min( commaidx , spaceidx );
+		    
 		    val = auth.substring( 0 , idx );
 		    if ( val.endsWith( "," ) )
 			val = val.substring( 0 , val.length - 1 );
@@ -110,7 +121,6 @@ var Auth = {
                          ":" + things.qop + 
                          ":" + ha2 );
             
-	    SYSOUT( r + "\n" + things.response );
             if ( r != things.response )
                 return null;
             
