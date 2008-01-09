@@ -57,8 +57,6 @@ User.find = function( thing , theTable ){
     if ( ! theTable )
 	theTable = db.users;
  
-    SYSOUT( thing + " on " + theTable.base + "." + theTable.name );	
-
     if ( ! thing )
         return null;
 	
@@ -68,8 +66,6 @@ User.find = function( thing , theTable ){
     
     if ( ! u )
 	u = theTable.findOne( { name : thing } );
-
-SYSOUT( "\t" + tojson( u ) );
 
     if ( ! u && theTable.base != "admin" && thing.match( /@10gen.com/ ) )
 	return User.find( thing , db[".admin.users"] );
