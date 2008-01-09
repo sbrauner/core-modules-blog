@@ -1,5 +1,6 @@
 <%
 
+core.user.user();
 core.user.auth();
 
 	if ( ! user ){
@@ -22,10 +23,11 @@ core.user.auth();
 -->
 
   </head>
+<body>
   <a href="/~~/admin/users.jxp">Users</a> | 
   <a href="/~~/admin/dbview.jxp">DB</a> |
   <a href="/~~/admin/gitLocal.jxp">Git Local</a> |
   <a href="/~~/admin/doc.jxp?f=/">Doc Tool</a> | 
-  <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a>
+  <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a> |
+  <a href="/~~/logout">Logout</a>
   <hr>
-<body>
