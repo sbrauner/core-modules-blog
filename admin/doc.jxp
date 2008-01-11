@@ -1,5 +1,4 @@
-<html>
-  <body>
+<% if ( core.admin.pieces.header() ) return; %>
 
 <%
  //    if( !allowModule.doc  ) {
@@ -28,6 +27,7 @@
 
 	if( !f.endsWith('/') ) {
 	    if( expand ) { %><a href="?f=<%=f%>">collapse</a> <% } else { %><a href="?f=<%=f%>&expand=1">expand</a> <% }
+	    print("\n");
 	}
 	else print("\n");
 	print("\n");
@@ -205,5 +205,4 @@
 
     </pre>
 
-  </body>
-</html>
+<% core.admin.pieces.footer(); %>
