@@ -1,0 +1,20 @@
+<% if ( core.admin.pieces.header() ) return; %>
+<%
+
+ var tab = new htmltable( 
+  { 
+   ns : db._files ,
+   cols : [
+     { name: "filename", searchWidth: 50 },
+     { name : "contentType" } ,
+     { name : "length" }
+   ],
+   detailUrl : "/~~/f?id=" ,
+   searchable: true
+  }
+  );
+
+tab.dbview( tab.find().sort({ts:-1}).limit( 100 ) );
+%>
+
+<% core.admin.pieces.footer(); %>

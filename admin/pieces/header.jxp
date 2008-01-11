@@ -25,6 +25,7 @@ core.user.auth();
   </head>
 <body>
   <a href="/~~/admin/users.jxp">Users</a> | 
+  <a href="/~~/admin/files.jxp">Files</a> | 
   <a href="/~~/admin/dbview.jxp">DB</a> |
   <a href="/~~/admin/gitLocal.jxp">Git Local</a> |
   <a href="/~~/admin/doc.jxp?f=/">Doc Tool</a> | 
