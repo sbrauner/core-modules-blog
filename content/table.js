@@ -95,7 +95,9 @@ function htmltable(specs) {
  this._rows = function(cursor) { 
      var colnames = this._colnames();
      var displaycolnames = this._displaycolnames();
-
+     if ( this.specs.actions && this.specs.actions.length > 0 )
+	 displaycolnames.push( "Actions" );
+     
      print( tr(displaycolnames, {header:true}) );
 
      if( this.specs.searchable ) {
@@ -115,31 +117,43 @@ function htmltable(specs) {
 	 print("</form>");
      }
 
-     var arr = cursor.toArray();
-     for( var r in arr ) {
-   	 if( this.filter && !this.filter(arr[r]) )
+     //var arr = cursor.toArray();
+     while( cursor.hasNext() ) {
+	 var obj = cursor.next();
+   	 if( this.filter && !this.filter(obj) )
 	     continue;
 	 print("<tr>");
 	 for( var c in colnames ) {
-	     var v = arr[r][colnames[c]];
+	     var v = obj[colnames[c]];
 	     print("<td>");
 	     {
 		 var details = c == "0" && (this.specs.detail || this.specs.detailUrl);
 		 if( details ) {
-		     var post = arr[r]; 
+		     var post = obj; 
 		     var durl;
 		     if( this.specs.detailUrl )
-			 durl = this.specs.detailUrl + arr[r]._id;
+			 durl = this.specs.detailUrl + obj._id;
 		     else
-			 durl = this.specs.detail(arr[r]);
+			 durl = this.specs.detail(obj);
 		     print('<a href="' + durl + '">');
 		 }
 		 var view = this.specs.cols[c].view;
-		 print(view ? view(v,arr[r]) : v);
+		 print(view ? view(v,obj) : v);
 		 if( details ) 
 		     print("</a>");
 	     }
 	     print("</td>");
+	 }
+	 if ( this.specs.actions ){
+	     print( "<td>" );
+	     for ( var i=0; i<this.specs.actions.length; i++ ){
+		 var action = this.specs.actions[i];
+		 print( "<form method='post'>" );
+		 print( "<input type='hidden' name='_id' value='" + obj._id + "'>" );
+		 print( "<input type='submit' name='action' value='" + action.name + "'>" );
+		 print( "</form>" );
+	     }
+	     print( "</td>" );
 	 }
 	 print("</tr>\n");
      }

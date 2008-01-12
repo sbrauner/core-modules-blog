@@ -18,19 +18,25 @@ if ( theFile ){
 
 <%
 
- var tab = new htmltable( 
-  { 
-   ns : db._files ,
-   cols : [
-     { name : "filename", searchWidth: 50 },
-     { name : "uploadDate" } ,
-     { name : "contentType" } ,
-     { name : "length" }
-   ],
-   detailUrl : "/~~/f?id=" ,
-   searchable: true
-  }
-  );
+       if ( "Delete" == request.action ){
+	   print( "<b>I should delete something, but I don't know how yet</b><br>" );
+       }
+
+ var tab = new htmltable( { 
+	 ns : db._files ,
+	     cols : [
+		     { name : "filename", searchWidth: 50 },
+		     { name : "uploadDate" } ,
+		     { name : "contentType" } ,
+		     { name : "length" }
+		     ],
+	     detailUrl : "/~~/f?id=" ,
+	     searchable: true , 
+	     actions : [ 
+			{ name : "Delete" }
+			]
+	     }
+     );
 
 tab.dbview( tab.find().sort( { uploadDate : -1 } ).limit( 100 ) );
 %>
