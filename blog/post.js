@@ -38,6 +38,11 @@ Post.prototype.getNumComments = function(){
     return this.comments.length;
 };
 
+Post.prototype.deleteComment = function( num ){
+    if ( this.comments )
+	this.comments.remove( num );
+};
+
 Post.prototype.addComment = function( newComment ){
     if ( ! this.comments )
 	this.comments = Array();
