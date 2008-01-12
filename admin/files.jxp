@@ -1,11 +1,29 @@
 <% if ( core.admin.pieces.header() ) return; %>
+
+
+<%
+var theFile = request.getFile( "theFile" );
+if ( theFile ){
+    db._files.save( theFile );
+}
+
+%>
+    
+<form method="POST" enctype="multipart/form-data" >
+   <input type="hidden" name="MAX_FILE_SIZE" value="<?= 1024 * 1024 * 100 ?>" />
+   Choose a file to upload: <input name="theFile" type="file" />
+   <input type="submit" value="Upload File" />
+</form>
+
+
 <%
 
  var tab = new htmltable( 
   { 
    ns : db._files ,
    cols : [
-     { name: "filename", searchWidth: 50 },
+     { name : "filename", searchWidth: 50 },
+     { name : "uploadDate" } ,
      { name : "contentType" } ,
      { name : "length" }
    ],
@@ -14,7 +32,7 @@
   }
   );
 
-tab.dbview( tab.find().sort({ts:-1}).limit( 100 ) );
+tab.dbview( tab.find().sort( { uploadDate : -1 } ).limit( 100 ) );
 %>
 
 <% core.admin.pieces.footer(); %>
