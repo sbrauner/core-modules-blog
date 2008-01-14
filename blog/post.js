@@ -1,5 +1,6 @@
 
 core.content.search();
+core.text.text();
 
 function Post(){
 
@@ -47,12 +48,23 @@ Post.prototype.addComment = function( newComment ){
     if ( ! this.comments )
 	this.comments = Array();
     this.comments.add( newComment );
-}	
+};
 
 Post.prototype.presave = function(){
     Search.index( this , { title : 1 } );
-}
+};
 
+Post.prototype.getExcerpt = function(){
+    if ( this.excerpt )
+        return this.excerpt;
+
+    var foo = this.getTeaserContent();
+    if ( foo == null )
+        return null;
+    
+    return Text.snippet( foo );
+}
+    
 if ( db ){
     posts = db.blog.posts;
     
