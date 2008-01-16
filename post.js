@@ -63,7 +63,17 @@ Post.prototype.getExcerpt = function(){
         return null;
     
     return Text.snippet( foo );
-}
+};
+
+Post.prototype.getUrl = function( r ){
+    if ( ! r && request )
+        r = request;
+    
+    var u = r ? "http://" + r.getHeader( "Host" ) : "";
+    u += "/index/" + this.name;
+    
+    return u;
+};
     
 if ( db ){
     posts = db.blog.posts;
