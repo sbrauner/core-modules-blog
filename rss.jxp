@@ -1,0 +1,28 @@
+<% core.blog.post(); %>
+
+<% var cursor = posts.find( { live : true } ).limit( 20 ); %>
+<% var now = Date(); %>
+
+<% response.setHeader( "Content-Type" , "text/xml"); %>
+<rss version="2.0">
+  <channel>
+    <title>The Latest</title>
+    <link>http://<%= request.getHeader( "Host") %></link>
+    <language>en-us</language>
+    <pubDate><%= now.webFormat() %></pubDate>
+    <lastBuildDate><%= now.webFormat() %></lastBuildDate>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+
+    <% while ( cursor.hasNext() ){ var me = cursor.next(); %>
+    <item>
+      <guid><%= me.getUrl( reques ) %></guid>
+      <title><%= me.title %></title>
+      <link><%= me.getUrl( request ) %> %></link>
+      <pubDate><%= me.ts.webFormat() %></pubDate>
+      <author><%= me.author %></author>
+      <description><%= me.getExcerpt() %></description>
+    </item>
+    <% } %>
+
+  </channel>
+</rss>
