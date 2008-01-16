@@ -12,15 +12,16 @@
     <pubDate><%= now.webFormat() %></pubDate>
     <lastBuildDate><%= now.webFormat() %></lastBuildDate>
     <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <description>description</description>
 
     <% while ( cursor.hasNext() ){ var me = cursor.next(); %>
     <item>
       <guid><%= me.getUrl( reques ) %></guid>
       <title><%= me.title %></title>
-      <link><%= me.getUrl( request ) %> %></link>
+      <link><%= me.getUrl( request ) %></link>
       <pubDate><%= me.ts.webFormat() %></pubDate>
       <author><%= me.author %></author>
-      <description><%= me.getExcerpt() %></description>
+      <description><%= me.getExcerpt().replace( /&nbsp;/g , "" ) %></description>
     </item>
     <% } %>
 
