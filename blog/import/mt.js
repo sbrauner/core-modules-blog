@@ -11,7 +11,7 @@ core.content.search();
 db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC LIMIT 10 " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC LIMIT 100 " );
 
 while ( res.hasNext() ){
 
