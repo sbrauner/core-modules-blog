@@ -166,7 +166,7 @@ function htmltable(specs) {
  this.dbview = function(cursor) {
   print("<table>\n");
   this._rows( cursor );
-  if( cursor.length() == 300 )
+  if( cursor.numSeen() == 300 )
       print( tr(["Only first 300 results displayed."]) );
   print("</table>\n");
  }
