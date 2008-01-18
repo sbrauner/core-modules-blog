@@ -1,13 +1,13 @@
-<% if ( core.admin.pieces.header() ) return; %>
+<% 
 
-<%
- //    if( !allowModule.doc  ) {
- //        print("module error 1");
- //        return;
- //    }
+/* doc.jxp - documentation tool. 
+*/
+
+if ( core.admin.pieces.header("open for corejs.10gen.com") ) 
+    return; 
 %>
 
-    <pre>
+<pre>
 
 <%
     var expand = request.expand;

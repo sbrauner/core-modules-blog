@@ -1,5 +1,7 @@
 <%
 
+var _openAccess = arguments[0] && request.getHost() == "corejs.10gen.com";
+
 core.user.user();
 core.user.auth();
 
@@ -7,7 +9,7 @@ core.user.auth();
 		user = Auth.getUser( request );
 	}
 	
-	if ( ! user || ! user.isAdmin() )
+        if ( !_openAccess && (! user || ! user.isAdmin()) )
 	    return Auth.reject( request , response );
 	
 	core.content.table();	
@@ -24,6 +26,7 @@ core.user.auth();
 
   </head>
 <body>
+    <%if( !_openAccess ) {%>
   <a href="/~~/admin/users.jxp">Users</a> | 
   <a href="/~~/admin/files.jxp">Files</a> | 
   <a href="/~~/admin/dbview.jxp">DB</a> |
@@ -32,3 +35,4 @@ core.user.auth();
   <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a> |
   <a href="/~~/logout">Logout</a>
   <hr>
+		  <%}%>
