@@ -1,5 +1,4 @@
 
-alert( "hi from pixel : <%= request.getURL() %>"  );
 
 <%
     var foooo = 1;
@@ -28,3 +27,4 @@ core.analytics.utils();
 Analytics.go( request , Analytics.stdAgs );
 
 %>
+tx
