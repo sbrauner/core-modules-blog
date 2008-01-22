@@ -57,7 +57,10 @@ doUniqueStuff( "ud" , "uniqueDay" , 3600 * 24 );
 doUniqueStuff( "um" , "uniqueMonth" , 3600 * 24 * 30 );
 
 function writePixel(){
-    document.write( "<scr" + "ipt src=\"/~~/analytics/pixel.jxp" + pixelParams + "\"></scr" + "ipt>" );    
+    var root = "";
+    if ( trackRoot )
+	root = trackRoot;
+    document.write( "<img src=\"" + root + "/~~/analytics/pixel.jxp" + pixelParams + "\" width=1 height=1 border=0>" );    
 }
 
 writePixel();

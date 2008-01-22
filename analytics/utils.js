@@ -29,7 +29,7 @@ if ( ! Analytics._utilsInit ){
     };
     
     Analytics.stdAgs = {
-        pageView : { key : { time : hour } } ,
+        pageView : { key : { time : Analytics.hour } } ,
         
         title : Analytics.hourlyThing( "title" ) ,
         search : Analytics.hourlyThing( "search" ) ,
@@ -37,9 +37,9 @@ if ( ! Analytics._utilsInit ){
         refererSearch : Analytics.hourlyThing( "refererSearch" ) ,
         section : Analytics.hourlyThing( "section" ) ,
         
-        uniqueHour : { key : { time : hour } , skip : function( r ){ return ! r.uniqueHour; } } ,
-        uniqueDay : { key : { time : day } , skip : function( r ){ return ! r.uniqueDay; } } ,
-        uniqueMonth : { key : { time : month } , skip : function( r ){ return ! r.uniqueMonth; } }
+        uniqueHour : { key : { time : Analytics.hour } , skip : function( r ){ return ! r.uniqueHour; } } ,
+        uniqueDay : { key : { time : Analytics.day } , skip : function( r ){ return ! r.uniqueDay; } } ,
+        uniqueMonth : { key : { time :  Analytics.month } , skip : function( r ){ return ! r.uniqueMonth; } }
         
     };
     
