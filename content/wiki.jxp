@@ -135,10 +135,10 @@
 			document.getElementById('deleteform').style.visibility = 'visible';
 		}
 <% } %>
-		else if( e.which == 32 )
+/*		else if( e.which == 32 )
 			window.location = '<%=base%>';
          }
-
+*/
          if ( editing && e.ctrlKey && ( e.which == 13 || e.which == 77 ) ){
             document.getElementById( "the_form" ).submit();
          }
@@ -198,7 +198,7 @@ Esc=close/cancel
     <div class="help">
 <% if( user ) { %>
 <div style="text-align: right;">hi <b><%= user.name %></b></div>
-e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; <% } %>space: home &nbsp; 
+e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; <% } %> 
 s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> 
 <% if( user ) { %>
 <br>
