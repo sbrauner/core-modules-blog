@@ -147,6 +147,7 @@
     </script>
   </head>
   <body>
+
 <% var ar=displayName.split(/[.]/);//wo.name.split(/[.]/);
   var nm = "";
   if( ar.length <= 1 )	
@@ -163,7 +164,7 @@
     nm=nm+ar[ar.length-1];
   }
 %>
-    <h2><div class="top"><%= nm %></div></h2>
+    <h2><div class="top"><a href="<%=base%>">Home</a>: <%= nm %></div></h2>
 <div class="help" id="renameform" style="position:absolute; top:50; left:50; z-index:1; padding:15px; border: 1px solid; visibility: hidden; ">
 <form method="POST">
 Rename<p>
