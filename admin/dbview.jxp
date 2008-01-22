@@ -11,7 +11,7 @@
 
   var top = request.ns == null;
   
-  var ns=top ? ".system.namespaces" : "." + request.ns;
+  var ns=top ? "system.namespaces" :  "." + request.ns;
   var collection = db[ns];
   var hdr = top ? "All Collections" : "Collection: " + request.ns;
   if( top )
@@ -31,7 +31,7 @@
   var rows = collection.find( searchObject ).sort( { name : 1 } ).toArray(100);
 
   var fields;
-  var thresh = rows.length / 2;
+  var thresh = rows.length < 4 ? 0 : rows.length / 2;
   if( top )
     fields = [ 'name' ];
   else {
