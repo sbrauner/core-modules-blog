@@ -59,7 +59,8 @@ if ( ! Analytics._utilsInit ){
                 key[foo] = v;
             }
             
-            db.analytics[ name ].update( key , op , dbOptions );
+            var coll = db.analytics[ name ];
+            coll.update( key , op , Analytics.dbOptions );
         }
     };
 
