@@ -1,0 +1,30 @@
+
+alert( "hi from pixel : <%= request.getURL() %>"  );
+
+<%
+    var foooo = 1;
+/**
+   
+   - unique/visits
+     - hour
+     - day
+     - month
+
+  - things by hour?
+     - referers   key - referer
+     - searches   key - search term
+     - pages/titles key - title
+     - hourly key - none
+     
+ 
+  - globals i need
+     - db
+     - request
+   
+*/
+
+core.analytics.utils();
+
+Analytics.go( request , Analytics.stdAgs );
+
+%>
