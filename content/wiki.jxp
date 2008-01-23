@@ -135,10 +135,10 @@
 			document.getElementById('deleteform').style.visibility = 'visible';
 		}
 <% } %>
-/*		else if( e.which == 32 )
+		else if( e.which == 72 )
 			window.location = '<%=base%>';
          }
-*/
+
          if ( editing && e.ctrlKey && ( e.which == 13 || e.which == 77 ) ){
             document.getElementById( "the_form" ).submit();
          }
@@ -164,7 +164,7 @@
     nm=nm+ar[ar.length-1];
   }
 %>
-    <h2><div class="top"><a href="<%=base%>">Home</a>: <%= nm %></div></h2>
+<h2><div class="top"><%= nm %></div></h2>
 <div class="help" id="renameform" style="position:absolute; top:50; left:50; z-index:1; padding:15px; border: 1px solid; visibility: hidden; ">
 <form method="POST">
 Rename<p>
@@ -200,7 +200,7 @@ Esc=close/cancel
 <% if( user ) { %>
 <div style="text-align: right;">hi <b><%= user.name %></b></div>
 e: edit &nbsp; r: rename &nbsp; d: delete &nbsp; <% } %> 
-s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> 
+s: <a href="<%=base.replace(/\/$/,'')%>search">search</a> &nbsp; h: <a href="<%=base%>">home</a>
 <% if( user ) { %>
 <br>
 ctrl-enter: saves after editing &nbsp; <a href="<%=base%>help.markup">markup help</a>    
