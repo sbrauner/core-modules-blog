@@ -58,7 +58,7 @@ doUniqueStuff( "um" , "uniqueMonth" , 3600 * 24 * 30 );
 
 function writePixel(){
     var root = "";
-    if ( trackRoot )
+    if ( window.trackRoot )
 	root = trackRoot;
     document.write( "<img src=\"" + root + "/~~/analytics/pixel.jxp" + pixelParams + "\" width=1 height=1 border=0>" );    
 }
