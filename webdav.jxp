@@ -1,14 +1,38 @@
 <% 
 
+var debug = false;
+
 core.user.auth();
 core.content.xml();
 
-var user = Auth.getUser( request );
-if ( ! user ) return Auth.reject( request , response );
-if ( ! user.isAdmin() ) return Auth.reject( request , response );
+var method = request.getMethod();
 
-SYSOUT( "-----" );
-SYSOUT( request.getRawHeader() );
+if ( debug ){ 
+    SYSOUT( "-----" );
+    SYSOUT( "entering webdav" );
+    SYSOUT( request.getRawHeader() );
+}
+
+if ( method == "OPTIONS" ){
+    // OPTIONS bypases security b/c some clients need it
+    response.setHeader( "Allow" , "OPTIONS,GET,PROPFIND,PUT,PROPPATCH,LOCK,UNLOCK" );
+    response.setHeader( "Dav" , "1,2" );
+    response.setHeader( "MS-Author-Via" , "DAV" );
+    if ( debug ) SYSOUT( response );
+    return;
+}
+
+
+var user = Auth.getUser( request );
+if ( ! user ) {
+    if ( debug ) SYSOUT( "no user" );
+    return Auth.reject( request , response );
+}
+if ( ! user.isAdmin() ){
+    if ( debug ) SYSOUT( "not admin" );
+    return Auth.reject( request , response );
+}
+
 
 request.applyServletParams( /(.~~.webdav)(.*)/ , [ "root" , "file" ] );
 var root = request.root;
@@ -20,17 +44,13 @@ if ( ! request.file ){
 if ( ! request.file )
     throw "no file:(";
 
-SYSOUT( "file:" + request.file );
+if ( debug ) SYSOUT( "file:" + request.file );
 
 var theFile = openFile( request.file );
 
-var method = request.getMethod();
 
-if ( method == "OPTIONS" ){
-    response.setHeader( "Allow" , "OPTIONS,GET,PROPFIND,PUT,PROPPATCH,LOCK,UNLOCK" );
-    response.setHeader( "Dav" , "1,2" );
-}
-else if ( method == "PROPFIND" ){
+
+if ( method == "PROPFIND" ){
 
     if ( theFile.exists() ){
         response.setResponseCode( 207 );
@@ -59,7 +79,7 @@ else if ( method == "GET" ){
         if ( theFile.isDirectory() ){
         }
         else {
-            SYSOUT( "sending " + theFile + " length::" + theFile.length );
+            if ( debug ) SYSOUT( "sending " + theFile + " length::" + theFile.length );
             response.sendFile( theFile );
         }
     }
@@ -86,15 +106,15 @@ else if ( method == "MKCOL" ){
         }
     }
 }
-else if ( method == "PUT" ){
+else if ( method == "PUT" || method == "POST" ){
     var pd = request.getPostData();
-    SYSOUT( "PUT : pd=" + ( ! ( ! pd ) ) );
+    if ( debug ) SYSOUT( "PUT : pd=" + ( ! ( ! pd ) ) );
     if ( ! pd ){
         theFile.touch();
     }
     else {
         try {
-            SYSOUT( "writing to " + theFile );
+            if ( debug ) SYSOUT( "writing to " + theFile );
             pd.writeTo( theFile );
         }
         catch ( e ){
@@ -108,11 +128,11 @@ else if ( method == "MOVE" ){
     if ( ! to )
         throw ( "no to" );
     
-    SYSOUT( "a:" + to );
+    if ( debug ) SYSOUT( "a:" + to );
     to = to.replace( /^https?:..[^\/]+/ , "" );
-    SYSOUT( "b:" + to );
+    if ( debug ) SYSOUT( "b:" + to );
     to = to.replace( /\/~~.webdav/ , "" );
-    SYSOUT( "c:" + to );
+    if ( debug ) SYSOUT( "c:" + to );
 
     theFile.renameTo( openFile( to ) );
     
