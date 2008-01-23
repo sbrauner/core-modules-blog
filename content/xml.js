@@ -22,7 +22,7 @@ xml = {
         var newLine = false;
         
         if ( name ){
-            xml.indent( append , indent );        
+            xml._indent( append , indent );        
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
@@ -65,13 +65,13 @@ xml = {
         
         if ( name ){
             if ( newLine )
-                xml.indent( append , indent );
+                xml._indent( append , indent );
             append( "</" + name + ">\n" );
         }
 
     } ,
     
-    indent : function( append , indent ){
+    _indent : function( append , indent ){
         for ( var i=0; i<indent; i++ )
             append( " " );
     }
