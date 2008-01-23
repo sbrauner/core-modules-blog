@@ -2,6 +2,8 @@
 core.user.user();
 
 var Auth = {
+
+    debug : false ,
     
     getUser : function( req ){
         return Auth.digest.getUser( req , db.getName() );
@@ -108,8 +110,11 @@ var Auth = {
 		uri = req.getURI();
             
             var user = User.find( things.username );
-            if ( ! user )
+            if ( ! user ){
+                if ( Auth.debug ) SYSOUT( "no user:" + things.username );
                 return null;
+            }
+            if ( Auth.debug ) SYSOUT( "found user:" + things.username );
 
             var ha1 = things.username.match( /@/ ) ? user.pass_ha1_email : user.pass_ha1_name;
             var ha2 = md5( req.getMethod() + ":" + uri );
@@ -121,8 +126,13 @@ var Auth = {
                          ":" + things.qop + 
                          ":" + ha2 );
             
-            if ( r != things.response )
+            if ( Auth.debug ) SYSOUT( r + "\n" + things.response );
+            if ( r != things.response ){
+                if ( Auth.debug ) SYSOUT( "don't match" );
                 return null;
+            }
+
+            if ( Auth.debug ) SYSOUT( "success!" );
             
             return user;
         } , 
