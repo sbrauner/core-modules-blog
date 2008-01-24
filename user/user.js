@@ -57,6 +57,8 @@ User.find = function( thing , theTable ){
     if ( ! theTable )
 	theTable = db.users;
  
+    theTable.setConstructor( User );
+
     if ( ! thing )
         return null;
 	
