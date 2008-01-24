@@ -4,50 +4,51 @@
     */
 
     if( ! ( allowModule && allowModule.wiki ) ){
-	print("module error 1");
-    	return;
+        print("module error 1");
+        return;
     }
     var prefix = allowModule.wiki.prefix || "";
     var readOnly = allowModule.wiki.readOnly;
 
     core.content.wiki_html();
     core.content.htmlhelper();
+    core.html.html();
 
     /* determine the base url we are running under.  
     */
     var uri = request.getURI();
-    var searchuri;	
+    var searchuri;    
 
     if( uri.indexOf('~') >= 0 ) {
         // only allowed if we remapped the url.  otherwise security would be bypassed
-	print("module error 2");
-	return;
+    print("module error 2");
+    return;
     }
-	
+    
     var base = uri.match( /^.*?wiki\// );
     if( !base && uri.match(/wiki/) ) { 
-	response.setResponseCode( 302 );
-	response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
-	return;
+    response.setResponseCode( 302 );
+    response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
+    return;
     }
 
     if( base ) {
-    	searchuri = base.replace(/\/$/,'') + 'search';
+        searchuri = base.replace(/\/$/,'') + 'search';
     } else { 
-	// wiki is site root url
-    	base = '/'; searchuri = '/wikisearch';
+    // wiki is site root url
+        base = '/'; searchuri = '/wikisearch';
     }
    
     request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
-	
+    
     var wiki = db.wiki;
     
     var displayName = request.name;
     if ( ! displayName )
-	displayName = "Main";
+    displayName = "Main";
     var name = displayName;
     if( prefix ) 
-	name = prefix + name;
+    name = prefix + name;
 
     var lookup = { name : name };
 
@@ -72,8 +73,8 @@
         else { 
           wo.name = request.rename;
           wiki.save(wo);
-	  response.setResponseCode( 302 );
-	  response.setHeader( "Location" , base + request.rename );
+      response.setResponseCode( 302 );
+      response.setHeader( "Location" , base + request.rename );
         }
       }
     }
@@ -85,8 +86,8 @@
       }
       else { 
         wiki.remove(wo);
-	response.setResponseCode( 302 );
-	response.setHeader( "Location" , base + wo.name ); // for ourselves to requery to make sure it is gone, and to get out of "POST" mode
+    response.setResponseCode( 302 );
+    response.setHeader( "Location" , base + wo.name ); // for ourselves to requery to make sure it is gone, and to get out of "POST" mode
       }
     }
 
@@ -109,34 +110,34 @@
       var editing = <%= request.e ? "true" : "false" %>;
       
       function edit(){
-	 window.location = "<%= base+name %>" + "?e=t";
+     window.location = "<%= base+name %>" + "?e=t";
       }
       
       window.onkeydown = function( e ){
       
-	 if( e.which == 27 ) {
-		document.getElementById('renameform').style.visibility = 'hidden';
-		document.getElementById('deleteform').style.visibility = 'hidden';
-	 }
+     if( e.which == 27 ) {
+        document.getElementById('renameform').style.visibility = 'hidden';
+        document.getElementById('deleteform').style.visibility = 'hidden';
+     }
          else if ( ! editing && !e.ctrlKey && 
-			document.getElementById('renameform').style.visibility != 'visible' && 
-			document.getElementById('deleteform').style.visibility != 'visible' ) 
-		{
-		if( e.which == 83 ) { 
-		        window.location = '<%=searchuri%>';
-		}
+            document.getElementById('renameform').style.visibility != 'visible' && 
+            document.getElementById('deleteform').style.visibility != 'visible' ) 
+        {
+        if( e.which == 83 ) { 
+                window.location = '<%=searchuri%>';
+        }
 <% if( !readOnly ) { %>
-		else if( e.which == 69 ) 
-			edit();
-		else if( e.which == 82 ) {
-			document.getElementById('renameform').style.visibility = 'visible';
-		}
-		else if( e.which == 68 ) {
-			document.getElementById('deleteform').style.visibility = 'visible';
-		}
+        else if( e.which == 69 ) 
+            edit();
+        else if( e.which == 82 ) {
+            document.getElementById('renameform').style.visibility = 'visible';
+        }
+        else if( e.which == 68 ) {
+            document.getElementById('deleteform').style.visibility = 'visible';
+        }
 <% } %>
-		else if( e.which == 72 )
-			window.location = '<%=base%>';
+        else if( e.which == 72 )
+            window.location = '<%=base%>';
          }
 
          if ( editing && e.ctrlKey && ( e.which == 13 || e.which == 77 ) ){
@@ -150,14 +151,14 @@
 
 <% var ar=displayName.split(/[.]/);//wo.name.split(/[.]/);
   var nm = "";
-  if( ar.length <= 1 )	
+  if( ar.length <= 1 )    
     nm = displayName;
   else {
     for( i=0; i <ar.length-1; i++) {
       var tgt="";
       for( j=0; j <= i; j++ ) {
-	tgt += ar[j];
-	if( j < i ) tgt += ".";
+    tgt += ar[j];
+    if( j < i ) tgt += ".";
       }
       nm=nm+'<a href=\"' + base + tgt + '">' + ar[i] + '</a>.';
     }
@@ -191,7 +192,7 @@ Esc=close/cancel
     <div>
       <form id="the_form" method="POST" action="<%= base+name %>">
         <input name="action" type="submit" value=" Save "><p>
-        <Textarea rows=40 cols=100 name="new_text" id="the_area"><%= wo.text %></textarea>
+        <Textarea rows=40 cols=100 name="new_text" id="the_area"><%= HTML.encode(wo.text) %></textarea>
       </form>
     </div>
     <% } %>
@@ -212,8 +213,8 @@ ctrl-enter: saves after editing &nbsp; <a href="<%=base%>help.markup">markup hel
  var listStyle = true;
  var prefixRE = null;
  if( prefix.length ) {
-    	var s = prefix.replace(/\./g, '\.');
-	prefixRE = RegExp(s);
+        var s = prefix.replace(/\./g, '\.');
+    prefixRE = RegExp(s);
  }
 
  var tgt = /^[^.]*$/;
