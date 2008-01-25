@@ -1,5 +1,35 @@
-<% if ( core.admin.pieces.header() ) return; %>
+<%
 
+    if ( core.admin.pieces.header() ) 
+        return; 
+
+var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
+sectionName = sectionName.replace( /inde(x.jxp|x)$/ , "" );
+var section = null;
+
+if ( sectionName.match( /^my\// ) )
+    section = jxp.admin[ sectionName.substring( 3 )];
+
+if ( section == null && sectionName.match( /\// ) ){
+    var idx = sectionName.indexOf( "/" );
+    var module = sectionName.substring( 0 , idx );
+    var piece = sectionName.substring( idx + 1 );
+
+    var moduleThing = core[module];
+    if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] )
+        section = moduleThing.admin[piece];
+}
+
+if ( section == null )
+    section = core.admin[ sectionName ];
+
+if ( isFunction( section ) )
+    section();
+else {
+    %>
 Welcome <b><%= user.name %></b> to the admin section for <b><%= db.getName() %></b>
-
+    <% 
+    }
+%>
+    
 <% core.admin.pieces.footer(); %>
