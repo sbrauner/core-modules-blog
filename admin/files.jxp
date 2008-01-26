@@ -10,7 +10,7 @@ if ( theFile ){
 %>
     
 <form method="POST" enctype="multipart/form-data" >
-   <input type="hidden" name="MAX_FILE_SIZE" value="<?= 1024 * 1024 * 100 ?>" />
+   <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
    Choose a file to upload: <input name="theFile" type="file" />
    <input type="submit" value="Upload File" />
 </form>
