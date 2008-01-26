@@ -1,4 +1,3 @@
-<% if ( core.admin.pieces.header() ) return; %>
 <% 
 var u = null;
 if ( request._id )
@@ -56,4 +55,4 @@ print.setFormObject( null );
 
 %>
 
-<% core.admin.pieces.footer(); %>
+

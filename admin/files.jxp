@@ -1,6 +1,3 @@
-<% if ( core.admin.pieces.header() ) return; %>
-
-
 <%
 var theFile = request.getFile( "theFile" );
 if ( theFile ){
@@ -41,4 +38,3 @@ if ( theFile ){
 tab.dbview( tab.find().sort( { uploadDate : -1 } ).limit( 100 ) );
 %>
 
-<% core.admin.pieces.footer(); %>

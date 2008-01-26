@@ -1,4 +1,3 @@
-<% if ( core.admin.pieces.header() ) return; %>
 <a href="/~~/admin/user.jxp">New User</a>
 <%
 
@@ -20,5 +19,3 @@
 
  tab.dbview( tab.find().sort({ts:-1}) );
 %>
-
-<% core.admin.pieces.footer(); %>
