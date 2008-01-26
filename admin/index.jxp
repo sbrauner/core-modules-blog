@@ -4,7 +4,9 @@
         return; 
 
 var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
-sectionName = sectionName.replace( /inde(x.jxp|x)$/ , "" );
+if ( sectionName.match( /.admin.index/ ) )
+    sectionName = sectionName.replace( /inde(x.jxp|x)$/ , "" );
+
 var section = null;
 
 if ( sectionName.match( /^my\// ) )

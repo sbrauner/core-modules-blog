@@ -33,6 +33,11 @@ core.user.auth();
   <a href="/~~/admin/gitLocal.jxp">Git Local</a> |
   <a href="/~~/admin/doc.jxp?f=/">Doc Tool</a> | 
   <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a> |
+  <if allowModule>
+    <% for ( var mod in allowModule ){ %>
+    <a href="/admin/<%= mod %>/index"><%= mod %></a>
+    <% } %>
+  </if>
   <a href="/~~/logout">Logout</a>
   <hr>
 		  <%}%>
