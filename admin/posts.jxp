@@ -1,0 +1,32 @@
+{
+    core.blog.admin.pieces.header();
+ core.content.table();
+}
+
+Posts - <a href="/admin/blog/editPost">new</a>
+<p>
+
+{
+
+ var tab = new htmltable( 
+  { 
+   ns : posts,
+   cols : [
+     { name: "title", searchWidth: 50 },
+     { name: "author" },
+     { name: "ts", heading: "created", 
+         view: function(x){return x.toString().replace(/... EST /,' ');}
+     }, 
+     { name: "live", 
+       view: function(x){return x?"yes":"no";}, 
+       searchWidth: 4, type: "boolean"
+     }
+   ],
+   detailUrl: "/admin/blog/editPost?id=",
+   searchable: true
+  } 
+ );
+
+ tab.dbview( tab.find({cls:"entry"}).sort({ts:-1}) );
+
+}
