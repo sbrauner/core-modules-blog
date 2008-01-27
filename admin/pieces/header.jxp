@@ -27,6 +27,7 @@ core.user.auth();
   </head>
 <body>
     <%if( !_openAccess ) {%>
+  <a href="/admin/">Home</a> | 
   <a href="/admin/users.jxp">Users</a> | 
   <a href="/admin/files.jxp">Files</a> | 
   <a href="/admin/dbview.jxp">DB</a> |
@@ -36,7 +37,7 @@ core.user.auth();
   <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a> |
   <if allowModule>
     <% for ( var mod in allowModule ){ %>
-    <a href="/admin/<%= mod %>/index"><%= mod %></a>
+    <a href="/admin/<%= mod %>/index"><%= mod %></a> |
     <% } %>
   </if>
   <a href="/~~/logout">Logout</a>

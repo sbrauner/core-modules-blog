@@ -1,1 +1,2 @@
+<% core.blog.admin.pieces.header(); %>
 Blog Admin

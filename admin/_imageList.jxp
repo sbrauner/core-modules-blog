@@ -1,0 +1,11 @@
+var tinyMCEImageList = [ 
+<%
+var cursor = db._files.find(  );
+
+while ( cursor.hasNext() ){
+    var f = cursor.next();
+    print( "[ \"" +  f.filename + "\" , \"http://static.10gen.com/x.alleyinsider.com/~~/f?id=" + f._id + "\" ] , \n");
+}
+%>
+[ "none" , "none"] 
+ ];

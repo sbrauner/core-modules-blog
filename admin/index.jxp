@@ -1,11 +1,11 @@
 <%
-
+    
     if ( core.admin.pieces.header() ) 
         return; 
 
 var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
-if ( sectionName.match( /.admin.index/ ) )
-    sectionName = sectionName.replace( /inde(x.jxp|x)$/ , "" );
+if ( sectionName.match( /^index/ ) )
+    sectionName = "";
 
 var section = null;
 
@@ -28,10 +28,11 @@ if ( section == null )
 if ( isFunction( section ) )
     section();
 else {
-    %>
-Welcome <b><%= user.name %></b> to the admin section for <b><%= db.getName() %></b>
-    <% 
-    }
-%>
+    print( "Welcome <b>" +  user.name  + "</b> to the admin section for <b>" +  db.getName() + "</b>" );
+    if ( jxp.admin[ "_index" ] )
+        jxp.admin[ "_index" ]();
+}
     
-<% core.admin.pieces.footer(); %>
+core.admin.pieces.footer(); 
+
+%>
