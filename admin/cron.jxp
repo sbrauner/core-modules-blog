@@ -1,0 +1,64 @@
+<h3>Cron</h3>
+<a href="/admin/editCron">Add Cron</a>
+
+<%
+
+ var tab = new htmltable( 
+  { 
+   ns : db.cron ,
+   cols : [
+    { name: "name", searchWidth: 50 },
+    { name: "url" } ,
+    { name : "xminutes" } ,
+    { name : "lastRun" }
+   ],
+   detailUrl : "/admin/editCron.jxp?_id=" ,
+   searchable: true
+  }
+  );
+
+tab.dbview( tab.find().sort( { name : 1 } ) );
+
+
+if ( request._run == "true" ){
+
+    print( "<hr>" );
+
+    var all = db.cron.find().toArray();
+    for ( var i=0; i<all.length; i++ ){
+        var cron = all[i];
+        
+        if ( ! cron.xminutes ){
+            cron.lastResult = "Error - no xminutes set";
+            db.cron.save( cron );
+            continue;
+        }
+
+        if ( cron.lastRun ){
+            var nextRun = cron.lastRun.getTime() + ( cron.xminutes * 60 * 1000.0 );
+            if ( nextRun > Date().getTime() )
+                continue;
+        }
+        
+        print( "running : " + cron.name + "<BR>" );
+        cron.lastRun = Date();
+        db.cron.save( cron );
+        
+        var url = "http://" + request.getHeader( "Host" ) + cron.url;
+        print( "url:" + url + "<br>" );
+        
+        var req = new XMLHttpRequest( "GET" , url );
+
+        var res = req.send();
+        if ( ! res )
+            cron.lastResult = "ERROR";
+        else {
+            print( "<b>" + res.responseText + "</b><br>" );
+        }
+        
+        db.cron.save( cron );
+        print( "<hr>" );
+    }
+}
+
+%>

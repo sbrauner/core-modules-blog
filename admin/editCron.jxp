@@ -1,0 +1,46 @@
+<h3>Edit Cron</h3>
+
+<% 
+
+    var cron = null;
+
+if ( request._id )
+    cron = db.cron.findOne( request._id );
+
+if ( ! cron )
+    cron = {};
+
+core.content.forms();
+Forms.fillInObject( "c_" , cron );
+
+if ( "Save" == request.action ){
+    db.cron.save( cron );
+}
+
+print.setFormObject( cron , "c_"  );
+%>
+
+<form>
+  <input type="hidden" name="c__id" >
+  <table>
+   
+    <tr>
+      <th>Name</th>
+      <td><input name="c_name" ></td>
+    </tr>
+    
+    <tr>
+      <th>url</th>
+      <td><input name="c_url"></td>
+    </tr>
+
+    <tr>
+      <th>Every X minutes</th>
+      <td><input name="c_xminutes"></td>
+    </tr>
+
+  </table>
+
+  <input type="submit" name="action" value="Save">
+
+</form>

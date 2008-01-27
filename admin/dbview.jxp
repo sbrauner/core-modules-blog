@@ -1,4 +1,3 @@
-<% core.admin.pieces.header(); %>
 {
   function outp(x) { 
     if( typeof x != 'string' ) { 
@@ -91,5 +90,3 @@
 
 %>
 
-
-<% core.admin.pieces.footer(); %>
