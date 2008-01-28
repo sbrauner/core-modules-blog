@@ -61,7 +61,9 @@ if ( request.content )
 <script type="text/javascript" src="NOCDN/~~/tinymce/3.0rc1/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
-	mode : "textareas",
+	mode : "exact",
+	elements : "content",
+	width: 500;
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",
 	theme_advanced_buttons1_add_before : "save,separator",
@@ -108,11 +110,12 @@ tinyMCE.init({
 
     <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
-    <div id="post_body"><textarea name="content" rows="24" cols="90" ><%= thePost.content %></textarea></div>
+    <div id="post_body"><textarea name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
+        <h2>Post Meta</h2>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
-            <div class="post_meta_field_value"><textarea name="excerpt" rows="24" cols="90" ><%= thePost.excerpt || "" %></textarea></div>
+            <div class="post_meta_field_value"><textarea name="excerpt"><%= thePost.excerpt || "" %></textarea></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Status</div>
