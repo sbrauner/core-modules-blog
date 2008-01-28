@@ -5,15 +5,16 @@ var _openAccess = arguments[0] && request.getHost() == "corejs.10gen.com";
 core.user.user();
 core.user.auth();
 
-	if ( ! user ){
-		user = Auth.getUser( request );
-	}
-	
-        if ( !_openAccess && (! user</li>| ! user.isAdmin()) )
-	    return Auth.reject( request , response );
-	
-	core.content.table();	
-	core.content.forms();	
+if ( ! user ){
+    user = Auth.getUser( request );
+}
+
+if ( !_openAccess && (! user || ! user.isAdmin()) ){
+    return Auth.reject( request , response );
+}
+
+core.content.table();	
+core.content.forms();	
 %>
 <html>
   <head>

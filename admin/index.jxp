@@ -9,6 +9,9 @@ if ( sectionName.match( /^index/ ) )
 
 var section = null;
 
+var sectionHeader = null;
+var sectionFooter = null;
+
 if ( sectionName.match( /^my\// ) )
     section = jxp.admin[ sectionName.substring( 3 )];
 
@@ -18,12 +21,20 @@ if ( section == null && sectionName.match( /\// ) ){
     var piece = sectionName.substring( idx + 1 );
 
     var moduleThing = core[module];
-    if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] )
+    if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] ){
         section = moduleThing.admin[piece];
+	if ( section && moduleThing.admin.pieces ){
+	    sectionHeader = moduleThing.admin.pieces.header;
+	    sectionFooter = moduleThing.admin.pieces.footer;
+	}
+    }
 }
 
 if ( section == null )
     section = core.admin[ sectionName ];
+
+if ( isFunction( sectionHeader ) )
+    sectionHeader();
 
 if ( isFunction( section ) )
     section();
@@ -32,6 +43,9 @@ else {
     if ( jxp.admin[ "_index" ] )
         jxp.admin[ "_index" ]();
 }
+
+if ( isFunction( sectionFooter ) )
+    sectionFooter();
     
 core.admin.pieces.footer(); 
 

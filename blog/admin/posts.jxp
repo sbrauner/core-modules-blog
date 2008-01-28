@@ -1,7 +1,4 @@
-{
-    core.blog.admin.pieces.header();
- core.content.table();
-}
+<% core.content.table(); %>
 
 Posts - <a href="/admin/blog/editPost">new</a>
 <p>
