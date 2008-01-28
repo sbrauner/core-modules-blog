@@ -133,7 +133,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input id="ts" size="15" value="<%= thePost.ts || new Date() %>"></div>
+            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts || new Date() %>"></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">ID</div>
