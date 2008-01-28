@@ -35,6 +35,7 @@ if ( request.action == "save" ){
       	print("<p>Error saving: name/content is blank?<p>");
     } else {
         if ( ! thePost.name ){
+            // Move this code out so it can be used by the interactive name generator below
     	    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
     	}
     
@@ -128,7 +129,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input id="publishDate" size="15" value="<%= thePost.publishDate || new Date() %>"></div>
+            <div class="post_meta_field_value"><input id="ts" size="15" value="<%= thePost.ts || new Date() %>"></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">ID</div>
