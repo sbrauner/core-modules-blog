@@ -80,4 +80,5 @@ if ( db ){
     
     db.users.ensureIndex( { email : 1 } );
     db.users.ensureIndex( { name : 1 } );
+    db.users.ensureIndex( { permissions : 1 } );
 }
