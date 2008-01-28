@@ -71,7 +71,7 @@ div#customer_admin_header {
     margin-bottom: 4px;
 }
 
-ul#customer_admin_header a {
+div#customer_admin_header a {
     color: #fff;
 }
 
