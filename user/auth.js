@@ -46,6 +46,7 @@ var Auth = {
         reject: function( req , res , name ){
             res.setHeader( "WWW-Authenticate" , "Basic realm=\"" + name + "\"" );
             res.setResponseCode( 401 );
+	    res.getWriter().print( "not allowed" );
             return "no";
         } 
     } ,
