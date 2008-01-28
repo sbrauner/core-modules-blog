@@ -76,5 +76,5 @@ div#post_body textarea {
 
 textarea#excerpt {
     width: 380px;
-    height: 100px;
+    height: 75px;
 }
