@@ -136,7 +136,7 @@ tinyMCE.init({
             <div class="post_meta_field_name">ID</div>
             <div class="post_meta_field_value">
                 <% if ( id ) { %>
-                    ID: <%= id %><br>
+                    <%= id %>
                     <input type="hidden" name="id" value="<%= id %>">
                 <% } %>
             </div>

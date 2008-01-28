@@ -1,6 +1,2 @@
-<hr>
-    <%if(user){%>
-you are : <%= user.name %>
-	 <%}%>
 </body>
 </html>

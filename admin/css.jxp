@@ -1,12 +1,19 @@
-body {
-	font-family: sans-serif;
+<%
+    header_blue = "#4f6b72";
+    header_green = "#2AA53C";
+    background = "#E5F1FF";
+%>
 
-	margin:2em; 
-	color: #4f6b72;
+body {
+    margin: 0px;
+    padding: 0px;
+	font-family: sans-serif;
+	color: #000;
+	background: <%= background %>;
 }
 
 a {
-	color: #c75f3e;
+	color: <%= header_blue %>;
 }
 
 table {

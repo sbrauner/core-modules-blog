@@ -9,7 +9,7 @@ core.user.auth();
 		user = Auth.getUser( request );
 	}
 	
-        if ( !_openAccess && (! user || ! user.isAdmin()) )
+        if ( !_openAccess && (! user</li>| ! user.isAdmin()) )
 	    return Auth.reject( request , response );
 	
 	core.content.table();	
@@ -19,27 +19,32 @@ core.user.auth();
   <head>
     <title>admin</title>
 
-    <link rel="stylesheet" href="/~~/misc/admin.css" type="text/css" />
+    <link rel="stylesheet" href="/~~/admin/admin.jxp" type="text/css" />
 <!--    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
 	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">
 -->
 
   </head>
 <body>
-    <%if( !_openAccess ) {%>
-  <a href="/admin/">Home</a> | 
-  <a href="/admin/users.jxp">Users</a> | 
-  <a href="/admin/files.jxp">Files</a> | 
-  <a href="/admin/dbview.jxp">DB</a> |
-  <a href="/admin/gitLocal.jxp">Git Local</a> |
-  <a href="/admin/cron.jxp">Cron</a> |
-  <a href="/admin/doc.jxp?f=/">Doc Tool</a> | 
-  <a href="http://www.10gen.com/wiki/">10gen.com/wiki</a> |
-  <if allowModule>
-    <% for ( var mod in allowModule ){ %>
-    <a href="/admin/<%= mod %>/index"><%= mod %></a> |
-    <% } %>
-  </if>
-  <a href="/~~/logout">Logout</a>
-  <hr>
-		  <%}%>
+<%if( !_openAccess ) {%>
+<div id="customer_admin_menu">
+        <ul>
+            <li><a href="/admin/">Home</a></li>
+            <li><a href="/admin/users.jxp">Users</a></li>
+            <li><a href="/admin/files.jxp">Files</a></li>
+            <li><a href="/admin/dbview.jxp">DB</a></li>
+            <li><a href="/admin/gitLocal.jxp">Git Local</a></li>
+            <li><a href="/admin/cron.jxp">Cron</a></li>
+            <li><a href="/admin/doc.jxp?f=/">Doc Tool</a></li> 
+            <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
+            <if allowModule>
+                <% for ( var mod in allowModule ){ %>
+                    <a href="/admin/<%= mod %>/index"><%= mod %></a></li>
+                <% } %>
+            </if>
+        </ul>
+</div>            
+<div id="customer_admin_user">
+    <a href="/~~/logout">Logout</a>
+</div>
+<%}%>
