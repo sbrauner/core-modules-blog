@@ -63,7 +63,7 @@ if ( request.content )
 tinyMCE.init({
 	mode : "exact",
 	elements : "content",
-	width: 500;
+	width: 500,
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",
 	theme_advanced_buttons1_add_before : "save,separator",
@@ -115,7 +115,7 @@ tinyMCE.init({
         <h2>Post Meta</h2>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
-            <div class="post_meta_field_value"><textarea name="excerpt"><%= thePost.excerpt || "" %></textarea></div>
+            <div class="post_meta_field_value"><textarea id="excerpt" name="excerpt"><%= thePost.excerpt || "" %></textarea></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Status</div>

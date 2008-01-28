@@ -74,6 +74,7 @@ div#post_body textarea {
     height: 300px;
 }
 
-div#post_meta_field_value textarea {
+textarea#excerpt {
     width: 380px;
+    height: 100px;
 }
