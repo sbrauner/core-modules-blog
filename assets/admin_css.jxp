@@ -1,3 +1,5 @@
+<% response.setHeader( "Content-Type" , "text/css"); %>
+
 /**********************
  *
  * 10Gen Blog Library
@@ -24,6 +26,7 @@ div#post_action {
     padding: 10px;
     margin: 5px;
     background: #ffd;
+    width: 500px;
 }
 
 div#post_title {
@@ -52,6 +55,7 @@ div.post_meta_field_name {
     float: left;
     width: 100px;
     margin: 5px;
+    color: #000;
 }
 
 div.post_meta_field_value {
