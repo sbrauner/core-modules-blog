@@ -103,32 +103,41 @@ tinyMCE.init({
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
 
-    <p><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></p>
-    <p>Title: <input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></p>
-    
-    <p>Status:
-        <select name="live">
-            <option value="false">Not Live</option>
-            <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
-        </select>
-    </p>
-    
-    <h2>Content</h2>
-    <p><textarea name="content" rows="24" cols="90" ><%= thePost.content %></textarea></p>
-
-    <h2>Excerpt</h2>
-    <p><textarea name="excerpt" rows="24" cols="90" ><%= thePost.excerpt || "" %></textarea></p>
-
-    <p>Name: <input id="name" size="39" name="name" value="<%= thePost.name|| "" %>" <%= newPost ? "" : "disabled" %> ></p>
-    
-    <p>Publish Date: <input id="publishDate" size="15" value="<%= thePost.publishDate || new Date() %>"></p>
-
-    <p>
-        <% if ( id ) { %>
-            ID: <%= id %><br>
-            <input type="hidden" name="id" value="<%= id %>">
-        <% } %>
-    </p>
+    <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
+    <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
+    <div id="post_body"><textarea name="content" rows="24" cols="90" ><%= thePost.content %></textarea></div>
+    <div id="post_meta">
+        <div class="post_meta_field">
+            <div class="post_meta_field_name">Excerpt</div>
+            <div class="post_meta_field_value"><textarea name="excerpt" rows="24" cols="90" ><%= thePost.excerpt || "" %></textarea></div>
+        </div>
+        <div class="post_meta_field">
+            <div class="post_meta_field_name">Status</div>
+            <div class="post_meta_field_value">
+                <select name="live">
+                    <option value="false">Not Live</option>
+                    <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
+                </select>
+            </div>
+        </div>
+        <div class="post_meta_field">
+            <div class="post_meta_field_name">Slug</div>
+            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name|| "" %>" <%= newPost ? "" : "disabled" %> ></div>
+        </div>
+        <div class="post_meta_field">
+            <div class="post_meta_field_name">Publish Date</div>
+            <div class="post_meta_field_value"><input id="publishDate" size="15" value="<%= thePost.publishDate || new Date() %>"></div>
+        </div>
+        <div class="post_meta_field">
+            <div class="post_meta_field_name">ID</div>
+            <div class="post_meta_field_value">
+                <% if ( id ) { %>
+                    ID: <%= id %><br>
+                    <input type="hidden" name="id" value="<%= id %>">
+                <% } %>
+            </div>
+        </div>
+    </div>
 </form>
 
 
