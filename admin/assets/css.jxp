@@ -1,8 +1,9 @@
 <%
-    var header_blue = "#4f6b72";
+    var header_blue = "#153A43";
     var header_green = "#2AA53C";
+    var header_gray = "#303030";
     var header_light_blue = "#8BA0A5";
-    var background = "#D9DEEA";
+    var background = "#EBEDF4";
 %>
 
 body {
@@ -74,7 +75,7 @@ div#customer_admin_header {
 
 div#module_header {
     height: 22px;
-    background: <%= header_light_blue %>;
+    background: <%= header_gray %>;
     color: #fff;
     margin-bottom: 4px;
 }
