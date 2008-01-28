@@ -19,7 +19,7 @@ core.content.forms();
 <html>
   <head>
     <title>10Gen Admin</title>
-    <link rel="stylesheet" href="NOCDN/~~/admin/css.jxp" type="text/css" />
+    <link rel="stylesheet" href="NOCDN/~~/admin/assets/css.jxp" type="text/css" />
 <!-- 
     <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
 	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">

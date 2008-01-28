@@ -1,7 +1,7 @@
 
 function mapUrlToJxpFileCore( uri , request ){
 
-    if ( uri.match( /^(\/|\/~~\/)admin\// ) )
+    if ( uri.match( /^(\/|\/~~\/)admin\// ) && !uri.match(/assets/))
         return "~~/admin/index.jxp";
     
     var ua = request.getHeader( "User-Agent" );
