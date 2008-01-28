@@ -11,6 +11,7 @@ h1 {
     font-weight: bold;
     font-size: 2em;
     padding: 5px;
+    color: #000;
     clear: both;
 }
 
