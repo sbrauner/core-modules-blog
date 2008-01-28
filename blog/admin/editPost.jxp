@@ -141,7 +141,7 @@ tinyMCE.init({
                         cursor.forEach( function(author) {
                     %>
                         <option value="<%= author.name %>" <% post.author == author ? selected : "" %>><%= author.name %></option>
-                    <% } %>
+                    <% }); %>
                 <input id="author" size="30" value="<%= thePost.ts || new Date() %>"></div>
         </div>
         <div class="post_meta_field">
