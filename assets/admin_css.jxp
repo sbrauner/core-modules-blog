@@ -7,6 +7,11 @@
  * Author: Dana Spiegel (dana@10gen.com)
  *********************/
 
+div#module_body {
+    clear: both;
+    margin: 5px;
+}
+ 
 h1 {
     font-weight: bold;
     font-size: 2em;
