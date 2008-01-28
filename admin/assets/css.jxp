@@ -1,7 +1,8 @@
 <%
     var header_blue = "#4f6b72";
     var header_green = "#2AA53C";
-    var background = "#EFF6EF";
+    var header_light_blue = "#8BA0A5";
+    var background = "#D9DEEA";
 %>
 
 body {
@@ -64,9 +65,16 @@ th.specalt {
 	color: #797268;
 }
 
-div#customer_admin_header, div#module_header {
+div#customer_admin_header {
     height: 22px;
     background: <%= header_blue %>;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+div#module_header {
+    height: 22px;
+    background: <%= header_light_blue %>;
     color: #fff;
     margin-bottom: 4px;
 }
