@@ -1,6 +1,8 @@
-<link rel="stylesheet" href="/~~/blog/admin/admin.css" type="text/css" />
+<link rel="stylesheet" href="/~~/blog/assets/admin_css.jxp" type="text/css" />
 
+<div>
 <ul class="module_menu">
     <li><a href="/admin/blog/posts">Posts</a></li>
     <li><a href="/admin/blog/pages">Pages</a></li>
 </ul>
+<div>
