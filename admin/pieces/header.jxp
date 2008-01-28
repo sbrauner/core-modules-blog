@@ -18,16 +18,16 @@ core.content.forms();
 %>
 <html>
   <head>
-    <title>admin</title>
-
-    <link rel="stylesheet" href="/~~/admin/css.jxp" type="text/css" />
-<!--    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
+    <title>10Gen Admin</title>
+    <link rel="stylesheet" href="NOCDN/~~/admin/css.jxp" type="text/css" />
+<!-- 
+    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
 	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">
 -->
 
   </head>
 <body>
-<%if( !_openAccess ) {%>
+<% if (!_openAccess) { %>
 <div id="customer_admin_menu">
         <ul>
             <li><a href="/admin/">Home</a></li>
@@ -40,7 +40,7 @@ core.content.forms();
             <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
             <if allowModule>
                 <% for ( var mod in allowModule ){ %>
-                    <a href="/admin/<%= mod %>/index"><%= mod %></a></li>
+                    <li><a href="/admin/<%= mod %>/index"><%= mod %></a></li>
                 <% } %>
             </if>
         </ul>
@@ -48,4 +48,4 @@ core.content.forms();
 <div id="customer_admin_user">
     <a href="/~~/logout">Logout</a>
 </div>
-<%}%>
+<% } %>
