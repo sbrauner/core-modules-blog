@@ -63,7 +63,7 @@ if ( request.content )
 tinyMCE.init({
 	mode : "exact",
 	elements : "content",
-	width: "500",
+	width: "600",
 	height: "300",
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",
@@ -111,7 +111,7 @@ tinyMCE.init({
 
     <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
-    <div id="post_body"><textarea name="content"><%= thePost.content %></textarea></div>
+    <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
         <div class="post_meta_field">
