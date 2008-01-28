@@ -24,7 +24,7 @@ a {
 table {
 	padding: 0;
 	margin: 0 auto;
-	border: collapse;
+	border-collapse: collapse;
 }
 
 th { 
