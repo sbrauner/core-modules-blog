@@ -16,16 +16,21 @@ div#module_body {
  
 h1 {
     font-weight: bold;
-    font-size: 2em;
+    font-size: 2.5em;
     padding: 5px;
     color: #000;
     clear: both;
 }
 
+h2 {
+    font-weight: bold;
+    font-size: 2em;
+    color: #000;
+}
+
 div#post_action {
     padding: 10px 0px;
-    background: #ffd;
-    width: 500px;
+    width: 600px;
 }
 
 div#post_title {
@@ -66,12 +71,7 @@ div.post_meta_field_value {
 
 div#post_title input {
     font-size: 2em;
-    width: 500px;
-}
-
-div#post_body textarea {
-    width: 500px;
-    height: 300px;
+    width: 600px;
 }
 
 textarea#excerpt {
