@@ -11,6 +11,7 @@ h1 {
     font-weight: bold;
     font-size: 2em;
     padding: 5px;
+    clear: both;
 }
 
 div#post_action {
@@ -53,6 +54,16 @@ div.post_meta_field_value {
     margin: 5px;
 }
 
-div#post_title textfield {
+div#post_title input {
     font-size: 2em;
+    width: 500px;
+}
+
+div#post_body textarea {
+    width: 500px;
+    height: 300px;
+}
+
+div#post_meta_field_value textarea {
+    width: 380px;
 }
