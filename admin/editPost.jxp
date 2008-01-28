@@ -1,6 +1,4 @@
 <% 
-    core.blog.admin.pieces.header();
-
 var id = request.id;
 var thePost = null;
 
