@@ -11,7 +11,7 @@ if (!HTML) HTML = {};
 if (!HTML.__init) {
 
     HTML.encode = function(s) {
-        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : s;
     };
  
     HTML.__init = true;
