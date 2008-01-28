@@ -1,5 +1,4 @@
 <% 
-
     core.blog.admin.pieces.header();
 
 var id = request.id;
@@ -16,10 +15,11 @@ if ( ! thePost ) {
     id = null;
 }
 
-if ( ! thePost.content  )
-    thePost.content = "write stuff here";
+if ( ! thePost.content)
+    thePost.content = "Write stuff here!";
 
-var justSaved=false;
+var justSaved = false;
+
 if ( request.action == "save" ){
 
     if( !thePost.cls )
@@ -41,17 +41,17 @@ if ( request.action == "save" ){
     	}
     
         thePost.title = request.title;
-   	thePost.content = request.content;
-	thePost.live = parseBool( request.live );
-	posts.save( thePost );
+   	    thePost.content = request.content;
+	    thePost.live = parseBool( request.live );
+	    posts.save( thePost );
 
-	id = thePost._id;
-	if ( ! id )
-	   print( "something is broken<p>" );
-	else {
-	    justSaved=true;	
+	    id = thePost._id;
+	    if ( ! id )
+	        print( "Error saving post." );
+	    else {
+	        justSaved=true;	
             print( "<i>Saved.</i>" );
-	}
+	    }
     }
 }
 
@@ -94,14 +94,18 @@ tinyMCE.init({
   }
 </script>
 
-<form method="post" action="editPost.jxp">
-    <input type="hidden" name="action" value="save">
+
+<h1>
 {
   if( newPost && !justSaved )
     print( request.cls == "page" ? "New Page" : "New Post" );
   else
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
+</h1>
+
+<form method="post" action="editPost.jxp">
+    <input type="hidden" name="action" value="save">
 
     <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
