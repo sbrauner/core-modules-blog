@@ -16,6 +16,8 @@ if ( ! thePost ) {
 if ( ! thePost.content)
     thePost.content = "Write stuff here!";
 
+if (!thePost.author) thePost.author = user;
+
 var justSaved = false;
 
 if ( request.action == "save" ){
