@@ -133,6 +133,18 @@ tinyMCE.init({
             <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name|| "" %>" <%= newPost ? "" : "disabled" %> ></div>
         </div>
         <div class="post_meta_field">
+            <div class="post_meta_field_name">Author</div>
+            <div class="post_meta_field_value">
+                <select name="author">
+                    <%
+                        var cursor = db.users.find( {permissions : "admin"} );
+                        cursor.forEach( function(author) {
+                    %>
+                        <option value="<%= author.name %>" <% post.author == author ? selected : "" %>><%= author.name %></option>
+                    <% } %>
+                <input id="author" size="30" value="<%= thePost.ts || new Date() %>"></div>
+        </div>
+        <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
             <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts || new Date() %>"></div>
         </div>
