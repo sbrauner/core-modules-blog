@@ -1,9 +1,11 @@
+<% response.setHeader( "Content-Type" , "text/css"); %>
+
 <%
     var header_blue = "#153A43";
     var header_green = "#2AA53C";
     var header_gray = "#303030";
     var header_light_blue = "#8BA0A5";
-    var background = "#EBEDF4";
+    var background = "#fff";
 %>
 
 body {
