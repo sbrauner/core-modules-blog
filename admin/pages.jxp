@@ -1,5 +1,4 @@
 {
-core.blog.admin.pieces.header();
  core.content.table();
 }
 
