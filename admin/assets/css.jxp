@@ -73,6 +73,7 @@ div#customer_admin_header {
 
 div#customer_admin_header a {
     color: #fff;
+    text-decoration: none;
 }
 
 ul#customer_admin_menu {
@@ -83,7 +84,10 @@ ul#customer_admin_menu li {
     float: left;
     border-right: 1px solid <%= background %>;
     padding: 5px 10px;
-    font-size: 12px;
+    font-size: 10px;
+    text-align: center;
+    vertical-align: middle;
+    height: 12px;
     font-weight: bold;
 }
 
@@ -91,6 +95,11 @@ div#customer_admin_user {
     float: right;
     vertical-align: top;
     padding: 3px;
-    font-size: .9em;
+    font-size: 9px;
     font-weight: bold;
+    margin-right: 10px;
+}
+
+div#customer_body {
+    margin: 5px;
 }

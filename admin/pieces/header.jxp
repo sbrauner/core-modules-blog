@@ -54,3 +54,6 @@ core.content.forms();
     </div>
 </div>
 <% } %>
+
+<div id="customer_body">
+    
