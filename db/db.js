@@ -9,10 +9,10 @@ function lt( x ){
 }
 
 
-function ge( x ){
-    return { $ge : x };
+function gte( x ){
+    return { $gte : x };
 }
 
-function le( x ){
-    return { $le : x };
+function lte( x ){
+    return { $lte : x };
 }
