@@ -16,6 +16,8 @@ if ( ! thePost ) {
 if ( ! thePost.content)
     thePost.content = "Write stuff here!";
 
+if (!thePost.author) thePost.author = user;
+
 var justSaved = false;
 
 if ( request.action == "save" ){
@@ -142,7 +144,8 @@ tinyMCE.init({
                     %>
                         <option value="<%= author.name %>" <%= thePost.author == author ? selected : "" %>><%= author.name %></option>
                     <% }); %>
-                <input id="author" size="30" value="<%= thePost.ts || new Date() %>"></div>
+                </select>
+            </div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
