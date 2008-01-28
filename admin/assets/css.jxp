@@ -65,10 +65,14 @@ th.specalt {
 }
 
 div#customer_admin_header {
-    height: 30px;
+    height: 22px;
     background: <%= header_blue %>;
     color: #fff;
     margin-bottom: 4px;
+}
+
+ul#customer_admin_header a {
+    color: #fff;
 }
 
 ul#customer_admin_menu {
@@ -79,12 +83,8 @@ ul#customer_admin_menu li {
     float: left;
     border-right: 1px solid <%= background %>;
     padding: 5px 10px;
-    font-size: 1.1em;
+    font-size: 12px;
     font-weight: bold;
-}
-
-ul#customer_admin_menu li a {
-    color: #fff;
 }
 
 div#customer_admin_user {
