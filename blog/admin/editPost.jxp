@@ -109,6 +109,7 @@ tinyMCE.init({
 <form method="post" action="editPost.jxp">
     <input type="hidden" name="action" value="save">
 
+    <div id="post_form">
     <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
     <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
@@ -144,6 +145,7 @@ tinyMCE.init({
                 <% } %>
             </div>
         </div>
+    </div>
     </div>
 </form>
 
