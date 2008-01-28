@@ -192,7 +192,7 @@ Esc=close/cancel
     <div>
       <form id="the_form" method="POST" action="<%= base+name %>">
         <input name="action" type="submit" value=" Save "><p>
-        <Textarea rows=40 cols=100 name="new_text" id="the_area"><%= HTML.encode(wo.text) %></textarea>
+	  <Textarea rows=40 cols=100 name="new_text" id="the_area"><%= wo.text ? HTML.encode(wo.text) : "" %></textarea>
       </form>
     </div>
     <% } %>
