@@ -72,14 +72,14 @@ div#customer_admin_header {
     height: 22px;
     background: <%= header_blue %>;
     color: #fff;
-    margin-bottom: 4px;
+    margin-bottom: 1px;
 }
 
 div#module_header {
     height: 22px;
     background: <%= header_gray %>;
     color: #fff;
-    margin-bottom: 4px;
+    margin-bottom: 1px;
 }
 
 div#customer_admin_header a, ul#module_menu a {
@@ -108,11 +108,14 @@ div#customer_admin_user {
     float: right;
     vertical-align: top;
     padding: 3px;
-    font-size: 10px;
-    font-weight: bold;
+    font-size: 11px;
     margin-right: 10px;
 }
 
 div#customer_body {
     clear: both;
+}
+
+.module_menu_item {
+    background: #
 }

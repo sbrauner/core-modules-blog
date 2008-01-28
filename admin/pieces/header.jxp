@@ -41,7 +41,7 @@ core.content.forms();
         <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
         <if allowModule>
             <% for ( var mod in allowModule ){ %>
-                <li><a href="/admin/<%= mod %>/index"><%= mod %></a></li>
+                <li class="module_menu_item"><a href="/admin/<%= mod %>/index"><%= mod %></a></li>
             <% } %>
         </if>
     </ul>
