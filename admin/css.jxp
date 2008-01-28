@@ -1,7 +1,7 @@
 <%
-    header_blue = "#4f6b72";
-    header_green = "#2AA53C";
-    background = "#E5F1FF";
+    var header_blue = "#4f6b72";
+    var header_green = "#2AA53C";
+    var background = "#E5F1FF";
 %>
 
 body {
