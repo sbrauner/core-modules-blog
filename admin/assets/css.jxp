@@ -1,9 +1,10 @@
 <% response.setHeader( "Content-Type" , "text/css"); %>
 
 <%
-    var header_blue = "#153A43";
+    var header_dark_red = "#421315";
+    var header_dark_blue = "#153A43";
     var header_green = "#2AA53C";
-    var header_gray = "#303030";
+    var header_dark_gray = "#303030";
     var header_light_blue = "#8BA0A5";
     var background = "#fff";
 %>
@@ -17,7 +18,7 @@ body {
 }
 
 a {
-	color: <%= header_blue %>;
+	color: <%= header_dark_blue %>;
 }
 
 table {
@@ -70,14 +71,14 @@ th.specalt {
 
 div#customer_admin_header {
     height: 22px;
-    background: <%= header_blue %>;
+    background: <%= header_dark_blue %>;
     color: #fff;
     margin-bottom: 1px;
 }
 
 div#module_header {
     height: 22px;
-    background: <%= header_gray %>;
+    background: <%= header_dark_gray %>;
     color: #fff;
     margin-bottom: 1px;
 }
@@ -117,5 +118,5 @@ div#customer_body {
 }
 
 .module_menu_item {
-    background: #
+    background: <%= header_dark_gray %>;
 }
