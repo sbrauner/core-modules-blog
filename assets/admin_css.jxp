@@ -21,7 +21,7 @@ h1 {
     color: #000;
     clear: both;
     margin: 0px;
-    padding: 0px;
+    padding: 5px 0px;
 }
 
 h2 {
@@ -29,12 +29,11 @@ h2 {
     font-size: 2em;
     color: #000;
     margin: 0px;
-    padding: 0px;
+    padding: 5px 0px;
 }
 
 div#post_form {
-    width: 600px;
-    background: #eee;
+    width: 620px;
     padding: 5px;
 }
 
