@@ -95,34 +95,40 @@ tinyMCE.init({
 </script>
 
 <form method="post" action="editPost.jxp">
+    <input type="hidden" name="action" value="save">
 {
   if( newPost && !justSaved )
     print( request.cls == "page" ? "New Page" : "New Post" );
   else
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
-<p>
-  Title: <input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" >
-  <input type="submit" value="save">
-<p>
-  Name: <input id="name" size="39" name="name" value="<%= thePost.name||"" %>" <%= newPost ? "" : "disabled" %> >   
-  Live: <select name="live">
-    <option value="false">Not Live</option>
-    <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
-    </select>
-<p>
-  <textarea name="content" rows="24" cols="90" ><%= thePost.content %></textarea>
 
-  <br>
-  <a href="/index/<%=thePost.name%>" target="zzz">View on site</a> &nbsp; 
-  <% if ( id ){ %>
-  ID: <%= id %><br>
-  <input type="hidden" name="id" value="<%= id %>">
-  <% } %>
-<p>
-  _searchIndex: <%=thePost._searchIndex%>   
-  <input type="hidden" name="action" value="save">
-  
+    <p><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></p>
+    <p>Title: <input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></p>
+    
+    <p>Status:
+        <select name="live">
+            <option value="false">Not Live</option>
+            <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
+        </select>
+    </p>
+    
+    <h2>Content</h2>
+    <p><textarea name="content" rows="24" cols="90" ><%= thePost.content %></textarea></p>
+
+    <h2>Excerpt</h2>
+    <p><textarea name="content" rows="24" cols="90" ><%= thePost.excerpt %></textarea></p>
+
+    <p>Name: <input id="name" size="39" name="name" value="<%= thePost.name||"" %>" <%= newPost ? "" : "disabled" %> ></p>
+    
+    <p>Publish Date: <input id="publishDate" size="15" value="<%= thePost.publishDate || new Date() %>"></p>
+
+    <p>
+        <% if ( id ) { %>
+            ID: <%= id %><br>
+            <input type="hidden" name="id" value="<%= id %>">
+        <% } %>
+    </p>
 </form>
 
 
