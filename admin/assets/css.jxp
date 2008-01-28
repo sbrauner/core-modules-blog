@@ -64,15 +64,22 @@ th.specalt {
 	color: #797268;
 }
 
+div#customer_admin_header {
+    height: 60px;
+    background: <%= header_blue %>;
+    color: #fff;
+}
+
 ul#customer_admin_menu {
     list-style: none;
 }
 
 ul#customer_admin_menu li {
     float: left;
-    border-right: 1px solid <%= header_blue %>;
-    padding: 5px 15px;
-    font-size: 1.3em;
+    border-right: 1px solid <%= background %>;
+    padding: 5px 0px;
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 div#customer_admin_user {
