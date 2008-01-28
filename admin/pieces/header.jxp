@@ -28,24 +28,27 @@ core.content.forms();
   </head>
 <body>
 <% if (!_openAccess) { %>
-<div id="customer_admin_menu">
-        <ul>
-            <li><a href="/admin/">Home</a></li>
-            <li><a href="/admin/users.jxp">Users</a></li>
-            <li><a href="/admin/files.jxp">Files</a></li>
-            <li><a href="/admin/dbview.jxp">DB</a></li>
-            <li><a href="/admin/gitLocal.jxp">Git Local</a></li>
-            <li><a href="/admin/cron.jxp">Cron</a></li>
-            <li><a href="/admin/doc.jxp?f=/">Doc Tool</a></li> 
-            <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
-            <if allowModule>
-                <% for ( var mod in allowModule ){ %>
-                    <li><a href="/admin/<%= mod %>/index"><%= mod %></a></li>
-                <% } %>
-            </if>
-        </ul>
-</div>            
+
+<ul id="customer_admin_menu">
+    <li><a href="/admin/">Home</a></li>
+    <li><a href="/admin/users.jxp">Users</a></li>
+    <li><a href="/admin/files.jxp">Files</a></li>
+    <li><a href="/admin/dbview.jxp">DB</a></li>
+    <li><a href="/admin/gitLocal.jxp">Git Local</a></li>
+    <li><a href="/admin/cron.jxp">Cron</a></li>
+    <li><a href="/admin/doc.jxp?f=/">Doc Tool</a></li> 
+    <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
+    <if allowModule>
+        <% for ( var mod in allowModule ){ %>
+            <li><a href="/admin/<%= mod %>/index"><%= mod %></a></li>
+        <% } %>
+    </if>
+</ul>
 <div id="customer_admin_user">
-    <a href="/~~/logout">Logout</a>
+    <% if (user) { %>
+        Logged in as <%= user.name %> <a href="/~~/logout">Logout</a>
+    <% } else { %>
+        <a href="/~~/login">Login</a>
+    <% } %>
 </div>
 <% } %>

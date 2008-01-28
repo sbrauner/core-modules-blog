@@ -63,3 +63,22 @@ th.specalt {
 	font: bold 10px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color: #797268;
 }
+
+ul#customer_admin_menu {
+    list-style: none;
+}
+
+ul#customer_admin_menu li {
+    float: left;
+    border-right: 1px solid <%= header_blue %>;
+    padding: 5px 15px;
+    font-size: 1.3em;
+}
+
+div#customer_admin_user {
+    float: right;
+    vertical-align: top;
+    padding: 3px;
+    font-size: .9em;
+    font-weight: bold;
+}
