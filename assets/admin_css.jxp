@@ -28,6 +28,12 @@ h2 {
     color: #000;
 }
 
+div#post_form {
+    width: 650px;
+    text-align: center;
+    background: #eee;
+}
+
 div#post_action {
     padding: 10px 0px;
     width: 600px;
