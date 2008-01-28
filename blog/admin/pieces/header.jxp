@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="/~~/blog/admin/admin.css" type="text/css" />
-<a href="/admin/blog/posts">Posts</a> |
-<a href="/admin/blog/pages">Pages</a>
 
-<hr>
+<ul class="module_menu">
+    <li><a href="/admin/blog/posts">Posts</a></li>
+    <li><a href="/admin/blog/pages">Pages</a></li>
+</ul>
