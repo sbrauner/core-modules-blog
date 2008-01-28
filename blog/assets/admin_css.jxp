@@ -62,6 +62,7 @@ div.post_meta_field_value {
     font-size: 1.2em;
     float:left;
     margin: 5px;
+    color: #000;
 }
 
 div#post_title input {
