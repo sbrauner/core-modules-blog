@@ -33,12 +33,12 @@ div#post_meta {
     border-top: 1px solid #ccc;
 }
 
-div#post_meta_field {
+div.post_meta_field {
     margin: 5px;
     clear: both;
 }
 
-div#post_meta_field_name {
+div.post_meta_field_name {
     font-weight: bold;
     font-size: 1em;
     text-align: right;
@@ -46,7 +46,7 @@ div#post_meta_field_name {
     width: 250px;
 }
 
-div#post_meta_field_value {
+div.post_meta_field_value {
     float:left;
     width: 250px;
 }
