@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="NOCDN/~~/blog/assets/admin_css.jxp" type="text/css" />
 
-<div>
-<ul class="module_menu">
+<div id="module_header">
+<ul id="module_menu">
     <li><a href="/admin/blog/posts">Posts</a></li>
     <li><a href="/admin/blog/pages">Pages</a></li>
 </ul>

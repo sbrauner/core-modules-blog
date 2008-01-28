@@ -20,7 +20,6 @@ div#post_action {
 }
 
 div#post_title {
-    font-size: 2em;
     margin: 5px;
 }
 
@@ -52,4 +51,8 @@ div.post_meta_field_value {
     font-size: 1.2em;
     float:left;
     margin: 5px;
+}
+
+div#post_title textfield {
+    font-size: 2em;
 }
