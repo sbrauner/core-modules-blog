@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="admin.css" type="text/css" />
+<link rel="stylesheet" href="/~~/blog/admin/admin.css" type="text/css" />
 <a href="/admin/blog/posts">Posts</a> |
 <a href="/admin/blog/pages">Pages</a>
 
