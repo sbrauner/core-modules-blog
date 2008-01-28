@@ -20,7 +20,7 @@ core.content.forms();
   <head>
     <title>admin</title>
 
-    <link rel="stylesheet" href="/~~/admin/admin.jxp" type="text/css" />
+    <link rel="stylesheet" href="/~~/admin/css.jxp" type="text/css" />
 <!--    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
 	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">
 -->
