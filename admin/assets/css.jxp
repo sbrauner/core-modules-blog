@@ -118,5 +118,5 @@ div#customer_body {
 }
 
 .module_menu_item {
-    background: <%= header_dark_gray %>;
+    background: <%= header_dark_red %>;
 }
