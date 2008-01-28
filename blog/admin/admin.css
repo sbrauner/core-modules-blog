@@ -40,13 +40,14 @@ div.post_meta_field {
 
 div.post_meta_field_name {
     font-weight: bold;
-    font-size: 1em;
+    font-size: 1.2em;
     text-align: right;
     float: left;
-    width: 250px;
+    width: 150px;
+    margin: 5px;
 }
 
 div.post_meta_field_value {
     float:left;
-    width: 250px;
+    margin: 5px;
 }
