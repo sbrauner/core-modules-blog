@@ -112,5 +112,4 @@ div#customer_admin_user {
 
 div#customer_body {
     clear: both;
-    margin: 5px;
 }
