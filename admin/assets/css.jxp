@@ -1,7 +1,7 @@
 <%
     var header_blue = "#4f6b72";
     var header_green = "#2AA53C";
-    var background = "#EFF6FF";
+    var background = "#EFF6EF";
 %>
 
 body {
@@ -64,25 +64,25 @@ th.specalt {
 	color: #797268;
 }
 
-div#customer_admin_header {
+div#customer_admin_header, div#module_header {
     height: 22px;
     background: <%= header_blue %>;
     color: #fff;
     margin-bottom: 4px;
 }
 
-div#customer_admin_header a {
+div#customer_admin_header a, ul#module_menu a {
     color: #fff;
     text-decoration: none;
 }
 
-ul#customer_admin_menu, ul.module_menu {
+ul#customer_admin_menu, ul#module_menu {
     list-style: none;
     margin: 0px;
     padding: 0px;
 }
 
-ul#customer_admin_menu li, ul.module_menu li {
+ul#customer_admin_menu li, ul#module_menu li {
     float: left;
     border-right: 1px solid <%= background %>;
     padding: 5px 10px;
@@ -103,5 +103,6 @@ div#customer_admin_user {
 }
 
 div#customer_body {
+    clear: both;
     margin: 5px;
 }
