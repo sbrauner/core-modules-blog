@@ -1,8 +1,18 @@
 <%
-    
-    if ( core.admin.pieces.header() ) 
-        return; 
 
+var _openAccess = arguments[0] && request.getHost() == "corejs.10gen.com";
+
+core.user.user();
+core.user.auth();
+
+if ( ! user ){
+    user = Auth.getUser( request );
+}
+
+if ( !_openAccess && (! user || ! user.isAdmin()) ){
+    return Auth.reject( request , response );
+}
+    
 var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
 if ( sectionName.match( /^index/ ) )
     sectionName = "";
@@ -33,6 +43,13 @@ if ( section == null && sectionName.match( /\// ) ){
 if ( section == null )
     section = core.admin[ sectionName ];
 
+if ( isFunction( section ) && section.getName().match( /_/ ) ){
+    section();
+    return;
+}
+
+core.admin.pieces.header();
+
 if ( isFunction( sectionHeader ) )
     sectionHeader();
 
@@ -40,7 +57,7 @@ if ( isFunction( section ) )
     section();
 else {
     print( "Welcome <b>" +  user.name  + "</b> to the admin section for <b>" +  db.getName() + "</b>" );
-    if ( jxp.admin[ "_index" ] )
+    if ( jxp.admin && jxp.admin[ "_index" ] )
         jxp.admin[ "_index" ]();
 }
 
@@ -48,5 +65,4 @@ if ( isFunction( sectionFooter ) )
     sectionFooter();
     
 core.admin.pieces.footer(); 
-
 %>

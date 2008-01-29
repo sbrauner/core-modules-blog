@@ -1,30 +1,9 @@
-<%
-
-var _openAccess = arguments[0] && request.getHost() == "corejs.10gen.com";
-
-core.user.user();
-core.user.auth();
-
-if ( ! user ){
-    user = Auth.getUser( request );
-}
-
-if ( !_openAccess && (! user || ! user.isAdmin()) ){
-    return Auth.reject( request , response );
-}
-
-core.content.table();	
-core.content.forms();	
-%>
+<% core.content.table(); %>
+<% core.content.forms(); %>
 <html>
   <head>
     <title>10Gen Admin</title>
     <link rel="stylesheet" href="NOCDN/~~/admin/assets/css.jxp" type="text/css" />
-<!-- 
-    <link rel="stylesheet" href="/lib/wiky.css" type="text/css">
-	<link rel="stylesheet" href="/git/gitweb.css" type="text/css">
--->
-
   </head>
 <body>
 <% if (!_openAccess) { %>

@@ -1,3 +1,7 @@
 </div>
+<hr>
+<div style="text-align: center; font-size: .6em;">
+      10 Gen Admin | <%= Date() %>
+</div>
 </body>
 </html>
