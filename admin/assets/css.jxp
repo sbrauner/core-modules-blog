@@ -77,7 +77,7 @@ div#admin_header {
     margin-bottom: 1px;
 }
 
-div#10gen_logo{
+div#10gen_logo {
     float: left;
     background: #fff;
     height: 50px;
@@ -90,6 +90,7 @@ div#10gen_logo img {
 }
 
 ul#admin_menu {
+    float: left;
     list-style: none;
     margin: 0px;
     padding: 0px;
