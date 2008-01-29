@@ -72,28 +72,9 @@ th.specalt {
 
 div#admin_header {
     background: <%= header_dark_blue %>;
-    height: 50px;
+    height: 55px;
     color: #fff;
     margin-bottom: 1px;
-}
-
-div#10gen_logo {
-    float: left;
-    background: #fff;
-    height: 50px;
-    width: 110px;
-}
-
-div#10gen_logo img {
-    margin: 5px;
-    vertical-align: bottom;
-}
-
-ul#admin_menu {
-    float: left;
-    list-style: none;
-    margin: 0px;
-    padding: 0px;
 }
 
 div#module_header {
@@ -108,7 +89,7 @@ div#admin_header a, ul#module_menu a {
     text-decoration: none;
 }
 
-ul#module_menu {
+ul#admin_menu, ul#module_menu {
     list-style: none;
     margin: 0px;
     padding: 0px;
@@ -123,6 +104,17 @@ ul#admin_menu li, ul#module_menu li {
     vertical-align: middle;
     height: 12px;
     font-weight: bold;
+}
+
+ul#admin_menu li#10Gen_logo {
+    background: #fff;
+    height: 55px;
+    width: 110px;
+}
+
+ul#admin_menu li#10Gen_logo img {
+    margin: 5px;
+    vertical-align: bottom;
 }
 
 div#admin_user {
