@@ -70,11 +70,23 @@ th.specalt {
 	color: #797268;
 }
 
-div#customer_admin_header {
-    height: 22px;
-    background: <%= header_dark_blue %>;
+div#admin_header {
+    height: 50px;
     color: #fff;
     margin-bottom: 1px;
+}
+
+div#admin_header img {
+    margin-left: 5px;
+    margin-bottom: 5px;
+    vertical-align: bottom;
+}
+
+ul#admin_menu {
+    background: <%= header_dark_blue %>;
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
 }
 
 div#module_header {
@@ -84,18 +96,18 @@ div#module_header {
     margin-bottom: 1px;
 }
 
-div#customer_admin_header a, ul#module_menu a {
+div#admin_header a, ul#module_menu a {
     color: #fff;
     text-decoration: none;
 }
 
-ul#customer_admin_menu, ul#module_menu {
+ul#module_menu {
     list-style: none;
     margin: 0px;
     padding: 0px;
 }
 
-ul#customer_admin_menu li, ul#module_menu li {
+ul#admin_menu li, ul#module_menu li {
     float: left;
     border-right: 1px solid <%= background %>;
     padding: 5px 10px;
@@ -106,7 +118,7 @@ ul#customer_admin_menu li, ul#module_menu li {
     font-weight: bold;
 }
 
-div#customer_admin_user {
+div#admin_user {
     float: right;
     vertical-align: top;
     padding: 3px;
