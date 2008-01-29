@@ -144,7 +144,7 @@ tinyMCE.init({
                         cursor.forEach( function(author.name) {
                     %>
                     <!-- author: <%= author._id %> -->
-                        <option value="<%= author.name %>" <%= thePost.author.name == author.name || thePost.author == author ? selected : "" %>><%= author.name %></option>
+                        <option value="<%= author.name %>" <%= (thePost.author.name == author.name || thePost.author == author) ? selected : "" %>><%= author.name %></option>
                     <% }); %>
                 </select>
             </div>
