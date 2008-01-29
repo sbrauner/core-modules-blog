@@ -29,7 +29,7 @@ core.content.forms();
 <body>
 <% if (!_openAccess) { %>
 
-<div id="customer_admin_header">
+<div id="admin_header">
     <div id="10gen_logo"><img src="~~/admin/assets/10Gen_logo.png" width="100" height="47" /></div>
 
     <ul id="admin_menu">
