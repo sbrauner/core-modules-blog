@@ -49,7 +49,7 @@ core.content.forms();
     </ul>
     <div id="admin_user">
         <% if (user) { %>
-            Logged in as <%= user.name %> &nbsp;&nbsp; - <a href="/~~/logout">logout</a>
+            Logged in as <%= user.name %> &mdash; <a href="/~~/logout">logout</a>
         <% } else { %>
             <a href="/~~/login">login</a>
         <% } %>
