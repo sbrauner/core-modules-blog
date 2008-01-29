@@ -101,18 +101,18 @@ ul#admin_menu li, ul#module_menu li {
     padding: 5px 10px;
     font-size: 11px;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: bottom;
     height: 12px;
     font-weight: bold;
 }
 
-ul#admin_menu li#10Gen_logo {
+li#10Gen_logo {
     background: #fff;
     height: 55px;
     width: 110px;
 }
 
-ul#admin_menu li#10Gen_logo img {
+li#10Gen_logo img {
     margin: 5px;
     vertical-align: bottom;
 }
