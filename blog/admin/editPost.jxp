@@ -142,7 +142,7 @@ tinyMCE.init({
                         var cursor = db.users.find( {permissions : "admin"} );
                         cursor.forEach( function(author) {
                     %>
-                        <option value="<%= author.name %>" <%= thePost.author.name == author.name ? "selected" : "" %>><%= author.name %></option>
+                        <option value="<%= author.name %>" <%= thePost.author.name == author.name ? "selected" : "fdsa" %>><%= author.name %></option>
                     <% }); %>
                 </select>
             </div>
