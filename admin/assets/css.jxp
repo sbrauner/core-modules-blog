@@ -108,11 +108,10 @@ ul#admin_menu li, ul#module_menu li {
 
 li#10Gen_logo {
     background: #fff;
-    height: 55px;
-    width: 110px;
 }
 
-li#10Gen_logo img {
+ul#admin_menu li img {
+    background: #fff;
     margin: 5px;
     vertical-align: bottom;
 }
