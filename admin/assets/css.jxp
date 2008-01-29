@@ -72,7 +72,7 @@ th.specalt {
 
 div#admin_header {
     background: <%= header_dark_blue %>;
-    height: 53px;
+    height: 55px;
     color: #fff;
     margin-bottom: 1px;
 }
@@ -96,10 +96,6 @@ ul#admin_menu, ul#module_menu {
     padding: 0px;
 }
 
-ul#admin_menu {
-    margin-top: 21px;
-}
-
 ul#admin_menu li, ul#module_menu li {
     float: left;
     border-right: 1px solid <%= background %>;
@@ -110,13 +106,17 @@ ul#admin_menu li, ul#module_menu li {
     font-weight: bold;
 }
 
+ul#admin_menu li {
+    margin-top: 23px;
+}
+
 div#admin_logo {
     float: left;
     background: #fff;
 }
 
 div#admin_logo img {
-    margin: 3px;
+    margin: 4px;
 }
 
 div#admin_user {
