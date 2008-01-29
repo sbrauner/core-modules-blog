@@ -102,7 +102,7 @@ ul#admin_menu li, ul#module_menu li {
     font-size: 11px;
     text-align: center;
     vertical-align: bottom;
-    height: 12px;
+    height: 55px;
     font-weight: bold;
 }
 
@@ -112,7 +112,7 @@ li#10Gen_logo {
 
 ul#admin_menu li img {
     background: #fff;
-    margin: 5px;
+    margin: 3px;
     vertical-align: bottom;
 }
 
