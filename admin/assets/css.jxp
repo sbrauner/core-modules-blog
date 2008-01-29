@@ -76,9 +76,12 @@ div#admin_header {
     margin-bottom: 1px;
 }
 
-div#admin_header img {
-    margin-left: 5px;
-    margin-bottom: 5px;
+div#10gen_logo{
+    float: left;
+}
+
+div#10gen_logo img {
+    margin: 5px;
     vertical-align: bottom;
 }
 
