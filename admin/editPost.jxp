@@ -20,7 +20,7 @@ if (!thePost.author) thePost.author = user.name;
 
 var justSaved = false;
 
-if ( request.action == "save" ){
+if ( request.action == "save" ) {
 
     if( !thePost.cls )
         thePost.cls = request.cls == "page" ? "page" : "entry";
@@ -53,6 +53,13 @@ if ( request.action == "save" ){
 	        justSaved=true;	
             print( "<i>Saved.</i>" );
 	    }
+    }
+} else if (request.action == 'delete') {
+    if (posts.remove(thePost)) {
+        response.setResponseCode( 302 );
+        response.setHeader( "Location" , "posts" );
+    } else {
+        print("<strong>Error deleting post!</strong>");
     }
 }
 
@@ -87,7 +94,7 @@ tinyMCE.init({
 });
 </script>
 
-<script>
+<script language="javascript" type="text/javascript">
   var newPost = <%= id ? "false" : "true" %>;
   function titleChange(){
     if ( ! newPost ) return;
@@ -95,7 +102,16 @@ tinyMCE.init({
     var t = document.getElementById( "title" ).value;
     t = t.replace( /[^a-zA-Z0-9]/g , "_" );
     document.getElementById( "name" ).value = t;
-  }
+  };
+  
+  function confirmDelete() {
+      var confirmed = window.confirm('Are you sure you want to delete this post? You cannot undelete!');
+
+      if (confirmed) {
+          document.getElementById("form_action").value = 'delete';
+          document.editForm.submit();
+      }
+  };
 </script>
 
 
@@ -107,12 +123,21 @@ tinyMCE.init({
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
 </h1>
-
-<form method="post" action="editPost.jxp">
-    <input type="hidden" name="action" value="save">
-
+<%= request.action %>
+<form method="post" action="editPost.jxp" name="editForm">
+    <input type="hidden" name="action" value="save" id="form_action">
+<!-- 
+TODO:
+* Delete post
+* Fix author assignment bug
+* add categories    
+    -->
     <div id="post_form">
-    <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
+    <div id="post_action">
+        <input type="submit" value="Save">
+        <input type="button" value="Preview" onclick="window.open('/index/<%=thePost.name%>', '_top');">
+        <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
+    </div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
     <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
