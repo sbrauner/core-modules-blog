@@ -18,6 +18,7 @@
         <li><a href="/admin/files.jxp">Files</a></li>
         <li><a href="/admin/dbview.jxp">DB</a></li>
         <li><a href="/admin/gitLocal.jxp">Git Local</a></li>
+        <li><a href="/admin/shell.jxp">Shell</a></li>
         <li><a href="/admin/cron.jxp">Cron</a></li>
         <li><a href="/admin/doc.jxp?f=/">Doc Tool</a></li> 
         <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
