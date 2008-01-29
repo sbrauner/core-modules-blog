@@ -113,7 +113,7 @@ ul#admin_menu li {
 div#admin_logo {
     float: left;
     background: #fff;
-    padding: 4px 10px;
+    padding: 4px 15px;
 }
 
 div#admin_user {
