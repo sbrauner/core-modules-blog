@@ -107,7 +107,7 @@ ul#admin_menu li, ul#module_menu li {
 }
 
 ul#admin_menu li {
-    margin-top: 23px;
+    margin-top: 34px;
 }
 
 div#admin_logo {
