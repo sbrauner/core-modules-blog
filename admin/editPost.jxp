@@ -136,7 +136,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Author</div>
-            <div class="post_meta_field_value">
+            <div class="post_meta_field_value"><%= thePost.author %>
                 <select name="author">
                     <%
                         var cursor = db.users.find( {permissions : "admin"} );
