@@ -30,7 +30,7 @@ core.content.forms();
 <% if (!_openAccess) { %>
 
 <div id="admin_header">
-    <div id="admin_logo"><img src="NOCDN/~~/admin/assets/10Gen_logo.png" width="100" height="47" /></div>
+    <div id="admin_logo"><img id="admin_logo_image" src="NOCDN/~~/admin/assets/10Gen_logo.png" width="100" height="47" /></div>
 
     <ul id="admin_menu">
         <li><a href="/admin/">Home</a></li>
