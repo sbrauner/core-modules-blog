@@ -72,7 +72,7 @@ th.specalt {
 
 div#admin_header {
     background: <%= header_dark_blue %>;
-    height: 55px;
+    height: 53px;
     color: #fff;
     margin-bottom: 1px;
 }
@@ -94,6 +94,10 @@ ul#admin_menu, ul#module_menu {
     list-style: none;
     margin: 0px;
     padding: 0px;
+}
+
+ul#admin_menu {
+    margin-top: 21px;
 }
 
 ul#admin_menu li, ul#module_menu li {
