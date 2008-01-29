@@ -32,6 +32,10 @@ h2 {
     padding: 5px 0px;
 }
 
+hr {
+    clear: both;
+}
+
 div#post_form {
     width: 620px;
     padding: 5px;
@@ -73,6 +77,12 @@ div.post_meta_field_value {
     float:left;
     margin: 5px;
     color: #000;
+}
+
+div.scrollable {
+    height: 150px;
+    overflow: scroll;
+    width: 250px;
 }
 
 div#post_title input {
