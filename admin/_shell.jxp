@@ -1,0 +1,24 @@
+<%
+
+    var shellId = request.id;
+if ( ! shellId ){
+    print( "no shellId :(" );
+    return;
+}
+
+var gg = scope.globals.getParent();
+var holder = gg._adminScopeHolder;
+if ( ! holder ){
+    holder = {};
+    gg._adminScopeHolder = holder;
+}
+
+var theScope = gg[ shellId ];
+if ( ! theScope ){
+    theScope = scope;
+    gg[ shellId ] = theScope;
+}
+
+var res = theScope.eval( request.command , "aaaa" + shellId , null );
+print( tojson( res ) );
+%>

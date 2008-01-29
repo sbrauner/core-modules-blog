@@ -52,10 +52,10 @@ if ( request._run == "true" ){
         var res = req.send();
         if ( ! res )
             cron.lastResult = "ERROR";
-        else {
-            print( "<b>" + res.responseText + "</b><br>" );
-        }
-        
+        else 
+            cron.lastResult =  res.responseText;
+	
+	print( "<div style='border:1px solid black;'>result: " + cron.lastResult + "</div>" );
         db.cron.save( cron );
         print( "<hr>" );
     }

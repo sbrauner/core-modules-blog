@@ -4,6 +4,7 @@
   <head>
     <title>10Gen Admin</title>
     <link rel="stylesheet" href="NOCDN/~~/admin/assets/css.jxp" type="text/css" />
+    <script src="/~~/ui/js/common.js"></script>
   </head>
 <body>
 <% if (!_openAccess) { %>

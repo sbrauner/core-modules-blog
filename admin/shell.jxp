@@ -1,0 +1,29 @@
+
+<div style="text-align:center;">
+     Shell (do not refresh page or anything crazy like that)<br>
+    <textarea id="history" disabled rows=20 cols=80></textarea><br>
+    <form onSubmit="return doRun();">
+       Command:<input id="command" size=70><input type="submit" value="run">
+    </form>
+</div>
+
+<script>
+    shellId = "shell-" + Math.random();
+    commandHistory = document.getElementById( "history" );
+    command = document.getElementById( "command" );
+    function doRun(){
+	commandHistory.value += "\n> " + command.value;
+
+	var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
+	//commandHistory.value += "\t" + url;
+	
+	var res = loadDocSync( url );
+	res = res.replace( /(^\s+|\s+$)/g , "" );
+	if ( res.length != 0 )
+	    commandHistory.value += "\n" + res;
+
+	command.value = "";
+	
+	return false;
+    }
+</script>
