@@ -88,6 +88,8 @@ div#admin_header a, ul#module_menu a {
     color: #fff;
     text-decoration: none;
     vertical-align: bottom;
+    width: 100%;
+    height: 100%;
 }
 
 ul#admin_menu, ul#module_menu {
