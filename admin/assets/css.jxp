@@ -87,6 +87,7 @@ div#module_header {
 div#admin_header a, ul#module_menu a {
     color: #fff;
     text-decoration: none;
+    vertical-align: bottom;
 }
 
 ul#admin_menu, ul#module_menu {
@@ -101,7 +102,6 @@ ul#admin_menu li, ul#module_menu li {
     padding: 5px 10px;
     font-size: 11px;
     text-align: center;
-    vertical-align: bottom;
     height: 55px;
     font-weight: bold;
 }
