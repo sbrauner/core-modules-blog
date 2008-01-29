@@ -106,14 +106,13 @@ ul#admin_menu li, ul#module_menu li {
     font-weight: bold;
 }
 
-#10Gen_logo {
+div#10Gen_logo {
+    float: left;
     background: #fff;
 }
 
-ul#admin_menu li img {
-    background: #fff;
+div#10Gen_logo img {
     margin: 3px;
-    vertical-align: bottom;
 }
 
 div#admin_user {
