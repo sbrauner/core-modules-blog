@@ -71,6 +71,7 @@ th.specalt {
 }
 
 div#admin_header {
+    background: <%= header_dark_blue %>;
     height: 50px;
     color: #fff;
     margin-bottom: 1px;
@@ -78,6 +79,9 @@ div#admin_header {
 
 div#10gen_logo{
     float: left;
+    background: #fff;
+    height: 50px;
+    width: 110px;
 }
 
 div#10gen_logo img {
@@ -86,7 +90,6 @@ div#10gen_logo img {
 }
 
 ul#admin_menu {
-    background: <%= header_dark_blue %>;
     list-style: none;
     margin: 0px;
     padding: 0px;
