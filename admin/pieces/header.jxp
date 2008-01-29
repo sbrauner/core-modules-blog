@@ -30,7 +30,9 @@ core.content.forms();
 <% if (!_openAccess) { %>
 
 <div id="customer_admin_header">
-    <ul id="customer_admin_menu">
+    <div id="10gen_logo"><img src="~~/admin/assets/10Gen_logo.png" width="100" height="47" /></div>
+
+    <ul id="admin_menu">
         <li><a href="/admin/">Home</a></li>
         <li><a href="/admin/users.jxp">Users</a></li>
         <li><a href="/admin/files.jxp">Files</a></li>
@@ -45,7 +47,7 @@ core.content.forms();
             <% } %>
         </if>
     </ul>
-    <div id="customer_admin_user">
+    <div id="admin_user">
         <% if (user) { %>
             Logged in as <%= user.name %> <a href="/~~/logout">Logout</a>
         <% } else { %>
