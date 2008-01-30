@@ -1,0 +1,83 @@
+<%%>
+<div class="a_section"> 
+   <div class="a_header">Page Views and Visits</div>
+
+   <table>
+     <tr>
+
+       <td>
+       <%
+    var u = db.analytics.uniqueHour.find().sort( { time: -1 } ).limit( 24 ).toArray(); 
+var p = db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 ).toArray(); 
+core.analytics.admin.pieces.visitsCount( "Past Day" , u , p );
+%>     
+       </td>
+
+       <td>
+
+       <%
+
+	 // past week
+	   
+	   var u = db.analytics.uniqueDay.find().sort( { time: -1 } ).limit( 8 ).toArray(); 
+var pTemp = db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 * 8 ).toArray(); 
+var p = [];
+var lastDay = null;
+for ( var i=0; i<pTemp.length; i++ ){
+    var n = pTemp[i].time.roundDay();
+
+    if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
+	p.push( { time : n , num : 0 } );
+
+    p[p.length - 1 ].num += pTemp[i].num;
+    lastDay = n;
+}
+core.analytics.admin.pieces.visitsCount( "Past Week" , u , p );
+
+
+
+// past month
+	   
+var u = db.analytics.uniqueMonth.find().sort( { time: -1 } ).limit( 13 ).toArray(); 
+var p = [];
+var lastDay = null;
+
+db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 * 30 * 14 ).forEach( function( z ){
+										     var n = z.time.roundMonth();
+
+										     if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
+											 p.push( { time : n , num : 0 } );
+
+										     p[p.length - 1 ].num += z.num;
+										     lastDay = n;
+										 }
+										 );
+core.analytics.admin.pieces.visitsCount( "Past Month" , u , p );
+
+// past year
+	   
+var u = db.analytics.uniqueMonth.find().sort( { time: -1 } ).limit( 13 ).toArray(); 
+var p = [];
+var lastDay = null;
+
+db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 * 30 * 14 ).forEach( function( z ){
+										     var n = z.time.roundMonth();
+
+										     if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
+											 p.push( { time : n , num : 0 } );
+
+										     p[p.length - 1 ].num += z.num;
+										     lastDay = n;
+										 }
+										 );
+core.analytics.admin.pieces.visitsCount( "Past Year" , u , p );
+
+%>     
+
+       </td>
+
+     </tr>
+
+   </table>
+
+</div>

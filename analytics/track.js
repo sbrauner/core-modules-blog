@@ -4,6 +4,37 @@ function addPixelParam( n , v ){
     pixelParams += n + "=" + v + "&";
 }
 
+function secondsTillNextDay(){
+    var now = new Date();
+
+    var diff = 0;
+
+    diff += ( 23 - now.getHours() );
+    diff *= 60;
+
+    diff += ( 59 - now.getMinutes() );
+    diff *= 60;
+
+    diff += ( 59 - now.getSeconds() );
+
+    return diff;
+}
+
+function secondsTillNextMonth(){
+    var inc = 0;
+
+    var d = new Date();
+    var now = d.getMonth();
+
+    d = new Date( d.getTime() + ( 1000 * 3600 * 24 ) );
+    while ( d.getMonth() == now ){
+	inc++;
+	d = new Date( d.getTime() + ( 1000 * 3600 * 24 ) );
+    }
+
+    return ( inc * 86400 ) + secondsTillNextDay();
+}
+
 function setCookie( name , value , seconds ) {
     var expires = "";
 
@@ -53,8 +84,8 @@ function doUniqueStuff( c , p , t ){
     addPixelParam( p , "t" );
 }
 doUniqueStuff( "uh" , "uniqueHour" , 3600 );
-doUniqueStuff( "ud" , "uniqueDay" , 3600 * 24 );
-doUniqueStuff( "um" , "uniqueMonth" , 3600 * 24 * 30 );
+doUniqueStuff( "ud" , "uniqueDay" , 300 +  secondsTillNextDay() );
+doUniqueStuff( "um" , "uniqueMonth" , 300 + secondsTillNextMonth() );
 
 function writePixel(){
     var root = "";

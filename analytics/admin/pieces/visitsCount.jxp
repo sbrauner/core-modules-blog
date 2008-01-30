@@ -1,0 +1,15 @@
+<table>
+    <tr>
+       <th><b><%= arguments[0] %></b></th>
+       <th>Page Views</th>
+       <th>Uniques</th>
+    </tr>
+    <% var u = arguments[1]; var p = arguments[2]; %>
+    <% for ( var i=0; i<Math.min( u.length , p.length ); i++ ){ %>
+    <tr>
+       <td><%= u[i].time %></td>
+       <td><%= p[i].num %></td>
+       <td><%= u[i].num %></td>
+    </tr>	
+    <% } %>	    												     
+</table>
