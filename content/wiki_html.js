@@ -105,6 +105,8 @@ var Wiki = {
 	        str = str.replace(this.prefixRE, '[[');
 	    str = this.repl(this.link, str);
 	}
+
+    // the basics
     str = this.repl(this.basics, str);
 
 	// * bullets

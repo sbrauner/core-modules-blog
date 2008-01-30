@@ -2,8 +2,12 @@
 core.content.search();
 core.text.text();
 
-function Post(){
-
+function Post() {
+    this.commentsEnabled = true;
+    this.ts = Date();
+    this.cls = "entry";
+    this.content = "";
+    this.categories = new Array();
 };
 
 Post.prototype.getTeaserContent = function(){
