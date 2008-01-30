@@ -3,51 +3,40 @@
 
 
 var id = request.id;
-var thePost = null;
 
-if ( id ){
-    thePost = posts.findOne( CrID( id ) );
+var newPost = true;
+var thePost = new Post();
+thePost.author = user.name;
+
+if (id) {
+    foundPost = posts.findOne( CrID( id ) );
+    if (foundPost) {
+        thePost = foundPost;
+        newPost = false;
+    } else {
+        id = null;
+    }
 }
-
-var newPost = ! thePost;
-
-if ( ! thePost ) {
-    thePost = new Post();
-    id = null;
-}
-
-if ( ! thePost.content)
-    thePost.content = "Write stuff here!";
-
-if (!thePost.author) thePost.author = user.name;
 
 var newCategories = new Array();
 if (request.new_categories) {
     newCategories = request.new_categories.split('[, ]').unique();
     var emptyIndex = newCategories.indexOf('');
-    if (emptyIndex >= 0)
-        newCategories.remove(emptyIndex);
+    if (emptyIndex >= 0) newCategories.remove(emptyIndex);
 }
 
 var justSaved = false;
 
 if ( request.action == "save" ) {
 
-    if( !thePost.cls )
-        thePost.cls = request.cls == "page" ? "page" : "entry";
-
-    if ( ! thePost.ts )
-        thePost.ts = Date();
-
-    if ( ! thePost.author )
-        thePost.author = user;
+    thePost.cls = request.cls;
 
     if( !request.title || 
         request.title.trim().length == 0 || 
         request.content.trim().length == 0 ) {
       	print("<p>Error saving: name/content is blank?<p>");
     } else {
-        if ( ! thePost.name ){
+        if ( ! thePost.name ) {
             // Move this code out so it can be used by the interactive name generator below
     	    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
     	}
@@ -55,13 +44,13 @@ if ( request.action == "save" ) {
         thePost.title = request.title;
    	    thePost.content = request.content;
    	    thePost.categories = request.getParameters('categories').concat(newCategories).unique().sort();
-
 	    thePost.live = parseBool( request.live );
+	    thePost.commentsEnabled = parseBool(request.commentsEnabled);
+
 	    posts.save( thePost );
 
 	    id = thePost._id;
-	    if ( ! id )
-	        print( "Error saving post." );
+	    if ( ! id ) print( "Error saving post." );
 	    else {
 	        justSaved=true;	
             print( "<i>Saved.</i>" );
@@ -76,8 +65,7 @@ if ( request.action == "save" ) {
     }
 }
 
-if ( request.content )
-    thePost.content = request.content;
+if ( request.content ) thePost.content = request.content;
 
 // Build a list of all available categories (this is a kludge!)
 var cursor = db.blog.posts.find({}, { categories:true });
@@ -169,6 +157,15 @@ tinyMCE.init({
             </div>
         </div>
         <div class="post_meta_field">
+            <div class="post_meta_field_name">Comments</div>
+            <div class="post_meta_field_value">
+                <select name="commentsEnabled">
+                    <option value="false">Disabled</option>
+                    <option value="true" <%= thePost.commentsEnabled ? "selected" : "" %> >Enabled</option>
+                </select>
+            </div>
+        </div>
+        <div class="post_meta_field">
             <div class="post_meta_field_name">Slug</div>
             <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name|| "" %>" <%= newPost ? "" : "disabled" %> ></div>
         </div>
@@ -200,7 +197,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts || new Date() %>"/></div>
+            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts %>"/></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">ID</div>
