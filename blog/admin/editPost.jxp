@@ -1,4 +1,7 @@
 <% 
+// * Fix author assignment bug
+
+
 var id = request.id;
 var thePost = null;
 
@@ -18,9 +21,17 @@ if ( ! thePost.content)
 
 if (!thePost.author) thePost.author = user.name;
 
+var newCategories = new Array();
+if (request.new_categories) {
+    newCategories = request.new_categories.split('[, ]').unique();
+    var emptyIndex = newCategories.indexOf('');
+    if (emptyIndex >= 0)
+        newCategories.remove(emptyIndex);
+}
+
 var justSaved = false;
 
-if ( request.action == "save" ){
+if ( request.action == "save" ) {
 
     if( !thePost.cls )
         thePost.cls = request.cls == "page" ? "page" : "entry";
@@ -43,6 +54,8 @@ if ( request.action == "save" ){
     
         thePost.title = request.title;
    	    thePost.content = request.content;
+   	    thePost.categories = request.getParameters('categories').concat(newCategories).unique().sort();
+
 	    thePost.live = parseBool( request.live );
 	    posts.save( thePost );
 
@@ -54,10 +67,24 @@ if ( request.action == "save" ){
             print( "<i>Saved.</i>" );
 	    }
     }
+} else if (request.action == 'delete') {
+    if (posts.remove(thePost)) {
+        response.setResponseCode( 302 );
+        response.setHeader( "Location" , "posts" );
+    } else {
+        print("<strong>Error deleting post!</strong>");
+    }
 }
 
 if ( request.content )
     thePost.content = request.content;
+
+// Build a list of all available categories (this is a kludge!)
+var cursor = db.blog.posts.find({}, { categories:true });
+var categories = new Array();
+cursor.forEach( function( postFragment ) { categories.concat( postFragment.categories); } );
+categories = categories.unique().sort();
+
 %>
 
 <script type="text/javascript" src="NOCDN/~~/tinymce/3.0rc1/tiny_mce.js"></script>
@@ -87,7 +114,7 @@ tinyMCE.init({
 });
 </script>
 
-<script>
+<script language="javascript" type="text/javascript">
   var newPost = <%= id ? "false" : "true" %>;
   function titleChange(){
     if ( ! newPost ) return;
@@ -95,7 +122,16 @@ tinyMCE.init({
     var t = document.getElementById( "title" ).value;
     t = t.replace( /[^a-zA-Z0-9]/g , "_" );
     document.getElementById( "name" ).value = t;
-  }
+  };
+  
+  function confirmDelete() {
+      var confirmed = window.confirm('Are you sure you want to delete this post? You cannot undelete!');
+
+      if (confirmed) {
+          document.getElementById("form_action").value = 'delete';
+          document.editForm.submit();
+      }
+  };
 </script>
 
 
@@ -107,12 +143,14 @@ tinyMCE.init({
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
 </h1>
-
-<form method="post" action="editPost.jxp">
-    <input type="hidden" name="action" value="save">
-
+<form method="post" action="editPost.jxp" name="editForm">
+    <input type="hidden" name="action" value="save" id="form_action">
     <div id="post_form">
-    <div id="post_action"><input type="submit" value="save"> <a href="/index/<%=thePost.name%>" target="zzz">View on site</a></div>
+    <div id="post_action">
+        <input type="submit" value="Save">
+        <input type="button" value="Preview" onclick="window.open('/index/<%=thePost.name%>', '_top');">
+        <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
+    </div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
     <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
@@ -148,8 +186,21 @@ tinyMCE.init({
             </div>
         </div>
         <div class="post_meta_field">
+            <div class="post_meta_field_name">Categories</div>
+            <div class="post_meta_field_value ">
+                <input id="new_categories" name="new_categories" size="30" /><br/>
+                <div class="scrollable">
+                <%
+                    categories.forEach( function(category) {
+                %>
+                    <input type="checkbox" name="categories" value="<%= category %>" <%= thePost.categories.contains(category) ? 'checked' : '' %>/> <%= category %><br/>
+                <% }); %>
+                </div>
+            </div>
+        </div>
+        <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts || new Date() %>"></div>
+            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts || new Date() %>"/></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">ID</div>
