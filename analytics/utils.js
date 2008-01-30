@@ -60,6 +60,7 @@ if ( ! Analytics._utilsInit ){
             }
             
             var coll = db.analytics[ name ];
+	    coll.ensureIndex( { time : 1 } );
             coll.update( key , op , Analytics.dbOptions );
         }
     };
