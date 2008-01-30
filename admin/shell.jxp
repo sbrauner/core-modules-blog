@@ -15,7 +15,10 @@
     var historyLocation = 0;
     function doRun(){
 	commandTranscript.value += "\n> " + command.value;
-	pastCommands[pastCommands.length] = command.value;
+	if (historyLocation != -1) {
+	    pastCommands[pastCommands.length] = command.value;
+	}
+	historyLocation = 0;
 
 	var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
 	//commandTranscript.value += "\t" + url;
