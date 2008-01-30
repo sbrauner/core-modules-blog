@@ -3,8 +3,6 @@
 /* doc.jxp - documentation tool. 
 */
 
-if ( core.admin.pieces.header("open for corejs.10gen.com") ) 
-    return; 
 %>
 
 <pre>
@@ -205,4 +203,3 @@ if ( core.admin.pieces.header("open for corejs.10gen.com") )
 
     </pre>
 
-<% core.admin.pieces.footer(); %>

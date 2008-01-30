@@ -1,6 +1,6 @@
 <%
 
-var _openAccess = arguments[0] && request.getHost() == "corejs.10gen.com";
+    var _openAccess = request.getURI().match( /^.admin\/doc$/ ) && request.getHost() == "corejs.10gen.com";
 
 core.user.user();
 core.user.auth();
