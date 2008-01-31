@@ -1,6 +1,6 @@
 <% core.content.table(); %>
 
-Posts - <a href="/admin/blog/editPost">new</a>
+Posts - <a href="post_edit">new</a>
 <p>
 
 {
@@ -19,7 +19,7 @@ Posts - <a href="/admin/blog/editPost">new</a>
        searchWidth: 4, type: "boolean"
      }
    ],
-   detailUrl: "/admin/blog/editPost?id=",
+   detailUrl: "post_edit?id=",
    searchable: true
   } 
  );

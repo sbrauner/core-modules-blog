@@ -74,17 +74,15 @@ Post.prototype.getUrl = function( r ){
         r = request;
     
     var u = r ? "http://" + r.getHeader( "Host" ) : "";
-    u += "/index/" + this.name;
+    u += "/" + this.name;
     
     return u;
 };
     
 if ( db ){
-    posts = db.blog.posts;
-    
-    posts.ensureIndex( { ts : 1 } );
-    posts.ensureIndex( { categories : 1 } );
-    posts.setConstructor( Post );
+    db.blog.posts.ensureIndex( { ts : 1 } );
+    db.blog.posts.ensureIndex( { categories : 1 } );
+    db.blog.posts.setConstructor( Post );
 
-    Search.fixTable( posts );
+    Search.fixTable( db.blog.posts );
 }
