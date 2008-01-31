@@ -1,0 +1,13 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+
+core.forum.topic();
+list = Forum.Topic.list();
+list = db.forum.topics.find();
+if (list)
+    list.forEach(function(t) { print ("topic: " + t.commentsEnabled + " " + t.pinned); });
+else
+    print ("No topics right now!");
+
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>
