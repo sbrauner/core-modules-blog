@@ -1,0 +1,23 @@
+<% core.content.table(); %>
+
+Categories - <a href="categories_edit">new</a>
+<p>
+
+{
+
+ var tab = new htmltable( 
+  { 
+   ns : db.blog.categories,
+   cols : [
+     { name: "label" },
+     { name: "name" },
+     { name: "description" }
+   ],
+   detailUrl: "categories_edit?id=",
+   searchable: true
+  } 
+ );
+
+ tab.dbview( tab.find().sort({ts:-1}) );
+
+}

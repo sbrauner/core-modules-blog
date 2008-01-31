@@ -7,7 +7,7 @@ Posts - <a href="post_edit">new</a>
 
  var tab = new htmltable( 
   { 
-   ns : posts,
+   ns : db.blog.posts,
    cols : [
      { name: "title", searchWidth: 50 },
      { name: "author" },
