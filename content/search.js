@@ -58,7 +58,7 @@ Search = {
                 if ( z.length == 0 )
                     return;
 
-                if ( debug ) SYSOUT( "\t searching on word : " + z );
+                if ( debug ) SYSOUT( "\t searching on word [" + z + "]" );
                 
                 var res = table.find( { _searchIndex : z } );
                 
@@ -73,7 +73,7 @@ Search = {
 
                     max = Math.max( max , matchCounts[temp] );
                     
-		    if ( debug ) SYSOUT( "\t\t " + temp.title );
+	        	    if ( debug ) SYSOUT( "\t\t " + tempObject.title );
 
                     fullObjects[temp] = tempObject;
                     if ( ! all.contains( temp ) )
