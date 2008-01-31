@@ -6,11 +6,37 @@ var baseUrl = "http://www.alleyinsider.com";
 // ------
 
 core.blog.post();
+core.blog.category();
 core.content.search();
 
 db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
 db.blog.images.ensureIndex( { mt_id : 1 } );
+
+var res = jdbcDB.query( "SELECT * FROM mt_category " );
+while ( res.hasNext() ){
+    var myCat = new BlogCategory();
+
+    var temp = db.blog.categories.findOne( { mt_id : res.category_id } );
+    if ( temp ){
+	myCat = temp;
+	print( "found old cat" );
+    }
+    
+    myCat.mt_id = res.category_id;
+    myCat.allowPings = res.category_allow_pings;
+    myCat.name = res.category_basename;
+    myCat.mt_class = res.category_class;
+    myCat.description = res.category_description;
+    myCat.label = res.category_label;
+    myCat.mt_parent = res.category_parent;
+    myCat.pingUrls = res.category_ping_urls;
+
+    db.blog.categories.save( myCat );
+}
+
+print( "forcing error" );
+foooo();
 
 var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
 
