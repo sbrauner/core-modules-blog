@@ -9,11 +9,11 @@ Forum.Post = function() {
     this.title = "";
     this.content = "";
     this.firstpost = false;
-    this.topic = null;
+    this.parent = null;
 };
 
 Forum.Post.findFirstPost = function(topic){
-    return db.forum.posts.find( { firstpost: true, topic: topic })[0];
+    return db.forum.posts.find( { firstpost: true, parent: topic })[0];
 };
 
 

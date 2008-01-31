@@ -4,8 +4,12 @@ if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.topic();
 list = Forum.Topic.list();
 list = db.forum.topics.find();
+function renderTopic(t){
+    print("topic: " + t.commentsEnabled + " " + t.pinned);
+    print(" <a href='makepost?_id="+t._id+"'>post</a>");
+}
 if (list)
-    list.forEach(function(t) { print ("topic: " + t.commentsEnabled + " " + t.pinned); });
+    list.forEach(function(t) { renderTopic(t);});
 else
     print ("No topics right now!");
 

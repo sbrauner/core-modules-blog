@@ -10,6 +10,8 @@ print.setFormObject( topic );
 
 print(topic);
 
+topic.commentsEnabled = Boolean(topic.commentsEnabled);
+topic.pinned = Boolean(topic.pinned);
 db.forum.topics.save( topic );
 
 
