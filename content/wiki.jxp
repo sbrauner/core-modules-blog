@@ -96,11 +96,19 @@
         wiki.save( wo );
     }
 
+    var htmlTitle = displayName;
+    
+    var bare = true;
+    if ( jxp.pieces && jxp.pieces.header )
+	bare = false;
+
 }
+<% if ( ! bare ){ jxp.pieces.header(); } %>
+<% if ( bare ) { %>
 <html>
   <head>
     <title><%= displayName %></title>
-
+<% } %>
     <script src="/lib/wiky.js"></script>
     <link rel="stylesheet" href="/~~/misc/wiky.css" type="text/css">
     <link rel="stylesheet" href="/~~/misc/gitweb.css" type="text/css">
@@ -146,8 +154,10 @@
       }
 
     </script>
+  <% if ( bare ) { %>
   </head>
   <body>
+<% } %>
 
 <% var ar=displayName.split(/[.]/);//wo.name.split(/[.]/);
   var nm = "";
@@ -236,6 +246,8 @@ ctrl-enter: saves after editing &nbsp; <a href="<%=base%>help.markup">markup hel
 }
 
 </div>
-</body>
 
+<% if ( bare ) { %>
+</body>
 </html>
+<% } else { if ( jxp.pieces.footer ){ jxp.pieces.footer(); } } %>
