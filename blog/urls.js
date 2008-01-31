@@ -103,9 +103,10 @@ Blog.handleRequest = function( request , arg ){
                     SYSOUT('found matching entries for: ' + uri);
                 }
             }
-            search = uri;
         }
         
+        search = uri;
+
         posts = entries.toArray();
         if (entries.length() > pageSize) hasMoreResults = true;
         if (posts.length > pageSize) {
