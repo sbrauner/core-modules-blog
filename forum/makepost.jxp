@@ -4,7 +4,17 @@ core.forum.post();
 core.content.forms();
 post = {};
 Forms.fillInObject( "p", post );
-print.setFormObject( topic );
+print.setFormObject( post );
+post.parent = db.forum.topics.find({id: request.p_id});
+if (! db.forum.posts.findOne({parent: post.parent})){
+    post.firstpost = true;
+}
+if (request.pcontent) {
+    db.forum.posts.save( post );
+}
+for (property in request){
+    print(property+" ");
+}
 %>
 
     <h3>Post to this topic</h3>
