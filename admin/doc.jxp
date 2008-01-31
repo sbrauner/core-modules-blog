@@ -1,8 +1,8 @@
 <% 
 
-/* doc.jxp - documentation tool. 
+/* 
+ * doc.jxp - documentation tool. 
 */
-
 %>
 
 <pre>
@@ -201,5 +201,4 @@
       }
 %>
 
-    </pre>
-
+</pre>

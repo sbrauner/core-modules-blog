@@ -22,8 +22,12 @@ var Wiki = {
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
         { r: /\[([^ \[]+\/[^ \[]+) +([^\[]+)\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
         { r: /\[([^\[]+\/[^\[]+)\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
-    ],
-
+        ],
+/* failed attempt at getting raw urls to be recognized - dana    
+    urls: [        
+        { r: /(http[s]?|ftp:\/?\/?[^:\/\s]+\/\w+*\/[\w\-\.]+[^#?\s]+.*?#[\w\-]+?)/g , s: '<a href="$1">$1</a>'}, // raw URL 
+        ],
+*/
     basics: [
         { r: /'''([^']+)'''/g , s: "<b>$1</b>" }, // '''bold
         { r: /''([^']+)''/g , s: "<i>$1</i>" } // ''italics'
@@ -92,6 +96,9 @@ var Wiki = {
 	    str = this.repl(this.h, str);
 	}
 
+    // raw urls - disabled, see above
+    // str = this.repl(this.urls, str);
+
 	// links
 	if( str.match(/\[/) ) {
 	    if( this.prefixRE )
@@ -99,7 +106,8 @@ var Wiki = {
 	    str = this.repl(this.link, str);
 	}
 
-        str = this.repl(this.basics, str);
+    // the basics
+    str = this.repl(this.basics, str);
 
 	// * bullets
 	if( str.match(/^\*/) ) {
