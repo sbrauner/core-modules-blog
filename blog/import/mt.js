@@ -10,6 +10,7 @@ core.content.search();
 
 db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
+db.blog.images.ensureIndex( { mt_id : 1 } );
 
 var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
 
@@ -37,6 +38,7 @@ while ( res.hasNext() ){
     myPost.cls = res.entry_class;
     myPost.baseName = res.entry_basename;
     myPost.excerpt = res.entry_excerpt;
+    myPost.mt_id = res.entry_id;
 
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id );
     while ( comments.hasNext() ){
