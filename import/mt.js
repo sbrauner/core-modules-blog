@@ -35,9 +35,6 @@ while ( res.hasNext() ){
     db.blog.categories.save( myCat );
 }
 
-print( "forcing error" );
-foooo();
-
 var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
