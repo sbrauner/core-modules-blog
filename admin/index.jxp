@@ -43,7 +43,7 @@ if ( section == null && sectionName.match( /\// ) ){
 if ( section == null )
     section = core.admin[ sectionName ];
 
-if ( isFunction( section ) && section.getName().match( /_/ ) ){
+if ( isFunction( section ) && section.getName().match( /\/_/ ) ){
     section();
     return;
 }
