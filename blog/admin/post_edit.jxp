@@ -139,7 +139,6 @@ tinyMCE.init({
 </h1>
 <form method="post" action="post_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">
-    <input type="hidden" name="cls" value="<%= thePost.cls %>">
     <div id="post_form">
     <div id="post_action">
         <input type="submit" value="Save">
