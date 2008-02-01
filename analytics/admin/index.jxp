@@ -1,1 +1,9 @@
-<% core.analytics.admin.pieces.visits(); %>
+<% %>
+<table><tr><td>
+  <ul class="a_main">
+    <li><% core.analytics.admin.pieces.visits(); %></li>	
+	<li><% core.analytics.admin.pieces.stringSection( { name : "Referrers" , field : function(z){ return z.referrer + "<br>" + z.title; } , fieldName : "From" , table : db.analytics.titleReferrer } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Pages" , field : "title" , table : db.analytics.title } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Local Searches" , field : "search" , table : db.analytics.search } ); %></li>
+  </ul>
+</td></tr></table>

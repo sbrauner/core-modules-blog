@@ -33,10 +33,22 @@ if ( ! Analytics._utilsInit ){
         
         title : Analytics.hourlyThing( "title" ) ,
         search : Analytics.hourlyThing( "search" ) ,
-        referer : Analytics.hourlyThing( "referer" ) ,
-        refererSearch : Analytics.hourlyThing( "refererSearch" ) ,
+        referrer : Analytics.hourlyThing( "referrer" ) ,
+        referrerSearch : Analytics.hourlyThing( "referrerSearch" ) ,
         section : Analytics.hourlyThing( "section" ) ,
-        
+      
+	titleReferrer : {
+	    key : { time : Analytics.hour , 
+		    referrer : function( r ){ return r[ "referrer" ]; } ,
+		    title : function( r ){ return r[ "title" ]; } 
+	    } ,
+	    skip : function ( r ){ 
+		if ( ! r.referrer ) return true;  
+		if ( ! r.title ) return true;  
+		return false;
+	    } 
+	} ,
+		    
         uniqueHour : { key : { time : Analytics.hour } , skip : function( r ){ return ! r.uniqueHour; } } ,
         uniqueDay : { key : { time : Analytics.day } , skip : function( r ){ return ! r.uniqueDay; } } ,
         uniqueMonth : { key : { time :  Analytics.month } , skip : function( r ){ return ! r.uniqueMonth; } }

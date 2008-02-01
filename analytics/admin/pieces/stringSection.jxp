@@ -1,0 +1,77 @@
+<%
+
+    var config = arguments[0];
+
+var startDate = new Date();
+startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 1 ) );
+startDate = startDate.roundHour();
+%>
+
+<div class="a_section"> 
+   <div class="a_header">
+     <%= config.name %>
+     <span style="font-size: .3em;">Since <%= startDate %></span>
+   </div>
+   
+   <%
+
+
+
+    var allThings = {};
+
+config.table.find( { time : { $gt : startDate } } ).forEach( function(z){ 
+								 
+								 var field = null;
+								 if ( isFunction( config.field ) )
+								     field = config.field( z );
+								 else
+								     field = z[ config.field ];
+								 
+								 var n = allThings[ field ];
+								 if ( n )
+								     n += z.num;
+								 else 
+								     n = z.num;
+								 allThings[ field ] = n;
+								 
+							     } );
+
+
+var all = [];
+for ( var t in allThings ){
+    var num = allThings[t];
+    all.push( { thing : t , num : num } );
+}
+
+all.sort( function( A , B ){ 
+	      a = A.num;
+	      b = B.num;
+	      
+	      if ( a == b )
+		  return 0;
+
+	      if ( a < b ) 
+		  return 1;
+	      
+	      return -1;
+	  } );
+
+print( "<table>" );
+
+print( "<tr><th>Num</th><th>" + ( config.fieldName || config.field ) + "</th></tr>" );
+
+for ( var i=0; i < Math.min( 30 , all.length ) ; i++ ){
+    var z = all[i];
+    print( "<tr>" );
+    print( "<td>" + z.num + "</td>" );
+    print( "<td>" + z.thing );
+    print( "</td>" );
+    print( "</tr>" );
+}
+
+print( "</table>"  );
+
+
+%>								 
+
+</div>

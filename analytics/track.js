@@ -70,12 +70,25 @@ if ( possTitles && possTitles.length > 0 )
     addPixelParam( "title" , possTitles[0].innerHTML );
         
 // search
+if ( window && window.searchTerm ){
+    addPixelParam( "search" , window.searchTerm );
+}
 
-// referer
+// referrer
+if ( document.referrer ){
+    var ru = document.referrer.replace( /(https?:..[^\/]+).*/ , "$1" );
+    var du = window.location.href.replace( /(https?:..[^\/]+).*/ , "$1" );
+    
+    if ( ru != du )
+	addPixelParam( "referrer" , document.referrer );
+}
+
+// section
+if ( window && window.sectionName )
+    addPixelParam( "section" , window.sectionName );
 
 // refererSearch
 
-// section
 
 function doUniqueStuff( c , p , t ){
     if ( getCookie( c ) )
