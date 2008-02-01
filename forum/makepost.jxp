@@ -1,6 +1,7 @@
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
+core.forum.topic();
 core.content.forms();
 var post = {};
 Forms.fillInObject( "p", post );
@@ -13,9 +14,10 @@ if (request.pcontent) {
     if(! request.t_id){
 	var Topic = Forum.Topic;
 	var topic = new Topic();
-	post.parent = topic;
-	db.forum.topics.save(post.parent);
+	db.forum.topics.save(topic);
+	post.parent = db.forum.topics.findOne({_id: topic._id});
 	post.firstpost = true;
+	
     }
     db.forum.posts.save( post );
 }
