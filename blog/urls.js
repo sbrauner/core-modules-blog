@@ -153,7 +153,7 @@ Blog.handlePosts = function( request , thePost ){
 	    comment.author = user.name;
 	    comment.email = user.email;
 	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-	    if ( Captcha.valid() ) {
+	    if ( Captcha.valid( request ) ) {
 		comment = {};
 		comment.author = request.yourname;
 		comment.email = request.email;
