@@ -13,6 +13,9 @@ db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
 db.blog.images.ensureIndex( { mt_id : 1 } );
 
+var catByName = {};
+var catById = {};
+
 var res = jdbcDB.query( "SELECT * FROM mt_category " );
 while ( res.hasNext() ){
     var myCat = new BlogCategory();
@@ -32,6 +35,9 @@ while ( res.hasNext() ){
     myCat.pingUrls = res.category_ping_urls;
 
     db.blog.categories.save( myCat );
+
+    catByName[ myCat.name ] = myCat;
+    catById[ "__" + myCat.mt_id ] = myCat;
 }
 
 var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
@@ -40,15 +46,19 @@ while ( res.hasNext() ){
 
     var myPost = new Post();
 
-    myPost.ts = res.entry_authored_on;
-    if( res.entry_class == "page" )
-	myPost.name = res.entry_basename;
-    else
-        myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
-    var temp = db.blog.posts.findOne( { name : myPost.name } );
+
+
+    var temp = db.blog.posts.findOne( { mt_id : res.entry_id } );
     if ( temp != null ){
 	myPost = temp;
     }
+
+    myPost.ts = res.entry_authored_on;
+    if( res.entry_class == "page" ){
+	myPost.name = res.entry_basename;
+    }
+    else
+        myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
 
     myPost.ts = res.entry_authored_on;
     print( myPost.name + "\t" + myPost.ts );
@@ -81,6 +91,20 @@ while ( res.hasNext() ){
     myPost.categories = Array();
     while ( cats.hasNext() )
         myPost.categories.push( cats.category_basename );
+
+    if ( res.entry_class == "page" && myPost.categories.length == 1 ){
+	SYSOUT( "folder" );
+	SYSOUT( "\t" + myPost.name );
+	myPost.name = myPost.categories[0] + "/" + res.entry_basename;
+	var theCat = catByName[ myPost.categories[0] ];
+	if ( theCat ){
+	    var par = catById[ "__" + theCat.mt_parent ];
+	    if ( par ){
+		myPost.name = par.name + "/" + myPost.name;
+	    }
+	}
+	SYSOUT( "\t" + myPost.name );
+    }
 
     myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
                                              function( wholeTag , url ){ 
