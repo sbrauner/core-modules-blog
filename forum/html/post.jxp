@@ -1,0 +1,16 @@
+<% 
+var t = arguments[0];
+core.forum.post();
+ %>
+<div class="post">
+  <div class="titlebar">
+    <%= t.title %> by <%= t.author %>
+  </div>
+  <div class="content">
+    <%= t.content %>
+  </div>
+  <a href="makepost?t_id=<%= t._id %>">Reply to this</a>
+  <% 
+    Forum.Post.findAllPosts(t).forEach(Forum.renderer.post);
+  %>
+</div>
