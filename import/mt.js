@@ -54,9 +54,8 @@ while ( res.hasNext() ){
     }
 
     myPost.ts = res.entry_authored_on;
-    if( res.entry_class == "page" ){
+    if( res.entry_class == "page" )
 	myPost.name = res.entry_basename;
-    }
     else
         myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
 
