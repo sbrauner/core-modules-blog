@@ -40,13 +40,11 @@ while ( res.hasNext() ){
     catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
     var myPost = new Post();
-
-
 
     var temp = db.blog.posts.findOne( { mt_id : res.entry_id } );
     if ( temp != null ){
@@ -102,9 +100,11 @@ while ( res.hasNext() ){
 		myPost.name = par.name + "/" + myPost.name;
 	    }
 	}
-	myPost.name = myPost.name.replace( /-/g , "_" ).replace( /\/index$/ , "" );
-	SYSOUT( "\t" + myPost.name );
+
     }
+
+    myPost.name = myPost.name.replace( /\-/g , "_" ).replace( /\/index$/ , "" );
+    SYSOUT( "\t" + myPost.name );
 
     myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
                                              function( wholeTag , url ){ 
