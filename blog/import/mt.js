@@ -40,7 +40,7 @@ while ( res.hasNext() ){
     catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id AND entry_id = 3551 ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
