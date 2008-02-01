@@ -8,3 +8,4 @@ else
     print ("No topics right now!");
 
 %>
+<a href="makepost">New topic</a>

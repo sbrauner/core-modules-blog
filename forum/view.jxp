@@ -3,11 +3,11 @@ if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 
 core.forum.topic();
 var topic = db.forum.topics.findOne({_id: request.tid});
+print("<!-- " + topic._id + "-->");
+
 
 var posts = Forum.Post.findAllPosts(topic);
 posts.forEach(Forum.renderer.post);
-
-print(topic._id+"<br/>");
 
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 %>
