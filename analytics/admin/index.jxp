@@ -1,17 +1,9 @@
 <% %>
-<style>
-.a_header { font-size: 1.8em; font-weight:bold; }    
-.a_section{ width: 60em; }
-.a_section div { text-align: center; }
-.a_section table{ font-size: .8em; }
-
-.a_main { display: inline; }
-.a_main li { display: inline; float:left; }
-
-</style>
 <table><tr><td>
   <ul class="a_main">
-    <li><% core.analytics.admin.pieces.visits(); %></li>
-    <li><% core.analytics.admin.pieces.pages(); %></li>
+    <li><% core.analytics.admin.pieces.visits(); %></li>	
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Referrers" , field : "referrer" , table : db.analytics.referrer } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Pages" , field : "title" , table : db.analytics.title } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Local Searches" , field : "search" , table : db.analytics.search } ); %></li>
   </ul>
 </td></tr></table>

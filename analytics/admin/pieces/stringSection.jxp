@@ -1,7 +1,10 @@
-<%%>
+<%
+
+    var config = arguments[0];
+%>
 
 <div class="a_section"> 
-   <div class="a_header">Pages</div>
+   <div class="a_header"><%= config.name %></div>
    
    <%
 
@@ -9,22 +12,22 @@ var startDate = new Date();
 startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 2 ) );
 startDate = startDate.roundHour();
 
-    var allTitles = {};
+    var allThings = {};
 
-db.analytics.title.find( { time : { $gt : startDate } } ).forEach( function(z){ 
-								       var n = allTitles[ z.title ];
+config.table.find( { time : { $gt : startDate } } ).forEach( function(z){ 
+								       var n = allThings[ z[ config.field ] ];
 								       if ( n )
 									   n += z.num;
 								       else 
 									   n = z.num;
-								       allTitles[ z.title ] = n;
+								       allThings[ z[ config.field] ] = n;
 								   } );
 
 
 var all = [];
-for ( var t in allTitles ){
-    var num = allTitles[t];
-    all.push( { title : t , num : num } );
+for ( var t in allThings ){
+    var num = allThings[t];
+    all.push( { thing : t , num : num } );
 }
 
 all.sort( function( A , B ){ 
@@ -42,13 +45,13 @@ all.sort( function( A , B ){
 
 print( "<table>" );
 
-print( "<tr><th>Num</th><th>Title</th></tr>" );
+print( "<tr><th>Num</th><th>" + config.field + "</th></tr>" );
 
 for ( var i=0; i < Math.min( 30 , all.length ) ; i++ ){
     var z = all[i];
     print( "<tr>" );
     print( "<td>" + z.num + "</td>" );
-    print( "<td>" + z.title + "</td>" );
+    print( "<td>" + z.thing + "</td>" );
     print( "</tr>" );
 }
 
