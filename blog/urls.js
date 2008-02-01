@@ -32,6 +32,7 @@ Blog.handleRequest = function( request , arg ){
     var hasMoreResults = false;
     var search = request.q;
     var uri = arg.uri || request.getURI();
+    var category;
 
     SYSOUT("request.q: " + request.q);
     SYSOUT("pageSize: " + pageSize);
@@ -100,6 +101,7 @@ Blog.handleRequest = function( request , arg ){
             if (entries.length() > 0) {
                 SYSOUT('found matching entries for category: ' + uri);
                 isCategorySearch = true;
+                category = db.blog.categories.findOne({ name: uri });
             } else {
                 // this isn't a category search, so we just assume its a date search or partial url search
                 searchCriteria = { live : true }; // FIX ME! This should remove the name criteria
@@ -116,7 +118,7 @@ Blog.handleRequest = function( request , arg ){
         search = uri;
 
         posts = entries.toArray();
-        if (entries.length() > pageSize) hasMoreResults = true;
+//        hasMoreResults = (entries.length() > pageSize);
         if (posts.length > pageSize) {
             hasMoreResults = true;
             posts.remove(pageSize);
@@ -163,10 +165,13 @@ Blog.handleRequest = function( request , arg ){
 	    }
     }
     
+    SYSOUT("category: " + category);
+ 
     return {isPage: isPage,
             posts: posts,
             isCategorySearch: isCategorySearch,
             baseSearch: search,
-            hasMoreResults: hasMoreResults
+            hasMoreResults: hasMoreResults,
+            category: category
     };
 }
