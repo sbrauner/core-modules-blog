@@ -20,7 +20,6 @@ while ( res.hasNext() ){
     var temp = db.blog.categories.findOne( { mt_id : res.category_id } );
     if ( temp ){
 	myCat = temp;
-	print( "found old cat" );
     }
     
     myCat.mt_id = res.category_id;
