@@ -18,7 +18,7 @@ var catById = {};
 
 var res = jdbcDB.query( "SELECT * FROM mt_category " );
 while ( res.hasNext() ){
-    var myCat = new BlogCategory();
+    var myCat = new Category();
 
     var temp = db.blog.categories.findOne( { mt_id : res.category_id } );
     if ( temp ){
@@ -40,7 +40,7 @@ while ( res.hasNext() ){
     catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id AND entry_id = 3551 ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
@@ -102,7 +102,7 @@ while ( res.hasNext() ){
 		myPost.name = par.name + "/" + myPost.name;
 	    }
 	}
-	myPost.name = myPost.name.replace( /-/g , "_" );
+	myPost.name = myPost.name.replace( /-/g , "_" ).replace( /\/index$/ , "" );
 	SYSOUT( "\t" + myPost.name );
     }
 
