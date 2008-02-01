@@ -5,17 +5,17 @@ core.content.forms();
 var post = {};
 Forms.fillInObject( "p", post );
 print.setFormObject( post );
-if(request.t_id != "null")
-    post.parent = db.forum.topics.findOne({_id: request.t_id});
+post.parent = db.forum.topics.findOne({_id: request.t_id});
 if (! db.forum.posts.findOne({parent: post.parent})){
     post.firstpost = true;
 }
 if (request.pcontent) {
-    if(! post.parent){
+    if(! request.t_id){
 	var Topic = Forum.Topic;
 	var topic = new Topic();
 	post.parent = topic;
 	db.forum.topics.save(post.parent);
+	post.firstpost = true;
     }
     db.forum.posts.save( post );
 }
@@ -27,7 +27,9 @@ for (property in request){
     <h3>Post to this topic</h3>
     <form>
       <input type="hidden" name="p_id">
+      <% if (request.t_id) { %>
       <input type="hidden" name="t_id" value="<%= request.t_id %>">
+      <% } %>
       Author: <input type="text" name="pauthor"><br/>
       Topic: <input type="text" name="ptitle"><br/>
       <textarea rows=20 cols=80 name="pcontent"></textarea><br/>
