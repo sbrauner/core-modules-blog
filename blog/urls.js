@@ -125,40 +125,6 @@ Blog.handleRequest = function( request , arg ){
     if ( searchName && posts.length == 0 ) {
         print( "NOT FOUND: " + searchName + "<; />" );
     }   
-
-    if ( searchName && posts.length == 1 ) {
-        if ( request.action == "delete" ) {
-	        var numToDelete = parseNumber( request.num );
-            posts[0].deleteComment( numToDelete );
-            db.blog.posts.save( posts[0] );
-        }
-        
-        if ( request.addComment == "yes" ) {
-            var comment = null;
-            
-            if ( user ) {
-                comment = {};
-                comment.author = user.name;
-                comment.email = user.email;
-            } else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-                if ( Captcha.valid() ) {
-                    comment = {};
-                    comment.author = request.yourname;
-                    comment.email = request.email;
-                } else {
-                    print( "invalid captcha response : " + request.captcha );
-                }
-            }
-            
-            comment.ts = Date();
-            comment.text = request.txt;
-            
-            if ( comment ) {
-                posts[0].addComment( comment );
-                db.blog.posts.save( posts[0] );
-            }
-	    }
-    }
     
     return {isPage: isPage,
             posts: posts,
@@ -167,4 +133,43 @@ Blog.handleRequest = function( request , arg ){
             hasMoreResults: hasMoreResults,
             category: category
     };
-}
+};
+
+Blog.handlePosts = function( request , thePost ){
+    if ( request.action == "delete" ) {
+	var numToDelete = parseNumber( request.num );
+	thePost.deleteComment( numToDelete );
+	db.blog.posts.save( thePost );
+	return;
+    }
+    
+    if ( request.addComment == "yes" ) {
+	var comment = null;
+	
+	SYSOUT( "want to add comment" );
+	
+	if ( user ) {
+	    comment = {};
+	    comment.author = user.name;
+	    comment.email = user.email;
+	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+	    if ( Captcha.valid() ) {
+		comment = {};
+		comment.author = request.yourname;
+		comment.email = request.email;
+	    } else {
+		print( "invalid captcha response : " + request.captcha );
+		return;
+	    }
+	}
+        
+	comment.ts = Date();
+	comment.text = request.txt;
+        
+	if ( comment ) {
+	    thePost.addComment( comment );
+	    db.blog.posts.save( thePost );
+	}
+	return;
+    }
+};
