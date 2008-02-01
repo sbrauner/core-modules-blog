@@ -1,7 +1,8 @@
 <%
     var t = arguments[0];
 core.forum.topic();
-var f = Forum.Post.findFirstPost(t);
+//var f = Forum.Post.findFirstPost(t);
+var f = t;
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 %>
 <div>
