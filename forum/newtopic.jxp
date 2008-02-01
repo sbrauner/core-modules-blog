@@ -1,0 +1,37 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+
+core.forum.topic();
+core.content.forms();
+topic = {};
+Forms.fillInObject( "" , topic );
+
+print.setFormObject( topic );
+
+print(topic);
+
+topic.commentsEnabled = Boolean(topic.commentsEnabled);
+topic.pinned = Boolean(topic.pinned);
+db.forum.topics.save( topic );
+
+
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>
+    <form>
+	
+	<input type="hidden" name="_id">
+	<table>
+
+	   <tr>
+	      <th>Comments enabled?: </th>
+	      <td><input type="checkbox" value="true" name="commentsEnabled"></td>
+	   </tr>
+
+	   <tr>
+	      <th>Pinned?</th>
+	      <td><input type="checkbox" value="true" name="pinned"></td>
+	   </tr>
+
+	</table>
+	<input type="submit" value="save">
+    </form>

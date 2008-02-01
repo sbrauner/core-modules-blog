@@ -1,0 +1,32 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+core.forum.post();
+core.content.forms();
+post = {};
+Forms.fillInObject( "p", post );
+print.setFormObject( post );
+post.parent = db.forum.topics.findOne({_id: request.t_id});
+if (! db.forum.posts.findOne({parent: post.parent})){
+    post.firstpost = true;
+}
+if (request.pcontent) {
+    db.forum.posts.save( post );
+}
+for (property in request){
+    print(property+" ");
+}
+%>
+
+    <h3>Post to this topic</h3>
+    <form>
+      <input type="hidden" name="p_id">
+      <input type="hidden" name="t_id" value="<%= request.t_id %>">
+      Author: <input type="text" name="pauthor"><br/>
+      Topic: <input type="text" name="ptitle"><br/>
+      <textarea rows=20 cols=80 name="pcontent"></textarea><br/>
+      <input type="submit" value="save">
+    </form>
+
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>

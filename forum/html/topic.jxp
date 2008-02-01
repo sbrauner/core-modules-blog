@@ -1,0 +1,10 @@
+<%
+    var t = arguments[0];
+core.forum.topic();
+var f = Forum.Post.findFirstPost(t);
+%>
+<div>
+<a href="view?tid=<%= t._id%>"><%= f.title%></a> started by <%= f.author %>
+<a href="makepost?t_id=<%= t._id%>">(post)</a>
+
+</div>
