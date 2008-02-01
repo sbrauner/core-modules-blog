@@ -1,16 +1,21 @@
 <%
 
     var config = arguments[0];
+
+var startDate = new Date();
+startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 1 ) );
+startDate = startDate.roundHour();
 %>
 
 <div class="a_section"> 
-   <div class="a_header"><%= config.name %></div>
+   <div class="a_header">
+     <%= config.name %>
+     <span style="font-size: .3em;">Since <%= startDate %></span>
+   </div>
    
    <%
 
-var startDate = new Date();
-startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 2 ) );
-startDate = startDate.roundHour();
+
 
     var allThings = {};
 
