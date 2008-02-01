@@ -1,5 +1,3 @@
-if ( ! Forum ) { Forum = {}; }
-
 core.forum.post();
 
 Forum.Topic = function(){
