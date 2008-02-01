@@ -19,6 +19,7 @@ if ( theFile ){
 	   print( "<b>I should delete something, but I don't know how yet</b><br>" );
        }
 
+db._files.ensureIndex( { uploadDate : 1 } );
  var tab = new htmltable( { 
 	 ns : db._files ,
 	     cols : [
