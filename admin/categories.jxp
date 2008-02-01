@@ -1,6 +1,6 @@
 <% core.content.table(); %>
 
-Categories - <a href="categories_edit">new</a>
+Categories - <a href="category_edit">new</a>
 <p>
 
 {
@@ -13,7 +13,7 @@ Categories - <a href="categories_edit">new</a>
      { name: "name" },
      { name: "description" }
    ],
-   detailUrl: "categories_edit?id=",
+   detailUrl: "category_edit?id=",
    searchable: true
   } 
  );

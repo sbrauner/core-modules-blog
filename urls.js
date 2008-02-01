@@ -3,6 +3,7 @@ if ( ! Blog )
     Blog = {};
 
 core.blog.post();
+core.blog.category();
 core.content.search();
 
 /**
@@ -96,7 +97,7 @@ Blog.handleRequest = function( request , arg ){
                 // this isn't a category search, so we just assume its a date search or partial url search
                 searchCriteria = { live : true }; // FIX ME! This should remove the name criteria
     	        if (arg.filter) searchCriteria = searchCriteria.concat(arg.filter);
-                searchCriteria.name = new RegExp('^' + uri.replace(/\//, '\\/'));
+                searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
                 SYSOUT(searchCriteria.name.toString())
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
                 if (entries) {
