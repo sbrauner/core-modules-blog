@@ -2,7 +2,7 @@
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
 core.content.forms();
-post = {};
+var post = {};
 Forms.fillInObject( "p", post );
 print.setFormObject( post );
 post.parent = db.forum.topics.findOne({_id: request.t_id});

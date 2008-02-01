@@ -1,6 +1,6 @@
 <%
 core.forum.topic();
-list = Forum.Topic.list();
+var list = Forum.Topic.list();
 list = db.forum.topics.find();
 if (list)
     list.forEach(Forum.renderer.topic);

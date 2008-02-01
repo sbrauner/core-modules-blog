@@ -2,9 +2,9 @@
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 
 core.forum.topic();
-topic = db.forum.topics.findOne({_id: request.tid});
+var topic = db.forum.topics.findOne({_id: request.tid});
 
-posts = Forum.Post.findAllPosts(topic);
+var posts = Forum.Post.findAllPosts(topic);
 posts.forEach(Forum.renderer.post);
 
 print(topic._id+"<br/>");
