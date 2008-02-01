@@ -1,6 +1,6 @@
 if ( ! Forum ) { Forum = {}; }
 
-core.forum.posts();
+core.forum.post();
 
 Forum.Topic = function(){
     this.commentsEnabled = true;

@@ -1,0 +1,19 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+
+core.forum.topic();
+topic = db.forum.topics.findOne({_id: request.tid});
+
+posts = Forum.Post.findAllPosts(topic);
+
+function renderPost(p){
+    print ("author: " + p.author + "<br/>title: " + p.title + "<br/>content: " + p.content);
+}
+
+//posts = db.forum.posts.find();
+print(topic._id+"<br/>");
+posts.forEach(function (p) { print("parent: "+p.parent + " " +p.parent._id +"<br>"); renderPost(p); });
+
+
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>

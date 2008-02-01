@@ -13,10 +13,10 @@ Forum.Post = function() {
 };
 
 Forum.Post.findFirstPost = function(topic){
-    return db.forum.posts.find( { firstpost: true, parent: topic })[0];
+    return db.forum.posts.findOne( { firstpost: true, parent: topic });
 };
 
 
 Forum.Post.findAllPosts = function(topic){
-    return db.forum.posts.find( {topic: topic} );
+    return db.forum.posts.find( {parent: topic} );
 };
