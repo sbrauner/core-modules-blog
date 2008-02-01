@@ -101,6 +101,7 @@ Blog.handleRequest = function( request , arg ){
 	
         // if the URL is empty, display the home page
         if (uri == '') {
+            searchCriteria.cls = 'entry';
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         } else {
             // search categories
@@ -149,39 +150,39 @@ Blog.handleRequest = function( request , arg ){
 
 Blog.handlePosts = function( request , thePost ){
     if ( request.action == "delete" ) {
-	var numToDelete = parseNumber( request.num );
-	thePost.deleteComment( numToDelete );
-	db.blog.posts.save( thePost );
-	return;
+    	var numToDelete = parseNumber( request.num );
+    	thePost.deleteComment( numToDelete );
+    	db.blog.posts.save( thePost );
+    	return;
     }
     
     if ( request.addComment == "yes" ) {
-	var comment = null;
+	    var comment = null;
 	
-	SYSOUT( "want to add comment" );
+	    SYSOUT( "want to add comment" );
 	
-	if ( user ) {
-	    comment = {};
-	    comment.author = user.name;
-	    comment.email = user.email;
-	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-	    if ( Captcha.valid( request ) ) {
-		comment = {};
-		comment.author = request.yourname;
-		comment.email = request.email;
-	    } else {
-		print( "invalid captcha response : " + request.captcha );
-		return;
-	    }
-	}
+    	if ( user ) {
+    	    comment = {};
+    	    comment.author = user.name;
+    	    comment.email = user.email;
+    	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+    	    if ( Captcha.valid( request ) ) {
+    		comment = {};
+    		comment.author = request.yourname;
+    		comment.email = request.email;
+    	    } else {
+    		print( "invalid captcha response : " + request.captcha );
+    		return;
+    	    }
+    	}
         
-	comment.ts = Date();
-	comment.text = request.txt;
+	    comment.ts = Date();
+	    comment.text = request.txt;
         
-	if ( comment ) {
-	    thePost.addComment( comment );
-	    db.blog.posts.save( thePost );
-	}
-	return;
+    	if ( comment ) {
+    	    thePost.addComment( comment );
+    	    db.blog.posts.save( thePost );
+    	}
+    	return;
     }
 };
