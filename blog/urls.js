@@ -40,7 +40,7 @@ Blog.handleRequest = function( request , arg ){
     
     var posts = Array();
     var isPage = false; // page vs. post
-    var pageSize = arg.limit || 15;
+    var pageSize = arg.limit || 20;
     var isCategorySearch = false;
     var isDateSearch = false;
     var pageNumber = 1;
@@ -88,7 +88,7 @@ Blog.handleRequest = function( request , arg ){
         var entry = db.blog.posts.findOne(searchCriteria);
 
         if (entry) {
-            SYSOUT('found a matching ' + entry.cls);
+            //SYSOUT('found a matching ' + entry.cls);
             search = request.q;
             return {isPage: true,
                     posts: [entry],
@@ -102,6 +102,7 @@ Blog.handleRequest = function( request , arg ){
         // if the URL is empty, display the home page
         if (uri == '') {
             searchCriteria.cls = 'entry';
+            searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         } else {
             // search categories
