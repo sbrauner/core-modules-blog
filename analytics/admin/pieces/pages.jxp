@@ -1,0 +1,59 @@
+<%%>
+<div class="a_section"> 
+   <div class="a_header">Pages</div>
+   
+   <%
+
+var startDate = new Date();
+startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 2 ) );
+startDate = startDate.roundHour();
+
+    var allTitles = {};
+
+db.analytics.title.find( { time : { $gt : startDate } } ).forEach( function(z){ 
+								       var n = allTitles[ z.title ];
+								       if ( n )
+									   n += z.num;
+								       else 
+									   n = z.num;
+								       allTitles[ z.title ] = n;
+								   } );
+
+
+var all = [];
+for ( var t in allTitles ){
+    var num = allTitles[t];
+    all.push( { title : t , num : num } );
+}
+
+all.sort( function( A , B ){ 
+	      a = A.num;
+	      b = B.num;
+	      
+	      if ( a == b )
+		  return 0;
+
+	      if ( a < b ) 
+		  return 1;
+	      
+	      return -1;
+	  } );
+
+print( "<table>" );
+
+print( "<tr><th>Num</th><th>Title</th></tr>" );
+
+for ( var i=0; i < Math.min( 30 , all.length ) ; i++ ){
+    var z = all[i];
+    print( "<tr>" );
+    print( "<td>" + z.num + "</td>" );
+    print( "<td>" + z.title + "</td>" );
+    print( "</tr>" );
+}
+
+print( "</table>"  );
+
+
+%>								 
+
+</div>
