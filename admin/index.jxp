@@ -56,7 +56,7 @@ if ( isFunction( sectionHeader ) )
 if ( isFunction( section ) )
     section();
 else {
-    print( "Welcome <b>" +  user.name  + "</b> to the admin section for <b>" +  db.getName() + "</b>" );
+    print( "<p>Welcome <b>" +  user.name  + "</b> to the admin section for <b>" +  db.getName() + "</b>" );
     if ( jxp.admin && jxp.admin[ "_index" ] )
         jxp.admin[ "_index" ]();
 }

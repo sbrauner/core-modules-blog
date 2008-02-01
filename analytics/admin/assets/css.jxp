@@ -1,5 +1,25 @@
-.a_section {
-  border: 1px solid green;
-  font-size: .6em;
+.a_header { 
+   font-size: 1.8em; 
+   font-weight:bold; 
+}    
 
+.a_section{ 
+   padding: 1em;
+}
+
+.a_section div { 
+   text-align: center; 
+}
+
+.a_section table{ 
+   font-size: .8em; 
+}
+
+.a_main { 
+   display: inline; 
+}
+
+.a_main li { 
+   display: inline; 
+   float:left; 
 }

@@ -13,6 +13,9 @@ db.blog.posts.ensureIndex( { name : 1 } );
 db.blog.images.ensureIndex( { filename : 1 } );
 db.blog.images.ensureIndex( { mt_id : 1 } );
 
+var catByName = {};
+var catById = {};
+
 var res = jdbcDB.query( "SELECT * FROM mt_category " );
 while ( res.hasNext() ){
     var myCat = new BlogCategory();
@@ -20,12 +23,11 @@ while ( res.hasNext() ){
     var temp = db.blog.categories.findOne( { mt_id : res.category_id } );
     if ( temp ){
 	myCat = temp;
-	print( "found old cat" );
     }
     
     myCat.mt_id = res.category_id;
     myCat.allowPings = res.category_allow_pings;
-    myCat.name = res.category_basename;
+    myCat.name = res.category_basename.replace( /-/g , "_" );
     myCat.mt_class = res.category_class;
     myCat.description = res.category_description;
     myCat.label = res.category_label;
@@ -33,23 +35,29 @@ while ( res.hasNext() ){
     myCat.pingUrls = res.category_ping_urls;
 
     db.blog.categories.save( myCat );
+
+    catByName[ myCat.name ] = myCat;
+    catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
     var myPost = new Post();
+
+
+
+    var temp = db.blog.posts.findOne( { mt_id : res.entry_id } );
+    if ( temp != null ){
+	myPost = temp;
+    }
 
     myPost.ts = res.entry_authored_on;
     if( res.entry_class == "page" )
 	myPost.name = res.entry_basename;
     else
         myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
-    var temp = db.blog.posts.findOne( { name : myPost.name } );
-    if ( temp != null ){
-	myPost = temp;
-    }
 
     myPost.ts = res.entry_authored_on;
     print( myPost.name + "\t" + myPost.ts );
@@ -81,7 +89,22 @@ while ( res.hasNext() ){
     var cats = jdbcDB.query( "SELECT category_basename FROM mt_placement , mt_category  WHERE placement_category_id = category_id AND placement_entry_id = " + res.entry_id );
     myPost.categories = Array();
     while ( cats.hasNext() )
-        myPost.categories.push( cats.category_basename );
+        myPost.categories.push( cats.category_basename.replace( /-/g , "_" ) );
+
+    if ( res.entry_class == "page" && myPost.categories.length == 1 ){
+	SYSOUT( "folder" );
+	SYSOUT( "\t" + myPost.name );
+	myPost.name = myPost.categories[0] + "/" + res.entry_basename;
+	var theCat = catByName[ myPost.categories[0] ];
+	if ( theCat ){
+	    var par = catById[ "__" + theCat.mt_parent ];
+	    if ( par ){
+		myPost.name = par.name + "/" + myPost.name;
+	    }
+	}
+	myPost.name = myPost.name.replace( /-/g , "_" );
+	SYSOUT( "\t" + myPost.name );
+    }
 
     myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
                                              function( wholeTag , url ){ 
