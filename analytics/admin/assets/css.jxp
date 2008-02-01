@@ -4,7 +4,6 @@
 }    
 
 .a_section{ 
-   font-size: .6em; 
    padding: 1em;
 }
 

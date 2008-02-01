@@ -20,13 +20,21 @@ startDate = startDate.roundHour();
     var allThings = {};
 
 config.table.find( { time : { $gt : startDate } } ).forEach( function(z){ 
-								       var n = allThings[ z[ config.field ] ];
-								       if ( n )
-									   n += z.num;
-								       else 
-									   n = z.num;
-								       allThings[ z[ config.field] ] = n;
-								   } );
+								 
+								 var field = null;
+								 if ( isFunction( config.field ) )
+								     field = config.field( z );
+								 else
+								     field = z[ config.field ];
+								 
+								 var n = allThings[ field ];
+								 if ( n )
+								     n += z.num;
+								 else 
+								     n = z.num;
+								 allThings[ field ] = n;
+								 
+							     } );
 
 
 var all = [];
@@ -50,13 +58,14 @@ all.sort( function( A , B ){
 
 print( "<table>" );
 
-print( "<tr><th>Num</th><th>" + config.field + "</th></tr>" );
+print( "<tr><th>Num</th><th>" + ( config.fieldName || config.field ) + "</th></tr>" );
 
 for ( var i=0; i < Math.min( 30 , all.length ) ; i++ ){
     var z = all[i];
     print( "<tr>" );
     print( "<td>" + z.num + "</td>" );
-    print( "<td>" + z.thing + "</td>" );
+    print( "<td>" + z.thing );
+    print( "</td>" );
     print( "</tr>" );
 }
 
