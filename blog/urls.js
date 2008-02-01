@@ -77,10 +77,10 @@ Blog.handleRequest = function( request , arg ){
 	
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
-        uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_');
+        uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 	
-        SYSOUT("base URI: " + uri);
-        SYSOUT("pageNumber: " + pageNumber);
+        //SYSOUT("base URI: " + uri);
+        //SYSOUT("pageNumber: " + pageNumber);
         
         // look for a page or post with name = URL, and display it if it exists
         // TODO: look for a page or post with name = URL replacing '-' with '_', and display it if it exists
@@ -133,42 +133,9 @@ Blog.handleRequest = function( request , arg ){
         }
     }
 
-    // We should have at least one post by now, so if we don't have any, it means we should register a 404
     if (posts.length == 0) {
         return Blog.handleMissingUri(uri);
-    }
-
-    if ( request.action == "delete" ) {
-        var numToDelete = parseNumber( request.num );
-        posts[0].deleteComment( numToDelete );
-        db.blog.posts.save( posts[0] );
-    }
-    
-    if ( request.addComment == "yes" ) {
-        var comment = null;
-        
-        if ( user ) {
-            comment = {};
-            comment.author = user.name;
-            comment.email = user.email;
-        } else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-            if ( Captcha.valid() ) {
-                comment = {};
-                comment.author = request.yourname;
-                comment.email = request.email;
-            } else {
-                print( "invalid captcha response : " + request.captcha );
-            }
-        }
-        
-        comment.ts = Date();
-        comment.text = request.txt;
-        
-        if ( comment ) {
-            posts[0].addComment( comment );
-            db.blog.posts.save( posts[0] );
-        }
-    }
+    }   
     
     return {isPage: isPage,
             posts: posts,
@@ -178,5 +145,43 @@ Blog.handleRequest = function( request , arg ){
             hasNext: hasNext,
             category: category
     };
-}
+};
 
+Blog.handlePosts = function( request , thePost ){
+    if ( request.action == "delete" ) {
+	var numToDelete = parseNumber( request.num );
+	thePost.deleteComment( numToDelete );
+	db.blog.posts.save( thePost );
+	return;
+    }
+    
+    if ( request.addComment == "yes" ) {
+	var comment = null;
+	
+	SYSOUT( "want to add comment" );
+	
+	if ( user ) {
+	    comment = {};
+	    comment.author = user.name;
+	    comment.email = user.email;
+	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+	    if ( Captcha.valid( request ) ) {
+		comment = {};
+		comment.author = request.yourname;
+		comment.email = request.email;
+	    } else {
+		print( "invalid captcha response : " + request.captcha );
+		return;
+	    }
+	}
+        
+	comment.ts = Date();
+	comment.text = request.txt;
+        
+	if ( comment ) {
+	    thePost.addComment( comment );
+	    db.blog.posts.save( thePost );
+	}
+	return;
+    }
+};

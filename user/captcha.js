@@ -17,7 +17,7 @@ Captcha = {
         response.addCookie( "cid" , id );
     } ,
     
-    valid : function(){
+    valid : function( request ){
         SYSOUT( "in valid" );
         if ( ! request )
             return false;
