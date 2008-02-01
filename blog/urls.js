@@ -34,11 +34,7 @@ Blog.handleRequest = function( request , arg ){
     var uri = arg.uri || request.getURI();
     var category;
 
-    SYSOUT("request.q: " + request.q);
-    SYSOUT("pageSize: " + pageSize);
-    
     // define a standard search, which restricts pages/posts to entries that are live, and publishDate earlier than now
-    
     
     if ( request.q ) {
         posts = Search.search(db.blog.posts, request.q );
@@ -69,8 +65,8 @@ Blog.handleRequest = function( request , arg ){
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
         uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_');
 	
-        SYSOUT("base URI: " + uri);
-        SYSOUT("pageNumber: " + pageNumber);
+        //SYSOUT("base URI: " + uri);
+        //SYSOUT("pageNumber: " + pageNumber);
         
         // look for a page or post with name = URL, and display it if it exists
         // TODO: look for a page or post with name = URL replacing '-' with '_', and display it if it exists
@@ -107,7 +103,6 @@ Blog.handleRequest = function( request , arg ){
                 searchCriteria = { live : true }; // FIX ME! This should remove the name criteria
     	        if (arg.filter) searchCriteria = searchCriteria.concat(arg.filter);
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
-                SYSOUT(searchCriteria.name.toString())
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
                 if (entries) {
                     SYSOUT('found matching entries for: ' + uri);
@@ -124,7 +119,7 @@ Blog.handleRequest = function( request , arg ){
             posts.remove(pageSize);
         }
 
-        SYSOUT("posts: " + posts.length);
+//        SYSOUT("posts: " + posts.length);
     }
 
     if ( searchName && posts.length == 0 ) {
@@ -165,8 +160,6 @@ Blog.handleRequest = function( request , arg ){
 	    }
     }
     
-    SYSOUT("category: " + category);
- 
     return {isPage: isPage,
             posts: posts,
             isCategorySearch: isCategorySearch,
