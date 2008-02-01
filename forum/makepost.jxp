@@ -37,6 +37,7 @@ for (property in request){
       <textarea rows=20 cols=80 name="pcontent"></textarea><br/>
       <input type="submit" value="save">
     </form>
+    <a href="./">Back to forum</a>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
