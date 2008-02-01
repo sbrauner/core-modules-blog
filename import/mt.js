@@ -27,7 +27,7 @@ while ( res.hasNext() ){
     
     myCat.mt_id = res.category_id;
     myCat.allowPings = res.category_allow_pings;
-    myCat.name = res.category_basename;
+    myCat.name = res.category_basename.replace( /-/g , "_" );
     myCat.mt_class = res.category_class;
     myCat.description = res.category_description;
     myCat.label = res.category_label;
@@ -40,7 +40,7 @@ while ( res.hasNext() ){
     catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
@@ -90,7 +90,7 @@ while ( res.hasNext() ){
     var cats = jdbcDB.query( "SELECT category_basename FROM mt_placement , mt_category  WHERE placement_category_id = category_id AND placement_entry_id = " + res.entry_id );
     myPost.categories = Array();
     while ( cats.hasNext() )
-        myPost.categories.push( cats.category_basename );
+        myPost.categories.push( cats.category_basename.replace( /-/g , "_" ) );
 
     if ( res.entry_class == "page" && myPost.categories.length == 1 ){
 	SYSOUT( "folder" );
@@ -103,6 +103,7 @@ while ( res.hasNext() ){
 		myPost.name = par.name + "/" + myPost.name;
 	    }
 	}
+	myPost.name = myPost.name.replace( /-/g , "_" );
 	SYSOUT( "\t" + myPost.name );
     }
 
