@@ -12,7 +12,7 @@ Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
    ns : db.blog.posts,
    cols : [
      { name: "title", searchWidth: 40 },
-     { name: "baseName", searchWidth: 30 },
+     { name: "name", heading: "slug", searchWidth: 30 },
      { name: "author" },
      { name: "ts", heading: "created", 
          view: function(x){return x.toString().replace(/... EST /,' ');}

@@ -2,7 +2,9 @@
 core.content.search();
 core.text.text();
 
-function Post() {
+function Post(name, title) {
+    this.name = name;
+    this.title = title;
     this.commentsEnabled = true;
     this.ts = Date();
     this.cls = "entry";
@@ -77,6 +79,17 @@ Post.prototype.getUrl = function( r ){
     u += "/" + this.name;
     
     return u;
+};
+
+Post.prototype.get404 = function() {
+    http404page = db.blog.posts.findOne({ name: '404' });
+    if (!http404page) {
+        http404page = new Post('404', '404');
+        http404page.cls = 'page';
+        http404page.live = true;
+        db.blog.posts.save(http404page);
+    }
+    return http404page;    
 };
     
 if ( db ){
