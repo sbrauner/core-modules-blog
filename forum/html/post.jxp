@@ -9,7 +9,7 @@ core.forum.post();
   <div class="content">
     <%= t.content %>
   </div>
-  <a href="makepost?t_id=<%= t._id %>">Reply to this</a>
+  <a href="makepost?parentid=<%= t._id %>">Reply to this</a>
   <% 
     Forum.Post.findAllPosts(t).forEach(Forum.renderer.post);
   %>

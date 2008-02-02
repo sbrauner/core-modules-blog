@@ -8,7 +8,7 @@ Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
     if(request.parentid){
-	post.parent = db.forum.topics.findOne({_id: request.parentid});
+	post.parent = db.forum.posts.findOne({_id: request.parentid});
     }
     db.forum.posts.save( post );
 }
@@ -20,8 +20,8 @@ for (property in request){
     <h3>Post to this topic</h3>
     <form>
       <input type="hidden" name="n_id">
-      <% if (request.t_id) { %>
-      <input type="hidden" name="parent_id" value="<%= request.t_id %>">
+      <% if (request.parentid) { %>
+      <input type="hidden" name="parentid" value="<%= request.parentid %>">
       <% } %>
       Author: <input type="text" name="nauthor"><br/>
       Topic: <input type="text" name="ntitle"><br/>
