@@ -1,5 +1,6 @@
 <% core.content.table(); %>
 <% core.content.forms(); %>
+<% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
 <html>
   <head>
     <title>10Gen Admin</title>

@@ -18,7 +18,7 @@ var catById = {};
 
 var res = jdbcDB.query( "SELECT * FROM mt_category " );
 while ( res.hasNext() ){
-    var myCat = new BlogCategory();
+    var myCat = new Category();
 
     var temp = db.blog.categories.findOne( { mt_id : res.category_id } );
     if ( temp ){
@@ -40,13 +40,11 @@ while ( res.hasNext() ){
     catById[ "__" + myCat.mt_id ] = myCat;
 }
 
-var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id  ORDER BY entry_id DESC " );
+var res = jdbcDB.query( "SELECT * FROM mt_entry , mt_author WHERE entry_author_id = author_id ORDER BY entry_id DESC " );
 
 while ( res.hasNext() ){
 
     var myPost = new Post();
-
-
 
     var temp = db.blog.posts.findOne( { mt_id : res.entry_id } );
     if ( temp != null ){
@@ -71,7 +69,7 @@ while ( res.hasNext() ){
     myPost.excerpt = res.entry_excerpt;
     myPost.mt_id = res.entry_id;
 
-    var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id );
+    var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id + " ORDER BY comment_created_on ");
     while ( comments.hasNext() ){
         
         var c = Object();
@@ -102,9 +100,11 @@ while ( res.hasNext() ){
 		myPost.name = par.name + "/" + myPost.name;
 	    }
 	}
-	myPost.name = myPost.name.replace( /-/g , "_" );
-	SYSOUT( "\t" + myPost.name );
+
     }
+
+    myPost.name = myPost.name.replace( /\-/g , "_" ).replace( /\/index$/ , "" );
+    SYSOUT( "\t" + myPost.name );
 
     myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
                                              function( wholeTag , url ){ 
