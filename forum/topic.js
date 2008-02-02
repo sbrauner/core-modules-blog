@@ -1,10 +1,10 @@
 core.forum.post();
-
+core.db.db();
 Forum.Topic = function(){
     this.commentsEnabled = true;
     this.pinned = true;
 };
 
 Forum.Topic.list = function(){
-    db.forum.topics.find({orderby: {pinned: true}}).limit(10);
+    return db.forum.posts.find({parent: null}).sort({pinned: -1});
 };
