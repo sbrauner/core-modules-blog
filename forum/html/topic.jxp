@@ -3,10 +3,13 @@ core.forum.topic();
     var t = arguments[0];
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
+var l = t.latestPost;
 %>
 <div>
 <a href="view?tid=<%= t._id%>"><%= f.title%></a> started by <%= f.author %>
-(<%= t.count.toFixed(0) %> posts so far) 
+(<%= t.count.toFixed(0) %> posts so far)
+Started at <%= f.ts %>. <br/>
+<a href="view?tid=<%= t._id %>&view=<%= l._id %>">Most recent post</a> at <%= l.ts %>
 <!-- <a href="makepost?t_id=<%= t._id%>">(post)</a> -->
 
 </div>
