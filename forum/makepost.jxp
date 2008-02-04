@@ -1,15 +1,15 @@
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
+core.forum.topic();
 core.content.forms();
-post = {};
-Forms.fillInObject( "p", post );
+var post = {};
+Forms.fillInObject( "n", post );
 print.setFormObject( post );
-post.parent = db.forum.topics.findOne({_id: request.t_id});
-if (! db.forum.posts.findOne({parent: post.parent})){
-    post.firstpost = true;
-}
-if (request.pcontent) {
+if (request.ncontent) {
+    if(request.parentid){
+	post.parent = db.forum.posts.findOne({_id: request.parentid});
+    }
     db.forum.posts.save( post );
 }
 for (property in request){
@@ -19,13 +19,16 @@ for (property in request){
 
     <h3>Post to this topic</h3>
     <form>
-      <input type="hidden" name="p_id">
-      <input type="hidden" name="t_id" value="<%= request.t_id %>">
-      Author: <input type="text" name="pauthor"><br/>
-      Topic: <input type="text" name="ptitle"><br/>
-      <textarea rows=20 cols=80 name="pcontent"></textarea><br/>
+      <input type="hidden" name="n_id">
+      <% if (request.parentid) { %>
+      <input type="hidden" name="parentid" value="<%= request.parentid %>">
+      <% } %>
+      Author: <input type="text" name="nauthor"><br/>
+      Topic: <input type="text" name="ntitle"><br/>
+      <textarea rows=20 cols=80 name="ncontent"></textarea><br/>
       <input type="submit" value="save">
     </form>
+    <a href="./">Back to forum</a>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
