@@ -8,6 +8,8 @@ Forum.Post = function() {
     this.content = "";
     this.firstpost = false;
     this.parent = null;
+
+    this.count = 1;
 };
 
 Forum.Post.findFirstPost = function(topic){
@@ -17,4 +19,16 @@ Forum.Post.findFirstPost = function(topic){
 
 Forum.Post.findAllPosts = function(topic){
     return db.forum.posts.find( {parent: topic} );
+};
+
+Forum.Post.prototype.findAncestor = function(){
+    var tmp = this;
+    while(tmp.parent){
+	tmp = tmp.parent;
+    }
+    return tmp;
+};
+
+Forum.Post.prototype.incrementReplies = function(){
+    this.findAncestor().count += 1;
 };

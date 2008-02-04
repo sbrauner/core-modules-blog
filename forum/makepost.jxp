@@ -3,12 +3,16 @@ if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
 core.forum.topic();
 core.content.forms();
-var post = {};
+Post = Forum.Post;
+var post = new Post();
 Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
+	if (post.parent) {
+	    post.incrementReplies();
+	}
     }
     db.forum.posts.save( post );
 }

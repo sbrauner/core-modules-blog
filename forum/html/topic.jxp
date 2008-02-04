@@ -7,6 +7,7 @@ if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 %>
 <div>
 <a href="view?tid=<%= t._id%>"><%= f.title%></a> started by <%= f.author %>
+(<% if(f.count) print(f.count.toFixed(0)); else print("0"); %> posts so far) 
 <a href="makepost?t_id=<%= t._id%>">(post)</a>
 
 </div>
