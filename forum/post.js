@@ -6,16 +6,9 @@ Forum.Post = function() {
     this.author = null;
     this.title = "";
     this.content = "";
-    this.firstpost = false;
     this.parent = null;
-
-    this.count = 1;
+    this.ts = Date();
 };
-
-Forum.Post.findFirstPost = function(topic){
-    return db.forum.posts.findOne( { firstpost: true, parent: topic });
-};
-
 
 Forum.Post.findAllPosts = function(topic){
     return db.forum.posts.find( {parent: topic} );
@@ -32,3 +25,5 @@ Forum.Post.prototype.findAncestor = function(){
 Forum.Post.prototype.incrementReplies = function(){
     this.findAncestor().count += 1;
 };
+
+db.forum.posts.setConstructor(Forum.Post);
