@@ -48,6 +48,7 @@ if ( request.action == "save" ) {
     
         thePost.title = request.title;
    	    thePost.content = request.content;
+   	    thePost.name = request.name
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
@@ -81,7 +82,7 @@ categories = categories.unique().sort();
 
 %>
 
-<script type="text/javascript" src="NOCDN/~~/tinymce/3.0rc1/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/~~/tinymce/3.0/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",
@@ -101,7 +102,7 @@ tinyMCE.init({
 	theme_advanced_path_location : "bottom",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
-	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 	external_link_list_url : "example_data/example_link_list.js",
 	external_image_list_url : "/admin/_imageList.jxp",
 	flash_external_list_url : "example_data/example_flash_list.js"
@@ -114,7 +115,7 @@ tinyMCE.init({
     if ( ! newPost ) return;
     
     var t = document.getElementById( "title" ).value;
-    t = t.replace( /[^a-zA-Z0-9]/g , "_" );
+    t = t.replace( /[^a-zA-Z0-9]/g , "_" ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
   
@@ -173,7 +174,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Slug</div>
-            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name || "" %>" <%= newPost ? "" : "disabled" %> ></div>
+            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name || "" %>"></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Author</div>
