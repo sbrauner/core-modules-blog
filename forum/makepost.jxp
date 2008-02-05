@@ -1,31 +1,36 @@
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
-core.forum.topic();
+core.forum.thread();
 core.content.forms();
 var post = new Forum.Post();
 Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
-    // A post is a reply to another post, or it's a new topic. Topics
-    // go in forums, so if creating a topic, we need to have a f_id.
+    // A post is a reply to another post, or it's a new thread. Threads
+    // go in topics, so if creating a thread, we need to have a f_id.
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
-	var topic = db.forum.topics.findOne({startPost: post.findAncestor()});
-	topic.count += 1;
+	var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
+	thread.count += 1;
     }
     else{
-	var topic = new Forum.Topic();
-	topic.startPost = post;
-	topic.forum = db.forum.forums.findOne({_id: request.f_id});
-	topic.forum.threadCount += 1;
+	var thread = new Forum.Thread();
+	thread.startPost = post;
+	thread.topic = db.forum.topics.findOne({_id: request.f_id});
+	print(tojson(thread.topic));
+	thread.topic.threadCount += 1;
     }
     
-    topic.forum.postCount += 1;
-    //db.forum.forums.save(topic.forum);
-    topic.latestPost = post;
+    thread.topic.postCount += 1;
+    db.forum.topics.save(thread.topic);
+    thread.latestPost = post;
+    print("ooo");
     db.forum.posts.save( post );
-    db.forum.topics.save(topic);
+    print("Hi");
+    print(tojson(thread));
+    db.forum.threads.save(thread);
+    print("ppp");
 }
 for (property in request){
     print(property+" ");

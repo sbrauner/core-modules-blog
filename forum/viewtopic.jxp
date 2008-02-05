@@ -1,11 +1,11 @@
 <%
-core.forum.topic();
+core.forum.thread();
 var fid = request.fid;
-var f = db.forum.forums.findOne({_id: fid});
-var list = Forum.Topic.list(f);
+var f = db.forum.topics.findOne({_id: fid});
+var list = Forum.Thread.list(f);
 if (list)
-    list.forEach(Forum.renderer.topic);
+    list.forEach(Forum.renderer.thread);
 else
     print ("No forums right now!");
 %>
-<a href="makepost?f_id=<%= fid %>">New topic</a>
+<a href="makepost?f_id=<%= fid %>">New thread</a>

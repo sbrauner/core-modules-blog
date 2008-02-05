@@ -8,7 +8,7 @@ Forum.Topic = function(){
 };
 
 Forum.Topic.list = function(){
-    return db.forum.forums.find().sort({index: 1});
+    return db.forum.topics.find().sort({order: 1});
 };
 
 db.forum.forums.setConstructor(Forum.Topic);

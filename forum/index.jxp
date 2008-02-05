@@ -1,10 +1,10 @@
 <%
-core.forum.forum();
-var list = Forum.Forum.list();
+core.forum.topic();
+var list = Forum.Topic.list();
 if (list)
-    list.forEach(Forum.renderer.forum);
+    list.forEach(Forum.renderer.topic);
 else
     print ("No topics right now!");
 
 %>
-<a href="makeforum">New forum</a>
+<a href="maketopic">New topic</a>
