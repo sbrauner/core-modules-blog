@@ -9,16 +9,16 @@ print.setFormObject( post );
 if (request.ncontent) {
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
-	if (post.parent) {
-	    post.incrementReplies();
-	}
+	var topic = db.forum.topics.findOne({startPost: post.findAncestor()});
+	topic.count += 1;
     }
     else{
 	var topic = new Forum.Topic();
 	topic.startPost = post;
-	db.forum.topics.save(topic);
     }
+    topic.latestPost = post;
     db.forum.posts.save( post );
+    db.forum.topics.save(topic);
 }
 for (property in request){
     print(property+" ");
