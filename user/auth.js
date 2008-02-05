@@ -1,7 +1,7 @@
 
 core.user.user();
 
-var Auth = {
+Auth = {
 
     debug : false ,
     
