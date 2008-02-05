@@ -76,7 +76,7 @@ Post.prototype.getComments = function() {
 };
 
 Post.prototype.presave = function(){
-    Search.index( this , { title : 1 } );
+    Search.index( this , { title : 1 , author : 1 } );
 };
 
 Post.prototype.getExcerpt = function(){
