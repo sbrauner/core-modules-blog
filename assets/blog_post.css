@@ -16,3 +16,5 @@ img.center {
 img.full {
     margin: 0 0 20px 0;
 }
+
+body {margin: 0 auto; padding: 0; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 12px;}

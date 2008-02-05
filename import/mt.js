@@ -69,9 +69,6 @@ while ( res.hasNext() ){
     myPost.excerpt = res.entry_excerpt;
     myPost.mt_id = res.entry_id;
 
-    if ( myPost.comments )
-	myPost.comments = [];
-
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id + " ORDER BY comment_created_on ");
     var commentCount = 0;
     myPost.comments = Object();
