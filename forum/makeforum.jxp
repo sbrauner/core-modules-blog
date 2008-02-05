@@ -4,9 +4,10 @@ core.content.forms();
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 
 var forum = new Forum.Forum();
-Forms.fillInObject( "n", forum );
+Forms.fillInObject( "f", forum );
 print.setFormObject( forum );
 if(request.fname){
+    forum.order = parseInt(forum.order);
     db.forum.forums.save(forum);
 }
 %>

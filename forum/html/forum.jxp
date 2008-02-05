@@ -1,10 +1,12 @@
 <%
 core.forum.topic();
-var f = arguments[0];
-var list = Forum.Topic.list(f);
-if (list)
-    list.forEach(Forum.renderer.topic);
-else
-    print ("No forums right now!");
+    var f = arguments[0];
 %>
-<a href="makepost">New topic</a>
+<div>
+<a href="viewforum?fid=<%= f._id%>"><%= f.name%></a>
+(<%= f.threadCount.toFixed(0) %> threads)
+(<%= f.postCount.toFixed(0) %> posts)
+<br/>
+<%= f.description %>
+
+</div>
