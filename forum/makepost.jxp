@@ -18,7 +18,11 @@ if (request.ncontent) {
 	var topic = new Forum.Topic();
 	topic.startPost = post;
 	topic.forum = db.forum.forums.findOne({_id: request.f_id});
+	topic.forum.threadCount += 1;
     }
+    
+    topic.forum.postCount += 1;
+    //db.forum.forums.save(topic.forum);
     topic.latestPost = post;
     db.forum.posts.save( post );
     db.forum.topics.save(topic);
