@@ -15,9 +15,12 @@ Posts - <a href="post_edit">new</a>
          view: function(x){return x.toString().replace(/... EST /,' ');}
      }, 
      { name: "live", 
-       view: function(x){return x?"yes":"no";}, 
+       view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>" : "no"; }, 
        searchWidth: 4, type: "boolean"
-     }
+     } ,
+     { name : "name" , searchWidth : 0 , searchable : false ,
+     view : function(x,o){ return "<a href='/admin/blog/post_edit?id=" + o._id + "'>edit</a>"; }
+      }
    ],
    detailUrl: "post_edit?id=",
    searchable: true

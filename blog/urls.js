@@ -51,13 +51,47 @@ Blog.handleRequest = function( request , arg ){
 
     // define a standard search, which restricts pages/posts to entries that are live, and publishDate earlier than now
     
+    // find any paging instructions in the url
+    page = uri.match(/\/page\/([0-9]*)$/);
+    if (page) {
+        pageNumber = parseInt(page.match(/[0-9]*$/));
+        pageNumber = Math.max(1, pageNumber); // make sure we can't go below 1
+
+        // don't forget to strip out the page from the processed uri
+        uri = uri.replace(page, '');
+    }
+
     if (request.q) {
         posts = Search.search(db.blog.posts, request.q );
         posts = posts.filter( function( z ){ return z.live; } );
 	    posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 	
-	    var num = 0 ;
-        posts = posts.filter( function( z ){ return num++ < 20; } );
+	    var postResults = 0;
+	    var pageStart = (pageNumber - 1) * pageSize;
+	    var pageEnd = Math.min(pageNumber * pageSize, posts.length);
+	    
+SYSOUT("posts: " + posts.length);
+        posts = posts.filter( function( z ) { 
+            postResults++
+            return postResults > pageStart && postResults <= pageEnd;
+        });
+        
+SYSOUT("pageStart: " + pageStart);
+SYSOUT("pageEnd: " + pageEnd);
+SYSOUT("postResults: " + postResults);
+SYSOUT("page: " + pageNumber);
+    
+        return {isPage: isPage,
+                posts: posts,
+                isCategorySearch: false,
+                baseSearch: '',
+                hasPrevious: pageStart > 1,
+                hasNext: postResults > pageEnd,
+                category: category,
+                pageNumber: pageNumber,
+                searchTerm: request.q
+        };
+    
     } else {
         var searchCriteria = { live : true }; // add ts filter
 	    var entries;
@@ -65,15 +99,6 @@ Blog.handleRequest = function( request , arg ){
 	    if(arg.filter) {
 	        Blog._addFilters( searchCriteria , arg.filter );
 	    }
-	
-        // find any paging instructions in the url
-        page = uri.match(/\/page\/([0-9]*)$/);
-        if (page) {
-            pageNumber = parseInt(page.match(/[0-9]*$/));
-	    
-            // don't forget to strip out the page from the processed uri
-            uri = uri.replace(page, '');
-        }
 	
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
@@ -146,7 +171,8 @@ Blog.handleRequest = function( request , arg ){
             baseSearch: search,
             hasPrevious: pageNumber > 1,
             hasNext: hasNext,
-            category: category
+            category: category,
+            pageNumber: pageNumber
     };
 };
 
