@@ -94,3 +94,15 @@ textarea#excerpt {
     width: 380px;
     height: 75px;
 }
+
+img.floatLeft {
+    margin: 0 20px 20px 0;
+}
+
+img.floatRight {
+    margin: 0 0 20px 20px;
+}
+
+img.center {
+    margin: 0 0 20px 0;
+}
