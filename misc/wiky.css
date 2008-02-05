@@ -12,12 +12,12 @@
   text-align: center;
 }
 
-div.main_content { margin-left: 5px; text-align:left; } 
+div.main_content { margin-left: 5px; text-align:left; font-size: 12px;} 
 
 /* pre { font-size:100%; background: #eed; border:1px dotted #999; padding:0 0.5em; overflow:auto; } */
-pre { font-family:courier new, monospace; overflow:auto; margin-left: 5em; }
+pre { font-family: monospace, courier new; overflow:auto; margin-left: 5em; }
 
-div.help { font-size:100%; background: #eed; border:1px dotted #999; padding: 0 0.5em; overflow:autho; }
+div.help { text-align: left; font-size: 10px; background: #eed; border:1px dotted #999; padding: 0 0.5em; overflow: auto; }
 
 div.top { background: #ddb; } 
 

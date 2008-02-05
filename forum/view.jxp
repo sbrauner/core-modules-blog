@@ -2,11 +2,11 @@
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 
 core.forum.topic();
-var topic = db.forum.posts.findOne({_id: request.tid});
+var topic = db.forum.topics.findOne({_id: request.tid});
 print("<!-- " + topic._id + "-->");
 
 
-Forum.renderer.post(topic);
+Forum.renderer.post(topic.findFirstPost());
 
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 %>
