@@ -8,7 +8,7 @@ Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
     // A post is a reply to another post, or it's a new thread. Threads
-    // go in topics, so if creating a thread, we need to have a f_id.
+    // go in topics, so if creating a thread, we need to have a top_id.
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
 	var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
@@ -17,7 +17,7 @@ if (request.ncontent) {
     else{
 	var thread = new Forum.Thread();
 	thread.startPost = post;
-	thread.topic = db.forum.topics.findOne({_id: request.f_id});
+	thread.topic = db.forum.topics.findOne({_id: request.top_id});
 	print(tojson(thread.topic));
 	thread.topic.threadCount += 1;
     }
@@ -43,8 +43,8 @@ for (property in request){
       <% if (request.parentid) { %>
       <input type="hidden" name="parentid" value="<%= request.parentid %>">
       <% } %>
-      <% if (request.f_id) { %>
-      <input type="hidden" name="f_id" value="<%= request.f_id %>">
+      <% if (request.top_id) { %>
+      <input type="hidden" name="top_id" value="<%= request.top_id %>">
       <% } %>
       Author: <input type="text" name="nauthor"><br/>
       Topic: <input type="text" name="ntitle"><br/>

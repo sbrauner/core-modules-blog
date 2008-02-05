@@ -3,7 +3,7 @@ core.forum.thread();
     var f = arguments[0];
 %>
 <div>
-<a href="viewtopic?fid=<%= f._id%>"><%= f.name%></a>
+<a href="viewtopic?id=<%= f._id%>"><%= f.name%></a>
 (<%= f.threadCount.toFixed(0) %> threads)
 (<%= f.postCount.toFixed(0) %> posts)
 <br/>
