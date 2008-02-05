@@ -8,4 +8,4 @@ if (list)
 else
     print ("No forums right now!");
 %>
-<a href="makepost?fid=<%= fid %>">New topic</a>
+<a href="makepost?f_id=<%= fid %>">New topic</a>

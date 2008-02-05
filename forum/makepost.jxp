@@ -7,6 +7,8 @@ var post = new Forum.Post();
 Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
+    // A post is a reply to another post, or it's a new topic. Topics
+    // go in forums, so if creating a topic, we need to have a f_id.
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
 	var topic = db.forum.topics.findOne({startPost: post.findAncestor()});
@@ -15,6 +17,7 @@ if (request.ncontent) {
     else{
 	var topic = new Forum.Topic();
 	topic.startPost = post;
+	topic.forum = db.forum.forums.findOne({_id: request.f_id});
     }
     topic.latestPost = post;
     db.forum.posts.save( post );
@@ -30,6 +33,9 @@ for (property in request){
       <input type="hidden" name="n_id">
       <% if (request.parentid) { %>
       <input type="hidden" name="parentid" value="<%= request.parentid %>">
+      <% } %>
+      <% if (request.f_id) { %>
+      <input type="hidden" name="f_id" value="<%= request.f_id %>">
       <% } %>
       Author: <input type="text" name="nauthor"><br/>
       Topic: <input type="text" name="ntitle"><br/>
