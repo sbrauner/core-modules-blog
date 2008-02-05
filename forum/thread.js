@@ -1,6 +1,6 @@
 core.forum.post();
 core.db.db();
-Forum.Topic = function(){
+Forum.Thread = function(){
     this.commentsEnabled = true;
     this.pinned = true;
     this.latestPost = null;
@@ -9,14 +9,14 @@ Forum.Topic = function(){
     this.forum = null;
 };
 
-Forum.Topic.list = function(forum){
+Forum.Thread.list = function(forum){
 //    return db.forum.posts.find({parent: null}).sort({pinned: -1});
-    return db.forum.topics.find({forum: forum}).sort({pinned: -1});
+    return db.forum.threads.find({forum: forum}).sort({pinned: -1});
 };
 
-Forum.Topic.prototype.findFirstPost = function(){
-    //return db.forum.posts.findOne( { firstpost: true, parent: topic });
+Forum.Thread.prototype.findFirstPost = function(){
+    //return db.forum.posts.findOne( { firstpost: true, parent: thread });
     return this.startPost;
 };
 
-db.forum.topics.setConstructor(Forum.Topic);
+db.forum.threads.setConstructor(Forum.Thread);

@@ -1,4 +1,4 @@
-Forum.Forum = function(){
+Forum.Topic = function(){
     this.name = null;
     this.description = null;
     this.order = null;
@@ -7,8 +7,8 @@ Forum.Forum = function(){
     this.threadCount = 0;
 };
 
-Forum.Forum.list = function(){
+Forum.Topic.list = function(){
     return db.forum.forums.find().sort({index: 1});
 };
 
-db.forum.forums.setConstructor(Forum.Forum);
+db.forum.forums.setConstructor(Forum.Topic);
