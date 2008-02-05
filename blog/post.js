@@ -1,6 +1,7 @@
 
 core.content.search();
 core.text.text();
+core.blog.comment();
 
 function Post(name, title) {
     this.name = name;
@@ -57,6 +58,7 @@ Post.prototype.addComment = function( comment ){
         this.comments = Object();
         this.comments.length = 0;
     }
+    comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
     comment.cid = ObjectID();
     this.comments[comment.cid.toString()] = comment;
     this.comments.length = this.comments.length + 1;
