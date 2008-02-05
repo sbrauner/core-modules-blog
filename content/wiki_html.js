@@ -1,7 +1,7 @@
 // wiki.js
 
 
-var Wiki = {
+Wiki = {
 
     prefixRE: null,	
     outp: undefined,
