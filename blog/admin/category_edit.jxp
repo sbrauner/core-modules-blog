@@ -70,10 +70,9 @@ tinyMCE.init({
 	external_link_list_url : "example_data/example_link_list.js",
 	external_image_list_url : "/admin/_imageList.jxp",
 	flash_external_list_url : "example_data/example_flash_list.js",
-	bramus_cssextras_classesstring : "img::self[floatLeft,floatRight,center]",
 	theme_advanced_buttons1_add : "separator,bramus_cssextras_classes,bramus_cssextras_ids",
-    bramus_cssextras_idsstring : "",
-    content_css : "NOCDN/~~/blog/assets/admin_css.jxp",
+    content_css : "/~~/blog/assets/blog_post.css",
+    debug: true;
 });
 </script>
 
