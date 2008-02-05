@@ -3,8 +3,7 @@ if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.post();
 core.forum.topic();
 core.content.forms();
-Post = Forum.Post;
-var post = new Post();
+var post = new Forum.Post();
 Forms.fillInObject( "n", post );
 print.setFormObject( post );
 if (request.ncontent) {
@@ -15,9 +14,7 @@ if (request.ncontent) {
 	}
     }
     else{
-	Topic = Forum.Topic;
-	var topic = new Topic();
-	topic.latestPost = post;
+	var topic = new Forum.Topic();
 	topic.startPost = post;
 	db.forum.topics.save(topic);
     }
