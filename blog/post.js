@@ -1,7 +1,6 @@
 
 core.content.search();
 core.text.text();
-core.blog.comment();
 
 function Post(name, title) {
     this.name = name;
