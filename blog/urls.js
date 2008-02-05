@@ -152,8 +152,7 @@ Blog.handleRequest = function( request , arg ){
 
 Blog.handlePosts = function( request , thePost ){
     if ( request.action == "delete" ) {
-    	var numToDelete = parseNumber( request.num );
-    	thePost.deleteComment( numToDelete );
+    	thePost.deleteComment( request.cid );
     	db.blog.posts.save( thePost );
     	return;
     }
