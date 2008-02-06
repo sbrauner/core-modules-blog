@@ -62,7 +62,7 @@ while ( res.hasNext() ){
     
     myPost.title = res.entry_title;
     myPost.content = res.entry_text;
-    if ( res.entry_text_more && res.entry_text_more.trim().length() > 0 )
+    if ( res.entry_text_more && res.entry_text_more.trim().length > 0 )
 	myPost.content += "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_nickname;
     myPost.live = res.entry_status == 2;
