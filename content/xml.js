@@ -58,9 +58,8 @@ xml = {
                     continue;
                 
                 var child = obj[prop];
-
-                if ( isArray( obj ) && isObject( child ) && child._name && prop.match( /\d+/ ) )
-                    xml.to( append , null , child , indent + 1 );
+                if ( isArray( child ) )
+                    xml.toArray( append, prop, child, indent + 1 );
                 else
                     xml.to( append , prop , child , indent + 1 );
             }
@@ -77,6 +76,12 @@ xml = {
 
     } ,
     
+    toArray : function( append, name, obj, indent ){
+        for( var i=0; i<obj.length; i++ ){
+            xml.to(append, name, obj[i], indent);
+        }
+    } ,
+
     _indent : function( append , indent ){
         for ( var i=0; i<indent; i++ )
             append( " " );

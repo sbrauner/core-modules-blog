@@ -34,5 +34,12 @@ x = xml.fromString(s);
 assert(x.multtest.elem1 == "hi");
 assert(x.multtest.elem2 == 'yo');
 
+function strip(s){
+    return s.replace(/[ \n\t]/g, '');
+}
+
 x = { a: ['di', 'yo']};
-print(xml.toString("listtest", x));
+s = strip(xml.toString("listtest", x));
+
+assert(s == "<listtest><a>di</a><a>yo</a></listtest>");
+
