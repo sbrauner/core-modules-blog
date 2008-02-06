@@ -83,7 +83,7 @@ xml = {
     } ,
 
     fromString : function( s ){
-	return from(xml._xmlTokenizer(s));
+	return xml.from(xml._xmlTokenizer(s));
     },
 
     _xmlTokenizer : function( s ){
@@ -92,7 +92,12 @@ xml = {
 	var attrName = false;
 	var attrValue = false;
 	var tagName = false;
-	return function(){
+	var f = function(){
+	    if(f.lookahead){
+		l = f.lookahead;
+		f.lookahead = null;
+		return l;
+	    }
 	    var re = /[\w<>?=\/'"]/;
 	    var exec = re.exec(s);
 	    if (exec == null) return -1;
@@ -160,6 +165,7 @@ xml = {
 		
 	    }
 	};
+	return f;
     },
 
     from : function( tokenizer ){
@@ -171,38 +177,48 @@ xml = {
 	    // FIXME: do something
 	    while (next != "?>") next = tokenizer();
 	}
+	else tokenizer.lookahead = next;
 
-	var result = _from(tokenizer);
-	return result.root;
+	return xml._from(tokenizer);
     } ,
 
     _from : function( tokenizer ){
 	var root = {};
-	var next;
+	var next = tokenizer();
+	if(next != "<") return next;
+	tokenizer.lookahead = next;
 
 	while(true){
 	    next = tokenizer();
 	    if (next == -1) break;
-	    if (s.substring(next+1, next+2) == "/") break;
-	    var right = s.indexOf(">");
-	    var name = s.substring(next+1, right-1);
-	    var result = _from(s.substring(right+1, s.length));
-	    root[name] = result.root;
-	    s = result.remaining;
-	    next = s.indexOf("</"+name+">");
-	    s = s.substring(next, s.length);
+	    if (next == "<"){
+		var name = tokenizer();
+		if(name == "/"){
+		    // our root element just ended; return what we have
+		    return root;
+		}
+		var props = {};
+		var slash = false;
+		next = tokenizer();
+		while(next != ">"){
+		    if (next == "/") slash = true;
+		    var eq = tokenizer();
+		    var val = tokenizer();
+		    props[next] = val;
+		    next = tokenizer();
+		}
+		if(! slash){
+		    var result = xml._from(tokenizer);
+		}
+		else var result = "";
+		result._props = props;
+		root[name] = result;
+	    }
 	}
 	
-	return {root: root, remaining: s};
+	return root;
 	
     }
     
 };
 
-s = "<thingy attr='name'>hi</thingy>";
-f = xml._xmlTokenizer(s);
-while(true){
-    tok = f();
-    if (tok == -1) break;
-    print(tok);
-}
