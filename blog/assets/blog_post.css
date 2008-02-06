@@ -1,0 +1,20 @@
+img.float_left {
+    margin: 0 20px 20px 0;
+    float: left;
+}
+
+img.float_right {
+    margin: 0 0 20px 20px;
+    float: right;
+}
+
+img.center {
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+
+img.full {
+    margin: 0 0 20px 0;
+}
+
+body {margin: 0 auto; padding: 0; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 12px;}

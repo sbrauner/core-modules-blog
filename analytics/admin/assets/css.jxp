@@ -12,7 +12,7 @@
 }
 
 .a_section table{ 
-   font-size: .8em; 
+   font-size: .7em; 
 }
 
 .a_main { 

@@ -1,0 +1,34 @@
+<%
+core.forum.thread();
+var thread = db.forum.threads.findOne({_id: request.id});
+print("<!-- " + thread._id + "-->");
+
+%>
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+else { 
+%>
+<html>
+  <head>
+    <title>Viewing thread: <%= thread.findFirstPost().title %></title>
+    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
+  </head>
+  <body>
+    <h1>Viewing thread</h1>
+    
+      
+
+<%
+}
+
+Forum.renderer.post(thread.findFirstPost());
+%>
+
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+else {
+%>
+<a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
+  </body>
+</html>
+	<% } %>

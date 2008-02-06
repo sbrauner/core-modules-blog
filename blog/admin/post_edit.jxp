@@ -9,7 +9,7 @@ var thePost = new Post();
 thePost.author = user.name;
 
 if (id) {
-    foundPost = posts.findOne( CrID( id ) );
+    foundPost = db.blog.posts.findOne( CrID( id ) );
     if (foundPost) {
         thePost = foundPost;
         newPost = false;
@@ -25,11 +25,16 @@ if (request.new_categories) {
     if (emptyIndex >= 0) newCategories.remove(emptyIndex);
 }
 
+newCategories.forEach ( function (categoryName) { 
+    if (!db.blog.categories.findOne( {name: categoryName} ))
+        db.blog.categories.save(new Category(categoryName, categoryName));
+} );
+
 var justSaved = false;
 
 if ( request.action == "save" ) {
 
-    thePost.cls = request.cls;
+    thePost.cls = request.cls || "entry";
 
     if( !request.title || 
         request.title.trim().length == 0 || 
@@ -43,11 +48,12 @@ if ( request.action == "save" ) {
     
         thePost.title = request.title;
    	    thePost.content = request.content;
-   	    thePost.categories = request.getParameters('categories').concat(newCategories).unique().sort();
+   	    if (thePost.cls == 'entry')
+   	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
 	    thePost.commentsEnabled = parseBool(request.commentsEnabled);
 
-	    posts.save( thePost );
+	    db.blog.posts.save( thePost );
 
 	    id = thePost._id;
 	    if ( ! id ) print( "Error saving post." );
@@ -57,7 +63,7 @@ if ( request.action == "save" ) {
 	    }
     }
 } else if (request.action == 'delete') {
-    if (posts.remove(thePost)) {
+    if (db.blog.posts.remove(thePost)) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "posts" );
     } else {
@@ -75,7 +81,7 @@ categories = categories.unique().sort();
 
 %>
 
-<script type="text/javascript" src="NOCDN/~~/tinymce/3.0rc1/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/~~/tinymce/3.0/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",
@@ -83,22 +89,21 @@ tinyMCE.init({
 	width: "600",
 	height: "300",
 	theme : "advanced",
-	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",
-	theme_advanced_buttons1_add_before : "save,separator",
-	theme_advanced_buttons1_add : "fontselect,fontsizeselect",
-	theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom,separator,forecolor,backcolor",
+	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
+	theme_advanced_buttons1_add : "fontselect,fontsizeselect,separator,forecolor,backcolor",
 	theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
 	theme_advanced_buttons3_add_before : "tablecontrols,separator",
-	theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,separator,print",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
 	theme_advanced_path_location : "bottom",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
-	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 	external_link_list_url : "example_data/example_link_list.js",
 	external_image_list_url : "/admin/_imageList.jxp",
-	flash_external_list_url : "example_data/example_flash_list.js"
+	flash_external_list_url : "example_data/example_flash_list.js",
+	theme_advanced_buttons1_add : "separator,bramus_cssextras_classes,bramus_cssextras_ids",
+	content_css : "/~~/blog/assets/blog_post.css"
 });
 </script>
 
@@ -108,7 +113,7 @@ tinyMCE.init({
     if ( ! newPost ) return;
     
     var t = document.getElementById( "title" ).value;
-    t = t.replace( /[^a-zA-Z0-9]/g , "_" );
+    t = t.replace( /[^a-zA-Z0-9]/g , "_" ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
   
@@ -131,12 +136,12 @@ tinyMCE.init({
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
 </h1>
-<form method="post" action="editPost.jxp" name="editForm">
+<form method="post" action="post_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">
     <div id="post_form">
     <div id="post_action">
         <input type="submit" value="Save">
-        <input type="button" value="Preview" onclick="window.open('/index/<%=thePost.name%>', '_top');">
+        <input type="button" value="Preview" onclick="window.open('/<%=thePost.name%>', '_top');">
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
     <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
@@ -167,7 +172,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Slug</div>
-            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name|| "" %>" <%= newPost ? "" : "disabled" %> ></div>
+            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name || "" %>"></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Author</div>
@@ -190,7 +195,7 @@ tinyMCE.init({
                 <%
                     categories.forEach( function(category) {
                 %>
-                    <input type="checkbox" name="categories" value="<%= category %>" <%= thePost.categories.contains(category) ? 'checked' : '' %>/> <%= category %><br/>
+                    <input type="checkbox" name="categories" value="<%= category %>" <%= thePost.categories.contains(category) ? 'checked' : '' %>/> <%= Category.getLabel(category) %><br/>
                 <% }); %>
                 </div>
             </div>

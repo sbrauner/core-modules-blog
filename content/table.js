@@ -28,7 +28,7 @@ var tab = new htmltable(
     { name: "ts" }, 
     { name: "live", view: function(x){return x?"yes":"no";}, searchable: false }
   ],
-  detailUrl: "/editPost?id="
+  detailUrl: "/post_edit?id="
  } 
 );
 

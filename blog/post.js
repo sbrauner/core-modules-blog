@@ -2,7 +2,9 @@
 core.content.search();
 core.text.text();
 
-function Post() {
+function Post(name, title) {
+    this.name = name;
+    this.title = title;
     this.commentsEnabled = true;
     this.ts = Date();
     this.cls = "entry";
@@ -37,25 +39,45 @@ Post.prototype.hasJump = function(){
 
 
 Post.prototype.getNumComments = function(){
-    if ( ! this.comments )
+    if ( !this.comments )
         return 0;
     
     return this.comments.length;
 };
 
-Post.prototype.deleteComment = function( num ){
-    if ( this.comments )
-	this.comments.remove( num );
+Post.prototype.deleteComment = function(cid){
+    if ( this.comments ) {
+        delete this.comments[cid];
+        this.comments.length = this.comments.length - 1;
+    }
 };
 
-Post.prototype.addComment = function( newComment ){
-    if ( ! this.comments )
-	this.comments = Array();
-    this.comments.add( newComment );
+Post.prototype.addComment = function( comment ){
+    if ( !this.comments ) {
+        this.comments = Object();
+        this.comments.length = 0;
+    }
+    comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
+    comment.cid = ObjectID();
+    this.comments[comment.cid.toString()] = comment;
+    this.comments.length = this.comments.length + 1;
+};
+
+Post.prototype.getComments = function() {
+    if (!this.comments) return Array();
+    
+    var commentsArray = Array();
+    for (var key in this.comments) {
+        if (key == 'length') continue;
+        commentsArray.push(this.comments[key]);
+    }
+    
+    // sort them by date
+    return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
 };
 
 Post.prototype.presave = function(){
-    Search.index( this , { title : 1 } );
+    Search.index( this , { title : 1 , author : 1 } );
 };
 
 Post.prototype.getExcerpt = function(){
@@ -78,11 +100,54 @@ Post.prototype.getUrl = function( r ){
     
     return u;
 };
+
+Post.prototype.get404 = function() {
+    http404page = db.blog.posts.findOne({ name: '404' });
+    if (!http404page) {
+        http404page = new Post('404', '404');
+        http404page.cls = 'page';
+        http404page.live = true;
+        db.blog.posts.save(http404page);
+    }
+    return http404page;    
+};
+
+function fixComments() {
+SYSOUT('Fixing Comments!');
+    cursor = db.blog.posts.find();
+    // iterate through each post
+    cursor.forEach(function(post) {
+        // see what kind of object comments is
+        if (post.comments) {
+            if (isArray(post.comments)) {
+SYSOUT('Converting Post ID (' + post._id + ')');
+                // if its an array, change it to an object, and reassign all of the objects
+                var convertedComments = Object();
+                
+                post.comments.forEach(function(comment) {
+                    comment.cid = ObjectId();
+                    SYSOUT('\tMigrating Comment ID (' + comment.cid + ')');
+                    convertedComments[comment.cid.toString()] = comment;
+                });
+                
+                post.comments = convertedComments;
+                db.blog.posts.save(post);
+SYSOUT('\tSaving Post ID (' + post._id + ')');
+            } else {
+SYSOUT('Post ID (' + post._id + ') already converted');
+            }
+        } else {
+SYSOUT('Post ID (' + post._id + ') has no comments');
+        }
+    });
+}
     
-if ( db ){
+if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
     db.blog.posts.setConstructor( Post );
 
     Search.fixTable( db.blog.posts );
+    
+//    fixComments();
 }
