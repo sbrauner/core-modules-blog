@@ -228,10 +228,20 @@ xml = {
                         print ("Error: malformed XML -- "+name+" does not match "+next); 
                     } 
                 }
-                else var result = "";
+                else var result = null;
                 if(hasprops)
                     result._props = props;
-                root[name] = result;
+                if(haskey(root, name)){
+                    if(! isArray(root[name])){
+                        var array = [root[name]];
+                    }
+                    else var array = root[name];
+                    array.push(result);
+                    root[name] = array;
+                }
+                else {
+                    root[name] = result;
+                }
             }
         }
         
@@ -241,3 +251,11 @@ xml = {
     
 };
 
+function haskey(obj, prop){
+    for (var i in obj){
+        if (i == prop){
+            return true;
+        }
+    }
+    return false;
+}

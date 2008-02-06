@@ -25,7 +25,7 @@ s = "<emptytest/>"
 
 x = xml.fromString(s);
 
-assert(x.emptytest == "");
+assert(x.emptytest == null);
 
 s = "<multtest><elem1>hi</elem1><elem2>yo</elem2></multtest>";
 
@@ -33,6 +33,13 @@ x = xml.fromString(s);
 
 assert(x.multtest.elem1 == "hi");
 assert(x.multtest.elem2 == 'yo');
+
+s = "<listtest><elem>hi</elem><elem>hi2</elem></listtest>";
+
+x = xml.fromString(s);
+
+assert(x.listtest.elem[0] == "hi");
+assert(x.listtest.elem[1] == "hi2");
 
 function strip(s){
     return s.replace(/[ \n\t]/g, '');
