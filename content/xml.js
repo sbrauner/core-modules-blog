@@ -199,6 +199,7 @@ xml = {
 		}
 		var props = {};
 		var slash = false;
+		var hasprops = false;
 		next = tokenizer();
 		while(next != ">"){
 		    if (next == "/") slash = true;
@@ -206,6 +207,7 @@ xml = {
 			var eq = tokenizer();
 			var val = tokenizer();
 			props[next] = val;
+			hasprops = true;
 		    }
 		    next = tokenizer();
 		}
@@ -222,7 +224,8 @@ xml = {
 		    } 
 		}
 		else var result = "";
-		result._props = props;
+		if(hasprops)
+		    result._props = props;
 		root[name] = result;
 	    }
 	}
