@@ -11,6 +11,12 @@
 */
 
 xml = {
+
+    toString : function( name , obj ){
+        var s = "";
+        xml.to( function( z ){ s += z; } , name , obj );
+        return s;
+    } ,
     
     to : function( append , name , obj , indent ){
 

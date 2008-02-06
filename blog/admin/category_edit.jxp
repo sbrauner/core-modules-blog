@@ -50,17 +50,14 @@ if ( request.action == "save" ) {
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",
-	elements : "content",
-	width: "600",
+	elements : "description",
+	width: "400",
 	height: "300",
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
-	theme_advanced_buttons1_add_before : "save,separator",
-	theme_advanced_buttons1_add : "fontselect,fontsizeselect",
-	theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom,separator,forecolor,backcolor",
+	theme_advanced_buttons1_add : "fontselect,fontsizeselect,separator,forecolor,backcolor",
 	theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
 	theme_advanced_buttons3_add_before : "tablecontrols,separator",
-	theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,separator,print",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
 	theme_advanced_path_location : "bottom",
@@ -71,8 +68,7 @@ tinyMCE.init({
 	external_image_list_url : "/admin/_imageList.jxp",
 	flash_external_list_url : "example_data/example_flash_list.js",
 	theme_advanced_buttons1_add : "separator,bramus_cssextras_classes,bramus_cssextras_ids",
-    content_css : "/~~/blog/assets/blog_post.css",
-    debug: true;
+    content_css : "/~~/blog/assets/blog_post.css"
 });
 </script>
 

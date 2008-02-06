@@ -1,7 +1,8 @@
-<% core.blog.post(); %>
+<% core.blog.post(); 
 
-<% var cursor = posts.find( { live : true } ).limit( 20 ); %>
-<% var now = Date(); %>
+var mainResult = Blog.handleRequest( request );
+var now = Date();
+%>
 
 <% response.setHeader( "Content-Type" , "text/xml"); %>
 <rss version="2.0">
@@ -14,9 +15,9 @@
     <docs>http://blogs.law.harvard.edu/tech/rss</docs>
     <description>description</description>
 
-    <% while ( cursor.hasNext() ){ var me = cursor.next(); %>
+    <% for ( var i=0; i != mainResult.posts.length; i++ ){ var me = mainResult.posts[i] ; %>
     <item>
-      <guid><%= me.getUrl( reques ) %></guid>
+      <guid><%= me.getUrl( request ) %></guid>
       <title><%= me.title %></title>
       <link><%= me.getUrl( request ) %></link>
       <pubDate><%= me.ts.webFormat() %></pubDate>

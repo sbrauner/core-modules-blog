@@ -61,16 +61,15 @@ while ( res.hasNext() ){
     print( myPost.name + "\t" + myPost.ts );
     
     myPost.title = res.entry_title;
-    myPost.content = res.entry_text + "\n\n---JUMP---\n\n" + res.entry_text_more;
+    myPost.content = res.entry_text;
+    if ( res.entry_text_more && res.entry_text_more.trim().length > 0 )
+	myPost.content += "\n\n---JUMP---\n\n" + res.entry_text_more;
     myPost.author = res.author_nickname;
     myPost.live = res.entry_status == 2;
     myPost.cls = res.entry_class;
     myPost.baseName = res.entry_basename;
     myPost.excerpt = res.entry_excerpt;
     myPost.mt_id = res.entry_id;
-
-    if ( myPost.comments )
-	myPost.comments = [];
 
     var comments = jdbcDB.query( "SELECT * FROM mt_comment WHERE comment_visible = 1 AND comment_entry_id = " + res.entry_id + " ORDER BY comment_created_on ");
     var commentCount = 0;
