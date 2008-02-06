@@ -1,0 +1,1 @@
+app.bugtracker.data = Object();
