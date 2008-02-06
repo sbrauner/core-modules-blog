@@ -1,0 +1,12 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+
+core.forum.thread();
+var thread = db.forum.threads.findOne({_id: request.tid});
+print("<!-- " + thread._id + "-->");
+
+
+Forum.renderer.post(thread.findFirstPost());
+
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>

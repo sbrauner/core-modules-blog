@@ -1,0 +1,11 @@
+<%
+core.forum.thread();
+var id = request.id;
+var t = db.forum.topics.findOne({_id: id});
+var list = Forum.Thread.list(t);
+if (list)
+    list.forEach(Forum.renderer.thread);
+else
+    print ("No forums right now!");
+%>
+<a href="makepost?top_id=<%= id %>">New thread</a>
