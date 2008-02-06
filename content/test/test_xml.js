@@ -31,7 +31,6 @@ s = "<multtest><elem1>hi</elem1><elem2>yo</elem2></multtest>";
 
 x = xml.fromString(s);
 
-print(tojson(x));
 assert(x.multtest.elem1 == "hi");
 assert(x.multtest.elem2 == 'yo');
 
