@@ -40,7 +40,7 @@ Blog.handleRequest = function( request , arg ){
     
     var posts = Array();
     var isPage = false; // page vs. post
-    var pageSize = arg.limit || 20;
+    var pageSize = arg.limit || 30;
     var isCategorySearch = false;
     var isDateSearch = false;
     var pageNumber = 1;
@@ -70,16 +70,16 @@ Blog.handleRequest = function( request , arg ){
 	    var pageStart = (pageNumber - 1) * pageSize;
 	    var pageEnd = Math.min(pageNumber * pageSize, posts.length);
 	    
-SYSOUT("posts: " + posts.length);
+// SYSOUT("posts: " + posts.length);
         posts = posts.filter( function( z ) { 
             postResults++
             return postResults > pageStart && postResults <= pageEnd;
         });
         
-SYSOUT("pageStart: " + pageStart);
-SYSOUT("pageEnd: " + pageEnd);
-SYSOUT("postResults: " + postResults);
-SYSOUT("page: " + pageNumber);
+//SYSOUT("pageStart: " + pageStart);
+//SYSOUT("pageEnd: " + pageEnd);
+// SYSOUT("postResults: " + postResults);
+// SYSOUT("page: " + pageNumber);
     
         return {isPage: isPage,
                 posts: posts,
