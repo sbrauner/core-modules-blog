@@ -11,8 +11,11 @@ if (request.ncontent) {
     // go in topics, so if creating a thread, we need to have a top_id.
     if(request.parentid){
 	post.parent = db.forum.posts.findOne({_id: request.parentid});
+	
 	var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
 	thread.count += 1;
+	//thread.topic.postCount += 1;
+	//db.forum.topics.save(thread.topic);
     }
     else{
 	var thread = new Forum.Thread();
@@ -20,17 +23,13 @@ if (request.ncontent) {
 	thread.topic = db.forum.topics.findOne({_id: request.top_id});
 	print(tojson(thread.topic));
 	thread.topic.threadCount += 1;
+	db.forum.topics.save(thread.topic);
     }
-    
-    thread.topic.postCount += 1;
-    db.forum.topics.save(thread.topic);
-    thread.latestPost = post;
-    print("ooo");
+
+    print(tojson(post));
     db.forum.posts.save( post );
-    print("Hi");
-    print(tojson(thread));
-    db.forum.threads.save(thread);
-    print("ppp");
+    //thread.latestPost = post;
+    //db.forum.threads.save(thread);
 }
 for (property in request){
     print(property+" ");
