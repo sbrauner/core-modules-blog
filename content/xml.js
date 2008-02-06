@@ -215,14 +215,13 @@ xml = {
 		    // we need to read </name>, or the recursion ended after 
 		    // reading </, so we need to read name>.
 		    var next = tokenizer();
-		    if(tokenizer == "<"){ tokenizer(); next = tokenizer(); }
+		    if(next == "<"){ tokenizer(); next = tokenizer(); }
 		    tokenizer();
 		    if(name != next) { 
 			print ("Error: malformed XML -- "+name+" does not match "+next); 
 		    } 
 		}
 		else var result = "";
-		print("recursion over "+name+tojson(result));
 		result._props = props;
 		root[name] = result;
 	    }
