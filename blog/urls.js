@@ -102,8 +102,8 @@ SYSOUT("page: " + pageNumber);
 	
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
-        uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
-	
+        uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/^.rss/ , "/" ).replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
+
         //SYSOUT("base URI: " + uri);
         //SYSOUT("pageNumber: " + pageNumber);
         
