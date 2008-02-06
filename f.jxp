@@ -1,15 +1,17 @@
 <%
 
-  var sentFile = false;
-	
-  if ( request.id ){
- 	var f = db._files.findOne( { _id : CrID( request.id ) } );
+var sentFile = false;
 
-	if ( f )
-		response.sendFile( f );
-  }
-	
-  if ( ! sentFile )
-  	response.setResponseCode( 404 );
+if ( request.id ){
+    var f = db._files.findOne( { _id : CrID( request.id ) } );
+    
+    if ( f ){
+	response.sendFile( f );
+	sentFile = true;
+    }
+}
+
+if ( ! sentFile )
+    response.setResponseCode( 404 );
 
 %>
