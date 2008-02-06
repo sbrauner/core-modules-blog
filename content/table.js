@@ -138,7 +138,8 @@ function htmltable(specs) {
 		     print('<a href="' + durl + '">');
 		 }
 		 var view = this.specs.cols[c].view;
-		 print(view ? view(v,obj) : v);
+		 var out = view ? view(v,obj) : v;
+	         print( out || "go to" );
 		 if( details ) 
 		     print("</a>");
 	     }

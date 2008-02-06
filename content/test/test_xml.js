@@ -51,8 +51,15 @@ function strip(s){
     return s.replace(/[ \n\t]/g, '');
 }
 
-x = { a: ['di', 'yo']};
-s = strip(xml.toString("listtest", x));
+foo = { _name : "C" , v : "V" };
+x = { B : [ foo , foo ] };
+s = xml.toString( "A"  , x );
+s = strip( s );
+assert( s == "<A><B><C><v>V</v></C><C><v>V</v></C></B></A>" );
 
-assert(s == "<listtest><a>di</a><a>yo</a></listtest>");
+x = [ { a : "d1" } , { b : "yo" } ]
+s = strip(xml.toString("listtest", x));
+print( s );
+//assert(s == "<listtest><a>di</a><a>yo</a></listtest>");
+
 
