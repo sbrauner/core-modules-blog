@@ -41,6 +41,12 @@ x = xml.fromString(s);
 assert(x.listtest.elem[0] == "hi");
 assert(x.listtest.elem[1] == "hi2");
 
+s = "<nulllisttest><elem/><elem>hi</elem></nulllisttest>";
+x = xml.fromString(s);
+
+assert(x.nulllisttest.elem[0] == null);
+assert(x.nulllisttest.elem[1] == "hi");
+
 function strip(s){
     return s.replace(/[ \n\t]/g, '');
 }
