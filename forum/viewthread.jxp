@@ -1,6 +1,6 @@
 <%
 core.forum.thread();
-var thread = db.forum.threads.findOne({_id: request.tid});
+var thread = db.forum.threads.findOne({_id: request.id});
 print("<!-- " + thread._id + "-->");
 
 %>
@@ -28,6 +28,7 @@ Forum.renderer.post(thread.findFirstPost());
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 else {
 %>
+<a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
   </body>
 </html>
 	<% } %>

@@ -27,6 +27,7 @@ else
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 else {
 %>
+<a href="./">Back to toplevel</a>
   </body>
 </html>
 <% } %>
