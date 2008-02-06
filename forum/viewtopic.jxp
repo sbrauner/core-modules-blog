@@ -2,6 +2,20 @@
 core.forum.thread();
 var id = request.id;
 var t = db.forum.topics.findOne({_id: id});
+
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+else { 
+%>
+<html>
+  <head>
+    <title>Forum <%= t.name %></title>
+    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
+  </head>
+  <body>
+    <h1>Available threads</h1>
+
+<%}%>
+<%
 var list = Forum.Thread.list(t);
 if (list)
     list.forEach(Forum.renderer.thread);
@@ -9,3 +23,10 @@ else
     print ("No topics right now!");
 %>
 <a href="makepost?top_id=<%= id %>">New thread</a>
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+else {
+%>
+  </body>
+</html>
+<% } %>

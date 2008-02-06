@@ -1,4 +1,17 @@
 <%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+else { 
+%>
+<html>
+  <head>
+    <title>Forums</title>
+    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
+  </head>
+  <body>
+    <h1>Available topics</h1>
+
+<%
+	}
 core.forum.topic();
 var list = Forum.Topic.list();
 if (list)
@@ -8,3 +21,11 @@ else
 
 %>
 <a href="maketopic">New topic</a>
+
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+else {
+%>
+  </body>
+</html>
+<% } %>

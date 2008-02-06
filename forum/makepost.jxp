@@ -14,8 +14,6 @@ if (request.ncontent) {
 	
 	var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
 	thread.count += 1;
-	//thread.topic.postCount += 1;
-	//db.forum.topics.save(thread.topic);
     }
     else{
 	var thread = new Forum.Thread();
@@ -23,19 +21,23 @@ if (request.ncontent) {
 	thread.topic = db.forum.topics.findOne({_id: request.top_id});
 	print(tojson(thread.topic));
 	thread.topic.threadCount += 1;
-	db.forum.topics.save(thread.topic);
     }
 
-    print(tojson(post));
+    thread.topic.postCount += 1;
+    thread.latestPost = post;
     db.forum.posts.save( post );
-    //thread.latestPost = post;
-    //db.forum.threads.save(thread);
+    db.forum.threads.save(thread);
+    db.forum.topics.save(thread.topic);
 }
 for (property in request){
     print(property+" ");
 }
 %>
-
+<html>
+  <head>
+    <title>Make a post</title>
+  </head>
+  <body>
     <h3>Post to this topic</h3>
     <form>
       <input type="hidden" name="n_id">
@@ -51,6 +53,8 @@ for (property in request){
       <input type="submit" value="save">
     </form>
     <a href="./">Back to forum</a>
+  </body>
+</html>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
