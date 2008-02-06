@@ -1,0 +1,1 @@
+ws.xmlrpc = Object();
