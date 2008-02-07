@@ -2,7 +2,7 @@ core.content.xml();
 s = "<thingy attr='name'>hi</thingy>";
 
 function dump(s){
-    f = xml._xmlTokenizer(s);
+    f = xml._xmlTokenizerchar(s);
     while(true){
         tok = f();
         if (tok == -1) break;

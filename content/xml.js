@@ -92,7 +92,7 @@ xml = {
     } ,
 
     fromString : function( s ){
-        return xml.from(xml._xmlTokenizerre(s));
+        return xml.from(xml._xmlTokenizerchar(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
@@ -133,7 +133,7 @@ xml = {
             else {
                 if(s[start] == '?'){
                     var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
-                    if(sub[s2] == ">"){
+                    if(sub[s2] == '>'){
                         s = sub.substring(s2+1, sub.length);
                         tagName = insideTag = false;
                         return "?>";
@@ -156,6 +156,96 @@ xml = {
                 }
                 if(!attrName){
                     var s2 = xml._re_word.exec(sub).index;
+                    s = sub.substring(s2, sub.length);
+                    attrName = true;
+                    return sub.substring(0, s2);
+                }
+                if(attrValue){
+                    var q = sub[0];
+                    var r = q+"(.+)"+q+"(.*)";
+                    var results = new RegExp(r).exec(sub);
+                    s = results[2];
+                    attrName = attrValue = false;
+                    return results[1];
+                }
+                else if(!attrValue) {
+                    var s2 = sub.indexOf("=");
+                    s = sub.substring(s2+1, sub.length);
+                    attrValue = true;
+                    return "=";
+                }
+
+            }
+        };
+        return f;
+    },
+
+    _xmlTokenizerchar : function( s ){
+        var pos = 0;
+        var insideTag = false;
+        var attrName = false;
+        var attrValue = false;
+        var tagName = false;
+        var f = function(){
+            if(f.lookahead){
+                l = f.lookahead;
+                f.lookahead = null;
+                return l;
+            }
+            var i = 0;
+            while(s[i] == ' ' || s[i] == '\t' || s[i] == '\n') ++i;
+            if (i >= s.length) return -1;
+            start = i;
+            var sub = s.substring(start, s.length);
+            if(insideTag == false){
+                if(s[start] == '<'){
+                    insideTag = true;
+                    i = 1;
+                    while(sub[i] == ' ' || sub[i] == '\t' || sub[i] == '\n') ++i;
+                    var s2 = i;
+                    if(sub[s2] == '?'){
+                        s = sub.substring(s2+1, sub.length);
+                        return "<?";
+                    }
+                    s = s.substring(start+1, s.length);
+                    return "<";
+                }
+                var next = sub.indexOf("<");
+                s = sub.substring(next, sub.length);
+                return sub.substring(0, next);
+            }
+            else {
+                if(s[start] == '?'){
+                    i = 1;
+                    while(sub[i] == ' ' || sub[i] == '\t' || sub[i] == '\n') ++i;
+                    var s2 = i;
+                    if(sub[s2] == '>'){
+                        s = sub.substring(s2+1, sub.length);
+                        tagName = insideTag = false;
+                        return "?>";
+                    }
+                }
+                if(s[start] == '/'){
+                    s = s.substring(start+1, s.length);
+                    return "/";
+                }
+                if(s[start] == '>'){
+                    tagName = insideTag = false;
+                    s = s.substring(start+1, s.length);
+                    return ">";
+                }
+                if(!tagName){
+                    i = 0;
+                    while(('a' <= sub[i] && 'z' >= sub[i]) || ('A' <= sub[i] && 'Z' >= sub[i]) || ('0' <= sub[i] && '9' >= sub[i])) ++i;
+                    var s2 = i;
+                    s = s.substring(start+s2, s.length);
+                    tagName = true;
+                    return sub.substring(0, s2);
+                }
+                if(!attrName){
+                    i = 0;
+                    while(('a' <= sub[i] && 'z' >= sub[i]) || ('A' <= sub[i] && 'Z' >= sub[i]) || ('0' <= sub[i] && '9' >= sub[i])) ++i;
+                    var s2 = i;
                     s = sub.substring(s2, sub.length);
                     attrName = true;
                     return sub.substring(0, s2);
