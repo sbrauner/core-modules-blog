@@ -38,14 +38,19 @@ s = "<listtest><elem>hi</elem><elem>hi2</elem></listtest>";
 
 x = xml.fromString(s);
 
-assert(x.listtest.elem[0] == "hi");
-assert(x.listtest.elem[1] == "hi2");
+assert(x.listtest[0] == "hi");
+assert(x.listtest[0]._name == "elem");
+assert(x.listtest[1] == "hi2");
+assert(x.listtest[1]._name == "elem");
 
 s = "<nulllisttest><elem/><elem>hi</elem></nulllisttest>";
 x = xml.fromString(s);
 
-assert(x.nulllisttest.elem[0] == null);
-assert(x.nulllisttest.elem[1] == "hi");
+
+assert(x.nulllisttest[0]["$"] == null);
+assert(x.nulllisttest[0]._name == "elem");
+assert(x.nulllisttest[1] == "hi");
+assert(x.nulllisttest[1]._name == "elem");
 
 function strip(s){
     return s.replace(/[ \n\t]/g, '');
