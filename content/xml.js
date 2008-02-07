@@ -191,11 +191,11 @@ xml = {
         }
         else tokenizer.lookahead = next;
 
-        return xml._from(tokenizer);
+        return xml._from(tokenizer)[0]; // root is always one element
     } ,
 
     _from : function( tokenizer ){
-        var root = {};
+        var root = [];
         var next = tokenizer();
         if(next != "<") return next;
         tokenizer.lookahead = next;
@@ -203,7 +203,12 @@ xml = {
         while(true){
             next = tokenizer();
             if (next == -1) break;
-            if (next == "<"){
+            if (next != "<"){
+                //CTEXT
+                root.push(next);
+                continue;
+            }
+            else if (next == "<"){
                 var name = tokenizer();
                 if(name == "/"){
                     // our root element just ended; return what we have
@@ -236,35 +241,12 @@ xml = {
                     } 
                 }
                 else var result = null;
-                if(hasprops)
-                    result._props = props;
-                if(isArray(root)){
-                    result._name = name;
-                    root.push(result);
-                }
-               else if(haskey(root, name)){
-                   var array = [];
-                   for (var prop in root){
-                       child = root[prop];
-                       if(isObject(child)){
-                           child._name = prop;
-                           array.push(child);
-                       }
-                       else{
-                           array.push({_name: name, "$": child});
-                       }
-
-                   }
-                   result._name = name;
-                    array.push(result);
-                    root = array;
-                }
-                else {
-                    root[name] = result;
-                }
+                root.push({_name: name, _props: props, "child": result});
             }
         }
-        
+
+        if(root.length == 1 && root[0] == null || isString(root[0]))
+            return root[0];
         return root;
         
     }
