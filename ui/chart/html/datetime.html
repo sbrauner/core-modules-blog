@@ -1,0 +1,32 @@
+<div style="width:$chart.width px; height:$chart.height px; "> 
+  <div><canvas id="chart$chart._dataName" width="$chart.width" height="$chart.height"></canvas></div> 
+    
+  <script type="text/javascript"> 
+
+    var $layoutName = new Layout( "line" );
+    
+<%  for ( var s in obj.chart._series ){
+     print( " var " + obj.chart._dataName + s + " = [];\n" );
+ } %>
+    
+    $chart._dataCode;
+
+    <%= obj.layoutName %>.options.xAxis = [  $chart._min.getTime() ,  $chart._max.getTime() ]; 
+
+<% for ( var s in obj.chart._series ){
+        print( obj.layoutName + ".addDataset( \"" + s + "\" , " + obj.chart._dataName + s + " );\n" );    
+} %>
+    
+    <%= obj.layoutName %>.xTickLabeler = function(z){ 
+        var d = new Date(z);
+        return ( 1 + d.getMonth() ) + "/" + d.getDate() + ":" + d.getHours();
+    }; 
+    
+    <%= obj.layoutName %>.evaluate();
+    
+    var chart = new SweetCanvasRenderer(  document.getElementById( "chart$chart._dataName" ) , $layoutName );
+    chart.options.shouldFill = false; 
+    chart.render();
+
+  </script> 
+</div> 

@@ -1,4 +1,32 @@
-<%%>
+<%
+    function mungeData( cursor , t ){
+
+        cursor.sort( { time: -1 } );
+
+        var last = null;
+        var a = [];
+        
+        cursor.forEach( function( z ){ 
+                var n = z.time;
+
+                if ( t == "d" )
+                    n = n.roundDay();
+                else if ( t == "w" )
+                    n = n.roundWeek();
+                else if ( t == "m" )
+                    n = n.roundMonth();
+		
+                if ( ! last || ( n.getTime() != last.getTime()  ) )
+                    a.push( { time : n , num : 0 } );
+                
+                a[a.length - 1 ].num += z.num;
+                last = n;
+            } );
+        return a;
+                
+    }
+    
+%>
 <div class="a_section"> 
    <div class="a_header">Page Views and Visits</div>
 
@@ -19,19 +47,9 @@ core.analytics.admin.pieces.visitsCount( "Past Day" , u , p );
 
 	 // past week
 	   
-	   var u = db.analytics.uniqueDay.find().sort( { time: -1 } ).limit( 8 ).toArray(); 
-var pTemp = db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 * 8 ).toArray(); 
-var p = [];
-var lastDay = null;
-for ( var i=0; i<pTemp.length; i++ ){
-    var n = pTemp[i].time.roundDay();
+    var u = db.analytics.uniqueDay.find().sort( { time: -1 } ).limit( 8 ).toArray(); 
+var p = mungeData( db.analytics.pageView.find().limit( 24 * 8 ) , "d" )
 
-    if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
-	p.push( { time : n , num : 0 } );
-
-    p[p.length - 1 ].num += pTemp[i].num;
-    lastDay = n;
-}
 core.analytics.admin.pieces.visitsCount( "Past Week" , u , p );
 
 
@@ -40,56 +58,45 @@ core.analytics.admin.pieces.visitsCount( "Past Week" , u , p );
 
 var startDate = (new Date()).roundWeek();
 startDate = new Date( startDate.getTime() - ( 1000 * 86400 * 7 * 5 ) );
-var u = [];
-var p = [];
-var lastDay = null;
 
-db.analytics.uniqueDay.find( { time : { $gt : startDate } } ).sort( { time: -1 } ).forEach( function( z ){ 
-												var n = z.time.roundWeek();
-												
-												if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
-												    u.push( { time : n , num : 0 } );
-												
-												u[u.length - 1 ].num += z.num;
-												lastDay = n;
-											    } );
-lastDay = null;
+u = mungeData( db.analytics.uniqueDay.find( { time : { $gt : startDate } } ) , "w" );
+p = mungeData( db.analytics.pageView.find( { time : { $gt : startDate } }  ) , "w" );
 
-
-db.analytics.pageView.find( { time : { $gt : startDate } } ).sort( { time: -1 } ).forEach( function( z ){
-										     var n = z.time.roundWeek();
-
-										     if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
-											 p.push( { time : n , num : 0 } );
-
-										     p[p.length - 1 ].num += z.num;
-										     lastDay = n;
-										 }
-										 );
 core.analytics.admin.pieces.visitsCount( "Past Month" , u , p );
 
 // past year
 	   
 var u = db.analytics.uniqueMonth.find().sort( { time: -1 } ).limit( 13 ).toArray(); 
-var p = [];
-var lastDay = null;
+var p = mungeData( db.analytics.pageView.find().limit( 24 * 30 * 14 ) , "m" );
 
-db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 * 30 * 14 ).forEach( function( z ){
-										     var n = z.time.roundMonth();
-
-										     if ( ! lastDay || ( n.getTime() != lastDay.getTime()  ) )
-											 p.push( { time : n , num : 0 } );
-
-										     p[p.length - 1 ].num += z.num;
-										     lastDay = n;
-										 }
-										 );
 core.analytics.admin.pieces.visitsCount( "Past Year" , u , p );
 
 %>     
 
        </td>
 
+     </tr>
+
+     <tr>
+       <td colspan="2">
+         <%
+core.ui.chart.datetime();
+var dt = new ui.chart.DateTime();
+dt.width = 500;
+dt.height = 150;
+
+db.analytics.uniqueDay.find().sort( { time : -1 } ).limit( 31 ).forEach( function( z ){
+        dt.add( z.time , z.num , "u" );
+    } );
+
+var p = mungeData( db.analytics.pageView.find().limit( 24 * 31 ) , "d" );
+p.forEach( function( z ){
+        dt.add( z.time , z.num , "p" );
+    } );
+
+dt.print( print );
+    %>
+       </td>
      </tr>
 
    </table>
