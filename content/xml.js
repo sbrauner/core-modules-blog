@@ -92,14 +92,14 @@ xml = {
     } ,
 
     fromString : function( s ){
-        return xml.from(xml._xmlTokenizer(s));
+        return xml.from(xml._xmlTokenizerre(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
     _re_space : /[ \t\n]/,
     _re_word : /[^\w&;]/,
 
-    _xmlTokenizer : function( s ){
+    _xmlTokenizerre : function( s ){
         var pos = 0;
         var insideTag = false;
         var attrName = false;
