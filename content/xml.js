@@ -116,10 +116,10 @@ xml = {
             var start = exec.index;
             var sub = s.substring(start, s.length);
             if(insideTag == false){
-                if(s[start] == "<"){
+                if(s[start] == '<'){
                     insideTag = true;
                     var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
-                    if(sub[s2] == "?"){
+                    if(sub[s2] == '?'){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
@@ -131,7 +131,7 @@ xml = {
                 return sub.substring(0, next);
             }
             else {
-                if(s[start] == "?"){
+                if(s[start] == '?'){
                     var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
                     if(sub[s2] == ">"){
                         s = sub.substring(s2+1, sub.length);
@@ -139,11 +139,11 @@ xml = {
                         return "?>";
                     }
                 }
-                if(s[start] == "/"){
+                if(s[start] == '/'){
                     s = s.substring(start+1, s.length);
                     return "/";
                 }
-                if(s[start] == ">"){
+                if(s[start] == '>'){
                     tagName = insideTag = false;
                     s = s.substring(start+1, s.length);
                     return ">";
