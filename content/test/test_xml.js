@@ -25,7 +25,7 @@ s = "<emptytest/>"
 
 x = xml.fromString(s);
 
-assert(x.emptytest == "");
+assert(x.emptytest == null);
 
 s = "<multtest><elem1>hi</elem1><elem2>yo</elem2></multtest>";
 
@@ -47,7 +47,7 @@ s = "<nulllisttest><elem/><elem>hi</elem></nulllisttest>";
 x = xml.fromString(s);
 
 
-assert(x.nulllisttest[0] == "");
+assert(x.nulllisttest[0]["$"] == null);
 assert(x.nulllisttest[0]._name == "elem");
 assert(x.nulllisttest[1] == "hi");
 assert(x.nulllisttest[1]._name == "elem");
