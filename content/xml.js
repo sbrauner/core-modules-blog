@@ -117,28 +117,28 @@ xml = {
             var sub = s.substring(start, s.length);
             if(insideTag == false){
                 if(s[start] == "<"){
-                    var s2 = xml._re_nonspace.exec(sub).index;
+                    insideTag = true;
+                    var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
                     if(sub[s2] == "?"){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
-                    insideTag = true;
                     s = s.substring(start+1, s.length);
                     return "<";
-                }
-                if(s[start] == "?"){
-                    var s2 = xml._re_nonspace.exec(sub).index;
-                    if(sub.substring(s2, 1) == ">"){
-                        s = sub.substring(s2+1, sub.length);
-                        insideTag = false;
-                        return "?>";
-                    }
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 return sub.substring(0, next);
             }
             else {
+                if(s[start] == "?"){
+                    var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
+                    if(sub[s2] == ">"){
+                        s = sub.substring(s2+1, sub.length);
+                        tagName = insideTag = false;
+                        return "?>";
+                    }
+                }
                 if(s[start] == "/"){
                     s = s.substring(start+1, s.length);
                     return "/";
@@ -161,7 +161,7 @@ xml = {
                     return sub.substring(0, s2);
                 }
                 if(attrValue){
-                    var q = sub.substring(0, 1);
+                    var q = sub[0];
                     var r = q+"(.+)"+q+"(.*)";
                     var results = new RegExp(r).exec(sub);
                     s = results[2];
@@ -238,10 +238,10 @@ xml = {
                 else var result = null;
                 if(hasprops)
                     result._props = props;
-               if(isArray(root)){
-                   result._name = name;
-                   root.push(result);
-               }
+                if(isArray(root)){
+                    result._name = name;
+                    root.push(result);
+                }
                else if(haskey(root, name)){
                    var array = [];
                    for (var prop in root){
