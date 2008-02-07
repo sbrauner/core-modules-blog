@@ -11,9 +11,11 @@ function User(){
     
 };
 
-User.prototype.setPassword = function( pass ){
-    this.pass_ha1_name = md5( this.name + ":" + db.getName() + ":" + pass );
-    this.pass_ha1_email = md5( this.email + ":" + db.getName() + ":" + pass );
+User.prototype.setPassword = function( pass , name ){
+    if ( ! name )
+	name = db.getName();
+    this.pass_ha1_name = md5( this.name + ":" + name + ":" + pass );
+    this.pass_ha1_email = md5( this.email + ":" + name + ":" + pass );
 };
 
 User.prototype.checkPasswordClearText = function( pass ){
