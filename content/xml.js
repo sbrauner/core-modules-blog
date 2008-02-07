@@ -117,28 +117,28 @@ xml = {
             var sub = s.substring(start, s.length);
             if(insideTag == false){
                 if(s[start] == "<"){
-                    var s2 = xml._re_nonspace.exec(sub).index;
+                    insideTag = true;
+                    var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
                     if(sub[s2] == "?"){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
-                    insideTag = true;
                     s = s.substring(start+1, s.length);
                     return "<";
-                }
-                if(s[start] == "?"){
-                    var s2 = xml._re_nonspace.exec(sub).index;
-                    if(sub.substring(s2, 1) == ">"){
-                        s = sub.substring(s2+1, sub.length);
-                        insideTag = false;
-                        return "?>";
-                    }
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 return sub.substring(0, next);
             }
             else {
+                if(s[start] == "?"){
+                    var s2 = xml._re_nonspace.exec(sub.substring(1, sub.length)).index+1;
+                    if(sub[s2] == ">"){
+                        s = sub.substring(s2+1, sub.length);
+                        tagName = insideTag = false;
+                        return "?>";
+                    }
+                }
                 if(s[start] == "/"){
                     s = s.substring(start+1, s.length);
                     return "/";
@@ -161,7 +161,7 @@ xml = {
                     return sub.substring(0, s2);
                 }
                 if(attrValue){
-                    var q = sub.substring(0, 1);
+                    var q = sub[0];
                     var r = q+"(.+)"+q+"(.*)";
                     var results = new RegExp(r).exec(sub);
                     s = results[2];
@@ -191,11 +191,11 @@ xml = {
         }
         else tokenizer.lookahead = next;
 
-        return xml._from(tokenizer);
+        return xml._from(tokenizer)[0]; // root is always one element
     } ,
 
     _from : function( tokenizer ){
-        var root = {};
+        var root = [];
         var next = tokenizer();
         if(next != "<") return next;
         tokenizer.lookahead = next;
@@ -203,7 +203,12 @@ xml = {
         while(true){
             next = tokenizer();
             if (next == -1) break;
-            if (next == "<"){
+            if (next != "<"){
+                //CTEXT
+                root.push(next);
+                continue;
+            }
+            else if (next == "<"){
                 var name = tokenizer();
                 if(name == "/"){
                     // our root element just ended; return what we have
@@ -236,39 +241,44 @@ xml = {
                     } 
                 }
                 else var result = null;
-                if(hasprops)
-                    result._props = props;
-               if(isArray(root)){
-                   result._name = name;
-                   root.push(result);
-               }
-               else if(haskey(root, name)){
-                   var array = [];
-                   for (var prop in root){
-                       child = root[prop];
-                       if(isObject(child)){
-                           child._name = prop;
-                           array.push(child);
-                       }
-                       else{
-                           array.push({_name: name, "$": child});
-                       }
-
-                   }
-                   result._name = name;
-                    array.push(result);
-                    root = array;
-                }
-                else {
-                    root[name] = result;
-                }
+                var topush = {_name: name, "child": result};
+                if(hasprops){ topush._props = props; }
+                root.push(topush);
             }
         }
-        
+
+        if(root.length == 1 && root[0] == null || isString(root[0]))
+            return root[0];
         return root;
         
+    },
+
+    match: function(obj, query){
+        for(var prop in query){
+            var match = false;
+            if(isString(obj[prop]) && query[prop])
+                match = obj[prop] == query[prop];
+            else
+                match = xml.match(obj[prop], query[prop]);
+            
+            if(! match) return false;
+        }
+        return true;
+    },
+
+    find: function(obj, query){
+        var results = [];
+        if(xml.match(obj, query)) results.push(obj);
+        for(var i in obj.child){
+            var tmp = xml.find(obj.child[i], query);
+            if(! tmp) continue;
+            for(var tmpi in tmp){
+                results.push(tmp[tmpi]);
+            }
+        }
+        if(results.length > 0)
+            return results;
     }
-    
 };
 
 function haskey(obj, prop){
@@ -279,3 +289,4 @@ function haskey(obj, prop){
     }
     return false;
 }
+
