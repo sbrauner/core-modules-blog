@@ -1,0 +1,22 @@
+<% core.ui.chart.datetime(); %>
+<html>
+  <head>
+    <title>hi</title>
+  </head>
+  <body>
+    
+    <%
+    var dt = new ui.chart.DateTime();
+
+var now = Date().getTime();
+
+for ( var i=0; i != 100; i++ ){
+    dt.add( new Date( now - ( i * 86400000 ) ) , Math.random() * 1000 );
+}
+
+
+dt.print( print );
+    %>
+
+  </body>
+</html>
