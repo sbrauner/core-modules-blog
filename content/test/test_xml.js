@@ -71,6 +71,21 @@ assert(x.child[0].child[0].child[0].child[0].child[0]._name == "member");
 assert(x.child[0].child[0].child[0].child[0].child[0].child[0]._name == "name");
 assert(x.child[0].child[0].child[0].child[0].child[0].child[0].child == "difference");
 
+s = "        <     ?        xml         version        =        \"1.0\"        ?        ><     spaceytest       a       =       'yo'         >        <        elem         /        >       <         elem2        >hi<        /           elem2        >       <       / spaceytest      >";
+
+//dump(s);
+x = xml.fromString(s);
+assert(x._name == "spaceytest");
+assert(x._props.a == "yo");
+assert(x.child[0].child == null);
+assert(x.child[0]._name == "elem");
+assert(x.child[1]._name == "elem2");
+assert(x.child[1].child == "hi");
+
+
+
+
+
 function strip(s){
     return s.replace(/[ \n\t]/g, '');
 }

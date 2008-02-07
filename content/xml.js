@@ -201,7 +201,7 @@ xml = {
                 if(s[start] == '<'){
                     insideTag = true;
                     i = 1;
-                    while(isSpace(s[i])) ++i;
+                    while(isSpace(sub[i])) ++i;
                     var s2 = i;
                     if(sub[s2] == '?'){
                         s = sub.substring(s2+1, sub.length);
