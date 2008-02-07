@@ -69,7 +69,7 @@ xml = {
             append( obj );
         }
 
-        if ( obj["$"] )
+        if ( isObject( obj ) && obj["$"] )
             append( obj["$"] );
 
         if ( name ){
