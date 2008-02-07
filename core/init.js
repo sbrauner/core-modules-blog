@@ -12,6 +12,7 @@ function mapUrlToJxpFileCore( uri , request ){
     
     if ( ua && 
          ( ua.match( /webdav/i )
+           || ua.match( /BitKinex/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider DAV/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider Protocol Discovery/ )
            )
