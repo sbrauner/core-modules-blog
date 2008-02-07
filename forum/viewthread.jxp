@@ -14,7 +14,8 @@ else {
     <link rel="stylesheet" type="text/css" href="css/forum.css"/>
   </head>
   <body>
-    <h1>Viewing thread</h1>
+    <h1><a href="./">Forum</a></h1>
+    <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
     
       
 
