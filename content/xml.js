@@ -241,7 +241,9 @@ xml = {
                     } 
                 }
                 else var result = null;
-                root.push({_name: name, _props: props, "child": result});
+                var topush = {_name: name, "child": result};
+                if(hasprops){ topush._props = props; }
+                root.push(topush);
             }
         }
 

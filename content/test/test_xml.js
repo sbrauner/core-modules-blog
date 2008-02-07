@@ -23,6 +23,7 @@ assert(x._name == "recursetest");
 assert(x._props.attr == "noobs");
 assert(x._props.hello == 'goodbye');
 assert(x.child[0]._name == "hello");
+assert(x.child[0]._props == null);
 assert(x.child[0].child == "test");
 
 s = "<emptytest/>"
@@ -48,6 +49,7 @@ s = "<listtest><elem>hi</elem><elem>hi2</elem></listtest>";
 x = xml.fromString(s);
 
 assert(x._name == "listtest");
+assert(x._props == null);
 assert(x.child[0]._name == "elem");
 assert(x.child[0].child == "hi");
 assert(x.child[1]._name == "elem");
