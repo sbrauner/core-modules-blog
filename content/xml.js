@@ -95,6 +95,10 @@ xml = {
         return xml.from(xml._xmlTokenizer(s));
     },
 
+    _re_nonspace : /[^ \t\n]/,
+    _re_space : /[ \t\n]/,
+    _re_word : /[^\w&;]/,
+
     _xmlTokenizer : function( s ){
         var pos = 0;
         var insideTag = false;
@@ -107,15 +111,14 @@ xml = {
                 f.lookahead = null;
                 return l;
             }
-            var re = /[\w<>?=\/\'\"]/;
-            var exec = re.exec(s);
+            var exec = xml._re_nonspace.exec(s);
             if (exec == null) return -1;
             var start = exec.index;
             var sub = s.substring(start, s.length);
             if(insideTag == false){
-                if(s.substring(start, start+1) == "<"){
-                    var s2 = /[\w?]/.exec(sub).index;
-                    if(sub.substring(s2, s2+1) == "?"){
+                if(s[start] == "<"){
+                    var s2 = xml._re_nonspace.exec(sub).index;
+                    if(sub[s2] == "?"){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
@@ -123,8 +126,8 @@ xml = {
                     s = s.substring(start+1, s.length);
                     return "<";
                 }
-                if(s.substring(start, start+1) == "?"){
-                    var s2 = /[\w>]/.exec(sub).index;
+                if(s[start] == "?"){
+                    var s2 = xml._re_nonspace.exec(sub).index;
                     if(sub.substring(s2, 1) == ">"){
                         s = sub.substring(s2+1, sub.length);
                         insideTag = false;
@@ -136,23 +139,23 @@ xml = {
                 return sub.substring(0, next);
             }
             else {
-                if(s.substring(start, 1) == "/"){
+                if(s[start] == "/"){
                     s = s.substring(start+1, s.length);
                     return "/";
                 }
-                if(s.substring(start, 1) == ">"){
+                if(s[start] == ">"){
                     tagName = insideTag = false;
                     s = s.substring(start+1, s.length);
                     return ">";
                 }
                 if(!tagName){
-                    var s2 = /[^\w]/.exec(sub).index;
+                    var s2 = xml._re_word.exec(sub).index;
                     s = s.substring(start+s2, s.length);
                     tagName = true;
                     return sub.substring(0, s2);
                 }
                 if(!attrName){
-                    var s2 = /[^\w]/.exec(sub).index;
+                    var s2 = xml._re_word.exec(sub).index;
                     s = sub.substring(s2, sub.length);
                     attrName = true;
                     return sub.substring(0, s2);
@@ -166,7 +169,7 @@ xml = {
                     return results[1];
                 }
                 else if(!attrValue) {
-                    var s2 = /=/.exec(sub).index;
+                    var s2 = sub.indexOf("=");
                     s = sub.substring(s2+1, sub.length);
                     attrValue = true;
                     return "=";
