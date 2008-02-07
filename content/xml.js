@@ -128,7 +128,7 @@ xml = {
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
-                return sub.substring(0, next);
+                return sub.substring(0, next).trim();
             }
             else {
                 if(s[start] == '?'){
@@ -212,7 +212,7 @@ xml = {
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
-                return sub.substring(0, next);
+                return sub.substring(0, next).trim();
             }
             else {
                 if(s[start] == '?'){

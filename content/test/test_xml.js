@@ -83,7 +83,7 @@ assert(x.child[1]._name == "elem2");
 assert(x.child[1].child == "hi");
 
 
-s = "  \n< \n  ?  xml   version  =  \"1.0\"  \n?  >\n  <  newlinetest \n  > \t <  \n elem\tattr\n= 'hi'\t>  \ncdata< \n/\telem>\t<\nelem\n\t/><elem /\n> </newlinetest>";
+s = "  \n< \n  ?  xml   version  =  \"1.0\"  \n?  >\n  <  newlinetest \n  > \t <  \n elem\tattr\n= 'hi'\t>  \ncdata     \n \t< \n/\telem>\t<\nelem\n\t/><elem /\n> </newlinetest>";
 x = xml.fromString(s);
 
 
