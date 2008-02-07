@@ -14,7 +14,7 @@ at <%= f.ts %>
     <%= t.count.toFixed() %>
   </td>
   <td>
-    by <a href="viewthread?id=<%= t._id %>#<%= l._id %>"><%= l.author %></a><br/>
+    by <%= l.author %> (<a href="viewthread?id=<%= t._id %>#<%= l._id %>">go</a>)<br/>
       at <%= l.ts %>
   </td>
 
