@@ -193,7 +193,7 @@ xml = {
                 return l;
             }
             var i = 0;
-            while(s[i] == ' ' || s[i] == '\t' || s[i] == '\n') ++i;
+            while(isSpace(s[i])) ++i;
             if (i >= s.length) return -1;
             start = i;
             var sub = s.substring(start, s.length);
@@ -201,7 +201,7 @@ xml = {
                 if(s[start] == '<'){
                     insideTag = true;
                     i = 1;
-                    while(sub[i] == ' ' || sub[i] == '\t' || sub[i] == '\n') ++i;
+                    while(isSpace(s[i])) ++i;
                     var s2 = i;
                     if(sub[s2] == '?'){
                         s = sub.substring(s2+1, sub.length);
@@ -217,7 +217,7 @@ xml = {
             else {
                 if(s[start] == '?'){
                     i = 1;
-                    while(sub[i] == ' ' || sub[i] == '\t' || sub[i] == '\n') ++i;
+                    while(isSpace(sub[i])) ++i;
                     var s2 = i;
                     if(sub[s2] == '>'){
                         s = sub.substring(s2+1, sub.length);
@@ -236,7 +236,7 @@ xml = {
                 }
                 if(!tagName){
                     i = 0;
-                    while(('a' <= sub[i] && 'z' >= sub[i]) || ('A' <= sub[i] && 'Z' >= sub[i]) || ('0' <= sub[i] && '9' >= sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
                     var s2 = i;
                     s = s.substring(start+s2, s.length);
                     tagName = true;
@@ -244,7 +244,7 @@ xml = {
                 }
                 if(!attrName){
                     i = 0;
-                    while(('a' <= sub[i] && 'z' >= sub[i]) || ('A' <= sub[i] && 'Z' >= sub[i]) || ('0' <= sub[i] && '9' >= sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
                     var s2 = i;
                     s = sub.substring(s2, sub.length);
                     attrName = true;
