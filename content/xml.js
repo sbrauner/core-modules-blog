@@ -251,8 +251,34 @@ xml = {
             return root[0];
         return root;
         
+    },
+
+    match: function(obj, query){
+        for(var prop in query){
+            var match = false;
+            if(isString(obj[prop]) && query[prop])
+                match = obj[prop] == query[prop];
+            else
+                match = xml.match(obj[prop], query[prop]);
+            
+            if(! match) return false;
+        }
+        return true;
+    },
+
+    find: function(obj, query){
+        var results = [];
+        if(xml.match(obj, query)) results.push(obj);
+        for(var i in obj.child){
+            var tmp = xml.find(obj.child[i], query);
+            if(! tmp) continue;
+            for(var tmpi in tmp){
+                results.push(tmp[tmpi]);
+            }
+        }
+        if(results.length > 0)
+            return results;
     }
-    
 };
 
 function haskey(obj, prop){
@@ -263,3 +289,4 @@ function haskey(obj, prop){
     }
     return false;
 }
+

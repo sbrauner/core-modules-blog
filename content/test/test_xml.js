@@ -37,7 +37,6 @@ s = "<multtest><elem1>hi</elem1><elem2>yo</elem2></multtest>";
 
 x = xml.fromString(s);
 
-print(tojson(x));
 assert(x._name == "multtest");
 assert(x.child[0]._name == "elem1");
 assert(x.child[0].child == "hi");
@@ -84,7 +83,17 @@ assert( s == "<A><B><C><v>V</v></C><C><v>V</v></C></B></A>" );
 
 x = [ { a : "d1" } , { b : "yo" } ]
 s = strip(xml.toString("listtest", x));
-print( s );
+//print( s );
 //assert(s == "<listtest><a>di</a><a>yo</a></listtest>");
+
+
+var x = xml.fromString("<result><param><value>0</value><value>1</value></param><value>3</value></result>");
+
+var f = xml.find(x, {_name: "value"});
+assert(f.length == 3);
+assert(f[0]._name == "value");
+assert(f[1]._name == "value");
+assert(f[2]._name == "value");
+
 
 
