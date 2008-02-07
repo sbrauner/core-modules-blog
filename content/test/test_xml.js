@@ -83,7 +83,18 @@ assert(x.child[1]._name == "elem2");
 assert(x.child[1].child == "hi");
 
 
+s = "  \n< \n  ?  xml   version  =  \"1.0\"  \n?  >\n  <  newlinetest \n  > \t <  \n elem\tattr\n= 'hi'\t>  \ncdata< \n/\telem>\t<\nelem\n\t/><elem /\n> </newlinetest>";
+x = xml.fromString(s);
 
+
+assert(x._name == "newlinetest");
+assert(x.child[0]._props.attr == "hi");
+assert(x.child[0]._name == "elem");
+assert(x.child[0].child == "cdata");
+assert(x.child[1]._name == "elem");
+assert(x.child[1].child == null);
+assert(x.child[2]._name == "elem");
+assert(x.child[2].child == null);
 
 
 function strip(s){

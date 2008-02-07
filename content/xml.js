@@ -92,7 +92,7 @@ xml = {
     } ,
 
     fromString : function( s ){
-        return xml.from(xml._xmlTokenizerchar(s));
+        return xml.from(xml._xmlTokenizerre(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
@@ -163,7 +163,7 @@ xml = {
                 if(attrValue){
                     var q = sub[0];
                     var r = q+"(.+)"+q+"(.*)";
-                    var results = new RegExp(r).exec(sub);
+                    var results = new RegExp(r, "m").exec(sub);
                     s = results[2];
                     attrName = attrValue = false;
                     return results[1];
@@ -253,7 +253,7 @@ xml = {
                 if(attrValue){
                     var q = sub[0];
                     var r = q+"(.+)"+q+"(.*)";
-                    var results = new RegExp(r).exec(sub);
+                    var results = new RegExp(r, "m").exec(sub);
                     s = results[2];
                     attrName = attrValue = false;
                     return results[1];
