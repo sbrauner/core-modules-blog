@@ -232,16 +232,22 @@ xml = {
                         print ("Error: malformed XML -- "+name+" does not match "+next); 
                     } 
                 }
-                else var result = null;
+                else var result = "";
                 if(hasprops)
                     result._props = props;
-                if(haskey(root, name)){
-                    if(! isArray(root[name])){
-                        var array = [root[name]];
-                    }
-                    else var array = root[name];
+               if(isArray(root)){
+                   result._name = name;
+                   root.push(result);
+               }
+               else if(haskey(root, name)){
+                   var array = [];
+                   for (var prop in root){
+                       root[prop]._name = prop;
+                       array.push(root[prop]);
+                   }
+                   result._name = name;
                     array.push(result);
-                    root[name] = array;
+                    root = array;
                 }
                 else {
                     root[name] = result;
