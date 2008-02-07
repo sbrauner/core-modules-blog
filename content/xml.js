@@ -1,4 +1,4 @@
-/* 
+/*
    e.g.:
 
    xml.to( print, "myobjtype", { name: "foo", x : 3 } );
@@ -17,18 +17,18 @@ xml = {
         xml.to( function( z ){ s += z; } , name , obj );
         return s;
     } ,
-    
+
     to : function( append , name , obj , indent ){
 
         if ( ! indent ) indent = 0;
-        
+
         if ( ! name )
             name = obj._name;
 
         var newLine = false;
-        
+
         if ( name ){
-            xml._indent( append , indent );        
+            xml._indent( append , indent );
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
@@ -43,24 +43,24 @@ xml = {
 
             append( ">" );
         }
-        
+
         if ( obj == null ){
         }
         else if ( isString( obj ) || isDate( obj ) ){
             append( obj );
         }
         else if ( isObject( obj ) ){
-            
+
             newLine = true;
             append( "\n" );
             for ( var prop in obj ){
                 if ( prop == "_props" || prop == "_name" || prop == "$" )
                     continue;
-                
+
                 var child = obj[prop];
-	       
-		if ( isArray( obj ) && isObject( child ) && child._name && prop.match( /\d+/ ) )
-		    xml.to( append , null , child , indent + 1 );
+
+                if ( isArray( obj ) && isObject( child ) && child._name && prop.match( /\d+/ ) )
+                    xml.to( append , null , child , indent + 1 );
                 else
                     xml.to( append , prop , child , indent + 1 );
             }
@@ -71,7 +71,7 @@ xml = {
 
         if ( obj["$"] )
             append( obj["$"] );
-        
+
         if ( name ){
             if ( newLine )
                 xml._indent( append , indent );
@@ -79,7 +79,7 @@ xml = {
         }
 
     } ,
-    
+
     toArray : function( append, name, obj, indent ){
         for( var i=0; i<obj.length; i++ ){
             xml.to(append, null , obj[i], indent);
@@ -174,7 +174,7 @@ xml = {
                     attrValue = true;
                     return "=";
                 }
-                
+
             }
         };
         return f;
@@ -231,14 +231,14 @@ xml = {
                 if(! slash){
                     var result = xml._from(tokenizer);
                     // Either we just read a literal, in which case
-                    // we need to read </name>, or the recursion ended after 
+                    // we need to read </name>, or the recursion ended after
                     // reading </, so we need to read name>.
                     var next = tokenizer();
                     if(next == "<"){ tokenizer(); next = tokenizer(); }
                     tokenizer();
-                    if(name != next) { 
-                        print ("Error: malformed XML -- "+name+" does not match "+next); 
-                    } 
+                    if(name != next) {
+                        print ("Error: malformed XML -- "+name+" does not match "+next);
+                    }
                 }
                 else var result = null;
                 var topush = {_name: name, "child": result};
@@ -250,7 +250,7 @@ xml = {
         if(root.length == 1 && root[0] == null || isString(root[0]))
             return root[0];
         return root;
-        
+
     },
 
     match: function(obj, query){
@@ -260,7 +260,7 @@ xml = {
                 match = obj[prop] == query[prop];
             else
                 match = xml.match(obj[prop], query[prop]);
-            
+
             if(! match) return false;
         }
         return true;
