@@ -36,7 +36,7 @@ xml = {
                 }
             }
 
-            if ( obj == null ){
+            if ( obj == null || obj["$"] == null ){
                 append( " />" );
                 return;
             }
@@ -70,7 +70,7 @@ xml = {
         }
 
         if ( isObject( obj ) && obj["$"] )
-            append( obj["$"] );
+            xml.to(append, null, obj["$"], indent+1);
 
         if ( name ){
             if ( newLine )
@@ -333,7 +333,7 @@ xml = {
                     }
                 }
                 else var result = null;
-                var topush = {_name: name, "child": result};
+                var topush = {_name: name, "$": result};
                 if(hasprops){ topush._props = props; }
                 root.push(topush);
             }
@@ -361,8 +361,8 @@ xml = {
     find: function(obj, query){
         var results = [];
         if(xml.match(obj, query)) results.push(obj);
-        for(var i in obj.child){
-            var tmp = xml.find(obj.child[i], query);
+        for(var i in obj["$"]){
+            var tmp = xml.find(obj["$"][i], query);
             if(! tmp) continue;
             for(var tmpi in tmp){
                 results.push(tmp[tmpi]);
