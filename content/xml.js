@@ -162,12 +162,13 @@ xml = {
                     return sub.substring(0, s2);
                 }
                 if(attrValue){
-                    var q = sub[0];
-                    var r = q+"(.+)"+q+"(.*)";
-                    var results = new RegExp(r, "m").exec(sub);
-                    s = results[2];
+                    var q = s[start];
+                    var i = s.indexOf(q, start+1);
+                    s2 = i;
                     attrName = attrValue = false;
-                    return results[1];
+                    var ret = s.substring(start+1, s2);
+                    s = s.substring(s2+1, s.length);
+                    return ret;
                 }
                 else if(!attrValue) {
                     var s2 = sub.indexOf("=");
@@ -253,12 +254,13 @@ xml = {
                     return sub.substring(0, s2);
                 }
                 if(attrValue){
-                    var q = sub[0];
-                    var r = q+"(.+)"+q+"(.*)";
-                    var results = new RegExp(r, "m").exec(sub);
-                    s = results[2];
+                    var q = s[start];
+                    var i = s.indexOf(q, start+1);
+                    s2 = i;
                     attrName = attrValue = false;
-                    return results[1];
+                    var ret = s.substring(start+1, s2);
+                    s = s.substring(s2+1, s.length);
+                    return ret;
                 }
                 else if(!attrValue) {
                     var s2 = sub.indexOf("=");
