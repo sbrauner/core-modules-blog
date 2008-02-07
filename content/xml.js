@@ -54,7 +54,7 @@ xml = {
             newLine = true;
             append( "\n" );
             for ( var prop in obj ){
-                if ( prop == "_props" || prop == "_name" )
+                if ( prop == "_props" || prop == "_name" || prop == "$" )
                     continue;
                 
                 var child = obj[prop];
@@ -68,6 +68,9 @@ xml = {
         else {
             append( obj );
         }
+
+        if ( obj["$"] )
+            append( obj["$"] );
         
         if ( name ){
             if ( newLine )
