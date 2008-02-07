@@ -104,24 +104,24 @@ xml = {
                 f.lookahead = null;
                 return l;
             }
-            var re = /[\w<>?=\/'"]/;
+            var re = /[\w<>?=\/\'\"]/;
             var exec = re.exec(s);
             if (exec == null) return -1;
             var start = exec.index;
             var sub = s.substring(start, s.length);
             if(insideTag == false){
-                if(s.substring(start, 1) == "<"){
-                    insideTag = true;
-                    var s2 = /[\w]/.exec(sub).index;
+                if(s.substring(start, start+1) == "<"){
+                    var s2 = /[\w?]/.exec(sub).index;
                     if(sub.substring(s2, s2+1) == "?"){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
+                    insideTag = true;
                     s = s.substring(start+1, s.length);
                     return "<";
                 }
-                if(s.substring(start, 1) == "?"){
-                    var s2 = /[\w]/.exec(sub).index;
+                if(s.substring(start, start+1) == "?"){
+                    var s2 = /[\w>]/.exec(sub).index;
                     if(sub.substring(s2, 1) == ">"){
                         s = sub.substring(s2+1, sub.length);
                         insideTag = false;
