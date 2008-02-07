@@ -13,7 +13,18 @@ else {
   </head>
   <body>
     <h1>Available threads</h1>
-
+    <table>
+      <tr>
+        <td>
+          Thread
+        </td>
+        <td>
+          Replies
+        </td>
+        <td>
+          Last post
+        </td>
+      </tr>
 <%}%>
 <%
 var list = Forum.Thread.list(t);
@@ -22,11 +33,12 @@ if (list)
 else
     print ("No topics right now!");
 %>
-<a href="makepost?top_id=<%= id %>">New thread</a>
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 else {
 %>
+</table>
+<a href="makepost?top_id=<%= id %>">New thread</a>
 <a href="./">Back to toplevel</a>
   </body>
 </html>

@@ -8,3 +8,11 @@
     border-width: 1px;
     border-color: #000;
 }
+
+table {
+    width: 100%;
+}
+
+td {
+    border: solid 1px #000;
+}
