@@ -77,6 +77,28 @@ core.analytics.admin.pieces.visitsCount( "Past Year" , u , p );
 
      </tr>
 
+     <tr>
+       <td colspan="2">
+         <%
+core.ui.chart.datetime();
+var dt = new ui.chart.DateTime();
+dt.width = 500;
+dt.height = 150;
+
+db.analytics.uniqueDay.find().sort( { time : -1 } ).limit( 31 ).forEach( function( z ){
+        dt.add( z.time , z.num , "u" );
+    } );
+
+var p = mungeData( db.analytics.pageView.find().limit( 24 * 31 ) , "d" );
+p.forEach( function( z ){
+        dt.add( z.time , z.num , "p" );
+    } );
+
+dt.print( print );
+    %>
+       </td>
+     </tr>
+
    </table>
 
 </div>
