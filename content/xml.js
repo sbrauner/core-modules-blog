@@ -128,6 +128,7 @@ xml = {
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
+                // CDATA node
                 return sub.substring(0, next).trim();
             }
             else {
@@ -212,6 +213,7 @@ xml = {
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
+                // CDATA node
                 return sub.substring(0, next).trim();
             }
             else {
