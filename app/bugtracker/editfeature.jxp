@@ -25,6 +25,9 @@ Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 if(request.fstatus){
     feature.lastModified = Date();
+    if(feature.owner == "null") feature.owner = null;
+    else
+        feature.owner = db.users.findOne({_id: feature.owner});
     db.bugtracker.features.save(feature);
     // Redirect back to bugs/ or whatever
     response.setResponseCode(301);
@@ -41,7 +44,13 @@ else{
       <input type="hidden" name="f_id"/>
       Number:<br/> <input name="fnumber"/><br/>
       Title:<br/> <input name="ftitle"/><br/>
-      Owner:<br/> <input name="fowner"/><br/>
+        Owner:<br/>
+        <% // This doesn't set the None user if feature.owner 
+           // is null; that happens implicitly since None is first. %>
+      <%= app.bugtracker.data.helper.select(feature, "owner", "f",
+                                            [false].concat(db.users.find({}).toArray()),
+                                            function(u){return u?u.name:"None";},
+                                            function(u){return u?u._id:"null"; }) %> <br/>
       Status:<br/> <%= app.bugtracker.data.helper.select(feature, "status", "f") %></br>
       Severity:<br/> <%= app.bugtracker.data.helper.select(feature, "severity", "f") %><br/>
       Product:<br/> <input name="fproduct"/><br/>
