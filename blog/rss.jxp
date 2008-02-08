@@ -4,6 +4,16 @@ core.blog.post();
 
 var requestResult = Blog.handleRequest(request);
 var now = Date();
+
+function clean( s ){
+    
+    s = s.replace( /&nbsp;/g , " " );
+    s = s.replace( /&rsquo;/g , "'" );
+    s = s.replace( /&mdash;/g , "-" );
+    s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+
+    return s;
+}
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml"); %>
@@ -22,11 +32,16 @@ var now = Date();
         %>
         <item>
             <guid><%= post.getUrl(request) %></guid>
-            <title><%= post.title %></title>
+            <title><%= clean( post.title ) %></title>
             <link><%= post.getUrl(request) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
-            <description><%= post.getFullContent().replace( /&nbsp;/g , " " ) %></description>
+	    <%
+	    var content = post.getFullContent();
+	    content = post.getExcerpt();
+
+	    %>
+            <description><%= clean( content ) %></description>
         </item>
         <% } %>
 
