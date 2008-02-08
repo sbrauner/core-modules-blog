@@ -40,9 +40,10 @@ else{
     <title>Editing feature</title>
   </head>
   <body>
+    <h1>Editing bug number <%= feature.number %></h1>
     <form method="POST">
       <input type="hidden" name="f_id"/>
-      Number:<br/> <input name="fnumber"/><br/>
+      
       Title:<br/> <input name="ftitle"/><br/>
         Owner:<br/>
         <% // This doesn't set the None user if feature.owner 
