@@ -55,7 +55,7 @@ else{
       Status:<br/> <%= app.bugtracker.data.helper.select(feature, "status", "f") %></br>
       Severity:<br/> <%= app.bugtracker.data.helper.select(feature, "severity", "f") %><br/>
       Product:<br/> 
-        <% var choices = app.bugtracker.data.helper.getlist(allowModule, "bugs", "product"); 
+        <% var choices = app.bugtracker.list_products();
     if (choices) { %>
       <%= app.bugtracker.data.helper.select(feature, "product", "f", choices)%>
             <% } 
@@ -64,9 +64,9 @@ else{
         <% } %>
       <br/>
       OS:<br/> 
-        <% var choices = app.bugtracker.data.helper.getlist(allowModule, "bugs", "OS"); 
+           <% var choices = app.bugtracker.list_OSes();
     if (choices) { %>
-      <%= app.bugtracker.data.helper.select(feature, "OS", "f", choices)%>
+           <%= app.bugtracker.data.helper.select(feature, "OS", "f", choices)%>
             <% } 
     else { %>
             <input name="fOS"/>
