@@ -9,17 +9,6 @@
 **/
 
 app.bugtracker.data.Feature = function() {
-    app.bugtracker.Feature.STATUS = Object();
-    app.bugtracker.Feature.STATUS.NEW = 'new';
-    app.bugtracker.Feature.STATUS.REVIEWED = 'reviewed';
-    app.bugtracker.Feature.STATUS.FIXED = 'fixed';
-    app.bugtracker.Feature.STATUS.CLOSED = 'closed';
-
-    app.bugtracker.Feature.SEVERITY = Object();
-    app.bugtracker.Feature.SEVERITY.NORMAL = 'normal';
-    app.bugtracker.Feature.SEVERITY.HIGH = 'high';
-    app.bugtracker.Feature.SEVERITY.LOW = 'low';
-
      // member variables
     this.status = app.bugtracker.Feature.STATUS.NEW;
     this.severity = app.bugtracker.Feature.SEVERITY.NORMAL;
@@ -31,6 +20,17 @@ app.bugtracker.data.Feature = function() {
     this.title = '';
     this.description = '';
     this.reporter = '';
+    this.owner = '';
+    this.number = 0;
 };
 
-// We need a standard way to bind a 
+app.bugtracker.Feature.STATUS = { NEW: 'new',
+                                  REVIEWED: 'reviewed',
+                                  FIXED: 'fixed',
+                                  CLOSED: 'closed' };
+
+app.bugtracker.Feature.SEVERITY = { NORMAL: 'normal',
+                                    HIGH: 'high',
+                                    LOW: 'low' };
+
+// We need a standard way to bind a

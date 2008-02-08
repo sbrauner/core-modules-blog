@@ -20,7 +20,6 @@ if (request.ncontent) {
 	var thread = new Forum.Thread();
 	thread.startPost = post;
 	thread.topic = db.forum.topics.findOne({_id: request.top_id});
-	print(tojson(thread.topic));
 	thread.topic.threadCount += 1;
     }
 
