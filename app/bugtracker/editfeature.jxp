@@ -1,18 +1,31 @@
 <%
 core.app.bugtracker.data.feature();
+core.app.bugtracker.data.helper();
+core.user.user();
+core.user.auth();
 core.content.forms();
+if (! user ){
+    user = Auth.getUser(request);
+}
+if (! user ){
+    return Auth.reject(request, response);
+}
 var feature = null;
 if ( request.id ){
     feature = db.bugtracker.features.findOne( { _id : request.id } );
 }
 else{
     feature = new app.bugtracker.data.Feature();
+    feature.reporter = user;
 }
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 if(request.fstatus){
+    feature.lastModified = Date();
     db.bugtracker.features.save(feature);
-    print("<meta head-equiv=\"Refresh\" content=\"0; url=http://localhost:8080/bugs\">");
+    // Redirect back to bugs/ or whatever
+    response.setResponseCode(301);
+    response.setHeader("Location", "./");
 }
 else{
 %>
@@ -21,13 +34,13 @@ else{
     <title>Editing feature</title>
   </head>
   <body>
-    <form >
+    <form method="POST">
       <input type="hidden" name="f_id"/>
       Number:<br/> <input name="fnumber"/><br/>
       Title:<br/> <input name="ftitle"/><br/>
       Owner:<br/> <input name="fowner"/><br/>
-      Status:<br/> <input name="fstatus"/><br/>
-      Severity:<br/> <input name="fseverity"/><br/>
+      Status:<br/> <%= app.bugtracker.data.helper.select(feature, "status", "f") %></br>
+      Severity:<br/> <%= app.bugtracker.data.helper.select(feature, "severity", "f") %><br/>
       Product:<br/> <input name="fproduct"/><br/>
       OS:<br/> <input name="fOS"/><br/>
       Target release:<br/> <input name="ftargetRelease"/><br/>

@@ -24,13 +24,16 @@ app.bugtracker.data.Feature = function() {
     this.number = 0;
 };
 
-app.bugtracker.data.Feature.STATUS = { NEW: 'new',
+app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',
                                   REVIEWED: 'reviewed',
                                   FIXED: 'fixed',
                                   CLOSED: 'closed' };
 
-app.bugtracker.data.Feature.SEVERITY = { NORMAL: 'normal',
+app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
                                     LOW: 'low' };
 
-// We need a standard way to bind a
+db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
+
+// We need a standard way to bind a  -dana
+// .. member variable to a set of options. -ethan

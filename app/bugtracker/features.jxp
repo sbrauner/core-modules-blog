@@ -1,6 +1,14 @@
-<% core.content.table(); %>
-
-<h1>Features</h1>
+<%
+core.content.table();
+core.user.user();
+core.user.auth();
+   %>
+<html>
+  <head>
+    <title>Features list</title>
+  </head>
+  <body>
+    <h1>Features</h1>
 
 {
     var tab = new htmltable({
@@ -8,7 +16,7 @@
         cols: [
             {name: "number", header: "Number"},
             {name: "title", searchWidth: 50},
-            {name: "reporter"},
+            {name: "reporter", view: function(u) { return u.name; }},
             {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "status"},
             {name: "severity"}
@@ -20,3 +28,6 @@
     tab.dbview(tab.find().sort({number: 1}));
 
 }
+
+    <a href="editfeature">New feature</a>
+</body>
