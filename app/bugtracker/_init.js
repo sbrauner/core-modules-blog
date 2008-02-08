@@ -8,14 +8,15 @@ app.bugtracker._get_user_list = function (name){
     return alist;
 };
 
-app.bugtracker.list_products(){
+app.bugtracker.list_products = function(){
     return app.bugtracker._get_user_list("product");
-}
+};
 
-app.bugtracker.list_OSes(){
+app.bugtracker.list_OSes = function(){
     return app.bugtracker._get_user_list("OS");
-}
+};
 
-app.bugtracker.list_versions(){
+app.bugtracker.list_versions = function(){
     return app.bugtracker._get_user_list("version");
-}
+};
+
