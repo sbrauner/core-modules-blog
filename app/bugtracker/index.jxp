@@ -1,5 +1,7 @@
 <html>
-   <body>
-       BugTracker
-    </body>
+  <body>
+    <h1>BugTracker</h1>
+    <a href="features">List current features</a>
+    <a href="editfeature">New feature</a>
+  </body>
 </html>

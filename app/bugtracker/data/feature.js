@@ -10,8 +10,8 @@
 
 app.bugtracker.data.Feature = function() {
      // member variables
-    this.status = app.bugtracker.Feature.STATUS.NEW;
-    this.severity = app.bugtracker.Feature.SEVERITY.NORMAL;
+    this.status = app.bugtracker.data.Feature.STATUS.NEW;
+    this.severity = app.bugtracker.data.Feature.SEVERITY.NORMAL;
     this.creationDate = new Date();
     this.lastModified = new Date();
     this.product = '';
@@ -24,12 +24,12 @@ app.bugtracker.data.Feature = function() {
     this.number = 0;
 };
 
-app.bugtracker.Feature.STATUS = { NEW: 'new',
+app.bugtracker.data.Feature.STATUS = { NEW: 'new',
                                   REVIEWED: 'reviewed',
                                   FIXED: 'fixed',
                                   CLOSED: 'closed' };
 
-app.bugtracker.Feature.SEVERITY = { NORMAL: 'normal',
+app.bugtracker.data.Feature.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
                                     LOW: 'low' };
 

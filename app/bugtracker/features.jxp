@@ -3,20 +3,20 @@
 <h1>Features</h1>
 
 {
-    var tab = new htmltable({ 
+    var tab = new htmltable({
         ns: db.bugtracker.features,
         cols: [
-            {name: "_id", header: "ID"}
+            {name: "number", header: "Number"},
             {name: "title", searchWidth: 50},
             {name: "reporter"},
-            {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }}, 
+            {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "status"},
             {name: "severity"}
         ],
-        detailUrl: "post_edit?id=",
+        detailUrl: "editfeature?id=",
         searchable: true
     });
-    
-    tab.dbview(tab.find().sort({_id: 1}));
+
+    tab.dbview(tab.find().sort({number: 1}));
 
 }
