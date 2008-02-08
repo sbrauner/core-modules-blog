@@ -48,6 +48,7 @@ if ( request.action == "save" ) {
     
         thePost.title = request.title;
    	    thePost.content = request.content;
+   	    thePost.excerpt = request.excerpt;
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );

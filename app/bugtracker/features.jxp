@@ -28,7 +28,6 @@ core.user.auth();
     });
 
     tab.dbview(tab.find().sort({number: 1}));
-
 }
 
     <a href="editfeature">New feature</a>
