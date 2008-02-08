@@ -27,6 +27,11 @@ s = strip(xml.toString("listtest", x));
 //print( s );
 //assert(s == "<listtest><a>di</a><a>yo</a></listtest>");
 
+x = { methodName : "weblogUpdates.ping" ,
+      params :
+      [{_name:"param", value:{string:"SiliconAlleyInsider"}},
+       {_name:"param",value:{string:"http://www.alleyinsider.com/"}},
+       {_name:"param",value:{string:"http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle"}}]};
 
-
-
+s = xml.toString("danatest", x);
+print(s);
