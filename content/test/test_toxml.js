@@ -34,4 +34,11 @@ x = { methodName : "weblogUpdates.ping" ,
        {_name:"param",value:{string:"http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle"}}]};
 
 s = xml.toString("danatest", x);
-print(s);
+s = strip(s);
+target = "<danatest><methodName>weblogUpdates.ping</methodName>"+
+    "<params>"+
+    "<param><value><string>SiliconAlleyInsider</string></value></param>"+
+    "<param><value><string>http://www.alleyinsider.com/</string></value></param>"+
+    "<param><value><string>http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle</string></value></param>"+
+    "</params></danatest>";
+assert(s == target);
