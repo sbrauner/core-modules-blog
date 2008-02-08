@@ -48,6 +48,7 @@ if ( request.action == "save" ) {
     
         thePost.title = request.title;
    	    thePost.content = request.content;
+	    thePost.excerpt = request.excerpt;
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
@@ -144,7 +145,7 @@ tinyMCE.init({
         <input type="button" value="Preview" onclick="window.open('/<%=thePost.name%>', '_top');">
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
-    <div id="post_title"><input id="title" name="title" value="<%= thePost.title||"" %>" size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
+    <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
     <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
