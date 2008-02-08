@@ -1,5 +1,5 @@
 
-MissingPage = function (name) {
+MissingPage = function (uri) {
     this.uri = uri || '';
     this.date = new Date();
 };
