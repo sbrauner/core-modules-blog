@@ -11,7 +11,12 @@ function clean( s ){
     s = s.replace( /&rsquo;/g , "'" );
     s = s.replace( /&mdash;/g , "-" );
     s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+    
+    //s = s.replace( /<\/?embed[^>]*>/g , "" );
+    s = s.replace( /mt:asset.id=.*? /g , "" );
 
+    s = s.replace( /</g , "&lt;" );
+    s = s.replace( />/g , "&gt;" );
     return s;
 }
 %>
@@ -38,10 +43,10 @@ function clean( s ){
             <author><%= post.author %></author>
 	    <%
 	    var content = post.getFullContent();
-	    content = post.getExcerpt();
+	    //content = post.getExcerpt();
 
 	    %>
-            <description><%= clean( content ) %></description>
+            <description> <%= clean( post.getFullContent() ) %> </description>
         </item>
         <% } %>
 
