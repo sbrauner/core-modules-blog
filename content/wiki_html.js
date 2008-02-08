@@ -26,7 +26,8 @@ Wiki = {
 
     urls: [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/(([^\. \n\t]+)*\.)*[^\. \n\t]+)/g, s: '<a href="$2">$2</a>'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '[$2]$4'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '[$2]$4'}, // raw URL
         ],
 
     basics: [
@@ -36,6 +37,9 @@ Wiki = {
 
     repl: function(patts, str) {
         for( var i = 0; i < patts.length; i++ ) {
+            SYSOUT(patts[i].r);
+            SYSOUT(patts[i].s);
+            SYSOUT(str);
             str = str.replace(patts[i].r, patts[i].s);
         }
         return str;
@@ -99,6 +103,7 @@ Wiki = {
 
         // raw urls - disabled, see above
         str = this.repl(this.urls, str);
+        SYSOUT("URLs found!");
 
         // links
         if( str.match(/\[/) ) {
