@@ -65,9 +65,9 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
 }
 
 ws.xmlrpc.Client.processResponse = function(responseText) {
-    SYSOUT('processing response: ' + responseText.getClass());
+    SYSOUT('processing response: ' + responseText);
     response = xml.fromString(responseText);
-    SYSOUT('RESPONSE: ' + tojson);
+    SYSOUT('RESPONSE: ' + tojson(response));
 }
 
 
