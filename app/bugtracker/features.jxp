@@ -14,7 +14,7 @@ core.user.auth();
     var tab = new htmltable({
         ns: db.bugtracker.features,
         cols: [
-            {name: "number", header: "Number"},
+            {name: "number", header: "Number", view: function(n) { return parseInt(n).toFixed(0); } },
             {name: "title", searchWidth: 50},
             {name: "reporter", view: function(u) { return u.name; }},
             {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},

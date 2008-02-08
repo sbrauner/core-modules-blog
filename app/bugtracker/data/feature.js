@@ -33,7 +33,25 @@ app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
                                     LOW: 'low' };
 
-db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
+app.bugtracker.data.Feature.prototype.presave = function(){
+    this.number = parseInt(this.number);
+};
+
+if(db){
+    db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
+    db.bugtracker.features.ensureIndex({number: 1});
+    db.bugtracker.features.ensureIndex({lastModified: 1});
+}
+
+app.bugtracker.data.Feature.nextNumber = function(){
+    fs = app.bugtracker.data.Feature.find().sort({number: 1}).limit(1);
+    n = fs.next();
+    return  n.number+1;
+};
+
+app.bugtracker.data.Feature.find = function(){
+    return db.bugtracker.features.find();
+};
 
 // We need a standard way to bind a  -dana
 // .. member variable to a set of options. -ethan

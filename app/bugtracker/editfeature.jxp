@@ -18,7 +18,9 @@ if ( request.id ){
 else{
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
+    feature.number = app.bugtracker.data.Feature.nextNumber();
 }
+feature.number = parseInt(feature.number).toFixed(0);
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 if(request.fstatus){
