@@ -40,11 +40,13 @@ app.bugtracker.data.Feature.prototype.presave = function(){
 if(db){
     db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
     db.bugtracker.features.ensureIndex({number: 1});
+    db.bugtracker.features.ensureIndex({owner: 1});
+    db.bugtracker.features.ensureIndex({reporter: 1});
     db.bugtracker.features.ensureIndex({lastModified: 1});
 }
 
 app.bugtracker.data.Feature.nextNumber = function(){
-    fs = app.bugtracker.data.Feature.find().sort({number: 1}).limit(1);
+    fs = app.bugtracker.data.Feature.find().sort({number: -1}).limit(1);
     n = fs.next();
     return  n.number+1;
 };
