@@ -26,7 +26,8 @@ Wiki = {
 
     urls: [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)[ \.\n\t]/g, s: '<a href="$2">$2</a>'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '[$2]$4'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '[$2]$4'}, // raw URL
         ],
 
     basics: [
