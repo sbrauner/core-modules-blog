@@ -176,8 +176,8 @@ Blog.handleRequest = function( request , arg ){
     };
 };
 
-Blog.handlePosts = function( request , thePost ){
-    if ( request.action == "delete" ) {
+Blog.handlePosts = function( request , thePost , user ){
+    if ( user && user.isAdmin() && request.action == "delete" ) {
     	thePost.deleteComment( request.cid );
     	db.blog.posts.save( thePost );
     	return;
@@ -188,7 +188,7 @@ Blog.handlePosts = function( request , thePost ){
 	
 	    SYSOUT( "want to add comment" );
 	
-    	if ( user ) {
+    	if ( false && user ) {
     	    comment = {};
     	    comment.author = user.name;
     	    comment.email = user.email;
