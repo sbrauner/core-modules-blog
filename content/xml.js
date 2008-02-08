@@ -36,7 +36,7 @@ xml = {
                 }
             }
 
-            if ( obj == null || obj["$"] == null ){
+            if ( obj == null || (haskey(obj, "$") && obj["$"] == null )){
                 append( " />" );
                 return;
             }
