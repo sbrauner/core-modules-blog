@@ -18,7 +18,6 @@ if ( request.id ){
 else{
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
-    feature.number = app.bugtracker.data.Feature.nextNumber();
 }
 feature.number = parseInt(feature.number).toFixed(0);
 Forms.fillInObject( "f", feature );
@@ -28,6 +27,9 @@ if(request.fstatus){
     if(feature.owner == "null") feature.owner = null;
     else
         feature.owner = db.users.findOne({_id: feature.owner});
+    if(feature.number == 0)
+        feature.number = app.bugtracker.data.Feature.nextNumber();
+
     db.bugtracker.features.save(feature);
     // Redirect back to bugs/ or whatever
     response.setResponseCode(301);
@@ -40,7 +42,11 @@ else{
     <title>Editing feature</title>
   </head>
   <body>
-    <h1>Editing bug number <%= feature.number %></h1>
+        <% if(feature.number != 0){ %>
+        <h1>Editing bug number <%= feature.number %></h1>
+        <% } else { %>
+        <h1>Editing new bug</h1>
+        <% } %>
     <form method="POST">
       <input type="hidden" name="f_id"/>
       

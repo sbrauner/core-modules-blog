@@ -47,8 +47,9 @@ if(db){
 
 app.bugtracker.data.Feature.nextNumber = function(){
     fs = app.bugtracker.data.Feature.find().sort({number: -1}).limit(1);
-    n = fs.next();
-    return  n.number+1;
+    if(fs.hasNext())
+        return fs.next().number+1;
+    else return 1;
 };
 
 app.bugtracker.data.Feature.find = function(){
