@@ -37,9 +37,6 @@ Wiki = {
 
     repl: function(patts, str) {
         for( var i = 0; i < patts.length; i++ ) {
-            SYSOUT(patts[i].r);
-            SYSOUT(patts[i].s);
-            SYSOUT(str);
             str = str.replace(patts[i].r, patts[i].s);
         }
         return str;
@@ -103,7 +100,6 @@ Wiki = {
 
         // raw urls - disabled, see above
         str = this.repl(this.urls, str);
-        SYSOUT("URLs found!");
 
         // links
         if( str.match(/\[/) ) {
