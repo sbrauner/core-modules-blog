@@ -42,25 +42,27 @@ Post.prototype.getNumComments = function(){
     if ( !this.comments )
         return 0;
     
-    return this.comments.length;
+    var numComments = 0;
+    for (var key in this.comments) {
+        if (key == 'length') continue;
+        numComments++;
+    }
+    return numComments;
 };
 
 Post.prototype.deleteComment = function(cid){
     if ( this.comments ) {
         delete this.comments[cid];
-        this.comments.length = this.comments.length - 1;
     }
 };
 
 Post.prototype.addComment = function( comment ){
     if ( !this.comments ) {
         this.comments = Object();
-        this.comments.length = 0;
     }
     comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
     comment.cid = ObjectID();
     this.comments[comment.cid.toString()] = comment;
-    this.comments.length = this.comments.length + 1;
 };
 
 Post.prototype.getComments = function() {

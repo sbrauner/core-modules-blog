@@ -6,7 +6,6 @@
     var tab = new htmltable({ 
         ns: db.bugtracker.features,
         cols: [
-            {name: "_id", header: "ID"}
             {name: "title", searchWidth: 50},
             {name: "reporter"},
             {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }}, 
@@ -17,6 +16,6 @@
         searchable: true
     });
     
-    tab.dbview(tab.find().sort({_id: 1}));
+    tab.dbview(tab.find());
 
 }
