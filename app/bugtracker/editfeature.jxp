@@ -13,6 +13,7 @@ if (! user ){
 var feature = null;
 if ( request.id ){
     feature = db.bugtracker.features.findOne( { _id : request.id } );
+    feature.lastModified = Date();
 }
 else{
     feature = new app.bugtracker.data.Feature();

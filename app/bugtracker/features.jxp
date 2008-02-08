@@ -18,6 +18,7 @@ core.user.auth();
             {name: "title", searchWidth: 50},
             {name: "reporter", view: function(u) { return u.name; }},
             {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
+            {name: "lastModified", view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "status"},
             {name: "severity"}
         ],
