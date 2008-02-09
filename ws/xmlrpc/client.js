@@ -15,7 +15,7 @@ ws.xmlrpc.Client = function(host, port, path) {
     // member variables
     this.host = host || '';
     this.port = port || 80;
-    this.path = path || '';
+    this.path = path || '/';
     this.contentType = 'text/xml';
     this.isAsynchronous = false;
     this.xmlHTTPRequest = new XMLHttpRequest();
@@ -131,11 +131,10 @@ ws.xmlrpc.Client.prototype._processResponse = function(responseText) {
 
 ws.xmlrpc.Client.Test = function() {
     // create a new object
-//    var client = new ws.xmlrpc.Client('ping.feedburner.com');
-    var client = new ws.xmlrpc.Client('rpc.technorati.com', 80, '/rpc/ping');
-//    var client = new ws.xmlrpc.Client('rpc.pingomatic.com', 80, '/RPC2');
-//    client.methodCall('sample.sumAndDifference', [6, 3]);
-//    client.methodCall('sample.sumAndDifference', [1, 1.5, new Date(), true, false, "this is a test"]);
+
+    var client = new ws.xmlrpc.Client('ping.feedburner.com');
+    //var client = new ws.xmlrpc.Client('rpc.technorati.com', 80, '/rpc/ping');
+    //var client = new ws.xmlrpc.Client('rpc.pingomatic.com', 80, '/RPC2');
 
     // test XML-RPC blog ping
     var response = client.methodCall('weblogUpdates.ping', ['Silicon Alley Insider', 'http://www.alleyinsider.com/', 'http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle']);
