@@ -152,8 +152,6 @@ else {
     throw "can't handle : " + method;
 }
 
-SYSOUT( response );
-
 function xmlHeader(){
     response.getWriter().reset();
     print( "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" );
