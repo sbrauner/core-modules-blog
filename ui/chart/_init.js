@@ -31,10 +31,6 @@ ui.chart.checkHead = function(){
         SYSOUT( "have head :(" );
         head.concat( ui.chart.head );
     }
-    else if ( globalHead ){
-        SYSOUT( "have global head :)" );
-        globalHead.concat( ui.chart.head );
-    }
     else {
         SYSOUT( "have nothing!!!" );
     }
