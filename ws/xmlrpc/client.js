@@ -28,7 +28,7 @@ ws.xmlrpc.Client = function(host, port, path) {
 ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
     if (!methodName) return; // this should really throw an exception
     
-    var content = '<?xml version="1.0"?>\n\n';
+    var content = '<?xml version="1.0"?>\n';
     var callObject = { methodName : methodName, params: [] };
     if (parameters) {
         // process each passed in parameter in the parameters array, and convert to the proper type
@@ -49,8 +49,9 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
     
     var url = 'http://' + this.host + ':' + this.port + this.path;
     this.xmlHTTPRequest.open("POST", url, this.isAsynchronous);
-    this.xmlHTTPRequest.setRequestHeader("Content-type", this.contentType);
-    this.xmlHTTPRequest.setRequestHeader("Content-length", content.length);
+    this.xmlHTTPRequest.setRequestHeader("Content-Type", this.contentType);
+    
+    SYSOUT( content );
 
     this.xmlHTTPRequest.send(content);
     
@@ -76,5 +77,12 @@ ws.xmlrpc.Client.Test = function() {
     // create a new object
     var client = new ws.xmlrpc.Client('localhost', 9001);
     client.methodCall('sample.sumAndDifference', [6, 3]);
+//    client.methodCall('sample.sumAndDifference', [1, 1.5, new Date(), true, false, "this is a test"]);
+};
+
+ws.xmlrpc.Client.Test2 = function() {
+    // create a new object
+    var client = new ws.xmlrpc.Client( "rpc.technorati.com" , 80 , "/rpc/ping"  );
+    client.methodCall( "weblogUpdates.ping", [ "Silicon Alley Insider" , "http://www.alleyinsider.com/" , "http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle" ] );
 //    client.methodCall('sample.sumAndDifference', [1, 1.5, new Date(), true, false, "this is a test"]);
 }
