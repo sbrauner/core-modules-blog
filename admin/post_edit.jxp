@@ -1,6 +1,7 @@
 <% 
 // * Fix author assignment bug
 
+core.blog.ping();
 
 var id = request.id;
 
@@ -61,6 +62,8 @@ if ( request.action == "save" ) {
 	    else {
 	        justSaved=true;	
             print( "<i>Saved.</i>" );
+            // ping blogging services
+            if (thePost.live) ping(siteUrl + '/' + thePost.name);
 	    }
     }
 } else if (request.action == 'delete') {
