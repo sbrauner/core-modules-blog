@@ -201,8 +201,7 @@ Blog.handlePosts = function( request , thePost , user ){
     		comment.url = request.url;
     	    } 
 	    else {
-    		print( "<div>invalid captcha response : " + request.captcha + "</div>" );
-    		return;
+    		return "invalid captcha response : " + request.captcha;
     	    }
     	}
         
@@ -213,6 +212,8 @@ Blog.handlePosts = function( request , thePost , user ){
 
     	    thePost.addComment( comment );
     	    db.blog.posts.save( thePost );
+	    
+	    return "Comment Saved";
     	}
     	return;
     }
