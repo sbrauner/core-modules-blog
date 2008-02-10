@@ -50,6 +50,7 @@ if ( request.action == "save" ) {
         thePost.title = request.title;
    	    thePost.content = request.content;
 	    thePost.excerpt = request.excerpt;
+	    thePost.ts = new Date( request.ts );
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
@@ -64,7 +65,7 @@ if ( request.action == "save" ) {
             print( "<i>Saved.</i>" );
             // ping blogging services
 	    print( "Pinging Services<br>" );
-            if ( thePost.live && request.getHost().match( /^www\./ ) ){
+            if ( allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
 		Blog.ping(siteUrl + '/' + thePost.name);
 	    }
 	 }
@@ -209,7 +210,7 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input id="ts" size="30" value="<%= thePost.ts %>"/></div>
+            <div class="post_meta_field_value"><input name="ts" size="30" value="<%= thePost.ts.simpleFormat() %>"/></div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">ID</div>
