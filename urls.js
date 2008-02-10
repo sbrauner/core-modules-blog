@@ -184,30 +184,33 @@ Blog.handlePosts = function( request , thePost , user ){
     }
     
     if ( request.addComment == "yes" ) {
-	    var comment = null;
+	var comment = null;
 	
-	    SYSOUT( "want to add comment" );
+	SYSOUT( "want to add comment" );
 	
-    	if ( false && user ) {
+    	if ( user ) {
     	    comment = {};
     	    comment.author = user.name;
     	    comment.email = user.email;
-    	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+    	} 
+	else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
     	    if ( Captcha.valid( request ) ) {
     		comment = {};
     		comment.author = request.yourname;
     		comment.email = request.email;
     		comment.url = request.url;
-    	    } else {
-    		print( "invalid captcha response : " + request.captcha );
+    	    } 
+	    else {
+    		print( "<div>invalid captcha response : " + request.captcha + "</div>" );
     		return;
     	    }
     	}
         
+    	if ( comment ) {
+	    
 	    comment.ts = Date();
 	    comment.text = request.txt;
-        
-    	if ( comment ) {
+
     	    thePost.addComment( comment );
     	    db.blog.posts.save( thePost );
     	}
