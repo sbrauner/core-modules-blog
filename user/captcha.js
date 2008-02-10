@@ -8,7 +8,7 @@ Captcha = {
         if ( ! db )
             throw( "need a db" );
 
-        var s = "eliot";
+	var s = md5( Math.random() ).substring( 0 , 6 );
         JSCaptcha.img( s , response );
         
         var id = "asd" + Math.random();
