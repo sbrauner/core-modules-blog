@@ -63,8 +63,11 @@ if ( request.action == "save" ) {
 	        justSaved=true;	
             print( "<i>Saved.</i>" );
             // ping blogging services
-            if (thePost.live) ping(siteUrl + '/' + thePost.name);
+	    print( "Pinging Services<br>" );
+            if ( thePost.live && request.getHost().match( /^www\./ ) ){
+		Blog.ping(siteUrl + '/' + thePost.name);
 	    }
+	 }
     }
 } else if (request.action == 'delete') {
     if (db.blog.posts.remove(thePost)) {

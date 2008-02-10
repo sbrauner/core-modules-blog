@@ -10,19 +10,19 @@
 
 core.ws.xmlrpc.client();
 
-var pingService = [
+Blog.pingService = [
     {url: 'ping.feedburner.com', port: 80, path: '/'},
     {url: 'rpc.technorati.com', port: 80, path: '/rpc/ping'},
     {url: 'blogsearch.google.com', port: 80, path: '/ping/RPC2'},
     {url: 'rpc.weblogs.com', port: 80, path: '/RPC2'},
-    ];
+];
     
-function ping(articleUrl) {
+Blog.ping = function(articleUrl) {
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
     if (!articleUrl || articleUrl.length == 0) articleUrl = siteUrl;
     
     // cycle through all of the defined ping services
-    pingService.forEach( function(service) {
+    Blog.pingService.forEach( function(service) {
         SYSOUT('Pinging: ' + service.url);
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
         var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
