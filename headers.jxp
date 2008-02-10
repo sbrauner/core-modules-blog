@@ -1,3 +1,11 @@
+<%
+    if ( request.action == "delete" ){
+	response.removeCookie( request.name || "" );
+	response.setResponseCode( 301 );
+	response.setHeader( "Location", "/~~/headers" );
+	return;
+    }
+%>
 <html>
   <body>
 
@@ -17,7 +25,12 @@
             print( "<tr>" );
             print( "<td>" + z + "</td>" );
             print( "<td>" + request.getCookie( z ) + "</td>" );
-            print( "</tr>" );
+
+	    print( "<td>" );
+	    print( "<a href='/~~/headers?action=delete&name=" + z + "'>delete</a>" );
+	    print( "</td>" );
+            
+	    print( "</tr>" );
         } ); %>
     </table>
 

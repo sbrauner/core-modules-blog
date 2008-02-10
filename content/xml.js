@@ -36,7 +36,7 @@ xml = {
                 }
             }
 
-            if ( obj == null || obj["$"] == null ){
+            if ( obj == null || (haskey(obj, "$") && obj["$"] == null )){
                 append( " />" );
                 return;
             }
@@ -376,6 +376,8 @@ xml = {
 };
 
 function haskey(obj, prop){
+    if ( ! isObject( obj ) )
+	return false;
     for (var i in obj){
         if (i == prop){
             return true;
