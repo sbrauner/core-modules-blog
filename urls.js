@@ -197,6 +197,7 @@ Blog.handlePosts = function( request , thePost , user ){
     		comment = {};
     		comment.author = request.yourname;
     		comment.email = request.email;
+    		comment.url = request.url;
     	    } else {
     		print( "invalid captcha response : " + request.captcha );
     		return;
