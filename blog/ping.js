@@ -36,17 +36,17 @@ Blog.ping = function(articleUrl) {
             } else {
                 var flerror;
                 var message;
-                response.value.$.forEach( function(member) {
-                    var name = member.$[0].$;
+                response.value.children.forEach( function(member) {
+                    var name = member.children[0].$;
                     if (name == 'flerror') {
-                        flerror = member.$[1].$[0].$;
+                        flerror = member.children[1].children[0].$;
                     } else if (name == 'message') {
-                        if (isArray(member.$[1].$)) {
-                            message = member.$[1].$[0].$;
+                        if (isArray(member.children[1].children)) {
+                            message = member.children[1].children[0].$;
                         } else {
-                            message = member.$[1].$;
+                            message = member.children[1].$;
                         }
-                        message = message.toString().replace(/&#32;/g, ' ');
+                        message = message.replace(/&#32;/g, ' ');
                     }
                     
                 })
