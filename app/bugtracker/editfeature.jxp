@@ -13,29 +13,34 @@ if (! user ){
 var feature = null;
 if ( request.id ){
     feature = db.bugtracker.features.findOne( { _id : request.id } );
-    feature.lastModified = Date();
 }
 else{
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
 }
 feature.number = parseInt(feature.number).toFixed(0);
+timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 if(request.fstatus){
-    feature.lastModified = Date();
-    if(feature.owner == "null") feature.owner = null;
-    else
-        feature.owner = db.users.findOne({_id: feature.owner});
-    if(feature.number == 0)
-        feature.number = app.bugtracker.data.Feature.nextNumber();
+    if (feature.lastModified.toString() == request.starttime){
+        feature.lastModified = Date();
+        if(feature.owner == "null") feature.owner = null;
+        else
+            feature.owner = db.users.findOne({_id: feature.owner});
+        if(feature.number == 0)
+            feature.number = app.bugtracker.data.Feature.nextNumber();
 
-    db.bugtracker.features.save(feature);
-    // Redirect back to bugs/ or whatever
-    response.setResponseCode(301);
-    response.setHeader("Location", "./");
+        db.bugtracker.features.save(feature);
+        // Redirect back to bugs/ or whatever
+        response.setResponseCode(301);
+        response.setHeader("Location", "./");
+    }
+    else{
+        timestamp = feature.lastModified;
+        orig = db.bugtracker.features.findOne( { _id: request.id } );
+    }
 }
-else{
 %>
 <html>
   <head>
@@ -47,9 +52,25 @@ else{
         <% } else { %>
         <h1>Editing new bug</h1>
         <% } %>
+        <% if (orig) { %>
+        <span style="color: red">Someone edited this bug in the meantime. Here's their version.</span>
+        <ul>
+          <li>Title: <%= orig.title%></li>
+          <li>Owner: <%= orig.owner%></li>
+          <li>Status: <%= orig.status%></li>
+          <li>Severity: <%= orig.severity%></li>
+          <li>Product: <%= orig.product %></li>
+          <li>OS: <%= orig.OS %></li>
+          <li>Target release: <%= orig.targetRelease%></li>
+          <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
+        </ul>
+        Here's your version:
+                   <% } %>
+
     <form method="POST">
       <input type="hidden" name="f_id"/>
-      
+      <input type="hidden" name="starttime" value="<%= timestamp %>"/>
+
       Title:<br/> <input name="ftitle"/><br/>
         Owner:<br/>
         <% // This doesn't set the None user if feature.owner 
@@ -87,5 +108,5 @@ else{
   </body>
 </html>
 <%
-}
+
 %>
