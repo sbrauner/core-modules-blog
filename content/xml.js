@@ -36,7 +36,7 @@ xml = {
                 }
             }
 
-            if ( obj == null || (haskey(obj, "$") && obj["$"] == null )){
+            if ( obj == null || (haskey(obj, "$") && obj["$"] == null) || (haskey(obj, "children") && (obj.children == null || obj.children.length == 0))){
                 append( " />" );
                 return;
             }
@@ -54,7 +54,7 @@ xml = {
             newLine = true;
             append( "\n" );
             for ( var prop in obj ){
-                if ( prop == "_props" || prop == "_name" || prop == "$" )
+                if ( prop == "_props" || prop == "_name" || prop == "$" || prop == "children" )
                     continue;
 
                 var child = obj[prop];
@@ -71,6 +71,10 @@ xml = {
 
         if ( isObject( obj ) && obj["$"] )
             xml.to(append, null, obj["$"], indent+1);
+
+        if ( isObject( obj ) && isArray(obj.children) )
+            xml.to(append, null, obj.children, indent+1);
+
 
         if ( name ){
             if ( newLine )
@@ -298,7 +302,7 @@ xml = {
             next = tokenizer();
             if (next == -1) break;
             if (next != "<"){
-                //CTEXT
+                //CDATA
                 root.push(next);
                 continue;
             }
@@ -335,8 +339,12 @@ xml = {
                     }
                 }
                 else var result = null;
-                var topush = {_name: name, "$": result};
+                var topush = {_name: name};
                 if(hasprops){ topush._props = props; }
+                if(result == null || isString(result))
+                    topush.$ = result;
+                else
+                    topush.children = result;
                 root.push(topush);
             }
         }
@@ -363,11 +371,13 @@ xml = {
     find: function(obj, query){
         var results = [];
         if(xml.match(obj, query)) results.push(obj);
-        for(var i in obj["$"]){
-            var tmp = xml.find(obj["$"][i], query);
-            if(! tmp) continue;
-            for(var tmpi in tmp){
-                results.push(tmp[tmpi]);
+        if(obj.children && obj.children.length > 0){
+            for(var i in obj.children){
+                var tmp = xml.find(obj.children[i], query);
+                if(! tmp) continue;
+                for(var tmpi in tmp){
+                    results.push(tmp[tmpi]);
+                }
             }
         }
         if(results.length > 0)
@@ -377,7 +387,7 @@ xml = {
 
 function haskey(obj, prop){
     if ( ! isObject( obj ) )
-	return false;
+        return false;
     for (var i in obj){
         if (i == prop){
             return true;
