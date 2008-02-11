@@ -22,6 +22,7 @@ feature.number = parseInt(feature.number).toFixed(0);
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
+head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime){
         feature.lastModified = Date();
@@ -54,7 +55,7 @@ if(request.fstatus){
         <% } %>
         <% if (orig) { %>
         <div id="original">
-          <span style="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
+          <span class="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
           <ul>
             <li>Title: <%= orig.title%></li>
             <li>Owner: <%= orig.owner%></li>
@@ -79,8 +80,8 @@ if(request.fstatus){
            // is null; that happens implicitly since None is first. %>
       <%= app.bugtracker.data.helper.select(feature, "owner", "f",
                                             [false].concat(db.users.find({}).toArray()),
-                                            {viewfunc: function(u){return u?u.name:"None";},
-                                             valuefunc: function(u){return u?u._id:"null"; },
+                                            {view: function(u){return u?u.name:"None";},
+                                             value: function(u){return u?u._id:"null"; },
                                             }) %> <br/>
       Status:<br/> <%= app.bugtracker.data.helper.select(feature, "status", "f") %></br>
       Severity:<br/> <%= app.bugtracker.data.helper.select(feature, "severity", "f") %><br/>
