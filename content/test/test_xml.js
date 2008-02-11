@@ -118,3 +118,7 @@ assert(x.children[3]._name == "elem");
 assert(x.children[3].$ == "2");
 assert(x.children[4]._name == "PCDATA");
 assert(x.children[4].$ == "yeah");
+
+var s = "<ctest><![CDATA[<greeting>hello</greeting>]]></ctest>";
+var x = xml.fromString(s);
+assert(x.$ == "<greeting>hello</greeting>");

@@ -102,6 +102,7 @@ xml = {
     _re_nonspace : /[^ \t\n]/,
     _re_space : /[ \t\n]/,
     _re_word : /[^\w&;]/,
+    _re_close_cdata: /\]\]>/,
 
     _xmlTokenizerre : function( s ){
         var pos = 0;
@@ -126,6 +127,12 @@ xml = {
                     if(sub[s2] == '?'){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
+                    }
+                    if(sub.substring(s2, s2+8) == "![CDATA["){
+                        var s3 = xml._re_close_cdata.exec(sub).index;
+                        s = sub.substring(s3+3, sub.length);
+                        insideTag = false;
+                        return sub.substring(s2+8, s3);
                     }
                     s = s.substring(start+1, s.length);
                     return "<";
@@ -212,6 +219,12 @@ xml = {
                     if(sub[s2] == '?'){
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
+                    }
+                    if(sub.substring(s2, s2+8) == "![CDATA["){
+                        var s3 = xml._re_close_cdata.exec(sub).index;
+                        s = sub.substring(s3+3, sub.length);
+                        insideTag = false;
+                        return sub.substring(s2+8, s3);
                     }
                     s = s.substring(start+1, s.length);
                     return "<";
