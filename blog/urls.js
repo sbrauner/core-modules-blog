@@ -22,7 +22,6 @@ Blog._addFilters = function( searchCriteria , filter ){
 
 /* keep track of all pages that wind up as 404's */
 Blog.handleMissingUri = function(uri) {
-    SYSOUT("MISSING PAGE: " + uri);
     var missingPage = new MissingPage(uri);
     db.blog.missingpages.save(missingPage);
 //    response.setResponseCode(404);
@@ -81,17 +80,27 @@ Blog.handleRequest = function( request , arg ){
 // SYSOUT("postResults: " + postResults);
 // SYSOUT("page: " + pageNumber);
     
-        return {isPage: isPage,
-                posts: posts,
-                isCategorySearch: false,
-                baseSearch: '',
-                hasPrevious: pageStart > 1,
-                hasNext: postResults > pageEnd,
-                category: category,
-                pageNumber: pageNumber,
-                searchTerm: request.q
-        };
-    
+        if (postResults == 0) {
+            return {isPage: true,
+                    posts: [Post.getNoResults()],
+                    isCategorySearch: false,
+                    baseSearch: '',
+                    hasPrevious: false,
+                    hasNext: false,
+                    category: category,
+                    pageNumber: 1,
+                    searchTerm: request.q};
+        } else {
+            return {isPage: isPage,
+                    posts: posts,
+                    isCategorySearch: false,
+                    baseSearch: '',
+                    hasPrevious: pageStart > 1,
+                    hasNext: postResults > pageEnd,
+                    category: category,
+                    pageNumber: pageNumber,
+                    searchTerm: request.q};
+        }
     } else {
         var searchCriteria = { live : true , ts : { $lt : Date() } }; // add ts filter
 	    var entries;
@@ -136,7 +145,7 @@ Blog.handleRequest = function( request , arg ){
             entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
 
             if (entries.length() > 0) {
-                SYSOUT('found matching entries for category: ' + uri);
+                // SYSOUT('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: uri });
             } else {
@@ -146,7 +155,7 @@ Blog.handleRequest = function( request , arg ){
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
                 if (entries.length() > 0) {
-                    SYSOUT('found matching entries for: ' + uri);
+                    // SYSOUT('found matching entries for: ' + uri);
                 }
             }
         }
