@@ -93,7 +93,7 @@ Blog.handleRequest = function( request , arg ){
         };
     
     } else {
-        var searchCriteria = { live : true }; // add ts filter
+        var searchCriteria = { live : true , ts : { $lt : Date() } }; // add ts filter
 	    var entries;
 	
 	    if(arg.filter) {
@@ -176,41 +176,53 @@ Blog.handleRequest = function( request , arg ){
     };
 };
 
-Blog.handlePosts = function( request , thePost ){
-    if ( request.action == "delete" ) {
+Blog.handlePosts = function( request , thePost , user ){
+    if ( user && user.isAdmin() && request.action == "delete" ) {
     	thePost.deleteComment( request.cid );
     	db.blog.posts.save( thePost );
     	return;
     }
     
     if ( request.addComment == "yes" ) {
-	    var comment = null;
+	var comment = null;
 	
-	    SYSOUT( "want to add comment" );
+	SYSOUT( "want to add comment" );
 	
+	var hasYourName = request.yourname && request.yourname.trim().length != 0;
+	var hasEmail = request.email && request.email.trim().length != 0;
+
     	if ( user ) {
     	    comment = {};
     	    comment.author = user.name;
     	    comment.email = user.email;
-    	} else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+    	} 
+	else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
     	    if ( Captcha.valid( request ) ) {
     		comment = {};
     		comment.author = request.yourname;
     		comment.email = request.email;
     		comment.url = request.url;
-    	    } else {
-    		print( "invalid captcha response : " + request.captcha );
-    		return;
+    	    } 
+	    else {
+    		return "invalid captcha response : " + request.captcha;
     	    }
     	}
-        
+	
+    	if ( comment ) {
+	    
 	    comment.ts = Date();
 	    comment.text = request.txt;
-        
-    	if ( comment ) {
+
     	    thePost.addComment( comment );
     	    db.blog.posts.save( thePost );
+	    
+	    return "Comment Saved";
     	}
-    	return;
+
+	if ( ! hasYourName )
+	    return "need to specify name";
+	
+	if ( ! hasEmail )
+	    return "need to specify email address";
     }
 };

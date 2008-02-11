@@ -1,5 +1,8 @@
 
 Captcha = { 
+    
+    DEBUG : true ,
+    
     img : function(){
 
         if ( ! response )
@@ -8,35 +11,48 @@ Captcha = {
         if ( ! db )
             throw( "need a db" );
 
-        var s = "eliot";
+	if ( Math.random() > .99 ){
+	    var d = new Date();
+	    d = new Date( d.getTime() - ( 1000 * 3600 * 6 ) );
+	    if ( Captcha.DEBUG ) SYSOUT( "deleting before : " + d );
+	    db.user._captcha.remove( { ts : { $lt : d } } );
+	}
+			  
+	
+	var s = "";
+	while ( s.length < 6 )
+	    s += md5( Math.random() ).replace( /\d/g , "" ).substring( 0 , 6 );
         JSCaptcha.img( s , response );
         
-        var id = "asd" + Math.random();
-        
-        db.user.captcha.save( { id : id , s : s , ts : Date() } );
-        response.addCookie( "cid" , id );
+	var obj = { s : s , ts : Date() };
+        db.user._captcha.save( obj );
+	if ( Captcha.DEBUG ) SYSOUT( tojson( obj ) );
+        response.addCookie( "cid" , obj._id );
     } ,
     
     valid : function( request ){
-        SYSOUT( "in valid" );
+        if ( Captcha.DEBUG ) SYSOUT( "in valid" );
+
         if ( ! request )
             return false;
         
         var id = request.getCookie( "cid" );
-        SYSOUT( "id:" + id );
+
         if ( ! id )
             return false;
         
-        var c = db.user.captcha.findOne( { id : id } );
-        SYSOUT( "c:" + tojson( c ) );
+	id = ObjectId( id );
+	if ( Captcha.DEBUG ) SYSOUT( "id : " + id + " : " + db.user._captcha );
+        var c = db.user._captcha.findOne( id );
+        if ( Captcha.DEBUG ) SYSOUT( "c:" + tojson( c ) );
         if ( ! c ){
             return false;
         }
 
         // TODO: check time
-        //db.user.captcha.remove( c );
+        //db.user._captcha.remove( c );
         
-	SYSOUT( "request.captcha : " + request.captcha );
+	if ( Captcha.DEBUG ) SYSOUT( "request.captcha : " + request.captcha );
         return request.captcha == c.s;
     }
     

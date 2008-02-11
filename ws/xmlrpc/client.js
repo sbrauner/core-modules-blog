@@ -10,15 +10,18 @@
  
 core.content.xml();
 
-
 ws.xmlrpc.Client = function(host, port, path) {
     // member variables
     this.host = host || '';
     this.port = port || 80;
-    this.path = path || '/RPC2';
+    this.path = path || '/';
     this.contentType = 'text/xml';
     this.isAsynchronous = false;
     this.xmlHTTPRequest = new XMLHttpRequest();
+    this.isLastResponseFault = false;
+    this.lastResponse = '';
+    this.lastValue = '';
+    this.lastResponseCode = null;
 };
 
 
@@ -27,8 +30,8 @@ ws.xmlrpc.Client = function(host, port, path) {
  */
 ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
     if (!methodName) return; // this should really throw an exception
-    
-    var content = '<?xml version="1.0"?>\n\n';
+
+    var content = '<?xml version="1.0"?>\n';
     var callObject = { methodName : methodName, params: [] };
     if (parameters) {
         // process each passed in parameter in the parameters array, and convert to the proper type
@@ -38,8 +41,8 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
             if (isNumber(parameter)) value = { i4 : parameter.toFixed() }; // we need also a double
             else if (isDate(parameter)) value = { 'dateTime.iso8601': parameter.format("yyyyMMdd'T'HH:mm:ss") };
             else if (isBool(parameter)) value = { 'boolean': parameter ? 1 : 0 };
-            else if (isString(paramter)) value = { string: parameter };
-            else value = { string: parameter } // this should be base64
+            else if (isString(paramter)) value = parameter;
+            else value = parameter // this should be base64
             
             callObject.params.push( { _name : "param" , value : value });
         }
@@ -49,32 +52,78 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
     
     var url = 'http://' + this.host + ':' + this.port + this.path;
     this.xmlHTTPRequest.open("POST", url, this.isAsynchronous);
-    this.xmlHTTPRequest.setRequestHeader("Content-type", this.contentType);
-    this.xmlHTTPRequest.setRequestHeader("Content-length", content.length);
-
+    this.xmlHTTPRequest.setRequestHeader("Content-Type", this.contentType);
     this.xmlHTTPRequest.send(content);
     
     // handle the response from the server
-    // rewrite this as a switch statement
-    SYSOUT('Got Status: ' + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText);
+    // TODO: rewrite this as a switch statement
+    this.lastResponseCode = this.xmlHTTPRequest.stats;
     if (this.xmlHTTPRequest.status == 200) {
-        ws.xmlrpc.Client.processResponse(this.xmlHTTPRequest.responseText);
+        // got a valid method response, so process it
+        return this._processResponse(this.xmlHTTPRequest.responseText);
     } else {
+        // there's a lower level issue, so fail
         SYSOUT("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText);
-    };
-}
+    }
+};
 
-ws.xmlrpc.Client.processResponse = function(responseText) {
-    SYSOUT('processing response: ' + responseText);
+ws.xmlrpc.Client.prototype._processResponse = function(responseText) {
+    if (!responseText) {
+        // we received no response to process
+        this.lastResponse = null;
+        return null;
+    }
+    
     response = xml.fromString(responseText);
-    SYSOUT('RESPONSE: ' + tojson(response));
-}
+    this.lastResponse = response;
+    if (response) {
+        if (response._name == 'methodResponse') {
+            if (response.$[0]._name == 'params') {
+                // we got a valid response
+                this.isLastResponseFault = false;
+    
+                // get the contents of the response, which should be a single value
+                var value = response.$[0].$[0].$[0].$[0]
+                this.lastValue = value;
+    
+                return {isFault: false, value: value};
+            } else if (response.$[0]._name == 'fault') {
+                // we got an XML-RPC fault
+                this.isLastResponseFault = true;
+    
+                // get the contents of the response, which should be a faultString and faultValue
+                var value = response.$[0].$[0].$[0]
+                this.lastValue = value;
 
-
+                var faultString = value.$[0].$[1].$;
+                var faultValue = value.$[1].$[1].$[0].$;
+                return {isFault: true, faultString: faultString, faultValue: faultValue};
+            }
+        }
+    }
+    
+    // we received no response or an invalid response
+    return null;
+};
 
 ws.xmlrpc.Client.Test = function() {
     // create a new object
-    var client = new ws.xmlrpc.Client('localhost', 9001);
-    client.methodCall('sample.sumAndDifference', [6, 3]);
-//    client.methodCall('sample.sumAndDifference', [1, 1.5, new Date(), true, false, "this is a test"]);
-}
+    var client = new ws.xmlrpc.Client('ping.feedburner.com');
+    //var client = new ws.xmlrpc.Client('rpc.technorati.com', 80, '/rpc/ping');
+    //var client = new ws.xmlrpc.Client('rpc.pingomatic.com', 80, '/RPC2');
+
+    // test XML-RPC blog ping
+    var response = client.methodCall('weblogUpdates.ping', ['Silicon Alley Insider', 'http://www.alleyinsider.com/', 'http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle']);
+    
+    if (!response) {
+        SYSOUT('Got empty response');
+    } else {
+        if (response.isFault) {
+            // we got a fault
+            SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
+        } else {
+            SYSOUT('Success: ' + tojson(response.value));
+        }
+    }
+};
+

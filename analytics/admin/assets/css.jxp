@@ -11,9 +11,6 @@
    text-align: center; 
 }
 
-.a_section table{ 
-   font-size: .7em; 
-}
 
 .a_main { 
    display: inline; 

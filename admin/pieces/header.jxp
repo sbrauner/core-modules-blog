@@ -22,7 +22,7 @@
         <li><a href="/admin/shell.jxp">Shell</a></li>
         <li><a href="/admin/cron.jxp">Cron</a></li>
         <li><a href="/admin/doc.jxp?f=/">Doc Tool</a></li> 
-        <li><a href="http://www.10gen.com/wiki/">10gen.com/wiki</a></li>
+        <li><a href="http://www.10gen.com/wiki/">Documentation</a></li>
         <if allowModule>
             <% for ( var mod in allowModule ){ %>
                 <li class="module_menu_item"><a href="/admin/<%= mod %>/index"><%= mod %></a></li>

@@ -376,6 +376,8 @@ xml = {
 };
 
 function haskey(obj, prop){
+    if ( ! isObject( obj ) )
+	return false;
     for (var i in obj){
         if (i == prop){
             return true;
