@@ -42,3 +42,19 @@ target = "<danatest><methodName>weblogUpdates.ping</methodName>"+
     "<param><value><string>http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle</string></value></param>"+
     "</params></danatest>";
 assert(s == target);
+
+x = [ {_name: "elem", $: {_name: "child", $: "Hi"}},
+      {_name: "elem", child: "Yo"},
+      {_name: "elem", $: null} ];
+s = strip(xml.toString("childrentest", x));
+
+target = "<childrentest><elem><child>Hi</child></elem><elem><child>Yo</child></elem><elem/></childrentest>";
+assert(s == target);
+
+x = [ {_name: "elem", _props: {attr1: "sup"}},
+      {_name: "elem", _props: {attr1: "hi"}, $: null}];
+s = strip(xml.toString("dollartest", x));
+target = "<dollartest><elemattr1='sup'></elem><elemattr1='hi'/></dollartest>";
+print(target);
+print(s);
+assert(s == target);
