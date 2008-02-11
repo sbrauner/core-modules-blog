@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<rss version="2.0">
 <% 
 
 core.blog.post(); 
@@ -11,6 +12,9 @@ function clean( s ){
     s = s.replace( /&nbsp;/g , " " );
     s = s.replace( /&rsquo;/g , "'" );
     s = s.replace( /&mdash;/g , "-" );
+    s = s.replace( /&ldquo;/g , "'" );
+    s = s.replace( /&rdquo;/g , "'" );
+
     s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
     
     //s = s.replace( /<\/?embed[^>]*>/g , "" );
@@ -23,7 +27,6 @@ function clean( s ){
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml"); %>
-<rss version="2.0">
     <channel>
         <title><%= siteName %></title>
         <link>http://<%= request.getHeader( "Host") %></link>
