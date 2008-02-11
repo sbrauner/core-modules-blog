@@ -93,7 +93,7 @@ Blog.handleRequest = function( request , arg ){
         };
     
     } else {
-        var searchCriteria = { live : true }; // add ts filter
+        var searchCriteria = { live : true , ts : { $lt : Date() } }; // add ts filter
 	    var entries;
 	
 	    if(arg.filter) {
