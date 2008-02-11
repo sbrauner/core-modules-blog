@@ -51,6 +51,8 @@ if ( request.action == "save" ) {
    	    thePost.content = request.content;
 	    thePost.excerpt = request.excerpt;
 	    thePost.ts = new Date( request.ts );
+	    if ( request.author )
+		thePost.author = request.author;
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
