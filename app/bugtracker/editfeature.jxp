@@ -53,18 +53,20 @@ if(request.fstatus){
         <h1>Editing new bug</h1>
         <% } %>
         <% if (orig) { %>
-        <span style="color: red">Someone edited this bug in the meantime. Here's their version.</span>
-        <ul>
-          <li>Title: <%= orig.title%></li>
-          <li>Owner: <%= orig.owner%></li>
-          <li>Status: <%= orig.status%></li>
-          <li>Severity: <%= orig.severity%></li>
-          <li>Product: <%= orig.product %></li>
-          <li>OS: <%= orig.OS %></li>
-          <li>Target release: <%= orig.targetRelease%></li>
-          <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
-        </ul>
+        <div id="original">
+          <span style="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
+          <ul>
+            <li>Title: <%= orig.title%></li>
+            <li>Owner: <%= orig.owner%></li>
+            <li>Status: <%= orig.status%></li>
+            <li>Severity: <%= orig.severity%></li>
+            <li>Product: <%= orig.product %></li>
+            <li>OS: <%= orig.OS %></li>
+            <li>Target release: <%= orig.targetRelease%></li>
+            <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
+          </ul>
         Here's your version:
+        </div>
                    <% } %>
 
     <form method="POST">
@@ -77,8 +79,9 @@ if(request.fstatus){
            // is null; that happens implicitly since None is first. %>
       <%= app.bugtracker.data.helper.select(feature, "owner", "f",
                                             [false].concat(db.users.find({}).toArray()),
-                                            function(u){return u?u.name:"None";},
-                                            function(u){return u?u._id:"null"; }) %> <br/>
+                                            {viewfunc: function(u){return u?u.name:"None";},
+                                             valuefunc: function(u){return u?u._id:"null"; },
+                                            }) %> <br/>
       Status:<br/> <%= app.bugtracker.data.helper.select(feature, "status", "f") %></br>
       Severity:<br/> <%= app.bugtracker.data.helper.select(feature, "severity", "f") %><br/>
       Product:<br/>

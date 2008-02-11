@@ -1,5 +1,7 @@
 app.bugtracker.data.helper = {
-    select: function(obj, field, prefix, opts, view, value){
+    select: function(obj, field, prefix, opts, conf){
+        var viewfunc = conf.view;
+        var valuefunc = conf.value;
         s = "";
         s += "<select name=\""+prefix+field+"\">";
         var orig = obj[field];
@@ -9,9 +11,9 @@ app.bugtracker.data.helper = {
         }
         for(var f in opts){
             var text = opts[f];
-            if(view) text = view(text);
+            if(viewfunc) text = viewfunc(text);
             var val = opts[f];
-            if(value) val = value(val);
+            if(valuefunc) val = valuefunc(val);
             s += "<option";
             // This paranoid check prevents the possibility of opts[f] being
             // false or null and getting an exception when you access
@@ -26,7 +28,7 @@ app.bugtracker.data.helper = {
                 s += " selected=1"
 
             if(opts[f] != val)
-                s += " value=\""+ val +"\"";
+                s += " valuefunc=\""+ val +"\"";
             s += ">";
             s += text;
             s += "</option>";
