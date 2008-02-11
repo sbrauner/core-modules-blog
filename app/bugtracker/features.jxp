@@ -23,12 +23,12 @@ core.user.auth();
             {name: "status"},
             {name: "severity"}
         ],
-        detailUrl: "editfeature?id=",
+        detailUrl: "feature_edit?id=",
         searchable: true
     });
 
     tab.dbview(tab.find().sort({number: 1}));
 }
 
-    <a href="editfeature">New feature</a>
+    <a href="feature_edit">New feature</a>
 </body>
