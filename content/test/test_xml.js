@@ -122,3 +122,12 @@ assert(x.children[4].$ == "yeah");
 var s = "<ctest><![CDATA[<greeting>hello</greeting>]]></ctest>";
 var x = xml.fromString(s);
 assert(x.$ == "<greeting>hello</greeting>");
+
+var s = "<ctest><![CDATA[<greeting>hello&amp;</greeting>]]></ctest>";
+var x = xml.fromString(s);
+assert(x.$ == "<greeting>hello&amp;</greeting>");
+
+var s = "<ctest>&lt;greeting&gt;</ctest>";
+var x = xml.fromString(s);
+assert(x.$ == "<greeting>");
+

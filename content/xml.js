@@ -9,6 +9,7 @@
    </myobjtype>
 
 */
+core.content.html();
 
 xml = {
 
@@ -32,7 +33,7 @@ xml = {
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
-                    append( " " + a + "=\"" + obj._props[a] + "\" " );
+                    append( " " + a + "=\"" + content.HTML.escape_html(obj._props[a]) + "\" " );
                 }
             }
 
@@ -47,7 +48,7 @@ xml = {
         if ( obj == null ){
         }
         else if ( isString( obj ) || isDate( obj ) ){
-            append( obj );
+            append( content.HTML.escape_html(obj.toString()) );
         }
         else if ( isObject( obj ) ){
 
@@ -128,7 +129,7 @@ xml = {
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
-                    if(sub.substring(s2, s2+8) == "![CDATA["){
+                    if(sub.substring(s2, s2+8) == "!\[CDATA\["){
                         var s3 = xml._re_close_cdata.exec(sub).index;
                         s = sub.substring(s3+3, sub.length);
                         insideTag = false;
@@ -140,7 +141,7 @@ xml = {
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 // CDATA node
-                return sub.substring(0, next).trim();
+                return content.HTML.unescape_html(sub.substring(0, next).trim());
             }
             else {
                 if(s[start] == '?'){
@@ -220,7 +221,7 @@ xml = {
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
-                    if(sub.substring(s2, s2+8) == "![CDATA["){
+                    if(sub.substring(s2, s2+8) == "!\[CDATA\["){
                         var s3 = xml._re_close_cdata.exec(sub).index;
                         s = sub.substring(s3+3, sub.length);
                         insideTag = false;
@@ -232,7 +233,7 @@ xml = {
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 // CDATA node
-                return sub.substring(0, next).trim();
+                return content.HTML.unescape_html(sub.substring(0, next).trim());
             }
             else {
                 if(s[start] == '?'){
@@ -332,6 +333,7 @@ xml = {
                     else{
                         var eq = tokenizer();
                         var val = tokenizer();
+                        val = content.HTML.unescape_html(val);
                         props[next] = val;
                         hasprops = true;
                     }

@@ -61,3 +61,8 @@ var s = "<pctest>hi<elem>1</elem>sup<elem>2</elem>yeah</pctest>";
 var x = xml.fromString(s);
 var news = strip(xml.toString(null, x));
 assert(news == s);
+
+var x = [{_name: "elem", $: "<int>"},
+    {_name: "elem", $: "whee", _props: {attr: '"hi"\'yep'}}];
+var s = strip(xml.toString("ctest", x));
+assert(s == "<ctest><elem>&lt;int&gt;</elem><elemattr='&quot;hi&quot;&apos;yep'>whee</elem></ctest>");
