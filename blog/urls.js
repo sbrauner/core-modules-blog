@@ -188,6 +188,9 @@ Blog.handlePosts = function( request , thePost , user ){
 	
 	SYSOUT( "want to add comment" );
 	
+	var hasYourName = request.yourname && request.yourname.trim().length != 0;
+	var hasEmail = request.email && request.email.trim().length != 0;
+
     	if ( user ) {
     	    comment = {};
     	    comment.author = user.name;
@@ -204,7 +207,7 @@ Blog.handlePosts = function( request , thePost , user ){
     		return "invalid captcha response : " + request.captcha;
     	    }
     	}
-        
+	
     	if ( comment ) {
 	    
 	    comment.ts = Date();
@@ -215,6 +218,11 @@ Blog.handlePosts = function( request , thePost , user ){
 	    
 	    return "Comment Saved";
     	}
-    	return;
+
+	if ( ! hasYourName )
+	    return "need to specify name";
+	
+	if ( ! hasEmail )
+	    return "need to specify email address";
     }
 };
