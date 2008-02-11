@@ -1,5 +1,6 @@
 app.bugtracker.data.helper = {
     select: function(obj, field, prefix, opts, conf){
+        if(! conf) conf = {};
         var viewfunc = conf.view;
         var valuefunc = conf.value;
         s = "";
