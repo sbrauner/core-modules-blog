@@ -1,15 +1,4 @@
 app.bugtracker.data.helper = {
-    getlist: function(){
-        //SYSOUT(getlist(app, "bugtracker", "data", "helper", "getlist") == app.bugtracker.data.helper.getlist);
-        var obj = arguments[0];
-        var i = 1;
-        while(obj && i < arguments.length){
-            obj = obj[arguments[i]];
-            ++i;
-        }
-        return obj;
-    },
-
     select: function(obj, field, prefix, opts, view, value){
         s = "";
         s += "<select name=\""+prefix+field+"\">";

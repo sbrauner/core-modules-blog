@@ -1,10 +1,10 @@
 app.bugtracker = Object();
 SYSOUT('In app.bugtracker._init.js');
-core.app.bugtracker.data.feature();
 core.app.bugtracker.bugtracker();
+core.app.bugtracker.data.feature();
 
 app.bugtracker._get_user_list = function (name){
-    alist = app.bugtracker.data.helper.getlist(allowModule, "bugs", name);
+    alist = app.App.getlist(allowModule, "bugs", name);
     return alist;
 };
 
