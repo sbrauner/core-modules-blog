@@ -103,3 +103,18 @@ assert(f.length == 3);
 assert(f[0]._name == "value");
 assert(f[1]._name == "value");
 assert(f[2]._name == "value");
+
+var s = "<pctest>hi<elem>1</elem>sup<elem>2</elem>yeah</pctest>";
+var x = xml.fromString(s);
+
+assert(x._name == "pctest");
+assert(x.children[0]._name == "PCDATA");
+assert(x.children[0].$ == "hi");
+assert(x.children[1]._name == "elem");
+assert(x.children[1].$ == "1");
+assert(x.children[2]._name == "PCDATA");
+assert(x.children[2].$ == "sup");
+assert(x.children[3]._name == "elem");
+assert(x.children[3].$ == "2");
+assert(x.children[4]._name == "PCDATA");
+assert(x.children[4].$ == "yeah");

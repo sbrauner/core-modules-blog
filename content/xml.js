@@ -294,9 +294,7 @@ xml = {
 
     _from : function( tokenizer ){
         var root = [];
-        var next = tokenizer();
-        if(next != "<") return next;
-        tokenizer.lookahead = next;
+        var next;
 
         while(true){
             next = tokenizer();
@@ -310,7 +308,7 @@ xml = {
                 var name = tokenizer();
                 if(name == "/"){
                     // our root element just ended; return what we have
-                    return root;
+                    break;
                 }
                 var props = {};
                 var slash = false;
@@ -349,8 +347,13 @@ xml = {
             }
         }
 
-        if(root.length == 1 && root[0] == null || isString(root[0]))
+        if(root.length == 1 && (root[0] == null || isString(root[0])))
             return root[0];
+        for(var i in root){
+            if (isString(root[i])){
+                root[i] = {_name: "PCDATA", $: root[i]};
+            }
+        }
         return root;
 
     },
