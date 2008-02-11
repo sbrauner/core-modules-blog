@@ -55,6 +55,9 @@ x = [ {_name: "elem", _props: {attr1: "sup"}},
       {_name: "elem", _props: {attr1: "hi"}, $: null}];
 s = strip(xml.toString("dollartest", x));
 target = "<dollartest><elemattr1='sup'></elem><elemattr1='hi'/></dollartest>";
-print(target);
-print(s);
 assert(s == target);
+
+var s = "<pctest>hi<elem>1</elem>sup<elem>2</elem>yeah</pctest>";
+var x = xml.fromString(s);
+var news = strip(xml.toString(null, x));
+assert(news == s);

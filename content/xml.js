@@ -27,7 +27,7 @@ xml = {
 
         var newLine = false;
 
-        if ( name ){
+        if ( name && name != "PCDATA" ){
             xml._indent( append , indent );
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
@@ -76,7 +76,7 @@ xml = {
             xml.to(append, null, obj.children, indent+1);
 
 
-        if ( name ){
+        if ( name && name != "PCDATA" ){
             if ( newLine )
                 xml._indent( append , indent );
             append( "</" + name + ">\n" );
