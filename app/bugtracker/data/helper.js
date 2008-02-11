@@ -28,7 +28,7 @@ app.bugtracker.data.helper = {
                 s += " selected=1"
 
             if(opts[f] != val)
-                s += " valuefunc=\""+ val +"\"";
+                s += " value=\""+ val +"\"";
             s += ">";
             s += text;
             s += "</option>";
