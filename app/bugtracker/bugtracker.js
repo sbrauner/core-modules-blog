@@ -46,15 +46,16 @@ app.App.getlist = function(){
 app.bugtracker.BugTracker = function() {};
 app.bugtracker.BugTracker.prototype = new app.App();
 app.bugtracker.BugTracker.prototype.name = "bugs";
+app.bugtracker.BugTracker.prototype.list_projects = function(){
+    var cur = db.bugtracker.projects.find();
+    return cur.toArray();
+};
+
 app.bugtracker.app = new app.bugtracker.BugTracker();
 
 app.bugtracker._get_user_list = function (name){
     alist = app.bugtracker.app.config(name, {merge: true});
     return alist;
-};
-
-app.bugtracker.list_products = function(){
-    return app.bugtracker._get_user_list("product");
 };
 
 app.bugtracker.list_OSes = function(){

@@ -1,5 +1,6 @@
 <%
 core.app.bugtracker.data.feature();
+core.app.bugtracker.data.project();
 core.app.bugtracker.data.helper();
 core.user.user();
 core.user.auth();
@@ -37,15 +38,18 @@ if(request.fstatus){
         if(feature.owner == "null") feature.owner = null;
         else
             feature.owner = db.users.findOne({_id: feature.owner});
-        var props = ["product", "OS", "release"];
-        for(var i in props){
-            var p = props[i];
-            if(feature[p] == "Other"){
-                feature[p] = request["extra_f"+p];
-                if(! app.bugtracker.app.config(p, {match: feature[p]})){
-                    app.bugtracker.app.add_config("product", feature[p]);
-                }
-            }
+        var props = ["project", "OS", "release"];
+        p = "project";
+        if(feature.project == "null"){
+            feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
+            db.bugtracker.projects.save(feature.project);
+        }
+        if(feature.area == "New area"){
+            feature.area = request["extra_farea"];
+        }
+
+        if(!app.App.findArray(feature.project.areas, feature.area)){
+            feature.project.areas.push(feature.area);
         }
 
         if(feature.number == 0)
@@ -70,7 +74,7 @@ if(request.fstatus){
           var elems = document.getElementsByName(input);
           var select = elems[0];
           var input = document.getElementsByName("extra_"+input)[0];
-          if(select.options[select.selectedIndex].text == "Other"){
+          if(select.options[select.selectedIndex].text.indexOf("New ") == 0){
               input.disabled = false;
           }
           else{
@@ -95,7 +99,7 @@ if(request.fstatus){
         <li>Owner: <%= orig.owner%></li>
         <li>Status: <%= orig.status%></li>
         <li>Severity: <%= orig.severity%></li>
-        <li>Product: <%= orig.product %></li>
+        <li>Project: <%= orig.project %></li>
         <li>OS: <%= orig.OS %></li>
         <li>Target release: <%= orig.targetRelease%></li>
         <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
@@ -140,20 +144,32 @@ if(request.fstatus){
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
         </div>
         <div class="field">
-          <div class="field_name">Product</div>
+          <div class="field_name">Project</div>
           <div class="field_value">
-            <% var choices = app.bugtracker.list_products();
-               if (choices) {
-                   var pchoices = choices.concat(["Other"]);
+            <%
+var choices = app.bugtracker.app.list_projects();
+var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
                        %>
             <%=
-               app.bugtracker.data.helper.select(feature, "product", "f", pchoices,
-                                                 {onchange: "enableInput('fproduct')"})%>
-            <input name="extra_fproduct" disabled="true"/>
-                       <% }
-                          else { %>
-                       <input name="fproduct"/>
-                   <% } %>
+               app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
+                                                 {view: function(p){ return p.name; },
+                                                  value: function(p){ return p._id; },
+                                                  onchange: "enableInput('fproject')"})%>
+            <input name="extra_fproject" <%=choices.length > 0? "disabled=\"true\"": "" %>/>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field_name">Area</div>
+          <div class="field_value">
+            <%
+            var project = pchoices[0];
+var choices = project.areas;
+        var pchoices = choices.concat(["New area"]);
+                       %>
+            <%=
+               app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
+                                                 {onchange: "enableInput('farea')"})%>
+            <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
           </div>
         </div>
         <div class="field">
