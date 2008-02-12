@@ -2,31 +2,20 @@
 
 Posts - <a href="post_edit">new</a>
 <p>
-
 {
+    var tab = new htmltable({
+        ns: db.blog.posts,
+        cols: [
+            { name: "title", isLink: true, searchWidth: 50 },
+            { name: "author" },
+            { name: "ts", heading: "created", view: function(x){return x.toString().replace(/... EST /,' ');}}, 
+            { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>": "no"; }},
+            { name: "name", isLink: true, searchable: false, view: function(x,o){ return 'edit'; }
+        }
+        ],
+        detailUrl: "post_edit?id=",
+        searchable: true
+    });
 
- var tab = new htmltable( 
-  { 
-   ns : db.blog.posts,
-   cols : [
-     { name: "title", searchWidth: 50 },
-     { name: "author" },
-     { name: "ts", heading: "created", 
-         view: function(x){return x.toString().replace(/... EST /,' ');}
-     }, 
-     { name: "live", 
-       view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>" : "no"; }, 
-       searchWidth: 4, type: "boolean"
-     } ,
-     { name : "name" , searchWidth : 0 , searchable : false ,
-     view : function(x,o){ return "<a href='/admin/blog/post_edit?id=" + o._id + "'>edit</a>"; }
-      }
-   ],
-   detailUrl: "post_edit?id=",
-   searchable: true
-  } 
- );
-
- tab.dbview( tab.find({cls:"entry"}).sort({ts:-1}) );
-
+    tab.dbview( tab.find({ cls: "entry" }).sort({ ts: -1 }));
 }
