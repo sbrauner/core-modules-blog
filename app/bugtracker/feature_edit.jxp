@@ -25,7 +25,7 @@ if (request._method == "delete"){
     response.setHeader("Location", "./");
     return;
 }
-feature.number = parseInt(feature.number).toFixed(0);
+feature.number = parseInt(feature.number).toFixed();
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
@@ -81,7 +81,7 @@ if(request.fstatus){
   </head>
   <body>
     <% if(feature.number != 0){ %>
-    <h1>Editing bug number <%= feature.number.toFixed() %></h1>
+    <h1>Editing bug number <%= feature.number %></h1>
     <% } else { %>
     <h1>Editing new bug</h1>
     <% } %>
@@ -111,6 +111,14 @@ if(request.fstatus){
         <div class="field">
           <div class="field_name">Title</div>
           <div class="field_value"><input name="ftitle"/></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Date reported</div>
+          <div class="field_value"><%= feature.creationDate%></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Last modified</div>
+          <div class="field_value"><%= feature.lastModified%></div>
         </div>
         <div class="field">
           <div class="field_name">Owner</div>
