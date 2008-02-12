@@ -3,6 +3,8 @@
 core.text.stem();
 
 Search = { 
+
+    DEBUG : false ,
     
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
@@ -42,10 +44,11 @@ Search = {
         return obj;
     } ,
 
-    search : function( table , queryString ){
+    search : function( table , queryString , options ){
 	
-	var debug = true;
-	if ( debug ) SYSOUT( queryString );
+        options = options || {};
+        
+	if ( Search.DEBUG ) SYSOUT( queryString );
 
         var fullObjects = Object();
         
@@ -58,7 +61,7 @@ Search = {
                 if ( z.length == 0 )
                     return;
 
-                if ( debug ) SYSOUT( "\t searching on word [" + z + "]" );
+                if ( Search.DEBUG ) SYSOUT( "\t searching on word [" + z + "]" );
                 
                 var res = table.find( { _searchIndex : z } );
                 
@@ -73,23 +76,23 @@ Search = {
 
                     max = Math.max( max , matchCounts[temp] );
                     
-	        	    if ( debug ) SYSOUT( "\t\t " + tempObject.title );
-
+                    if ( Search.DEBUG ) SYSOUT( "\t\t " + temp + "\t" + tempObject.title );
+                    
                     fullObjects[temp] = tempObject;
                     if ( ! all.contains( temp ) )
                         all.add( temp );
                 }
             } );
         
-        //print( "matchCounts: " + tojson( matchCounts ) );
-
+        if ( Search.DEBUG ) print( "matchCounts: " + tojson( matchCounts ) );
+        
         all.sort( function( l , r ){ 
                 return matchCounts[r] - matchCounts[l];
             } );
         
         var good = Array();
         all.forEach( function( z ){
-                if ( matchCounts[z] == max ){
+                if ( matchCounts[z] == max || good.length < ( options.min || 10 ) ){
                     good.add( fullObjects[z] );
                     return;
                 }
