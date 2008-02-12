@@ -15,6 +15,7 @@ app.bugtracker.data.Feature = function() {
     this.creationDate = new Date();
     this.lastModified = new Date();
     this.project = '';
+    this.type = '';
     this.OS = '';
     this.targetRelease = '';
     this.title = '';
@@ -32,6 +33,10 @@ app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',
 app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
                                     LOW: 'low' };
+
+app.bugtracker.data.Feature.prototype.TYPE = { BUG: 'bug',
+                                    FEATURE: 'feature',
+                                    INQUIRY: 'inquiry' };
 
 app.bugtracker.data.Feature.prototype.presave = function(){
     this.number = parseInt(this.number);

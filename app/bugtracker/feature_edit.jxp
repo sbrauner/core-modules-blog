@@ -127,6 +127,7 @@ function ObjectId(){ return null; }
         <li>Owner: <%= orig.owner%></li>
         <li>Status: <%= orig.status%></li>
         <li>Severity: <%= orig.severity%></li>
+        <li>Type: <%= orig.type %></li>
         <li>Project: <%= orig.project %></li>
         <li>Area: <%= orig.area %></li>
         <li>OS: <%= orig.OS %></li>
@@ -171,6 +172,13 @@ function ObjectId(){ return null; }
         <div class="field">
           <div class="field_name">Severity</div>
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Type</div>
+          <div class="field_value">
+            <%=
+               app.bugtracker.data.helper.select(feature, "type", "f") %>
+          </div>
         </div>
         <div class="field">
           <div class="field_name">Project</div>
