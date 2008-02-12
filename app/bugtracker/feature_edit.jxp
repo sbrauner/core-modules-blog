@@ -35,6 +35,9 @@ if(request.fstatus){
             var p = props[i];
             if(feature[p] == "Other"){
                 feature[p] = request["extra_f"+p];
+                if(! app.bugtracker.app.config(p, {match: feature[p]})){
+                    app.bugtracker.app.add_config("product", feature[p]);
+                }
             }
         }
 
