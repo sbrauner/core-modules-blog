@@ -1,10 +1,12 @@
 app.bugtracker.data.helper = {
     select: function(obj, field, prefix, opts, conf){
-        if(! conf) conf = {};
+        if(! conf) conf = { view: null, value: null };
         var viewfunc = conf.view;
+        delete conf.view;
         var valuefunc = conf.value;
+        delete conf.value;
         s = "";
-        s += "<select name=\""+prefix+field+"\">";
+        s += "<select name=\""+prefix+field+"\" "+app.bugtracker.data.helper.format(conf)+">";
         var orig = obj[field];
         if(! opts){
             var field_c = field.toUpperCase();
@@ -36,5 +38,18 @@ app.bugtracker.data.helper = {
         }
         s += "</select>";
         return s;
+    },
+    format: function(obj){
+        // Transform an object full of k:v pairs to a string full of "k=\"v\""
+        // elements (for embedding as attributes in an HTML element).
+        //
+        // Useful after you've removed all the excess parameters for your function.
+        s = "";
+        for(var prop in obj){
+            s += prop + "=";
+            s += '"' + obj[prop] + '"' + " ";
+        }
+        return s;
     }
+
 };

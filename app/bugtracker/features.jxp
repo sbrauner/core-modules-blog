@@ -18,10 +18,11 @@ core.user.auth();
             {name: "title", searchWidth: 50},
             {name: "reporter", view: function(u) { return u.name; }},
             {name: "owner", view: function(u) { if(u) return u.name; else return "none"; }},
-            {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
-            {name: "lastModified", view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "status"},
-            {name: "severity"}
+            {name: "severity"},
+            {name: "product"},
+            {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
+            {name: "lastModified", view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
         detailUrl: "feature_edit?id=",
         searchable: true

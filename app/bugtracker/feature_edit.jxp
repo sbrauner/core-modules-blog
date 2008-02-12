@@ -30,6 +30,14 @@ if(request.fstatus){
         if(feature.owner == "null") feature.owner = null;
         else
             feature.owner = db.users.findOne({_id: feature.owner});
+        var props = ["product", "OS", "release"];
+        for(var i in props){
+            var p = props[i];
+            if(feature[p] == "Other"){
+                feature[p] = request["extra_f"+p];
+            }
+        }
+
         if(feature.number == 0)
             feature.number = app.bugtracker.data.Feature.nextNumber();
 
@@ -47,6 +55,19 @@ if(request.fstatus){
 <html>
   <head>
     <title>Editing feature</title>
+    <script>
+      function enableInput(input){
+          var elems = document.getElementsByName(input);
+          var select = elems[0];
+          var input = document.getElementsByName("extra_"+input)[0];
+          if(select.options[select.selectedIndex].text == "Other"){
+              input.disabled = false;
+          }
+          else{
+              input.disabled = true;
+          }
+      }
+    </script>
   </head>
   <body>
     <% if(feature.number != 0){ %>
@@ -102,12 +123,17 @@ if(request.fstatus){
           <div class="field_name">Product:</div>
           <div class="field_value">
             <% var choices = app.bugtracker.list_products();
-               if (choices) { %>
-            <%= app.bugtracker.data.helper.select(feature, "product", "f", choices)%>
+               if (choices) {
+                   var pchoices = choices.concat(["Other"]);
+                       %>
+            <%=
+               app.bugtracker.data.helper.select(feature, "product", "f", pchoices,
+                                                 {onchange: "enableInput('fproduct')"})%>
+            <input name="extra_fproduct" disabled="true"/>
                        <% }
                           else { %>
                        <input name="fproduct"/>
-                                  <% } %>
+                   <% } %>
           </div>
         </div>
         <div class="field">
