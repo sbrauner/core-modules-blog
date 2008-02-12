@@ -21,6 +21,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; }},
             {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
             {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
+            {name: "product", searchWidth: 10, heading: "Product", cssClassName: 'field'},
             {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
