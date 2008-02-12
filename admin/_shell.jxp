@@ -10,13 +10,16 @@ var gg = scope.globals.getParent();
 var holder = gg._adminScopeHolder;
 if ( ! holder ){
     holder = {};
+    var s = gg.getTLPreferred();
+    gg.setTLPreferred( gg );
     gg._adminScopeHolder = holder;
+    gg.setTLPreferred( s );
 }
 
-var theScope = gg[ shellId ];
+var theScope = holder[ shellId ];
 if ( ! theScope ){
     theScope = scope;
-    gg[ shellId ] = theScope;
+    holder[ shellId ] = theScope;
 }
 
 var res = theScope.eval( request.command , "aaaa" + shellId , null );
