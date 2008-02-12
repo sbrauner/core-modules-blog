@@ -18,6 +18,13 @@ else{
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
 }
+
+if (request._method == "delete"){
+    db.bugtracker.features.remove(feature);
+    response.setResponseCode(301);
+    response.setHeader("Location", "./");
+    return;
+}
 feature.number = parseInt(feature.number).toFixed(0);
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
@@ -166,6 +173,16 @@ if(request.fstatus){
             <div class="field_value"><input type="submit" value="Save"></div>
       </div>
     </form>
+
+    <form method="POST">
+      <input type="hidden" name="f_id"/>
+      <input type="hidden" name="_method" value="delete"/>
+        <div class="field">
+            <div class="field_name">&nbsp;</div>
+            <div class="field_value"><input type="submit" value="Delete"
+                                            onclick="return confirm('Are you sure you want to delete this item?');"></div>
+      </div>
+      </form>
   </body>
 </html>
 <%
