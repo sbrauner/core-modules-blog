@@ -1,5 +1,38 @@
+table {
+	border-collapse: collapse;
+	border: #000;
+}
+
+td.field {
+	border: 1px solid #ddd;
+	padding: 3px;
+}
+
+th {
+	color: #fff;
+	background: #333;
+}
+
+textarea {
+	width: 450px;
+}
 .errormsg {
+	color: red;
+}
 
-color: red;
+.field {
+	float:  left;
+	clear: both;
+	padding: 5px 5px 5px 0;
+}
 
+.field_name {
+	float: left;
+	width: 120px;
+	font-weight: bold;
+}
+
+.field_value {
+	float: left;
+	width: 500px;
 }

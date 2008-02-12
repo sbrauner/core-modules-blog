@@ -2,7 +2,9 @@
 core.content.table();
 core.user.user();
 core.user.auth();
-   %>
+head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
+%>
+
 <html>
   <head>
     <title>Features list</title>
@@ -14,14 +16,13 @@ core.user.auth();
     var tab = new htmltable({
         ns: db.bugtracker.features,
         cols: [
-            {name: "number", header: "Number", view: function(n) { return parseInt(n).toFixed(0); } },
-            {name: "title", searchWidth: 50},
-            {name: "reporter", view: function(u) { return u.name; }},
-            {name: "owner", view: function(u) { if(u) return u.name; else return "none"; }},
-            {name: "creationDate", view: function(x) { return x.toString().replace(/... EST /,' '); }},
-            {name: "lastModified", view: function(x) { return x.toString().replace(/... EST /,' '); }},
-            {name: "status"},
-            {name: "severity"}
+            {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
+            {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},
+            {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; }},
+            {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
+            {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
+            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
+            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
         detailUrl: "feature_edit?id=",
         searchable: true

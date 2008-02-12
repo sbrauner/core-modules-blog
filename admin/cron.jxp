@@ -7,7 +7,7 @@
   { 
    ns : db.cron ,
    cols : [
-    { name: "name", searchWidth: 50 },
+    { name: "name", isLink: true, searchWidth: 50 },
     { name: "url" } ,
     { name : "xminutes" } ,
     { name : "lastRun" }

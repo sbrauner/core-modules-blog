@@ -54,6 +54,8 @@ if(request.fstatus){
     <% } else { %>
     <h1>Editing new bug</h1>
     <% } %>
+    <a href="./">Feature list</a>
+
     <% if (orig) { %>
     <div id="original">
       <span class="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
@@ -130,12 +132,11 @@ if(request.fstatus){
           <div class="field_name">Description:</div>
           <div class="field_value"><textarea cols=80 rows=20 name="fdescription"><%= feature.description %></textarea></div>
         </div>
-        <div id="post_action">
-          <input type="submit" value="Save">
-        </div>
+        <div class="field">
+            <div class="field_name">&nbsp;</div>
+            <div class="field_value"><input type="submit" value="Save"></div>
       </div>
     </form>
-    <a href="./">Feature list</a>
   </body>
 </html>
 <%

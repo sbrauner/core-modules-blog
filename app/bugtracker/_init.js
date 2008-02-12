@@ -1,5 +1,5 @@
 app.bugtracker = Object();
-SYSOUT('In app.bugtracker._init.js');
+
 core.app.bugtracker.bugtracker();
 core.app.bugtracker.data.feature();
 
