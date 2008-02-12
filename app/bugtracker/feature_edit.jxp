@@ -68,7 +68,7 @@ if(request.fstatus){
 %>
 <html>
   <head>
-    <title>Editing feature</title>
+    <title>Editing case</title>
     <script>
       function enableInput(input){
           var elems = document.getElementsByName(input);
@@ -85,15 +85,15 @@ if(request.fstatus){
   </head>
   <body>
     <% if(feature.number != 0){ %>
-    <h1>Editing bug number <%= feature.number %></h1>
+    <h1>Editing case number <%= feature.number %></h1>
     <% } else { %>
-    <h1>Editing new bug</h1>
+    <h1>Editing new case</h1>
     <% } %>
-    <a href="./">Feature list</a>
+    <a href="./">Case list</a>
 
     <% if (orig) { %>
     <div id="original">
-      <span class="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
+      <span class="errormsg">Someone edited this case in the meantime. Here's their version.</span>
       <ul>
         <li>Title: <%= orig.title%></li>
         <li>Owner: <%= orig.owner%></li>

@@ -7,10 +7,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <html>
   <head>
-    <title>Features list</title>
+    <title>Cases list</title>
   </head>
   <body>
-    <h1>Features</h1>
+    <h1>Cases</h1>
 
 {
     var tab = new htmltable({
@@ -21,7 +21,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; }},
             {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
             {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
-            {name: "product", searchWidth: 10, heading: "Product", cssClassName: 'field'},
+            {name: "project", searchWidth: 10, heading: "Project", cssClassName: 'field'},
             {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
@@ -32,5 +32,5 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     tab.dbview(tab.find().sort({number: 1}));
 }
 
-    <a href="feature_edit">New feature</a>
+    <a href="feature_edit">New case</a>
 </body>
