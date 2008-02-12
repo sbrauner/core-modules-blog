@@ -120,6 +120,13 @@ function htmltable(specs) {
     			     'name="'+x.name+'">';} )) );
     	print("</form>");
     }
+     
+     var hasIsLink = false;
+     this.specs.cols.forEach( function( z ){
+				  if ( z.isLink )
+				      hasIsLink = true;
+			      } );
+ 
 
      //var arr = cursor.toArray();
      while( cursor.hasNext() ) {
@@ -134,7 +141,7 @@ function htmltable(specs) {
 	     
     	     print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
     	     {
-        		 var linkToDetails =  isLink && (this.specs.detail || this.specs.detailUrl);
+		         var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
         		 if( linkToDetails ) {
         		     var post = obj; 
         		     var fieldUrl;
