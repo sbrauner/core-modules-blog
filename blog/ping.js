@@ -23,35 +23,44 @@ Blog.ping = function(articleUrl) {
     
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
-        SYSOUT('Pinging: ' + service.url);
-        var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
-        var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
-        
-        if (!response) {
-            SYSOUT('Got empty response');
-        } else {
-            if (response.isFault) {
-                // we got a fault
-                SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
-            } else {
-                var flerror;
-                var message;
-                response.value.$.forEach( function(member) {
-                    var name = member.$[0].$;
-                    if (name == 'flerror') {
-                        flerror = member.$[1].$[0].$;
-                    } else if (name == 'message') {
-                        if (isArray(member.$[1].$)) {
-                            message = member.$[1].$[0].$;
-                        } else {
-                            message = member.$[1].$;
-                        }
-                        message = message.toString().replace(/&#32;/g, ' ');
-                    }
-                    
-                })
-                SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
-            }
-        }
-    });
+				  try {
+				      SYSOUT('Pinging: ' + service.url);
+				      var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
+				      var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+				      
+				      if (!response) {
+					  SYSOUT('Got empty response');
+				      } 
+				      else {
+					  if (response.isFault) {
+					      // we got a fault
+					      SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
+					  }
+					  else {
+					      var flerror;
+					      var message;
+					      response.value.$.forEach( function(member) {
+									    var name = member.$[0].$;
+									    if (name == 'flerror') {
+										flerror = member.$[1].$[0].$;
+									    } 
+									    else if (name == 'message') {
+										if (isArray(member.$[1].$)) {
+										    message = member.$[1].$[0].$;
+										} 
+										else {
+										    message = member.$[1].$;
+										}
+										message = message.toString().replace(/&#32;/g, ' ');
+									    }
+									    
+									})
+						  SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
+					  }
+				      }
+				  }
+				  catch ( e ){
+				      print( "failed to ping [" + tojson( service ) + "] because of : " + e );
+				  }
+			      });
 };
