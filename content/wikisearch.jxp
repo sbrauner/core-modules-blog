@@ -36,7 +36,7 @@
   { 
    ns : wiki,
    cols : [
-     { name: "name", searchWidth: 32,
+     { name: "name", isLink: true, searchWidth: 32,
        view: function(x) { return prefixRE?x.replace(prefixRE, ''):x; }
      },
      { name: "text", searchWidth: 60, 

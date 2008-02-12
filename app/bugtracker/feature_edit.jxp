@@ -75,6 +75,8 @@ if(request.fstatus){
     <% } else { %>
     <h1>Editing new bug</h1>
     <% } %>
+    <a href="./">Feature list</a>
+
     <% if (orig) { %>
     <div id="original">
       <span class="errormsg">Someone edited this bug in the meantime. Here's their version.</span>
@@ -97,11 +99,11 @@ if(request.fstatus){
       <input type="hidden" name="starttime" value="<%= timestamp %>"/>
       <div id="post_form">
         <div class="field">
-          <div class="field_name">Title:</div>
+          <div class="field_name">Title</div>
           <div class="field_value"><input name="ftitle"/></div>
         </div>
         <div class="field">
-          <div class="field_name">Owner:</div>
+          <div class="field_name">Owner</div>
           <div class="field_value">
             <% // This doesn't set the None user if feature.owner
     // is null; that happens implicitly since None is first. %>
@@ -112,15 +114,15 @@ if(request.fstatus){
                                           }) %> </div>
         </div>
         <div class="field">
-          <div class="field_name">Status:</div>
+          <div class="field_name">Status</div>
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "status", "f") %></div>
         </div>
         <div class="field">
-          <div class="field_name">Severity:</div>
+          <div class="field_name">Severity</div>
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
         </div>
         <div class="field">
-          <div class="field_name">Product:</div>
+          <div class="field_name">Product</div>
           <div class="field_value">
             <% var choices = app.bugtracker.list_products();
                if (choices) {
@@ -137,7 +139,7 @@ if(request.fstatus){
           </div>
         </div>
         <div class="field">
-          <div class="field_name">OS:</div>
+          <div class="field_name">OS</div>
           <div class="field_value">
                    <% var choices = app.bugtracker.list_OSes();
                       if (choices) { %>
@@ -149,19 +151,18 @@ if(request.fstatus){
           </div>
         </div>
         <div class="field">
-          <div class="field_name">Target release:</div>
+          <div class="field_name">Target release</div>
           <div class="field_value"><input name="ftargetRelease"/></div>
         </div>
         <div class="field">
-          <div class="field_name">Description:</div>
+          <div class="field_name">Description</div>
           <div class="field_value"><textarea cols=80 rows=20 name="fdescription"><%= feature.description %></textarea></div>
         </div>
-        <div id="post_action">
-          <input type="submit" value="Save">
-        </div>
+        <div class="field">
+            <div class="field_name">&nbsp;</div>
+            <div class="field_value"><input type="submit" value="Save"></div>
       </div>
     </form>
-    <a href="./">Feature list</a>
   </body>
 </html>
 <%
