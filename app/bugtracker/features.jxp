@@ -2,6 +2,7 @@
 core.content.table();
 core.user.user();
 core.user.auth();
+core.app.bugtracker.data.feature();
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
 
@@ -14,7 +15,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 {
     var tab = new htmltable({
-        ns: db.bugtracker.features,
+        ns: db.bugtracker.cases,
         cols: [
             {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
             {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},

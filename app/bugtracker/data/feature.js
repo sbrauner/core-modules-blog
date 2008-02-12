@@ -41,9 +41,9 @@ app.bugtracker.data.Feature.prototype.presave = function(){
 };
 
 if(db){
-    db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
-    db.bugtracker.features.ensureIndex({number: 1});
-    db.bugtracker.features.ensureIndex({lastModified: 1});
+    db.bugtracker.cases.setConstructor(app.bugtracker.data.Feature);
+    db.bugtracker.cases.ensureIndex({number: 1});
+    db.bugtracker.cases.ensureIndex({lastModified: 1});
 }
 
 app.bugtracker.data.Feature.nextNumber = function(){
@@ -54,7 +54,7 @@ app.bugtracker.data.Feature.nextNumber = function(){
 };
 
 app.bugtracker.data.Feature.find = function(){
-    return db.bugtracker.features.find();
+    return db.bugtracker.cases.find();
 };
 
 // We need a standard way to bind a  -dana
