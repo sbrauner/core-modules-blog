@@ -35,13 +35,14 @@ app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
 
 app.bugtracker.data.Feature.prototype.presave = function(){
     this.number = parseInt(this.number);
+    this.description = this.description.trim();
+    this.title = this.title.trim();
+    this.targetRelease = this.targetRelease.trim();
 };
 
 if(db){
     db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
     db.bugtracker.features.ensureIndex({number: 1});
-    db.bugtracker.features.ensureIndex({owner: 1});
-    db.bugtracker.features.ensureIndex({reporter: 1});
     db.bugtracker.features.ensureIndex({lastModified: 1});
 }
 
