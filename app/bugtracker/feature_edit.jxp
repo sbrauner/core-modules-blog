@@ -44,6 +44,9 @@ if(request.fstatus){
             feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
             db.bugtracker.projects.save(feature.project);
         }
+        else{
+            feature.project = db.bugtracker.projects.findOne({_id: feature.project});
+        }
         if(feature.area == "New area"){
             feature.area = request["extra_farea"];
         }
@@ -81,6 +84,31 @@ if(request.fstatus){
               input.disabled = true;
           }
       }
+function ObjectId(){ return null; }
+      projects = <%=tojson(db.bugtracker.projects.find().toArray()) %>;
+      function updateAreas(){
+          var projsel = document.getElementsByName("fproject")[0];
+          var areasel = document.getElementsByName("farea")[0];
+          var areatext = document.getElementsByName("extra_farea")[0];
+          var projname = projsel.options[projsel.selectedIndex].text;
+          var options = null;
+          for(var i in projects){
+              if(projects[i].name == projname){
+                  options = projects[i].areas;
+                  break;
+              }
+          }
+          areasel.options.length = 0;
+          if(options){
+              for (var i in options){
+                  var option = options[i];
+                  areasel.options[areasel.options.length] = new Option(option);
+              }
+          }
+          areasel.options[areasel.options.length] = new Option("New area");
+          if(areasel.options.length == 1) areatext.disabled = false;
+          else areatext.disabled = true;
+      }
     </script>
   </head>
   <body>
@@ -100,6 +128,7 @@ if(request.fstatus){
         <li>Status: <%= orig.status%></li>
         <li>Severity: <%= orig.severity%></li>
         <li>Project: <%= orig.project %></li>
+        <li>Area: <%= orig.area %></li>
         <li>OS: <%= orig.OS %></li>
         <li>Target release: <%= orig.targetRelease%></li>
         <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
@@ -154,7 +183,7 @@ var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
                app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
                                                  {view: function(p){ return p.name; },
                                                   value: function(p){ return p._id; },
-                                                  onchange: "enableInput('fproject')"})%>
+                                                  onchange: "enableInput('fproject');updateAreas();"})%>
             <input name="extra_fproject" <%=choices.length > 0? "disabled=\"true\"": "" %>/>
           </div>
         </div>
@@ -162,7 +191,7 @@ var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
           <div class="field_name">Area</div>
           <div class="field_value">
             <%
-            var project = pchoices[0];
+            var project = feature.project;
 var choices = project.areas;
         var pchoices = choices.concat(["New area"]);
                        %>
