@@ -24,7 +24,8 @@ Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 if(request.fstatus){
-    if (feature.lastModified.toString() == request.starttime){
+    if (feature.lastModified.toString() == request.starttime ||
+        ! feature._id ){
         feature.lastModified = Date();
         if(feature.owner == "null") feature.owner = null;
         else
@@ -69,13 +70,13 @@ if(request.fstatus){
       Here's your version:
     </div>
     <% } %>
-    
+
     <form method="POST">
       <input type="hidden" name="f_id"/>
       <input type="hidden" name="starttime" value="<%= timestamp %>"/>
       <div id="post_form">
         <div class="field">
-          <div class="field_name">Title:</div> 
+          <div class="field_name">Title:</div>
           <div class="field_value"><input name="ftitle"/></div>
         </div>
         <div class="field">
@@ -90,11 +91,11 @@ if(request.fstatus){
                                           }) %> </div>
         </div>
         <div class="field">
-          <div class="field_name">Status:</div> 
+          <div class="field_name">Status:</div>
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "status", "f") %></div>
         </div>
         <div class="field">
-          <div class="field_name">Severity:</div> 
+          <div class="field_name">Severity:</div>
           <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
         </div>
         <div class="field">
