@@ -24,8 +24,7 @@ Blog._addFilters = function( searchCriteria , filter ){
 Blog.handleMissingUri = function(uri) {
     SYSOUT("MISSING PAGE: " + uri);
     var missingPage = new MissingPage(uri);
-    db.blog.missingpages.save(missingPage);
-//    response.setResponseCode(404);
+    db.blog.missingpages.update( missingPage , { $inc : { num : 1 } } , { upsert : true , ids : false } );
 
     return {isPage: true,
             posts: [Post.get404()],
