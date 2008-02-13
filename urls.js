@@ -62,7 +62,7 @@ Blog.handleRequest = function( request , arg ){
     }
 
     if (request.q) {
-        posts = Search.search(db.blog.posts, request.q );
+        posts = Search.search(db.blog.posts, request.q , { min : 100 } );
         posts = posts.filter( function( z ){ return z.live; } );
 	    posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 	
