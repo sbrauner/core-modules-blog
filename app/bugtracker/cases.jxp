@@ -28,12 +28,12 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
             {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
-        detailUrl: "feature_edit?id=",
+        detailUrl: "case_edit?id=",
         searchable: true
     });
 
     tab.dbview(tab.find().sort({number: 1}));
 }
 
-    <a href="feature_edit">New case</a>
+    <a href="case_edit">New case</a>
 </body>
