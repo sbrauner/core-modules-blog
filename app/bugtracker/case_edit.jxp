@@ -165,6 +165,10 @@ function ObjectId(){ return null; }
           <div class="field_value"><%= feature.lastModified%></div>
         </div>
         <div class="field">
+          <div class="field_name">Reporter</div>
+          <div class="field_value"><%= feature.reporter.name %></div>
+        </div>
+        <div class="field">
           <div class="field_name">Owner</div>
           <div class="field_value">
             <% // This doesn't set the None user if feature.owner
