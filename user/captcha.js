@@ -1,7 +1,7 @@
 
 Captcha = { 
     
-    DEBUG : true ,
+    DEBUG : false ,
     
     img : function(){
 
