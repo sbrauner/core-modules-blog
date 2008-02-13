@@ -47,7 +47,7 @@
         var key = e.which;
         if(e.shiftKey){
             // cheap hack to make this work in konqueror
-            key = key - 17;
+            key = key + 17;
         }
         if( key == 38 ) { // up arrow
             historyLocation -= 1;
