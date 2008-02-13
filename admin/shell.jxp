@@ -43,7 +43,13 @@
                 cmd.value = pastCommands[pastCommands.length + historyLocation];
             }
         }
-        if( e.which == 38 ) { // up arrow
+        var key = e.keyCode || e.which;
+        var key = e.which;
+        if(e.shiftKey){
+            // cheap hack to make this work in konqueror
+            key = key - 17;
+        }
+        if( key == 38 ) { // up arrow
             historyLocation -= 1;
             if (historyLocation < -pastCommands.length){
                 historyLocation = -pastCommands.length;
@@ -52,7 +58,7 @@
                 setcmd();
             }
         }
-        else if( e.which == 40 ) { // down arrow
+        else if( key == 40 ) { // down arrow
             historyLocation += 1;
             if (historyLocation >= 0){
                 historyLocation = 0;
