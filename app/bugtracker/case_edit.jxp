@@ -199,7 +199,7 @@ var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
           <div class="field_name">Area</div>
           <div class="field_value">
             <%
-            var project = feature.project;
+            var project = feature.project || choices[0];
 var choices = project.areas;
         var pchoices = choices.concat(["New area"]);
                        %>
