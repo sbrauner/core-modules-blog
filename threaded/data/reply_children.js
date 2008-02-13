@@ -14,7 +14,12 @@ threaded.data.ReplyChildren.prototype.getReplies = function(){
     return threaded.data.Reply.sort(ary);
 };
 
+threaded.data.ReplyChildren.prototype.addReply = function(r){
+    this.children.push(r);
+};
+
 threaded.data.ReplyChildren.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
     obj.threaded_children = [];
 };
+

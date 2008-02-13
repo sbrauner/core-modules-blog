@@ -10,10 +10,16 @@ threaded.data.ReplyParent.prototype = new threaded.data.Reply();
 threaded.data.ReplyParent.prototype.constructor = threaded.data.ReplyParent;
 
 threaded.data.ReplyParent.prototype.getReplies = function(){
-    var ary = [];//db[this.tablename].find({parent: this}).toArray();
+    var ary = db[this.threaded_tablename].find({parent: this}).toArray();
     return threaded.data.Reply.sort(ary);
+};
+
+threaded.data.ReplyParent.prototype.addReply = function(rep){
+    rep.parent = this;
+    db[this.threaded_tablename].save(rep);
 };
 
 threaded.data.ReplyParent.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
 };
+
