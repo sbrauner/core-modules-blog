@@ -21,13 +21,14 @@ tab.dbview( tab.find().sort( { name : 1 } ) );
 
 
 if ( request._run == "true" ){
-
-    print( "<hr>" );
-
+    var debug = request._debug;
+    
     var all = db.cron.find().toArray();
     for ( var i=0; i<all.length; i++ ){
         var cron = all[i];
-        
+	// doing this so if someone else updated i'll know about it
+	cron = db.cron.findOne( cron._id );
+
         if ( ! cron.xminutes ){
             cron.lastResult = "Error - no xminutes set";
             db.cron.save( cron );
@@ -44,18 +45,22 @@ if ( request._run == "true" ){
         cron.lastRun = Date();
         db.cron.save( cron );
         
-        var url = "http://" + request.getHeader( "Host" ) + cron.url;
-        print( "url:" + url + "<br>" );
-        
-        var req = new XMLHttpRequest( "GET" , url );
+	var func = scope.eval( cron.url );
+	if ( ! func ){
+	    cron.lastResult = "can't find : " + cron.url;
+	}
+	else {
+	    var printSave = print;
+	    var buf = "";
+	    print = function(z){
+		buf += z;
+	    };
+	    func();
+	    print = printSave;
+	    cron.lastResult = buf;
+	}
 
-        var res = req.send();
-        if ( ! res )
-            cron.lastResult = "ERROR";
-        else 
-            cron.lastResult =  res.responseText;
-	
-	print( "<div style='border:1px solid black;'>result: " + cron.lastResult + "</div>" );
+	if ( debug ) print( "<div style='border:1px solid black;'>result: " + cron.lastResult + "</div>" );
         db.cron.save( cron );
         print( "<hr>" );
     }
