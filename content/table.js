@@ -153,7 +153,7 @@ function htmltable(specs) {
         		 }
         		 var viewMethod = this.specs.cols[c].view;
         		 var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
-                 print( fieldDisplay || "go to" );
+			 print( fieldDisplay || ( linkToDetails ? "go to" : "" ) );
         		 if( linkToDetails ) print("</a>");
     	     }
     	     print("</td>");
