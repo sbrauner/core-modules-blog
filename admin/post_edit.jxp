@@ -21,7 +21,7 @@ if (id) {
 
 var newCategories = new Array();
 if (request.new_categories) {
-    newCategories = request.new_categories.split('[, ]').unique();
+    newCategories = request.new_categories.split('[,]').unique();
     var emptyIndex = newCategories.indexOf('');
     if (emptyIndex >= 0) newCategories.remove(emptyIndex);
 }
