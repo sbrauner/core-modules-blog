@@ -40,7 +40,7 @@ app.bugtracker.data.Feature.prototype.TYPE = { BUG: 'bug',
                                     INQUIRY: 'inquiry' };
 
 core.threaded.data.reply_parent();
-threaded.repliesEnabled(app.bugtracker.data, "Feature", "parent");
+threaded.repliesEnabled(app.bugtracker.data, "Feature");
 
 
 app.bugtracker.data.Feature.prototype.presave = function(){

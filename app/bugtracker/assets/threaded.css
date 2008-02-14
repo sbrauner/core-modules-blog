@@ -1,0 +1,15 @@
+.comments {
+    float: left;
+    clear: both;
+};
+
+.post {
+    position: relative;
+    margin-left: 40px;
+}
+
+.postbox {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #000;
+}

@@ -2,7 +2,7 @@ threaded = {};
 core.threaded.data.reply_parent();
 core.threaded.data.reply_children();
 
-threaded.repliesEnabled = function(ns, clsname, style){
+threaded.repliesEnabled = function(ns, clsname, args){
     // This really hairy function has the following goals:
     // * Replace ns[clsname] with a wrapper class which, on construction,
     //   calls an initializer of the right reply class.
@@ -18,6 +18,9 @@ threaded.repliesEnabled = function(ns, clsname, style){
 
     var cls = ns[clsname];
     var tablename = clsname.toLowerCase()+"_replies";
+    args = args || {};
+    var style = args.style || "parent";
+    var users = args.users || "auth";
     if(style == "parent"){
         var rcls = threaded.data.ReplyParent;
     }
@@ -36,6 +39,7 @@ threaded.repliesEnabled = function(ns, clsname, style){
     // Maybe come up with a better approach here.
     cls.prototype.Reply.prototype.threaded_tablename = tablename;
     cls.prototype.Reply.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.Reply.prototype.threaded_users = users;
 
     // Add to cls the functions to make it behave like a Reply.
     cls.prototype.getReplies = rcls.getReplies;
@@ -43,6 +47,7 @@ threaded.repliesEnabled = function(ns, clsname, style){
     cls.prototype.getDescendant = rcls.getDescendant;
     cls.prototype.threaded_tablename = tablename;
     cls.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.threaded_users = users;
     cls.prototype.decoratorsRender = rcls.decoratorsRender;
     cls.prototype.decoratorsLinks = rcls.decoratorsLinks;
     cls.prototype.decoratorsHandle = rcls.decoratorsHandle;

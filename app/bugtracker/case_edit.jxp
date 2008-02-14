@@ -31,6 +31,7 @@ timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
+head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
@@ -262,8 +263,10 @@ if(project.areas.length > 0){
                                             onclick="return confirm('Are you sure you want to delete this item?');"></div>
       </div>
       </form>
+<div class="comments">
+<hr>
+Comments:
         <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
-<div>Comments:
 <%
 feature.decoratorsRender();
  %>
