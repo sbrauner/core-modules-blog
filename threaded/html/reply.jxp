@@ -1,17 +1,23 @@
-<% 
+<%
 var t = arguments[0];
+var u = request.getURI();
  %>
 <div class="post">
   <div class="postbox">
-    <a name="<%= t._id %>"/>
+    <a name="<%= t.getID() %>"/>
     <div class="titlebar">
       <%= t.title %> by <%= t.author %> (<%= t.ts %>)
-      (<a href="#<%= t._id %>"/>#</a>)
+      (<a href="#<%= t.getID() %>"/>#</a>)
     </div>
     <div class="content">
       <%= t.content %>
     </div>
-    <a href="makepost?parentid=<%= t._id %>">Reply to this</a>
+    <% if(request.reply == t.getID() && ! request.ncontent){
+        t.threaded_pieces.reply_form(t.getID());
+    }
+else{ %>
+    <a href="<%=u%>?reply=<%= t.getID() %>">Reply to this</a>
+        <% } %>
   </div>
   <%
     t.getReplies().forEach(t.threaded_pieces.reply);

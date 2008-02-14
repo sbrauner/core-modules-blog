@@ -23,24 +23,18 @@ threaded.data.Reply.prototype.decoratorsLinks = function(){
 
 threaded.data.Reply.prototype.decoratorsHandle = function(){
     if(request.reply){
-        u = request.getURI()+"?reply=true";
+        u = request.getURI();
         if(request.ncontent){
-            SYSOUT("adding reply");
+            var desc = this.getDescendant(request.reply);
             r = new this.Reply();
             r.author = request.nauthor;
             r.title = request.ntitle;
             r.content = request.ncontent;
-            this.addReply(r);
+            desc.addReply(r);
         }
         else{
-            print("<form =\""+u+"\">");
-            print("<input type=\"hidden\" name=\"id\"/>");
-            print("<input type=\"hidden\" name=\"reply\" value=\"true\"/>");
-            print("Author: <input type=\"text\" name=\"nauthor\"><br/>");
-            print("Topic: <input type=\"text\" name=\"ntitle\"><br/>");
-            print("<textarea rows=20 cols=80 name=\"ncontent\"></textarea><br/>");
-            print("<input type=\"submit\" value=\"save\">");
-            print("</form>");
+            if(reply == "true")
+                this.threaded_pieces.reply_form(true);
         }
         return true;
     }

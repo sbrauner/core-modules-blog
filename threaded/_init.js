@@ -40,6 +40,7 @@ threaded.repliesEnabled = function(ns, clsname, style){
     // Add to cls the functions to make it behave like a Reply.
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
+    cls.prototype.getDescendant = rcls.getDescendant;
     cls.prototype.threaded_tablename = tablename;
     cls.prototype.threaded_pieces = core.threaded.html;
     cls.prototype.decoratorsRender = rcls.decoratorsRender;

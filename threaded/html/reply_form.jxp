@@ -1,0 +1,7 @@
+<form method="POST">
+  <input type="hidden" name="reply" value="<%=arguments[0]%>"/>
+  Author: <input type="text" name="nauthor"><br/>
+  Topic: <input type="text" name="ntitle"><br/>
+  <textarea rows=20 cols=80 name="ncontent"></textarea><br/>
+  <input type="submit" value="save">
+</form>
