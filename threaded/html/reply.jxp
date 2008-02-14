@@ -1,13 +1,14 @@
 <%
 var t = arguments[0];
  %>
-<div class="post">
+<ul class="post">
+  <li>
   <div class="postbox">
     <a name="<%= t.getID() %>"/>
-    <div class="titlebar">
+    <span class="titlebar">
       <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
       (<a href="#<%= t.getID() %>"/>#</a>)
-    </div>
+    </span>
     <div class="content">
       <%= t.content %>
     </div>
@@ -21,4 +22,5 @@ else{ %>
   <%
     t.getReplies().forEach(t.threaded_pieces.reply);
   %>
-</div>
+  </li>
+</ul>
