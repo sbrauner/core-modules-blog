@@ -1,7 +1,6 @@
-.comments {
-    float: left;
+hr {
     clear: both;
-};
+}
 
 .post {
     position: relative;
