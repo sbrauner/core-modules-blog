@@ -33,8 +33,9 @@ threaded.data.Reply.prototype.decoratorsHandle = function(){
             desc.addReply(r);
         }
         else{
-            if(reply == "true")
+            if(request.reply == "true"){
                 this.threaded_pieces.reply_form(true);
+            }
         }
         return true;
     }
