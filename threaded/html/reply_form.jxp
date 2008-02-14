@@ -1,16 +1,14 @@
 <form method="POST">
   <input type="hidden" name="reply" value="<%=arguments[0]%>"/>
+     <div class="field">
+       <div class="field_name">Author</div>
      <% if (this.threaded_users == "free") { %>
-     <div class="field">
-       <div class="field_name">Author</div>
        <div class="field_value"><input type="text" name="nauthor"></div>
-     </div>
      <% } else { %>
-     <div class="field">
-       <div class="field_name">Author</div>
        <div class="field_value"><%= user.name %></div>
-     </div>
+       <input type="hidden" name="nauthor" value="<%= user._id %>"/>
      <% } %>
+     </div>
      <div class="field">
        <div class="field_name">Topic</div>
        <div class="field_value"><input type="text" name="ntitle"></div>

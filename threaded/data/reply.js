@@ -21,7 +21,12 @@ threaded.data.Reply.prototype.decoratorsHandle = function(){
         if(request.ncontent){
             var desc = this.getDescendant(request.reply);
             r = new this.Reply();
-            r.author = request.nauthor;
+            if(this.threaded_users){
+                r.author = user;
+            }
+            else{
+                r.author = request.nauthor;
+            }
             r.title = request.ntitle;
             r.content = request.ncontent;
             desc.addReply(r);

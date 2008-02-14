@@ -6,7 +6,7 @@ var u = request.getURI();
   <div class="postbox">
     <a name="<%= t.getID() %>"/>
     <div class="titlebar">
-      <%= t.title %> by <%= t.author %> (<%= t.ts %>)
+      <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
       (<a href="#<%= t.getID() %>"/>#</a>)
     </div>
     <div class="content">
