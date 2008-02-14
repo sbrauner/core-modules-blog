@@ -54,4 +54,5 @@ threaded.repliesEnabled = function(ns, clsname, style){
     };
     ns[clsname].prototype = new cls();
     ns[clsname].prototype.constructor = ns[clsname];
+    db[tablename].setConstructor(cls.prototype.Reply);
 };
