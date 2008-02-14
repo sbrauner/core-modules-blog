@@ -35,7 +35,7 @@ threaded.data.Reply.prototype.decoratorsHandle = function(){
         r.content = request.ncontent;
         desc.addReply(r);
     }
-    u = addQuery(request.getURI(), {reply: true});
+    u = addQuery({reply: true});
     print("<a href=\""+u+"\">Reply</a>");
 
 };
@@ -45,12 +45,19 @@ threaded.data.Reply.initialize = function(obj){
 };
 
 core.util.format();
-addQuery = function(uri, args){
-    for(var prop in request){
-        args[prop] = request[prop];
+addQuery = function(args){
+    var url = request.getURL();
+    var obj = {};
+    var qs = url.indexOf('?');
+    var opts = url.substring(qs+1, url.length);
+    var ary = opts.split(/&/);
+    for (var i in ary){
+        var pair = ary[i].split(/=/);
+        obj[pair[0]] = pair[1];
     }
-    if(uri.indexOf('?') != -1){
-        return uri + "+" + Util.format_queryargs(args);
+    for (var i in args){
+        obj[i] = args[i];
     }
-    return uri+"?"+Util.format_queryargs(args);
+    var uri = request.getURI();
+    return uri+"?"+Util.format_queryargs(obj);
 };

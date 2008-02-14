@@ -1,6 +1,5 @@
 <%
 var t = arguments[0];
-var u = request.getURI();
  %>
 <div class="post">
   <div class="postbox">
@@ -16,7 +15,7 @@ var u = request.getURI();
         t.threaded_pieces.reply_form(t.getID());
     }
 else{ %>
-      <a href="<%=addQuery(u, {reply: t.getID()}) %>">Reply to this</a>
+      <a href="<%=addQuery({reply: t.getID()}) %>">Reply to this</a>
         <% } %>
   </div>
   <%
