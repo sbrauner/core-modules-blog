@@ -262,6 +262,13 @@ if(project.areas.length > 0){
                                             onclick="return confirm('Are you sure you want to delete this item?');"></div>
       </div>
       </form>
+        <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
+<div>Comments:
+<%
+feature.decoratorsRender();
+ %>
+</div>
+
   </body>
 </html>
 <%

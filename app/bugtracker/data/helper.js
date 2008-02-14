@@ -1,3 +1,4 @@
+core.util.format();
 app.bugtracker.data.helper = {
     select: function(obj, field, prefix, opts, conf){
         if(! conf) conf = { view: null, value: null };
@@ -39,17 +40,6 @@ app.bugtracker.data.helper = {
         s += "</select>";
         return s;
     },
-    format: function(obj){
-        // Transform an object full of k:v pairs to a string full of "k=\"v\""
-        // elements (for embedding as attributes in an HTML element).
-        //
-        // Useful after you've removed all the excess parameters for your function.
-        s = "";
-        for(var prop in obj){
-            s += prop + "=";
-            s += '"' + obj[prop] + '"' + " ";
-        }
-        return s;
-    }
+    format: Util.format_htmlattr
 
 };

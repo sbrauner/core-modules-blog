@@ -16,14 +16,8 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
     }
 };
 
-threaded.data.Reply.prototype.decoratorsLinks = function(){
-    u = request.getURI()+"?reply=true";
-    return "<a href=\""+u+"\">Reply</a>";
-};
-
 threaded.data.Reply.prototype.decoratorsHandle = function(){
     if(request.reply){
-        u = request.getURI();
         if(request.ncontent){
             var desc = this.getDescendant(request.reply);
             r = new this.Reply();
@@ -39,8 +33,24 @@ threaded.data.Reply.prototype.decoratorsHandle = function(){
         }
         return true;
     }
+    else {
+        u = addQuery(request.getURI(), {reply: true});
+        print("<a href=\""+u+"\">Reply</a>");
+
+    }
 };
 
 threaded.data.Reply.initialize = function(obj){
     obj.threaded_numPosts = 0;
+};
+
+core.util.format();
+addQuery = function(uri, args){
+    for(var prop in request){
+        args[prop] = request[prop];
+    }
+    if(uri.indexOf('?') != -1){
+        return uri + "+" + Util.format_queryargs(args);
+    }
+    return uri+"?"+Util.format_queryargs(args);
 };
