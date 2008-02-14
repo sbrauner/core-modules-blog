@@ -2,8 +2,10 @@
 core.threaded.data.reply();
 
 threaded.data.ReplyChildren = function(){
-    call(threaded.data.Reply, this);
+    threaded.data.Reply.call(this);
     this.threaded_children = [];
+    this.parentid = "";
+    this.index = "";
 };
 
 threaded.data.ReplyChildren.prototype = new threaded.data.Reply();
@@ -15,7 +17,25 @@ threaded.data.ReplyChildren.prototype.getReplies = function(){
 };
 
 threaded.data.ReplyChildren.prototype.addReply = function(r){
-    this.children.push(r);
+    r.index = this.threaded_children.push(r)-1;
+    r.parentid = (this.getID && this.getID());
+};
+
+threaded.data.ReplyChildren.prototype.getID = function(){
+    return this.parentid? this.parentid + '.': "" + this.index;
+};
+
+threaded.data.ReplyChildren.prototype.getDescendant = function(desc_id){
+    if(desc_id == "true"){
+        return this;
+    }
+    ary = desc_id.split(/\./);
+    var child = this;
+    for(var i in ary){
+        var index = ary[i];
+        child = child.threaded_children[index];
+    }
+    return child;
 };
 
 threaded.data.ReplyChildren.initialize = function(obj){
