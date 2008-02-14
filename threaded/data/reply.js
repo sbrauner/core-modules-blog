@@ -17,32 +17,27 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
 };
 
 threaded.data.Reply.prototype.decoratorsHandle = function(){
-    if(request.reply){
-        if(request.ncontent){
-            var desc = this.getDescendant(request.reply);
-            r = new this.Reply();
-            if(this.threaded_users){
-                r.author = user;
-            }
-            else{
-                r.author = request.nauthor;
-            }
-            r.title = request.ntitle;
-            r.content = request.ncontent;
-            desc.addReply(r);
-        }
-        else{
-            if(request.reply == "true"){
-                this.threaded_pieces.reply_form(true);
-            }
-        }
+    if(request.reply == "true" && ! request.reply_target ){
+        this.threaded_pieces.reply_form(true);
         return true;
     }
-    else {
-        u = addQuery(request.getURI(), {reply: true});
-        print("<a href=\""+u+"\">Reply</a>");
-
+    else
+    if(request.reply_target){
+        var desc = this.getDescendant(request.reply);
+        r = new this.Reply();
+        if(this.threaded_users){
+            r.author = user;
+        }
+        else{
+            r.author = request.nauthor;
+        }
+        r.title = request.ntitle;
+        r.content = request.ncontent;
+        desc.addReply(r);
     }
+    u = addQuery(request.getURI(), {reply: true});
+    print("<a href=\""+u+"\">Reply</a>");
+
 };
 
 threaded.data.Reply.initialize = function(obj){

@@ -1,5 +1,5 @@
 <form method="POST">
-  <input type="hidden" name="reply" value="<%=arguments[0]%>"/>
+  <input type="hidden" name="reply_target" value="<%=arguments[0]%>"/>
      <div class="field">
        <div class="field_name">Author</div>
      <% if (this.threaded_users == "free") { %>

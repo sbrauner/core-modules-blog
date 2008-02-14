@@ -12,7 +12,7 @@ var u = request.getURI();
     <div class="content">
       <%= t.content %>
     </div>
-    <% if(request.reply == t.getID() && ! request.ncontent){
+    <% if(request.reply == t.getID() && ! request.reply_target){
         t.threaded_pieces.reply_form(t.getID());
     }
 else{ %>
