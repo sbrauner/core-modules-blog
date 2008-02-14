@@ -1,0 +1,19 @@
+<% 
+var t = arguments[0];
+ %>
+<div class="post">
+  <div class="postbox">
+    <a name="<%= t._id %>"/>
+    <div class="titlebar">
+      <%= t.title %> by <%= t.author %> (<%= t.ts %>)
+      (<a href="#<%= t._id %>"/>#</a>)
+    </div>
+    <div class="content">
+      <%= t.content %>
+    </div>
+    <a href="makepost?parentid=<%= t._id %>">Reply to this</a>
+  </div>
+  <%
+    t.getReplies().forEach(t.threaded_pieces.reply);
+  %>
+</div>

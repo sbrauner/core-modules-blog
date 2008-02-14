@@ -18,12 +18,11 @@ threaded.repliesEnabled = function(ns, clsname, style){
 
     var cls = ns[clsname];
     var tablename = clsname.toLowerCase()+"_replies";
-    var rcls;
     if(style == "parent"){
-        rcls = threaded.data.ReplyParent;
+        var rcls = threaded.data.ReplyParent;
     }
     else {
-        rcls = threaded.data.ReplyChildren;
+        var rcls = threaded.data.ReplyChildren;
     }
 
     // Create wrapper class for rcls.
@@ -36,11 +35,16 @@ threaded.repliesEnabled = function(ns, clsname, style){
     // This kind of sucks: ReplyChildren doesn't need tablename.
     // Maybe come up with a better approach here.
     cls.prototype.Reply.prototype.threaded_tablename = tablename;
+    cls.prototype.Reply.prototype.threaded_pieces = core.threaded.html;
 
     // Add to cls the functions to make it behave like a Reply.
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
     cls.prototype.threaded_tablename = tablename;
+    cls.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.decoratorsRender = rcls.decoratorsRender;
+    cls.prototype.decoratorsLinks = rcls.decoratorsLinks;
+    cls.prototype.decoratorsHandle = rcls.decoratorsHandle;
 
     // Wrap the class itself so that we can let the reply class add its own
     // fields.
