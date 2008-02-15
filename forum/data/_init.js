@@ -1,1 +1,1 @@
-core.Forum.data = {};
+Forum.data = {};
