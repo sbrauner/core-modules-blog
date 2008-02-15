@@ -1,6 +1,5 @@
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-core.forum.post();
 core.forum.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){

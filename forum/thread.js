@@ -1,4 +1,3 @@
-core.forum.post();
 core.db.db();
 Forum.Thread = function(){
     this.commentsEnabled = true;
