@@ -6,7 +6,7 @@ print("<!-- " + thread._id + "-->");
 %>
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else { 
+else {
 %>
 <html>
   <head>
@@ -16,12 +16,9 @@ else {
   <body>
     <h1><a href="./">Forum</a></h1>
     <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
-    
-      
-
 <%
 }
-if(thread.decoratorsHandle({replylink: false})){
+if(thread.decoratorsHandle({noreplylink: true})){
     thread.count ++;
     thread.topic.postCount ++;
     db.forum.topics.save(thread.topic);
@@ -37,4 +34,4 @@ else {
 <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
   </body>
 </html>
-	<% } %>
+        <% } %>

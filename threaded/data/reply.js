@@ -19,7 +19,7 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
 threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
     args = args || {};
-    var replylink = args.replylink;
+    var replylink = ! args.noreplylink;
     if(request.reply == "true" && ! request.reply_target ){
         this.threaded_pieces.reply_form.call(this, true);
         return;
