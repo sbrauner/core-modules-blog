@@ -16,7 +16,6 @@ if(request.getMethod() == "POST"){
         thread.topic.postCount += 1;
         thread.latestPost = rep.getID();
         db.forum.threads.save(thread);
-        print("whee");
         db.forum.topics.save(thread.topic);
         response.setResponseCode(301);
         response.setHeader("Location", "./");
