@@ -35,8 +35,8 @@
 
        <td>
        <%
-    var u = db.analytics.uniqueHour.find().sort( { time: -1 } ).limit( 24 ).toArray(); 
-var p = db.analytics.pageView.find().sort( { time: -1 } ).limit( 24 ).toArray(); 
+    var u = db.analytics.uniqueHour.find().sort( { time: -1 } ).limit( 27 ).toArray(); 
+var p = db.analytics.pageView.find().sort( { time: -1 } ).limit( 27 ).toArray(); 
 core.analytics.admin.pieces.visitsCount( "Past Day" , u , p );
 %>     
        </td>
