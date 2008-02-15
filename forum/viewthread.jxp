@@ -21,7 +21,12 @@ else {
 
 <%
 }
-thread.decoratorsHandle({replylink: false});
+if(thread.decoratorsHandle({replylink: false})){
+    thread.count ++;
+    thread.topic.postCount ++;
+    db.forum.topics.save(thread.topic);
+    db.forum.threads.save(thread);
+}
 thread.decoratorsRender();
 %>
 
