@@ -11,16 +11,16 @@ if (request.ncontent) {
     // A post is a reply to another post, or it's a new thread. Threads
     // go in topics, so if creating a thread, we need to have a top_id.
     if(request.parentid){
-	post.parent = parent;
-	
-	var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
-	thread.count += 1;
+        post.parent = parent;
+
+        var thread = db.forum.threads.findOne({startPost: post.findAncestor()});
+        thread.count += 1;
     }
     else{
-	var thread = new Forum.Thread();
-	thread.startPost = post;
-	thread.topic = db.forum.topics.findOne({_id: request.top_id});
-	thread.topic.threadCount += 1;
+        var thread = new Forum.Thread();
+        thread.startPost = post;
+        thread.topic = db.forum.topics.findOne({_id: request.top_id});
+        thread.topic.threadCount += 1;
     }
 
     thread.topic.postCount += 1;
