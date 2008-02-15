@@ -1,0 +1,39 @@
+<%
+core.content.table();
+core.user.user();
+core.user.auth();
+core.app.bugtracker.data.feature();
+head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
+%>
+
+<html>
+  <head>
+    <title>Cases list</title>
+  </head>
+  <body>
+    <h1>Cases</h1>
+
+{
+    var tab = new htmltable({
+        ns: db.bugtracker.cases,
+        cols: [
+            {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
+            {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},
+            {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; }},
+            {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
+            {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
+            {name: "type", searchWidth: 10, heading: "Type", cssClassName: 'field', view: function(x) { return x? x: "none"; }},
+            {name: "project", searchWidth: 10, heading: "Project", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; }},
+            {name: "area", searchWidth: 10, heading: "Area", cssClassName: 'field'},
+            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
+            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
+        ],
+        detailUrl: "case_edit?id=",
+        searchable: true
+    });
+
+    tab.dbview(tab.find().sort({number: 1}));
+}
+
+    <a href="case_edit">New case</a>
+</body>

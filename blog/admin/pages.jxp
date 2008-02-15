@@ -4,29 +4,17 @@
 
 Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
 <p>
-
 {
+    var tab = new htmltable({
+        ns: db.blog.posts,
+        cols: [
+            { name: "title", isLink: true, searchWidth: 50 },
+            { name: "name", isLink: true, heading: "slug", searchWidth: 30 },
+            { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>": "no"; }}
+        ],
+        detailUrl: "post_edit?id=",
+        searchable: true
+    });
 
- var tab = new htmltable( 
-  { 
-   ns : db.blog.posts,
-   cols : [
-     { name: "title", searchWidth: 40 },
-     { name: "name", heading: "slug", searchWidth: 30 },
-     { name: "author" },
-     { name: "ts", heading: "created", 
-         view: function(x){return x.toString().replace(/... EST /,' ');}
-     }, 
-     { name: "live", 
-       view: function(x){return x?"yes":"no";}, 
-       searchWidth: 4, type: "boolean"
-     }
-   ],
-   detailUrl: "post_edit?id=",
-   searchable: true
-  } 
- );
-
- tab.dbview( tab.find({cls:"page"}).sort({ts:-1}) );
-
+    tab.dbview( tab.find({cls:"page"}).sort({ts:-1}) );
 }

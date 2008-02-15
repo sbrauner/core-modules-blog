@@ -1,6 +1,14 @@
 <%
+/* everyone is allowed to read the source code in corejs and samples. */
+    var _openAccess = false;
 
-    var _openAccess = request.getURI().match( /^.admin\/doc$/ ) && request.getHost() == "corejs.10gen.com";
+SYSOUT( "here" );
+
+_openAccess = 
+    request.getURI().match( /^.admin\/doc$/ ) && 
+    ( request.getHost() == "corejs.10gen.com" || request.getHost() == "samples.10gen.com");
+
+SYSOUT( _openAccess );
 
 core.user.user();
 core.user.auth();

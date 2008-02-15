@@ -1,0 +1,279 @@
+<%
+core.app.bugtracker.data.feature();
+core.app.bugtracker.data.project();
+core.app.bugtracker.data.helper();
+core.user.user();
+core.user.auth();
+core.content.forms();
+if (! user ){
+    user = Auth.getUser(request);
+}
+if (! user ){
+    return Auth.reject(request, response);
+}
+var feature = null;
+if ( request.id ){
+    feature = db.bugtracker.cases.findOne( { _id : request.id } );
+}
+else{
+    feature = new app.bugtracker.data.Feature();
+    feature.reporter = user;
+}
+
+if (request._method == "delete"){
+    db.bugtracker.cases.remove(feature);
+    response.setResponseCode(301);
+    response.setHeader("Location", "./");
+    return;
+}
+feature.number = parseInt(feature.number).toFixed();
+timestamp = feature.lastModified;
+Forms.fillInObject( "f", feature );
+print.setFormObject( feature, "f" );
+head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
+head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
+if(request.fstatus){
+    if (feature.lastModified.toString() == request.starttime ||
+        ! feature._id ){
+        feature.lastModified = Date();
+        if(feature.owner == "null") feature.owner = null;
+        else
+            feature.owner = db.users.findOne({_id: feature.owner});
+        var props = ["project", "OS", "release"];
+        p = "project";
+        if(feature.project == "null"){
+            if(request["extra_fproject"]){
+                feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
+                db.bugtracker.projects.save(feature.project);
+            }
+            else feature.project = null;
+        }
+        else{
+            feature.project = db.bugtracker.projects.findOne({_id: feature.project});
+        }
+
+        if(feature.area == "New area"){
+            feature.area = request["extra_farea"];
+        }
+        else if(feature.area == "None"){
+            feature.area = "";
+        }
+
+        if(feature.project && !app.App.findArray(feature.project.areas, feature.area)){
+            feature.project.areas.push(feature.area);
+        }
+
+        if(feature.number == 0)
+            feature.number = app.bugtracker.data.Feature.nextNumber();
+
+        db.bugtracker.cases.save(feature);
+        // Redirect back to bugs/ or whatever
+        response.setResponseCode(301);
+        response.setHeader("Location", "./");
+    }
+    else{
+        timestamp = feature.lastModified;
+        orig = db.bugtracker.cases.findOne( { _id: request.id } );
+    }
+}
+%>
+<html>
+  <head>
+    <title>Editing case</title>
+    <script>
+      function enableInput(input){
+          var elems = document.getElementsByName(input);
+          var select = elems[0];
+          var input = document.getElementsByName("extra_"+input)[0];
+          if(select.options[select.selectedIndex].text.indexOf("New ") == 0){
+              input.disabled = false;
+          }
+          else{
+              input.disabled = true;
+          }
+      }
+function ObjectId(){ return null; }
+      projects = <%=tojson(db.bugtracker.projects.find().toArray()) %>;
+      function updateAreas(){
+          var projsel = document.getElementsByName("fproject")[0];
+          var areasel = document.getElementsByName("farea")[0];
+          var areatext = document.getElementsByName("extra_farea")[0];
+          var projname = projsel.options[projsel.selectedIndex].text;
+          var options = null;
+          for(var i in projects){
+              if(projects[i].name == projname){
+                  options = projects[i].areas;
+                  break;
+              }
+          }
+          areasel.options.length = 1;
+          if(options){
+              for (var i in options){
+                  var option = options[i];
+                  areasel.options[areasel.options.length] = new Option(option);
+              }
+          }
+          if(projname != "None")
+              areasel.options[areasel.options.length] = new Option("New area");
+          //if(areasel.options.length == 1) areatext.disabled = false;
+          //else
+              //
+          areatext.disabled = true;
+      }
+    </script>
+  </head>
+  <body>
+    <% if(feature.number != 0){ %>
+    <h1>Editing case number <%= feature.number %></h1>
+    <% } else { %>
+    <h1>Editing new case</h1>
+    <% } %>
+    <a href="./">Case list</a>
+
+    <% if (orig) { %>
+    <div id="original">
+      <span class="errormsg">Someone edited this case in the meantime. Here's their version.</span>
+      <ul>
+        <li>Title: <%= orig.title%></li>
+        <li>Owner: <%= orig.owner%></li>
+        <li>Status: <%= orig.status%></li>
+        <li>Severity: <%= orig.severity%></li>
+        <li>Type: <%= orig.type %></li>
+        <li>Project: <%= orig.project %></li>
+        <li>Area: <%= orig.area %></li>
+        <li>OS: <%= orig.OS %></li>
+        <li>Target release: <%= orig.targetRelease%></li>
+        <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
+      </ul>
+      Here's your version:
+    </div>
+    <% } %>
+
+    <form method="POST">
+      <input type="hidden" name="f_id"/>
+      <input type="hidden" name="starttime" value="<%= timestamp %>"/>
+      <div id="post_form">
+        <div class="field">
+          <div class="field_name">Title</div>
+          <div class="field_value"><input name="ftitle"/></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Date reported</div>
+          <div class="field_value"><%= feature.creationDate%></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Last modified</div>
+          <div class="field_value"><%= feature.lastModified%></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Reporter</div>
+          <div class="field_value"><%= feature.reporter.name %></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Owner</div>
+          <div class="field_value">
+            <% // This doesn't set the None user if feature.owner
+    // is null; that happens implicitly since None is first. %>
+    <%= app.bugtracker.data.helper.select(feature, "owner", "f",
+                                          [false].concat(db.users.find({}).toArray()),
+                                          {view: function(u){return u?u.name:"None";},
+                                           value: function(u){return u?u._id:"null"; },
+                                          }) %> </div>
+        </div>
+        <div class="field">
+          <div class="field_name">Status</div>
+          <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "status", "f") %></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Severity</div>
+          <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Type</div>
+          <div class="field_value">
+            <%=
+               app.bugtracker.data.helper.select(feature, "type", "f") %>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field_name">Project</div>
+          <div class="field_value">
+            <%
+var choices = app.bugtracker.app.list_projects();
+choices = [new app.bugtracker.data.Project("None")].concat(choices);
+var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
+
+                       %>
+            <%=
+               app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
+                                                 {view: function(p){ return p.name; },
+                                                  value: function(p){ return p._id; },
+                                                  onchange: "enableInput('fproject');updateAreas();"})%>
+            <input name="extra_fproject" <%=choices.length > 0? "disabled=\"true\"": "" %>/>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field_name">Area</div>
+          <div class="field_value">
+            <%
+            var project = feature.project || choices[0];
+var pchoices = ["None"].concat(project.areas);
+if(project.areas.length > 0){
+        pchoices = pchoices.concat(["New area"]);
+}
+                       %>
+            <%=
+               app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
+                                                 {onchange: "enableInput('farea')"})%>
+            <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
+          </div>
+        </div>
+        <div class="field">
+          <div class="field_name">OS</div>
+          <div class="field_value">
+                   <% var choices = app.bugtracker.list_OSes();
+                      if (choices) { %>
+                   <%= app.bugtracker.data.helper.select(feature, "OS", "f", choices)%>
+                              <% }
+                      else { %>
+                              <input name="fOS"/>
+                              <% } %>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field_name">Target release</div>
+          <div class="field_value"><input name="ftargetRelease"/></div>
+        </div>
+        <div class="field">
+          <div class="field_name">Description</div>
+          <div class="field_value"><textarea cols=80 rows=20 name="fdescription"><%= feature.description %></textarea></div>
+        </div>
+        <div class="field">
+            <div class="field_name">&nbsp;</div>
+            <div class="field_value"><input type="submit" value="Save"></div>
+      </div>
+    </form>
+
+    <form method="POST">
+      <input type="hidden" name="f_id"/>
+      <input type="hidden" name="_method" value="delete"/>
+        <div class="field">
+            <div class="field_name">&nbsp;</div>
+            <div class="field_value"><input type="submit" value="Delete"
+                                            onclick="return confirm('Are you sure you want to delete this item?');"></div>
+      </div>
+      </form>
+<div class="comments">
+<hr>
+Comments:
+        <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
+<%
+feature.decoratorsRender();
+ %>
+</div>
+
+  </body>
+</html>
+<%
+
+%>

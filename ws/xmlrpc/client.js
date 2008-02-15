@@ -78,25 +78,25 @@ ws.xmlrpc.Client.prototype._processResponse = function(responseText) {
     this.lastResponse = response;
     if (response) {
         if (response._name == 'methodResponse') {
-            if (response.$[0]._name == 'params') {
+            if (response.children[0]._name == 'params') {
                 // we got a valid response
                 this.isLastResponseFault = false;
     
                 // get the contents of the response, which should be a single value
-                var value = response.$[0].$[0].$[0].$[0]
+                var value = response.children[0].children[0].children[0].children[0]
                 this.lastValue = value;
     
                 return {isFault: false, value: value};
-            } else if (response.$[0]._name == 'fault') {
+            } else if (response.children[0]._name == 'fault') {
                 // we got an XML-RPC fault
                 this.isLastResponseFault = true;
     
                 // get the contents of the response, which should be a faultString and faultValue
-                var value = response.$[0].$[0].$[0]
+                var value = response.children[0].children[0].children[0]
                 this.lastValue = value;
 
-                var faultString = value.$[0].$[1].$;
-                var faultValue = value.$[1].$[1].$[0].$;
+                var faultString = value.children[0].children[1].$;
+                var faultValue = value.children[1].children[1].children[0].$;
                 return {isFault: true, faultString: faultString, faultValue: faultValue};
             }
         }

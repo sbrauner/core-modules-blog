@@ -11,6 +11,8 @@ cols: column specs
   view:         function that makes the value for the col pretty
   type:         "boolean" for bool columns.  used by search.
   queryForm:    translate what the user typed in the input field into db query format
+  isLink:       true or false; display this column as a link to the detail for this row
+  className:    CSS class name for this field
 detailUrl: drill down url prefix.  uses obj id (_id)
 detail: function which takes object and returns detail url
 searchable: if you want it searchable.
@@ -100,63 +102,75 @@ function htmltable(specs) {
      
      print( tr(displaycolnames, {header:true}) );
 
-     if( this.specs.searchable ) {
-	 print("<form>");
-	 var first = true;
-	 print( tr(this.specs.cols.map( function(x){
-			 var s = "";
-			 if( first ) { 
-			     first = false;
-			     s = '<input type="submit" value="search"> ';
-			 }
-			 if( x.searchable == false ) return s;
-			 return s+'<input ' +
-			     (request[x.name]?'value="'+request[x.name]+'" ':'') +
-			     (x.searchWidth?'size="'+x.searchWidth+'" ':'') +
-			     'name="'+x.name+'">';} )) );
-	 print("</form>");
-     }
+    if( this.specs.searchable ) {
+    	print("<form>");
+    	var first = true;
+    	print( tr(this.specs.cols.map( function(x){
+    	    var s = "";
+    		if( first ) { 
+    		    first = false;
+    			s = '<input type="submit" value="search"> ';
+    		}
+		
+    		if( x.searchable == false ) return s;
+		
+    		return s+'<input ' +
+    			     (request[x.name]?'value="'+request[x.name]+'" ':'') +
+    			     (x.searchWidth?'size="'+x.searchWidth+'" ':'') +
+    			     'name="'+x.name+'">';} )) );
+    	print("</form>");
+    }
+     
+     var hasIsLink = false;
+     this.specs.cols.forEach( function( z ){
+				  if ( z.isLink )
+				      hasIsLink = true;
+			      } );
+ 
 
      //var arr = cursor.toArray();
      while( cursor.hasNext() ) {
-	 var obj = cursor.next();
-   	 if( this.filter && !this.filter(obj) )
-	     continue;
-	 print("<tr>");
-	 for( var c in colnames ) {
-	     var v = obj[colnames[c]];
-	     print("<td>");
-	     {
-		 var details = c == "0" && (this.specs.detail || this.specs.detailUrl);
-		 if( details ) {
-		     var post = obj; 
-		     var durl;
-		     if( this.specs.detailUrl )
-			 durl = this.specs.detailUrl + obj._id;
-		     else
-			 durl = this.specs.detail(obj);
-		     print('<a href="' + durl + '">');
-		 }
-		 var view = this.specs.cols[c].view;
-		 var out = view ? view(v,obj) : v;
-	         print( out || "go to" );
-		 if( details ) 
-		     print("</a>");
-	     }
-	     print("</td>");
-	 }
-	 if ( this.specs.actions ){
-	     print( "<td>" );
-	     for ( var i=0; i<this.specs.actions.length; i++ ){
-		 var action = this.specs.actions[i];
-		 print( "<form method='post'>" );
-		 print( "<input type='hidden' name='_id' value='" + obj._id + "'>" );
-		 print( "<input type='submit' name='action' value='" + action.name + "'>" );
-		 print( "</form>" );
-	     }
-	     print( "</td>" );
-	 }
-	 print("</tr>\n");
+	     var obj = cursor.next();
+   	     if( this.filter && !this.filter(obj) ) continue;
+
+    	 print("<tr>");
+    	 for( var c in colnames ) {
+    	     var fieldValue = obj[colnames[c]];
+    	     var isLink = this.specs.cols[c].isLink;
+    	     var cssClassName = this.specs.cols[c].cssClassName;
+	     
+    	     print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
+    	     {
+		         var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
+        		 if( linkToDetails ) {
+        		     var post = obj; 
+        		     var fieldUrl;
+    		     
+        		     if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
+        		     else fieldUrl = this.specs.detail(obj);
+    		     
+        		     print('<a href="' + fieldUrl + '">');
+        		 }
+        		 var viewMethod = this.specs.cols[c].view;
+        		 var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
+			 print( fieldDisplay || ( linkToDetails ? "go to" : "" ) );
+        		 if( linkToDetails ) print("</a>");
+    	     }
+    	     print("</td>");
+    	 }
+
+    	 if ( this.specs.actions ){
+    	     print( "<td>" );
+    	     for ( var i=0; i<this.specs.actions.length; i++ ){
+    		 var action = this.specs.actions[i];
+    		 print( "<form method='post'>" );
+    		 print( "<input type='hidden' name='_id' value='" + obj._id + "'>" );
+    		 print( "<input type='submit' name='action' value='" + action.name + "'>" );
+    		 print( "</form>" );
+    	     }
+    	     print( "</td>" );
+    	 }
+	     print("</tr>\n\n");
      }
  }
 

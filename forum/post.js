@@ -17,7 +17,7 @@ Forum.Post.findAllPosts = function(topic){
 Forum.Post.prototype.findAncestor = function(){
     var tmp = this;
     while(tmp.parent){
-	tmp = tmp.parent;
+        tmp = tmp.parent;
     }
     return tmp;
 };

@@ -14,54 +14,59 @@
     var pastCommands = new Array();
     var historyLocation = 0;
     function doRun(){
-	commandTranscript.value += "\n> " + command.value;
-	if (historyLocation != -1) {
-	    pastCommands[pastCommands.length] = command.value;
-	}
-	historyLocation = 0;
+        commandTranscript.value += "\n> " + command.value;
+        if (historyLocation != -1) {
+            pastCommands[pastCommands.length] = command.value;
+        }
+        historyLocation = 0;
 
-	var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
-	//commandTranscript.value += "\t" + url;
-	
-	var res = loadDocSync( url );
-	res = res.replace( /(^\s+|\s+$)/g , "" );
-	if ( res.length != 0 )
-	    commandTranscript.value += "\n" + res;
+        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
+        //commandTranscript.value += "\t" + url;
 
-	command.value = "";
-	
-	return false;
+        var res = loadDocSync( url );
+        res = res.replace( /(^\s+|\s+$)/g , "" );
+        if ( res.length != 0 )
+            commandTranscript.value += "\n" + res;
+
+        command.value = "";
+
+        return false;
     }
 
     window.onkeydown = function( e ) {
-	var cmd = document.getElementById("command");
-	var setcmd = function () {
-	    if ( arguments.length ) {
-		cmd.value = arguments[0];
-	    }
-	    else {
-	        cmd.value = pastCommands[pastCommands.length + historyLocation];
-	    }
-	}
-
-	if( e.which == 38 ) { // up arrow
-	    historyLocation -= 1;
-	    if (historyLocation < -pastCommands.length){
-		historyLocation = -pastCommands.length;
-	    }
-	    else {
-		setcmd();
-	    }
+        var cmd = document.getElementById("command");
+        var setcmd = function () {
+            if ( arguments.length ) {
+                cmd.value = arguments[0];
+            }
+            else {
+                cmd.value = pastCommands[pastCommands.length + historyLocation];
+            }
         }
-	else if( e.which == 40 ) { // down arrow
-	    historyLocation += 1;
-	    if (historyLocation >= 0){
-		historyLocation = 0;
-		setcmd("");
-	    }
-	    else {
-		setcmd();
-	    }
-	}
+        var key = e.keyCode || e.which;
+        var key = e.which;
+        if(e.shiftKey){
+            // cheap hack to make this work in konqueror
+            key = key + 17;
+        }
+        if( key == 38 ) { // up arrow
+            historyLocation -= 1;
+            if (historyLocation < -pastCommands.length){
+                historyLocation = -pastCommands.length;
+            }
+            else {
+                setcmd();
+            }
+        }
+        else if( key == 40 ) { // down arrow
+            historyLocation += 1;
+            if (historyLocation >= 0){
+                historyLocation = 0;
+                setcmd("");
+            }
+            else {
+                setcmd();
+            }
+        }
     }
 </script>

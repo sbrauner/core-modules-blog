@@ -1,0 +1,26 @@
+<%
+var t = arguments[0];
+ %>
+<ul class="post">
+  <li>
+  <div class="postbox">
+    <a name="<%= t.getID() %>"/>
+    <span class="titlebar">
+      <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
+      (<a href="#<%= t.getID() %>"/>#</a>)
+    </span>
+    <div class="content">
+      <%= t.content %>
+    </div>
+    <% if(request.reply == t.getID() && ! request.reply_target){
+        t.threaded_pieces.reply_form(t.getID());
+    }
+else{ %>
+      <a href="<%=addQuery({reply: t.getID()}) %>">Reply to this</a>
+        <% } %>
+  </div>
+  <%
+    t.getReplies().forEach(t.threaded_pieces.reply);
+  %>
+  </li>
+</ul>

@@ -1,18 +1,13 @@
+core.util.format();
 app.bugtracker.data.helper = {
-    getlist: function(){
-        //SYSOUT(getlist(app, "bugtracker", "data", "helper", "getlist") == app.bugtracker.data.helper.getlist);
-        var obj = arguments[0];
-        var i = 1;
-        while(obj && i < arguments.length){
-            obj = obj[arguments[i]];
-            ++i;
-        }
-        return obj;
-    },
-
-    select: function(obj, field, prefix, opts, view, value){
+    select: function(obj, field, prefix, opts, conf){
+        if(! conf) conf = { view: null, value: null };
+        var viewfunc = conf.view;
+        delete conf.view;
+        var valuefunc = conf.value;
+        delete conf.value;
         s = "";
-        s += "<select name=\""+prefix+field+"\">";
+        s += "<select name=\""+prefix+field+"\" "+app.bugtracker.data.helper.format(conf)+">";
         var orig = obj[field];
         if(! opts){
             var field_c = field.toUpperCase();
@@ -20,9 +15,9 @@ app.bugtracker.data.helper = {
         }
         for(var f in opts){
             var text = opts[f];
-            if(view) text = view(text);
+            if(viewfunc) text = viewfunc(text);
             var val = opts[f];
-            if(value) val = value(val);
+            if(valuefunc) val = valuefunc(val);
             s += "<option";
             // This paranoid check prevents the possibility of opts[f] being
             // false or null and getting an exception when you access
@@ -44,5 +39,7 @@ app.bugtracker.data.helper = {
         }
         s += "</select>";
         return s;
-    }
+    },
+    format: Util.format_htmlattr
+
 };

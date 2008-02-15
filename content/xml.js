@@ -9,6 +9,7 @@
    </myobjtype>
 
 */
+core.content.html();
 
 xml = {
 
@@ -27,16 +28,16 @@ xml = {
 
         var newLine = false;
 
-        if ( name ){
+        if ( name && name != "PCDATA" ){
             xml._indent( append , indent );
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
-                    append( " " + a + "=\"" + obj._props[a] + "\" " );
+                    append( " " + a + "=\"" + content.HTML.escape_html(obj._props[a]) + "\" " );
                 }
             }
 
-            if ( obj == null || (haskey(obj, "$") && obj["$"] == null )){
+            if ( obj == null || (haskey(obj, "$") && obj["$"] == null) || (haskey(obj, "children") && (obj.children == null || obj.children.length == 0))){
                 append( " />" );
                 return;
             }
@@ -47,14 +48,14 @@ xml = {
         if ( obj == null ){
         }
         else if ( isString( obj ) || isDate( obj ) ){
-            append( obj );
+            append( content.HTML.escape_html(obj.toString()) );
         }
         else if ( isObject( obj ) ){
 
             newLine = true;
             append( "\n" );
             for ( var prop in obj ){
-                if ( prop == "_props" || prop == "_name" || prop == "$" )
+                if ( prop == "_props" || prop == "_name" || prop == "$" || prop == "children" )
                     continue;
 
                 var child = obj[prop];
@@ -72,7 +73,11 @@ xml = {
         if ( isObject( obj ) && obj["$"] )
             xml.to(append, null, obj["$"], indent+1);
 
-        if ( name ){
+        if ( isObject( obj ) && isArray(obj.children) )
+            xml.to(append, null, obj.children, indent+1);
+
+
+        if ( name && name != "PCDATA" ){
             if ( newLine )
                 xml._indent( append , indent );
             append( "</" + name + ">\n" );
@@ -98,6 +103,7 @@ xml = {
     _re_nonspace : /[^ \t\n]/,
     _re_space : /[ \t\n]/,
     _re_word : /[^\w&;]/,
+    _re_close_cdata: /\]\]>/,
 
     _xmlTokenizerre : function( s ){
         var pos = 0;
@@ -123,13 +129,19 @@ xml = {
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
+                    if(sub.substring(s2, s2+8) == "!\[CDATA\["){
+                        var s3 = xml._re_close_cdata.exec(sub).index;
+                        s = sub.substring(s3+3, sub.length);
+                        insideTag = false;
+                        return sub.substring(s2+8, s3);
+                    }
                     s = s.substring(start+1, s.length);
                     return "<";
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 // CDATA node
-                return sub.substring(0, next).trim();
+                return content.HTML.unescape_html(sub.substring(0, next).trim());
             }
             else {
                 if(s[start] == '?'){
@@ -209,13 +221,19 @@ xml = {
                         s = sub.substring(s2+1, sub.length);
                         return "<?";
                     }
+                    if(sub.substring(s2, s2+8) == "!\[CDATA\["){
+                        var s3 = xml._re_close_cdata.exec(sub).index;
+                        s = sub.substring(s3+3, sub.length);
+                        insideTag = false;
+                        return sub.substring(s2+8, s3);
+                    }
                     s = s.substring(start+1, s.length);
                     return "<";
                 }
                 var next = sub.indexOf("<");
                 s = sub.substring(next, sub.length);
                 // CDATA node
-                return sub.substring(0, next).trim();
+                return content.HTML.unescape_html(sub.substring(0, next).trim());
             }
             else {
                 if(s[start] == '?'){
@@ -290,15 +308,13 @@ xml = {
 
     _from : function( tokenizer ){
         var root = [];
-        var next = tokenizer();
-        if(next != "<") return next;
-        tokenizer.lookahead = next;
+        var next;
 
         while(true){
             next = tokenizer();
             if (next == -1) break;
             if (next != "<"){
-                //CTEXT
+                //CDATA
                 root.push(next);
                 continue;
             }
@@ -306,7 +322,7 @@ xml = {
                 var name = tokenizer();
                 if(name == "/"){
                     // our root element just ended; return what we have
-                    return root;
+                    break;
                 }
                 var props = {};
                 var slash = false;
@@ -317,6 +333,7 @@ xml = {
                     else{
                         var eq = tokenizer();
                         var val = tokenizer();
+                        val = content.HTML.unescape_html(val);
                         props[next] = val;
                         hasprops = true;
                     }
@@ -335,14 +352,23 @@ xml = {
                     }
                 }
                 else var result = null;
-                var topush = {_name: name, "$": result};
+                var topush = {_name: name};
                 if(hasprops){ topush._props = props; }
+                if(result == null || isString(result))
+                    topush.$ = result;
+                else
+                    topush.children = result;
                 root.push(topush);
             }
         }
 
-        if(root.length == 1 && root[0] == null || isString(root[0]))
+        if(root.length == 1 && (root[0] == null || isString(root[0])))
             return root[0];
+        for(var i in root){
+            if (isString(root[i])){
+                root[i] = {_name: "PCDATA", $: root[i]};
+            }
+        }
         return root;
 
     },
@@ -363,11 +389,13 @@ xml = {
     find: function(obj, query){
         var results = [];
         if(xml.match(obj, query)) results.push(obj);
-        for(var i in obj["$"]){
-            var tmp = xml.find(obj["$"][i], query);
-            if(! tmp) continue;
-            for(var tmpi in tmp){
-                results.push(tmp[tmpi]);
+        if(obj.children && obj.children.length > 0){
+            for(var i in obj.children){
+                var tmp = xml.find(obj.children[i], query);
+                if(! tmp) continue;
+                for(var tmpi in tmp){
+                    results.push(tmp[tmpi]);
+                }
             }
         }
         if(results.length > 0)
@@ -377,7 +405,7 @@ xml = {
 
 function haskey(obj, prop){
     if ( ! isObject( obj ) )
-	return false;
+        return false;
     for (var i in obj){
         if (i == prop){
             return true;

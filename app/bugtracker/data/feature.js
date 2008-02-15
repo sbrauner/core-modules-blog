@@ -10,11 +10,13 @@
 
 app.bugtracker.data.Feature = function() {
      // member variables
-    this.status = app.bugtracker.data.Feature.STATUS.NEW;
-    this.severity = app.bugtracker.data.Feature.SEVERITY.NORMAL;
+    this.status = this.STATUS.NEW;
+    this.severity = this.SEVERITY.NORMAL;
     this.creationDate = new Date();
     this.lastModified = new Date();
-    this.product = '';
+    this.project = null;
+    this.area = "";
+    this.type = '';
     this.OS = '';
     this.targetRelease = '';
     this.title = '';
@@ -33,16 +35,25 @@ app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
                                     LOW: 'low' };
 
+app.bugtracker.data.Feature.prototype.TYPE = { BUG: 'bug',
+                                    FEATURE: 'feature',
+                                    INQUIRY: 'inquiry' };
+
+core.threaded.data.reply_parent();
+threaded.repliesEnabled(app.bugtracker.data, "Feature");
+
+
 app.bugtracker.data.Feature.prototype.presave = function(){
     this.number = parseInt(this.number);
+    this.description = this.description.trim();
+    this.title = this.title.trim();
+    this.targetRelease = this.targetRelease.trim();
 };
 
 if(db){
-    db.bugtracker.features.setConstructor(app.bugtracker.data.Feature);
-    db.bugtracker.features.ensureIndex({number: 1});
-    db.bugtracker.features.ensureIndex({owner: 1});
-    db.bugtracker.features.ensureIndex({reporter: 1});
-    db.bugtracker.features.ensureIndex({lastModified: 1});
+    db.bugtracker.cases.setConstructor(app.bugtracker.data.Feature);
+    db.bugtracker.cases.ensureIndex({number: 1});
+    db.bugtracker.cases.ensureIndex({lastModified: 1});
 }
 
 app.bugtracker.data.Feature.nextNumber = function(){
@@ -53,7 +64,7 @@ app.bugtracker.data.Feature.nextNumber = function(){
 };
 
 app.bugtracker.data.Feature.find = function(){
-    return db.bugtracker.features.find();
+    return db.bugtracker.cases.find();
 };
 
 // We need a standard way to bind a  -dana

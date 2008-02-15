@@ -1,5 +1,5 @@
 <% 
 response.addCookie( "__sudo" , "11" ); 
 response.setResponseCode( 302 );
-response.setHeader( "Location" , "admin/index" );
+response.setHeader( "Location" , "/admin/" );
 %>
