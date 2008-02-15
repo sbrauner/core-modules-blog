@@ -1,0 +1,15 @@
+<%
+    if (request.edit) head.push('<script type="text/javascript">isEditPage = true;</script>');
+    else head.push('<script type="text/javascript">isEditPage = false;</script>');
+
+    head.push('<link rel="stylesheet" href="assets/wiki.css" type="text/css">');
+    //  head.push('<link rel="stylesheet" href="/~~/misc/gitweb.css" type="text/css">');
+    head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
+    head.push('<script type="text/javascript" src="assets/client.js"></script>');
+    if (!moduleSettings.readOnly) head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
+%>
+
+<% htmlheader('10gen Public Wiki | ' + wikiPage.getDisplayName()); %>
+
+<div id="wiki">
+    <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>

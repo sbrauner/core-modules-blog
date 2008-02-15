@@ -1,0 +1,44 @@
+<%
+    /* determine the base url we are running under.  
+    */
+
+    var uri = request.getURI();
+
+    // This should be moved to a general handler for all modules
+    if( request.getURI().indexOf('~') >= 0 ) {
+        // only allowed if we remapped the url.  otherwise security would be bypassed
+        print("module error 2");
+        return;
+    }
+
+    var base = request.getURI().match( /^.*?wiki\// );
+    if( !base && request.getURI().match(/wiki/) ) { 
+        response.setResponseCode( 302 );
+        response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
+        return;
+    }
+
+    request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
+
+    // Get the name of the page we are supposed to display. Assume we want the Main page if no page name is provided
+    var displayName = request.name;
+    if (!displayName) displayName = "Main";
+    
+    // Construct the full name of the page if we have a prefix defined for this instance
+    var name = moduleSettings.prefix + displayName;
+
+    // Get the actual wiki page. If there is no page with the given name, create a new page
+    var wikiPage = db.wiki.findOne( { name : name } );
+    if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
+
+    if (request['rename'] && !moduleSettings.readOnly) {
+        app.wiki.WikiController.renamePage(wikiPage, request.newName);
+    } else if ( request['delete'] && !moduleSettings.readOnly ) {
+        app.wiki.WikiController.deletePage(wikiPage);
+    } else if (request['update']) {
+        app.wiki.WikiController.updatePage(wikiPage, request.text);
+    }
+
+    if (request.edit) core.app.wiki.pieces.edit();
+    else core.app.wiki.pieces.view();
+%>

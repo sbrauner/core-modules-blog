@@ -1,0 +1,11 @@
+<% core.app.wiki.pieces.header(); %>
+
+<div id="edit_form">
+    <form id="the_form" method="POST" action="<%= name %>">
+        <p><input name="action" type="submit" value=" Save "></p>
+        <input type="hidden" name="update" value="true"/>
+        <textarea rows='40' cols='100' name="wikitext" id="wikitext"><%= wikiPage.text ? HTML.encode(wikiPage.text) : '' %></textarea>
+    </form>
+</div>
+
+<% core.app.wiki.pieces.footer(); %>

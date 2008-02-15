@@ -1,0 +1,36 @@
+<%
+if( !allowModule.wiki ) return;
+var prefix = allowModule.wiki.prefix || "";
+
+// determine the base url we are running under.
+var base = request.getURI();
+base = base.match( /^.*?wiki/ ) || '';
+base += '/';
+
+core.content.table();
+
+htmlheader('Wiki Search');
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
+head.push('<script type="text/javascript">loader = new YAHOO.util.YUILoader();</script>');
+
+var wiki = db.wiki;
+
+var prefixRE = null;
+if( prefix.length ) {
+    var s = prefix.replace(/\./g, '\.');
+    prefixRE = RegExp("^" + s);
+}
+
+var tab = new htmltable({
+    ns : wiki,
+    cols : [{ name: "name", isLink: true, searchWidth: 32, view: function(x) { return prefixRE?x.replace(prefixRE, ''):x; }},
+            { name: "text", searchWidth: 60, view: function(x) { return x.toString().substring(0, 66).replace(/</g,"&lt;");}}],
+    searchable: true,
+    detail: function(obj){ return base + (prefixRE?obj.name.replace(prefixRE,''):obj.name); },
+    });
+
+if( prefixRE ) tab.filter = function(x) { return x.name.match(prefixRE); }
+tab.dbview( tab.find().sort({name:1}) );
+
+htmlfooter(); 
+%>

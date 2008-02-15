@@ -1,0 +1,5 @@
+<% core.app.wiki.pieces.header(); %>
+
+<div id="wiki_content" class="content" ><%= wikiPage.getParsedText() %></div>
+
+<% core.app.wiki.pieces.footer(); %>
