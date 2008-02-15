@@ -28,7 +28,7 @@ else {
       </tr>
 <%}%>
 <%
-var list = Forum.Thread.list(t);
+var list = Forum.data.Thread.list(t);
 if (list)
     list.forEach(Forum.renderer.thread);
 else

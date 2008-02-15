@@ -1,5 +1,5 @@
 core.db.db();
-Forum.Thread = function(){
+Forum.data.Thread = function(){
     this.commentsEnabled = true;
     this.pinned = true;
     this.latestPost = null;
@@ -8,15 +8,15 @@ Forum.Thread = function(){
     this.topic = null;
 };
 
-Forum.Thread.prototype.findFirstPost = function(){
+Forum.data.Thread.prototype.findFirstPost = function(){
     return this.getReplies()[0];
 };
 
 core.threaded.data.reply_parent();
-threaded.repliesEnabled(Forum, "Thread", {users: "free", tablename: "forum.posts"});
+threaded.repliesEnabled(Forum.data, "Thread", {users: "free", tablename: "forum.posts"});
 
-Forum.Thread.list = function(topic){
+Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1});
 };
 
-db.forum.threads.setConstructor(Forum.Thread);
+db.forum.threads.setConstructor(Forum.data.Thread);

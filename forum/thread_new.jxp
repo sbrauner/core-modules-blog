@@ -3,7 +3,7 @@ if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 core.forum.data.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){
-    var thread = new Forum.Thread();
+    var thread = new Forum.data.Thread();
     db.forum.threads.save(thread);
     var rep = thread.decoratorsHandle();
 
@@ -32,7 +32,7 @@ var backurl = "viewtopic?id="+request.top_id;
   </head>
   <body>
     <h3>New thread</h3>
-    <% Forum.Thread.decoratorsHandle(); %>
+    <% Forum.data.Thread.decoratorsHandle(); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>
