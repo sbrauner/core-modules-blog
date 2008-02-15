@@ -10,11 +10,12 @@
 
 app.bugtracker.data.Feature = function() {
      // member variables
-    this.status = app.bugtracker.data.Feature.STATUS.NEW;
-    this.severity = app.bugtracker.data.Feature.SEVERITY.NORMAL;
+    this.status = this.STATUS.NEW;
+    this.severity = this.SEVERITY.NORMAL;
     this.creationDate = new Date();
     this.lastModified = new Date();
-    this.project = '';
+    this.project = null;
+    this.area = "";
     this.type = '';
     this.OS = '';
     this.targetRelease = '';
@@ -37,6 +38,10 @@ app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
 app.bugtracker.data.Feature.prototype.TYPE = { BUG: 'bug',
                                     FEATURE: 'feature',
                                     INQUIRY: 'inquiry' };
+
+core.threaded.data.reply_parent();
+threaded.repliesEnabled(app.bugtracker.data, "Feature");
+
 
 app.bugtracker.data.Feature.prototype.presave = function(){
     this.number = parseInt(this.number);

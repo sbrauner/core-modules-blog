@@ -1,5 +1,5 @@
 <%
-core.forum.thread();
+core.forum.data.thread();
 var id = request.id;
 var t = db.forum.topics.findOne({_id: id});
 
@@ -28,7 +28,7 @@ else {
       </tr>
 <%}%>
 <%
-var list = Forum.Thread.list(t);
+var list = Forum.data.Thread.list(t);
 if (list)
     list.forEach(Forum.renderer.thread);
 else
@@ -39,7 +39,7 @@ if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 else {
 %>
 </table>
-<a href="makepost?top_id=<%= id %>">New thread</a>
+<a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
 <a href="./">Back to toplevel</a>
   </body>
 </html>

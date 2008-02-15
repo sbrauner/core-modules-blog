@@ -1,0 +1,9 @@
+hr {
+    clear: both;
+}
+
+.post {
+    position: relative;
+    margin-left: 40px;
+    clear: both;
+}

@@ -14,7 +14,7 @@ else {
 <%
 	}
 core.forum.topic();
-var list = Forum.Topic.list();
+var list = Forum.data.Topic.list();
 if (list)
     list.forEach(Forum.renderer.topic);
 else

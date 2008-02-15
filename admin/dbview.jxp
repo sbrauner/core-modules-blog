@@ -57,12 +57,19 @@
     var obj=rows[i];
     var idx=top ? obj.name.indexOf("$") : -1; 
     if( obj.name && idx>=0 ) {
-      print("&nbsp&nbsp&nbsp;index "); print(obj.name.substring(idx)); print("<br>");
+	print("&nbsp&nbsp&nbsp; old (from system.namespaces) index "); print(obj.name.substring(idx)); print("<br>");
     }
     else if( top ) {
 %>
 <a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
-<% } else { 
+<%
+	    db.system.indexes.find( { ns : obj.name } ).forEach( function( z ){
+								     print("&nbsp&nbsp&nbsp;index "); 
+								     print( z.name); 
+								     print("<br>");
+								     
+								 } );
+ } else { 
       print("<tr>");
       for( h in f ) { 
         if( f[h]>thresh ) { 

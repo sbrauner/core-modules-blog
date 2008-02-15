@@ -23,9 +23,17 @@ Blog.ping = function(articleUrl) {
     
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
+
         SYSOUT('Pinging: ' + service.url);
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
-        var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+        var response = null;
+	try {
+	    response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+	}
+	catch ( e ){
+	    print( "couldn't ping : " + tojson( service ) + " because of " + e );
+	    return;
+	}
         
         if (!response) {
             SYSOUT('Got empty response');
@@ -54,4 +62,5 @@ Blog.ping = function(articleUrl) {
             }
         }
     });
+
 };

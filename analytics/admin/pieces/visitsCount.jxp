@@ -8,8 +8,8 @@
     <% for ( var i=0; i<Math.min( u.length , p.length ); i++ ){ %>
     <tr>
        <td><%= u[i].time %></td>
-       <td><%= p[i].num %></td>
-       <td><%= u[i].num %></td>
+       <td><%= p[i].num.toFixed() %></td>
+       <td><%= u[i].num.toFixed() %></td>
     </tr>	
     <% } %>	    												     
 </table>

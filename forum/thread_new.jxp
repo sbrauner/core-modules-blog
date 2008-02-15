@@ -1,0 +1,42 @@
+<%
+if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+core.forum.data.thread();
+core.content.forms();
+if(request.getMethod() == "POST"){
+    var thread = new Forum.data.Thread();
+    db.forum.threads.save(thread);
+    var rep = thread.decoratorsHandle();
+
+    if(rep){
+        thread.count += 1;
+        thread.topic = db.forum.topics.findOne({_id: request.top_id});
+        thread.topic.threadCount += 1;
+
+        thread.topic.postCount += 1;
+        thread.latestPost = rep.getID();
+        db.forum.threads.save(thread);
+        db.forum.topics.save(thread.topic);
+        response.setResponseCode(301);
+        response.setHeader("Location", "./");
+        return;
+    }
+    else {
+        db.forum.threads.remove(thread);
+    }
+}
+var backurl = "viewtopic?id="+request.top_id;
+%>
+<html>
+  <head>
+    <title>New thread</title>
+  </head>
+  <body>
+    <h3>New thread</h3>
+    <% Forum.data.Thread.decoratorsHandle(); %>
+<a href="<%= backurl %>">Back to forum</a>
+  </body>
+</html>
+
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+%>

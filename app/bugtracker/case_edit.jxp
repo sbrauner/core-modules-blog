@@ -31,6 +31,7 @@ timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
+head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
@@ -41,17 +42,24 @@ if(request.fstatus){
         var props = ["project", "OS", "release"];
         p = "project";
         if(feature.project == "null"){
-            feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
-            db.bugtracker.projects.save(feature.project);
+            if(request["extra_fproject"]){
+                feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
+                db.bugtracker.projects.save(feature.project);
+            }
+            else feature.project = null;
         }
         else{
             feature.project = db.bugtracker.projects.findOne({_id: feature.project});
         }
+
         if(feature.area == "New area"){
             feature.area = request["extra_farea"];
         }
+        else if(feature.area == "None"){
+            feature.area = "";
+        }
 
-        if(!app.App.findArray(feature.project.areas, feature.area)){
+        if(feature.project && !app.App.findArray(feature.project.areas, feature.area)){
             feature.project.areas.push(feature.area);
         }
 
@@ -98,16 +106,19 @@ function ObjectId(){ return null; }
                   break;
               }
           }
-          areasel.options.length = 0;
+          areasel.options.length = 1;
           if(options){
               for (var i in options){
                   var option = options[i];
                   areasel.options[areasel.options.length] = new Option(option);
               }
           }
-          areasel.options[areasel.options.length] = new Option("New area");
-          if(areasel.options.length == 1) areatext.disabled = false;
-          else areatext.disabled = true;
+          if(projname != "None")
+              areasel.options[areasel.options.length] = new Option("New area");
+          //if(areasel.options.length == 1) areatext.disabled = false;
+          //else
+              //
+          areatext.disabled = true;
       }
     </script>
   </head>
@@ -155,6 +166,10 @@ function ObjectId(){ return null; }
           <div class="field_value"><%= feature.lastModified%></div>
         </div>
         <div class="field">
+          <div class="field_name">Reporter</div>
+          <div class="field_value"><%= feature.reporter.name %></div>
+        </div>
+        <div class="field">
           <div class="field_name">Owner</div>
           <div class="field_value">
             <% // This doesn't set the None user if feature.owner
@@ -185,7 +200,9 @@ function ObjectId(){ return null; }
           <div class="field_value">
             <%
 var choices = app.bugtracker.app.list_projects();
+choices = [new app.bugtracker.data.Project("None")].concat(choices);
 var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
+
                        %>
             <%=
                app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
@@ -199,9 +216,11 @@ var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
           <div class="field_name">Area</div>
           <div class="field_value">
             <%
-            var project = feature.project;
-var choices = project.areas;
-        var pchoices = choices.concat(["New area"]);
+            var project = feature.project || choices[0];
+var pchoices = ["None"].concat(project.areas);
+if(project.areas.length > 0){
+        pchoices = pchoices.concat(["New area"]);
+}
                        %>
             <%=
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
@@ -244,6 +263,15 @@ var choices = project.areas;
                                             onclick="return confirm('Are you sure you want to delete this item?');"></div>
       </div>
       </form>
+<div class="comments">
+<hr>
+Comments:
+        <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
+<%
+feature.decoratorsRender();
+ %>
+</div>
+
   </body>
 </html>
 <%
