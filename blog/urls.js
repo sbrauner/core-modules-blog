@@ -23,8 +23,7 @@ Blog._addFilters = function( searchCriteria , filter ){
 /* keep track of all pages that wind up as 404's */
 Blog.handleMissingUri = function(uri) {
     var missingPage = new MissingPage(uri);
-    db.blog.missingpages.save(missingPage);
-//    response.setResponseCode(404);
+    db.blog.missingpages.update( missingPage , { $inc : { num : 1 } } , { upsert : true , ids : false } );
 
     return {isPage: true,
             posts: [Post.get404()],
@@ -61,7 +60,7 @@ Blog.handleRequest = function( request , arg ){
     }
 
     if (request.q) {
-        posts = Search.search(db.blog.posts, request.q );
+        posts = Search.search(db.blog.posts, request.q , { min : 100 } );
         posts = posts.filter( function( z ){ return z.live; } );
 	    posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 	

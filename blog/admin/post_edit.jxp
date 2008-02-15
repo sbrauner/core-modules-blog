@@ -51,6 +51,8 @@ if ( request.action == "save" ) {
    	    thePost.content = request.content;
 	    thePost.excerpt = request.excerpt;
 	    thePost.ts = new Date( request.ts );
+	    if ( request.author )
+		thePost.author = request.author;
    	    if (thePost.cls == 'entry')
    	        thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
 	    thePost.live = parseBool( request.live );
@@ -82,11 +84,14 @@ if ( request.action == "save" ) {
 if ( request.content ) thePost.content = request.content;
 
 // Build a list of all available categories (this is a kludge!)
+
 var cursor = db.blog.posts.find({}, { categories:true });
 var categories = new Array();
-cursor.forEach( function( postFragment ) { categories.concat( postFragment.categories); } );
+cursor.forEach( function( postFragment ) { 
+		    categories = categories.concat( postFragment.categories); 
+		} 
+		);
 categories = categories.unique().sort();
-
 %>
 
 <script type="text/javascript" src="NOCDN/~~/tinymce/3.0/tiny_mce.js"></script>
