@@ -9,12 +9,15 @@ Forum.Thread = function(){
     this.topic = null;
 };
 
-Forum.Thread.list = function(topic){
-    return db.forum.threads.find({topic: topic}).sort({pinned: -1});
+Forum.Thread.prototype.findFirstPost = function(){
+    return this.getReplies()[0];
 };
 
-Forum.Thread.prototype.findFirstPost = function(){
-    return this.startPost;
+core.threaded.data.reply_parent();
+threaded.repliesEnabled(Forum, "Thread", {users: "free", tablename: "forum.posts"});
+
+Forum.Thread.list = function(topic){
+    return db.forum.threads.find({topic: topic}).sort({pinned: -1});
 };
 
 db.forum.threads.setConstructor(Forum.Thread);

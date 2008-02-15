@@ -17,27 +17,29 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
 };
 
 threaded.data.Reply.prototype.decoratorsHandle = function(){
+    var ret = false;
     if(request.reply == "true" && ! request.reply_target ){
-        this.threaded_pieces.reply_form(true);
-        return true;
+        this.threaded_pieces.reply_form.call(this, true);
+        return;
     }
     else
     if(request.reply_target){
         var desc = this.getDescendant(request.reply);
         r = new this.Reply();
-        if(this.threaded_users){
-            r.author = user;
+        if(this.threaded_users == "free"){
+            r.author = request.nauthor;
         }
         else{
-            r.author = request.nauthor;
+            r.author = user;
         }
         r.title = request.ntitle;
         r.content = request.ncontent;
         desc.addReply(r);
+        ret = r;
     }
     u = addQuery({reply: true});
     print("<a href=\""+u+"\">Reply</a>");
-
+    return ret;
 };
 
 threaded.data.Reply.initialize = function(obj){

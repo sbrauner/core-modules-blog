@@ -17,8 +17,8 @@ threaded.repliesEnabled = function(ns, clsname, args){
     // lead to a ton of garbage. FIXME: WE NEED TO DO THIS BETTER.
 
     var cls = ns[clsname];
-    var tablename = clsname.toLowerCase()+"_replies";
     args = args || {};
+    var tablename = args.tablename || clsname.toLowerCase()+"_replies";
     var style = args.style || "parent";
     var users = args.users || "auth";
     if(style == "parent"){
