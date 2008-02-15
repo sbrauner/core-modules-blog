@@ -23,51 +23,17 @@ Blog.ping = function(articleUrl) {
     
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
-<<<<<<< HEAD:blog/ping.js
-				  try {
-				      SYSOUT('Pinging: ' + service.url);
-				      var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
-				      var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
-				      
-				      if (!response) {
-					  SYSOUT('Got empty response');
-				      } 
-				      else {
-					  if (response.isFault) {
-					      // we got a fault
-					      SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
-					  }
-					  else {
-					      var flerror;
-					      var message;
-					      response.value.$.forEach( function(member) {
-									    var name = member.$[0].$;
-									    if (name == 'flerror') {
-										flerror = member.$[1].$[0].$;
-									    } 
-									    else if (name == 'message') {
-										if (isArray(member.$[1].$)) {
-										    message = member.$[1].$[0].$;
-										} 
-										else {
-										    message = member.$[1].$;
-										}
-										message = message.toString().replace(/&#32;/g, ' ');
-									    }
-									    
-									})
-						  SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
-					  }
-				      }
-				  }
-				  catch ( e ){
-				      print( "failed to ping [" + tojson( service ) + "] because of : " + e );
-				  }
-			      });
-=======
+
         SYSOUT('Pinging: ' + service.url);
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
-        var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+        var response = null;
+	try {
+	    response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+	}
+	catch ( e ){
+	    print( "couldn't ping : " + tojson( service ) + " because of " + e );
+	    return;
+	}
         
         if (!response) {
             SYSOUT('Got empty response');
@@ -96,5 +62,5 @@ Blog.ping = function(articleUrl) {
             }
         }
     });
->>>>>>> 1b03fc7b3e568337d8edb8dffbb3c48679bdcd79:blog/ping.js
+
 };
