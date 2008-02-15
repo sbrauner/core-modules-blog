@@ -23,6 +23,7 @@ Blog.ping = function(articleUrl) {
     
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
+<<<<<<< HEAD:blog/ping.js
 				  try {
 				      SYSOUT('Pinging: ' + service.url);
 				      var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
@@ -63,4 +64,37 @@ Blog.ping = function(articleUrl) {
 				      print( "failed to ping [" + tojson( service ) + "] because of : " + e );
 				  }
 			      });
+=======
+        SYSOUT('Pinging: ' + service.url);
+        var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
+        var response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+        
+        if (!response) {
+            SYSOUT('Got empty response');
+        } else {
+            if (response.isFault) {
+                // we got a fault
+                SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
+            } else {
+                var flerror;
+                var message;
+                response.value.children.forEach( function(member) {
+                    var name = member.children[0].$;
+                    if (name == 'flerror') {
+                        flerror = member.children[1].children[0].$;
+                    } else if (name == 'message') {
+                        if (isArray(member.children[1].children)) {
+                            message = member.children[1].children[0].$;
+                        } else {
+                            message = member.children[1].$;
+                        }
+                        message = message.replace(/&#32;/g, ' ');
+                    }
+                    
+                })
+                SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
+            }
+        }
+    });
+>>>>>>> 1b03fc7b3e568337d8edb8dffbb3c48679bdcd79:blog/ping.js
 };

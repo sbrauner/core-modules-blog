@@ -9,7 +9,7 @@ Categories - <a href="category_edit">new</a>
   { 
    ns : db.blog.categories,
    cols : [
-     { name: "label" },
+     { name: "label", isLink: true },
      { name: "name" },
      { name: "description" }
    ],

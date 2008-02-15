@@ -103,15 +103,26 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
-Post.prototype.get404 = function() {
-    http404page = db.blog.posts.findOne({ name: '404' });
-    if (!http404page) {
-        http404page = new Post('404', '404');
-        http404page.cls = 'page';
-        http404page.live = true;
-        db.blog.posts.save(http404page);
+Post.get404 = function() {
+    http404Page = db.blog.posts.findOne({ name: '404' });
+    if (!http404Page) {
+        http404Page = new Post('404', '404');
+        http404Page.cls = 'page';
+        http404Page.live = true;
+        db.blog.posts.save(http404Page);
     }
-    return http404page;    
+    return http404Page;    
+};
+
+Post.getNoResults = function() {
+    noResultsPage = db.blog.posts.findOne({ name: 'no_results' });
+    if (!noResultsPage) {
+        noResultsPage = new Post('no_results', 'No Results');
+        noResultsPage.cls = 'page';
+        noResultsPage.live = true;
+        db.blog.posts.save(noResultsPage);
+    }
+    return noResultsPage;    
 };
 
 function fixComments() {
@@ -143,7 +154,7 @@ SYSOUT('Post ID (' + post._id + ') has no comments');
         }
     });
 }
-    
+
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );

@@ -21,7 +21,7 @@ if (id) {
 
 var newCategories = new Array();
 if (request.new_categories) {
-    newCategories = request.new_categories.split('[, ]').unique();
+    newCategories = request.new_categories.split('[,]').unique();
     var emptyIndex = newCategories.indexOf('');
     if (emptyIndex >= 0) newCategories.remove(emptyIndex);
 }
@@ -100,7 +100,7 @@ tinyMCE.init({
 	mode : "exact",
 	elements : "content",
 	width: "600",
-	height: "300",
+	height: "500",
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
 	theme_advanced_buttons1_add : "fontselect,fontsizeselect,separator,forecolor,backcolor",
