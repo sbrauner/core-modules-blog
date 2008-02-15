@@ -64,15 +64,18 @@ if ( ! Analytics._utilsInit ){
             var op = x.op || Analytics.inc;
             
             var key = {};
+	    var idx = {};
             for ( var foo in x.key ){
                 var v = x.key[foo];
                 if ( isFunction( v ) )
                     v = v(r);
                 key[foo] = v;
+		idx[foo] = 1;
             }
             
             var coll = db.analytics[ name ];
 	    coll.ensureIndex( { time : 1 } );
+	    coll.ensureIndex( idx );
             coll.update( key , op , Analytics.dbOptions );
         }
     };
