@@ -16,8 +16,10 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
     }
 };
 
-threaded.data.Reply.prototype.decoratorsHandle = function(){
+threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
+    args = args || {};
+    var replylink = args.replylink;
     if(request.reply == "true" && ! request.reply_target ){
         this.threaded_pieces.reply_form.call(this, true);
         return;
@@ -37,8 +39,10 @@ threaded.data.Reply.prototype.decoratorsHandle = function(){
         desc.addReply(r);
         ret = r;
     }
-    u = addQuery({reply: true});
-    print("<a href=\""+u+"\">Reply</a>");
+    if(replylink){
+        u = addQuery({reply: true});
+        print("<a href=\""+u+"\">Reply</a>");
+    }
     return ret;
 };
 

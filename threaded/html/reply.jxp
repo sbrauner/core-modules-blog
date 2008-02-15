@@ -13,7 +13,7 @@ var t = arguments[0];
       <%= t.content %>
     </div>
     <% if(request.reply == t.getID() && ! request.reply_target){
-        t.threaded_pieces.reply_form(t.getID());
+        t.threaded_pieces.reply_form.call(t, t.getID());
     }
 else{ %>
       <a href="<%=addQuery({reply: t.getID()}) %>">Reply to this</a>

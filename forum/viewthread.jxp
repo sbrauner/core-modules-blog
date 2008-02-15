@@ -21,8 +21,8 @@ else {
 
 <%
 }
-
-Forum.renderer.post(thread.findFirstPost());
+thread.decoratorsHandle({replylink: false});
+thread.decoratorsRender();
 %>
 
 <%
