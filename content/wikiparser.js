@@ -134,7 +134,7 @@ content.WikiParser.prototype.toHtml = function(str, prefix) {
     }
 
     var ln = str.split(/\r?\n/);
-    for( i = 0; i < ln.length; i++ ) {
+    for( var i = 0; i < ln.length; i++ ) {
         this._line(ln[i]);
     }
     return this.outp;
