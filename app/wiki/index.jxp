@@ -25,20 +25,29 @@
     if (!displayName) displayName = "Main";
     
     // Construct the full name of the page if we have a prefix defined for this instance
-    var name = moduleSettings.prefix + displayName;
+    var name = displayName;
+    if ( moduleSettings.prefix && ! displayName.match( "^" + moduleSettings.prefix ) )
+        name = moduleSettings.prefix + displayName;
 
     // Get the actual wiki page. If there is no page with the given name, create a new page
     var wikiPage = db.wiki.findOne( { name : name } );
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
-    if (request['rename'] && !moduleSettings.readOnly) {
-        app.wiki.WikiController.renamePage(wikiPage, request.newName);
-    } else if ( request['delete'] && !moduleSettings.readOnly ) {
-        app.wiki.WikiController.deletePage(wikiPage);
-    } else if (request['update']) {
-        app.wiki.WikiController.updatePage(wikiPage, request.text);
+    if ( ! moduleSettings.readOnly ){
+    
+	if (request['rename'] ) {
+	    app.wiki.WikiController.renamePage(wikiPage, request.newName);
+	} 
+	else if ( request['delete']  ) {
+	    app.wiki.WikiController.deletePage(wikiPage);
+	}
+	else if (request['update'] ) {
+	    app.wiki.WikiController.updatePage(wikiPage, request.text);
+	}
     }
 
-    if (request.edit) core.app.wiki.pieces.edit();
-    else core.app.wiki.pieces.view();
+    if ( request.edit )
+	core.app.wiki.pieces.edit();
+    else
+	core.app.wiki.pieces.view();
 %>
