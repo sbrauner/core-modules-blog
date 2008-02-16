@@ -21,5 +21,14 @@ app.wiki.WikiPage.prototype.getDisplayName = function() {
 };
 
 app.wiki.WikiPage.prototype.getParsedText = function() {
-    return app.wiki.WikiController.TEXT_PARSER.toHtml(this.text, app.wiki.config.prefix);
+    if ( ! this.text )
+	return "";
+    if ( this.text.trim().length == 0 )
+	return "";
+
+    var s = (new app.wiki.WikiController.TEXT_PARSER()).toHtml(this.text, app.wiki.config.prefix).trim();
+    if ( s.length == 0 )
+	throw "parser broken?";
+    
+    return s;
 };
