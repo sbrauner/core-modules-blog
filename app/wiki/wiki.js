@@ -1,6 +1,6 @@
 app.wiki.WikiController = function() {};
 
-app.wiki.WikiController.TEXT_PARSER = new content.WikiParser();
+app.wiki.WikiController.TEXT_PARSER = content.WikiParser;
 
 app.wiki.WikiController.renamePage = function(wikiPage, newPageName) {
     // ensure we have a page
