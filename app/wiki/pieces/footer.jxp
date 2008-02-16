@@ -18,7 +18,7 @@
 </ul>
 </div>
 
-<% if (!moduleSettings.readOnly) { %>
+<% if (!app.wiki.config.readOnly) { %>
     <div class="popup" id="rename_popup">
         <div class="hd">Confirm Page Rename</div>
         <div class="bd">

@@ -5,7 +5,7 @@ app.wiki.WikiController.TEXT_PARSER = new content.WikiParser();
 app.wiki.WikiController.renamePage = function(wikiPage, newPageName) {
     // ensure we have a page
     if (!wikiPage) return false;
-    if (moduleSettings.readOnly) return false;
+    if (app.wiki.config.readOnly) return false;
     
     // ensure our newPageName is valid
     if (!validatePageName(newPageName)) return false;
@@ -38,7 +38,7 @@ app.wiki.WikiController.validatePageName = function(pageName) {
 app.wiki.WikiController.deletePage = function(wikiPage) {
     SYSOUT('in delete');
     if (!wikiPage) return false;
-    if (moduleSettings.readOnly) return false;
+    if (app.wiki.config.readOnly) return false;
 
     // ensure we're not trying to delete the Main page
     if (wikiPage.name == 'Main') {
@@ -61,7 +61,7 @@ app.wiki.WikiController.deletePage = function(wikiPage) {
 app.wiki.WikiController.updatePage = function(wikiPage, text) {
     if (!wikiPage) return false;
     if (!text || text.length == 0) return false;
-    if (moduleSettings.readOnly) return false;
+    if (app.wiki.config.readOnly) return false;
 
     wikiPage.text = text;
     db.wiki.save(wikiPage);
@@ -93,21 +93,21 @@ app.wiki.WikiController.getChildPageNames = function(wikiPage) {
     if (!wikiPage) return [];
     
     var pageNameRegularExpression = /^[^.]*$/;
-    if (wikiPage.name != moduleSettings.prefix + "Main") pageNameRegularExpression = RegExp("^" + wikiPage.name + "\.[^.]+$");
-    else if (moduleSettings.prefix) pageNameRegularExpression = RegExp("^" + moduleSettings.prefix + "\.[^.]+$");
+    if (wikiPage.name != app.wiki.config.prefix + "Main") pageNameRegularExpression = RegExp("^" + wikiPage.name + "\.[^.]+$");
+    else if (app.wiki.config.prefix) pageNameRegularExpression = RegExp("^" + app.wiki.config.prefix + "\.[^.]+$");
 
     var childPages = db.wiki.find( { name: pageNameRegularExpression }, { name: true } ).sort( { name: 1 } ).toArray();
 
     childPages.forEach( function(childPage) {
-        childPage.name = childPage.name.replace(new RegExp('^' + moduleSettings.prefix), '');
+        childPage.name = childPage.name.replace(new RegExp('^' + app.wiki.config.prefix), '');
     });
     
     return childPages;
 
     // remove the prefix from all of the names
     var prefixRegularExpression = null;
-    if (moduleSettings.prefix) {
-        var s = moduleSettings.prefix.replace(/\./g, '\.');
+    if (app.wiki.config.prefix) {
+        var s = app.wiki.config.prefix.replace(/\./g, '\.');
         prefixRegularExpression = RegExp(s);
     }
 }

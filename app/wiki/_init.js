@@ -10,5 +10,5 @@ if (!(allowModule && allowModule.wiki)) {
     return;
 }
 
-moduleSettings = allowModule.wiki;
-moduleSettings.prefix = moduleSettings.prefix || '';
+app.wiki.config = allowModule.wiki;
+app.wiki.config.prefix = app.wiki.config.prefix || "";

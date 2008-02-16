@@ -26,14 +26,15 @@
     
     // Construct the full name of the page if we have a prefix defined for this instance
     var name = displayName;
-    if ( moduleSettings.prefix && ! displayName.match( "^" + moduleSettings.prefix ) )
-        name = moduleSettings.prefix + displayName;
+
+    if ( app.wiki.config.prefix && ! displayName.match( "^" + app.wiki.config.prefix ) )
+        name = app.wiki.config.prefix + displayName;
 
     // Get the actual wiki page. If there is no page with the given name, create a new page
     var wikiPage = db.wiki.findOne( { name : name } );
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
-    if ( ! moduleSettings.readOnly ){
+    if ( ! app.wiki.config.readOnly ){
     
 	if (request['rename'] ) {
 	    app.wiki.WikiController.renamePage(wikiPage, request.newName);

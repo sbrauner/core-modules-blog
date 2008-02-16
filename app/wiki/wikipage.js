@@ -17,9 +17,9 @@ app.wiki.WikiPage.prototype.getStructuredName = function() {
 };
 
 app.wiki.WikiPage.prototype.getDisplayName = function() {
-    return this.name.replace(new RegExp('^' + moduleSettings.prefix), '');
+    return this.name.replace(new RegExp('^' + app.wiki.config.prefix), '');
 };
 
 app.wiki.WikiPage.prototype.getParsedText = function() {
-    return app.wiki.WikiController.TEXT_PARSER.toHtml(this.text, moduleSettings.prefix);
+    return app.wiki.WikiController.TEXT_PARSER.toHtml(this.text, app.wiki.config.prefix);
 };
