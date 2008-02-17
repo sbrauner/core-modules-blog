@@ -12,6 +12,8 @@ function Post(name, title) {
     this.categories = new Array();
 };
 
+Post.prototype.SEARCH_OPTIONS = { title : 1 , author : 1 , content : .2 };
+
 Post.prototype.getTeaserContent = function(){
     return this.content.replace( /---JUMP---.*/m , "" );
 };
@@ -79,7 +81,7 @@ Post.prototype.getComments = function() {
 };
 
 Post.prototype.presave = function(){
-    Search.index( this , { title : 1 , author : 1 } );
+    Search.index( this , this.SEARCH_OPTIONS );
 };
 
 Post.prototype.getExcerpt = function(){
@@ -160,7 +162,7 @@ if ( db ) {
     db.blog.posts.ensureIndex( { categories : 1 } );
     db.blog.posts.setConstructor( Post );
 
-    Search.fixTable( db.blog.posts );
+    Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
     
 //    fixComments();
 }
