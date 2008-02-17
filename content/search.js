@@ -2,12 +2,15 @@
 
 core.text.stem();
 
+if ( Search && Search._doneInit )
+    return;
+
 Search = { 
 
     DEBUG : false ,
 
     _weights : {} ,
-    _default : { idx : "_searchIndex" , w : 1 } ,
+    _default : [ { idx : "_searchIndex" , w : 1 } ] ,
 
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
@@ -92,13 +95,14 @@ Search = {
 
     search : function( table , queryString , options ){
 
-	if ( Search.DEBUG ) SYSOUT( queryString );
+	if ( Search.DEBUG ) SYSOUT( table.getName() + "\t" + queryString );
         
         options = options || {};
         var min = options.min || 10;
         
         var weights = Search._weights[ table.getName() ] || Search._default;
-        
+        if ( Search.DEBUG ) SYSOUT( "\t weights.length : " + weights.length );
+
         var fullObjects = Object();
         var matchCounts = Object(); // _id -> num
         var all = Array();
@@ -147,7 +151,7 @@ Search = {
                 break;
         }
 
-        if ( Search.DEBUG ) print( "matchCounts: " + tojson( matchCounts ) );
+        if ( Search.DEBUG ) SYSOUT( "matchCounts: " + tojson( matchCounts ) );
         
         all.sort( function( l , r ){ 
                 return matchCounts[r] - matchCounts[l];
@@ -163,4 +167,6 @@ Search = {
         
         return good;
     }
-}
+};
+
+Search._doneInit = true;
