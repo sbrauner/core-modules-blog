@@ -186,4 +186,10 @@ function htmltable(specs) {
         print("</table>\n");
     }
 
+    this.arrview = function( arr ){
+        print("<table>\n");
+        this._rows( arr.iterator() );
+        print("</table>\n");
+    }
+    
 };
