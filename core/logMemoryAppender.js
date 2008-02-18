@@ -34,3 +34,18 @@ MemoryAppender.create = function(){
     
     return javaCreate( "ed.log.JSAppender" , append );
 };
+
+
+MemoryAppender.find = function( logger ){
+    if ( ! logger )
+        return null;
+    
+    if ( logger.appenders ){
+        for ( var i=0; i<logger.appenders.length; i++ ){
+            var a = logger.appenders[i];
+
+            if ( isObject( a ) && a.isMemoryAppender )
+                return a;
+        }
+    }
+}

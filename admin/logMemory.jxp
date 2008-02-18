@@ -1,19 +1,6 @@
 <%
-
-    var ma = null;
-
-for ( var i=0; i != log.appenders.length; i++ ){
-    var a = log.appenders[i];
-
-    if ( ! isObject( a ) )
-        continue;
     
-    if ( ! a.isMemoryAppender )
-        continue;
-    
-    ma = a;
-    break;
-}
+var ma = MemoryAppender.find( log );
 
 if ( request.l && request.l != 0 ){
     
