@@ -9,7 +9,6 @@ MemoryAppender.create = function(){
     var options = { max : 100 };
 
     var append = function( loggerName , date , level , msg , throwable , thread ){
-        throw 1;
         
         var lst = cache[ loggerName ];
         if ( ! lst ){
