@@ -1,5 +1,4 @@
-SYSOUT ("STARTING BUGTRACKER");
-SYSOUT(app);
+log("STARTING BUGTRACKER");
 app.App = function() {}
 app.App.prototype.config = function(key, opts){
     if(opts == null) opts = {merge: true};
