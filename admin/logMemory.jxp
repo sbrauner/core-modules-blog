@@ -1,0 +1,50 @@
+<%
+
+    var ma = null;
+
+for ( var i=0; i != log.appenders.length; i++ ){
+    var a = log.appenders[i];
+
+    if ( ! isObject( a ) )
+        continue;
+    
+    if ( ! a.isMemoryAppender )
+        continue;
+    
+    ma = a;
+    break;
+}
+
+if ( request.l && request.l != 0 ){
+    
+    print( "<h2> Logger : " + request.l + "</h2>" );
+    cols = [
+            { name : "date" } ,
+            { name : "thread" , view : function(z) {
+                    return z.getName();
+                } } ,
+            { name : "level" } ,
+            { name : "msg" } ,
+            { name : "throwable" }
+            ];
+    
+    var tab = new htmltable( { cols : cols } );
+    if ( ma.cache[ request.l ] )
+        tab.arrview( ma.cache[ request.l ] );
+}
+else {
+    var all = [];
+    for ( var foo in ma.cache ){
+        all.push( foo );
+    }
+    
+    all = all.sort();
+    print( "<ul>" );
+    for ( var i=0; i != all.length; i++ ){
+        print( "<li><a href='/admin/logMemory?l=" + all[i] + "'>" + all[i] + "</a></li>" );
+    }
+    print( "</ul>" );
+}
+
+
+%>
