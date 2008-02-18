@@ -20,6 +20,7 @@ if ( request.l && request.l != 0 ){
         tab.arrview( ma.cache[ request.l ] );
 }
 else {
+    print( "<h2>Menu</h2>" );
     var all = [];
     for ( var foo in ma.cache ){
         all.push( foo );
