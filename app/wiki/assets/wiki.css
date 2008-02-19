@@ -22,15 +22,15 @@
 }
 
 .wiki table td {
-	border: solid 1px #ddd;
-	padding: 5px;
+  border: solid 1px #ddd;
+  margin: 5px;
 }
 
 .wiki table th {
     background: #333;
     color: #fff;
-	border: solid 1px #ddd;
-	padding: 5px;
+  border: solid 1px #ddd;
+  padding: 5px;
 }
 
 .wiki .help {

@@ -1,0 +1,37 @@
+<div class="help">
+    <% if (user) { %>
+        <div class="user">hi <b><%= user.name %></b></div>
+        alt-e: edit &nbsp; alt-r: rename &nbsp; alt-d: delete &nbsp;
+    <% } %>
+    alt-s: <a href="search">search</a> &nbsp; alt-h: <a href="Main">home</a>
+    <% if( user ) { %>
+        <br/>
+        alt-enter: saves after editing &nbsp; <a href="help.markup">markup help</a>
+    <% } %>
+    <hr />
+    <b>Child Articles</b>
+    <ul>
+    <%
+        var childPageNames = app.wiki.WikiController.getChildPageNames(wikiPage);
+        childPageNames.forEach(core.app.wiki.pieces.html.childpagelist);
+    %>
+    </ul>
+</div>
+
+<% if (!app.wiki.config.readOnly) { %>
+    <div class="popup" id="rename_popup">
+        <div class="hd">Confirm Page Rename</div>
+        <div class="bd">
+            <form method="POST">
+                <label for="newName">New Page Name:</label> <input type="text" width="40" name="newName" value="<%= wikiPage.name %>">
+                <input type="hidden" name="rename" value="true"/>
+            </form>
+        </div>
+        <div class="ft"></div>
+    </div>
+
+    <div class="popup" id="delete_popup"></div>
+<% } %>
+</div>
+
+<% htmlfooter(); %>
