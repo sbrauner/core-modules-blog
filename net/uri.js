@@ -31,7 +31,6 @@ URI = function(s){
         var ary = s.split('&');
         for(var i in ary){
             var pair = ary[i].split('=');
-            if(pair.length == 1) pair[1] = "";
             this.args.push({key: pair[0], value: pair[1]});
         }
     }
