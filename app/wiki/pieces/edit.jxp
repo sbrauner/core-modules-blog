@@ -8,4 +8,4 @@
     </form>
 </div>
 
-<% core.app.wiki.pieces.footer(); %>
+<% core.app.wiki.pieces.footer_wikipage(); %>
