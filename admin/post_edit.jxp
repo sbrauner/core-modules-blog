@@ -7,6 +7,7 @@ var id = request.id;
 
 var newPost = true;
 var thePost = new Post();
+thePost.cls = request.cls || "entry";
 thePost.author = user.name;
 
 if (id) {
@@ -144,13 +145,14 @@ tinyMCE.init({
 <h1>
 {
   if( newPost && !justSaved )
-    print( request.cls == "page" ? "New Page" : "New Post" );
+    print( thePost.cls == "page" ? "New Page" : "New Post" );
   else
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 }
 </h1>
 <form method="post" action="post_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">
+    <input type="hidden" name="cls" value="<%= thePost.cls %>">
     <div id="post_form">
     <div id="post_action">
         <input type="submit" value="Save">
