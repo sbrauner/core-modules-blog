@@ -62,3 +62,17 @@ URI.prototype.replaceArg = function(key, value){
     }
     return this.addArg(key, value);
 };
+
+URI.prototype.removeArg = function(key){
+    var start = false;
+    for(var i in this.args){
+        if(!start && this.args[i].key == key){
+            start = true;
+        }
+        else if(start) {
+            this.args[i-1] = this.args[i];
+        }
+    }
+    this.args.pop();
+    return this;
+};

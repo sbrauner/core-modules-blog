@@ -31,3 +31,13 @@ s = "/bugs/?number=&title=";
 u = new URI(s);
 
 assert(u.toString() == s);
+
+u.removeArg("number");
+
+assert(u.toString() == "/bugs/?title=");
+
+
+s = "/bugs/?number=&title=&whee=";
+u = new URI(s);
+u.removeArg("title");
+assert(u.toString() == "/bugs/?number=&whee=");
