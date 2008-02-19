@@ -55,6 +55,7 @@ if(db){
     db.bugtracker.cases.ensureIndex({number: 1});
     db.bugtracker.cases.ensureIndex({lastModified: 1});
     db.bugtracker.cases.ensureIndex({severity: 1});
+    db.bugtracker.cases.ensureIndex({status: 1});
 }
 
 app.bugtracker.data.Feature.nextNumber = function(){
