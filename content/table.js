@@ -109,7 +109,6 @@ function htmltable(specs) {
                 key = true;
             }
         });
-        log("sorting on " + tojson(s));
         return key ? s : baseSort;
     };
 
