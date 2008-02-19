@@ -45,10 +45,10 @@ core.util.db();
 function htmltable(specs) {
     this.specs = specs;
 
-    this._colnames = function() { return this.specs.cols.map( function(x) { return x.name; } ); }
+    this._colnames = function() { return this.specs.cols.map( function(x) { return x.name; } ); };
 
     this._displaycolnames = function()
-        { return this.specs.cols.map( function(x) { return x.heading?x.heading:x.name; } ); }
+    { return this.specs.cols.map( function(x) { return x.heading?x.heading:x.name; } ); };
 
     /* returns the fields we want, as one needs them to filter them from the db
        e.g., { name:true, address:true }
@@ -57,7 +57,7 @@ function htmltable(specs) {
         f = {};
         this.specs.cols.forEach( function(x) { f[x.name] = true } );
         return f;
-    }
+    };
 
     // returns the query object to filter by
     this._query = function(baseQuery) {
@@ -94,7 +94,7 @@ function htmltable(specs) {
                 }
             });
         return q;
-    }
+    };
 
     this._sort = function(baseSort){
         baseSort = baseSort || {};
@@ -110,7 +110,7 @@ function htmltable(specs) {
             }
         });
         return key ? s : baseSort;
-    }
+    };
 
     this._rows = function(cursor) {
         var colnames = this._colnames();
@@ -200,11 +200,11 @@ function htmltable(specs) {
             }
             print("</tr>\n\n");
         }
-    }
+    };
 
     this.find = function(baseQuery, baseSort) {
         return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
-    }
+    };
 
     this.dbview = function(cursor) {
         print("<table>\n");
@@ -212,12 +212,12 @@ function htmltable(specs) {
         if( cursor.numSeen() == 300 )
             print( tr(["Only first 300 results displayed."]) );
         print("</table>\n");
-    }
+    };
 
     this.arrview = function( arr ){
         print("<table>\n");
         this._rows( arr.iterator() );
         print("</table>\n");
-    }
+    };
 
 };
