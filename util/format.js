@@ -24,7 +24,6 @@ Util.escape_queryargs = function(s){
     var strhex = '0123456789abcdef';
     var t = '';
     while(true){
-        print(s);
         var exec = re.exec(s);
         if(exec == null) break;
         var i = exec.index;
