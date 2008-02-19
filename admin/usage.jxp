@@ -81,18 +81,27 @@ function go( type , limit , t , header ){
     dt.print( print );
 }
 
-print( "<center>" );
-
-print( "<h1>Last 24 hours</h1>" );
-go( "bytes_in" , 12 * 24 );
-go( "bytes_out" , 12 * 24 );
-go( "cpu_millis" , 12 * 24 );
-
-print( "<h1>Last 7 Days</h1>" );
-go( "bytes_in" , 12 * 24 * 7 , "h" );
-go( "bytes_out" , 12 * 24 * 7 , "h" );
-go( "cpu_millis" , 12 * 24 * 7 , "h" );
-
-print( "</center>" );
+var types = [ "bytes_in" , "bytes_out" , "cpu_millis" , "requests" ];
+function doAllTypes( limit , t ){
+    types.forEach( function(z){
+		       go( z , limit , t );
+		   } );
+    
+}
 
 %>
+<table>
+  <tr>
+    
+    <td>
+      <h1>Last 24 hours</h1>
+      <%  doAllTypes( 12 * 24 ); %>
+    </td>
+
+    <td>
+      <h1>Last 7 days</h1>
+	<%  doAllTypes( 12 * 24 * 7 , "h" ); %>
+    </td>
+
+  </tr>
+</table>
