@@ -7,10 +7,10 @@ assert(u.hostname == 'localhost:8080');
 assert(u.path == '/a/b/c/');
 assert(u.toString() == s);
 
-u.replaceArg('you', 'money');
+u = u.replaceArg('you', 'money');
 assert(u.toString() == 'http://localhost:8080/a/b/c/?hi=there&you=money');
 
-u.addArg('you', 'sunny');
+u = u.addArg('you', 'sunny');
 assert(u.toString() == 'http://localhost:8080/a/b/c/?hi=there&you=money&you=sunny');
 
 s = 'localhost:8080/bugs/';
@@ -32,12 +32,12 @@ u = new URI(s);
 
 assert(u.toString() == s);
 
-u.removeArg("number");
+u = u.removeArg("number");
 
 assert(u.toString() == "/bugs/?title=");
 
 
 s = "/bugs/?number=&title=&whee=";
 u = new URI(s);
-u.removeArg("title");
+u = u.removeArg("title");
 assert(u.toString() == "/bugs/?number=&whee=");
