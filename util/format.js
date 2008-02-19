@@ -18,3 +18,26 @@ Util.format_queryargs = function(obj){
     }
     return s.substring(0, s.length-1);
 };
+
+Util.escape_queryargs = function(s){
+    var re = /[^A-Za-z\.-_~]/;
+    var strhex = '0123456789abcdef';
+    var t = '';
+    while(true){
+        print(s);
+        var exec = re.exec(s);
+        if(exec == null) break;
+        var i = exec.index;
+        t = t + s.substring(0, i);
+        if(s[i] == ' '){
+            var rep = '+';
+        } else {
+            var n = s.charCodeAt(i);
+            var rep = '%'+strhex.charAt(Math.floor(n/16))+strhex.charAt(n%16);
+        }
+        t = t+rep;
+        s = s.substring(i+1, s.length);
+    }
+    t = t + s;
+    return t;
+};
