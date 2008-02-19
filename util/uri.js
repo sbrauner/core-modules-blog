@@ -1,12 +1,13 @@
 URI = function(s){
-    if(s.indexOf(':') == -1){
-        this.scheme = 'http://';
+    if(s.indexOf('://') == -1){
+        this.scheme = 'http';
     } else {
-        this.scheme = s.substring(0, s.indexOf(':')+3);
-        s = s.substring(s.indexOf(':')+3, s.length);
+        this.scheme = s.substring(0, s.indexOf('://'));
+        s = s.substring(s.indexOf('://')+3, s.length);
     }
     this.hostname = s.substring(0, s.indexOf('/'));
     s = s.substring(s.indexOf('/'), s.length);
+
     this.args = [];
     if(s.indexOf('?') == -1){
         this.path = s;
@@ -32,7 +33,10 @@ URI = function(s){
 
 core.util.format();
 URI.prototype.toString = function(){
-    var str = this.scheme + this.hostname + this.path;
+    if(this.hostname)
+        var str = this.scheme + "://" + this.hostname + this.path;
+    else
+        var str = this.path;
     var encodeURIComponent = Util.escape_queryargs;
     if(this.args.length > 0){
         str += '?';
@@ -46,13 +50,15 @@ URI.prototype.toString = function(){
 
 URI.prototype.addArg = function(key, value){
     this.args.push({key: key, value: value});
+    return this;
 };
 
 URI.prototype.replaceArg = function(key, value){
     for(var i in this.args){
         if(this.args[i].key == key){
             this.args[i].value = value;
-            return;
+            return this;
         }
     }
+    return this.addArg(key, value);
 };

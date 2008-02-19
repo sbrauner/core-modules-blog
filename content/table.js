@@ -39,14 +39,16 @@ tab.dbview( tab.find().sort({ts:-1}) );
 */
 
 core.content.html2();
+core.util.uri();
+core.util.db();
 
 function htmltable(specs) {
     this.specs = specs;
 
-    this._colnames = function() { return this.specs.cols.map( function(x) { return x.name; } ); }
+    this._colnames = function() { return this.specs.cols.map( function(x) { return x.name; } ); };
 
     this._displaycolnames = function()
-        { return this.specs.cols.map( function(x) { return x.heading?x.heading:x.name; } ); }
+    { return this.specs.cols.map( function(x) { return x.heading?x.heading:x.name; } ); };
 
     /* returns the fields we want, as one needs them to filter them from the db
        e.g., { name:true, address:true }
@@ -55,7 +57,7 @@ function htmltable(specs) {
         f = {};
         this.specs.cols.forEach( function(x) { f[x.name] = true } );
         return f;
-    }
+    };
 
     // returns the query object to filter by
     this._query = function(baseQuery) {
@@ -92,13 +94,39 @@ function htmltable(specs) {
                 }
             });
         return q;
-    }
+    };
+
+    this._sort = function(baseSort){
+        baseSort = baseSort || {};
+        var s = {};
+        var key = false;
+        this.specs.cols.forEach( function(x) {
+            var sval = request["sort"+x.name];
+            if(sval){
+                if(sval == "-1")
+                    s[x.name] = -1;
+                else s[x.name] = 1;
+                key = true;
+            }
+        });
+        return key ? s : baseSort;
+    };
 
     this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
+
+        for(var i in displaycolnames){
+            if(has_index(this.specs.ns, this.specs.cols[i].name)){
+                if(request['sort'+colnames[i]] == 1)
+                    var newval = "-1";
+                else var newval = "1";
+                var u = new URI(request.getURL()).replaceArg('sort'+colnames[i], newval).toString();
+                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+"</a>";
+            }
+        }
 
         print( tr(displaycolnames, {header:true}) );
 
@@ -172,11 +200,11 @@ function htmltable(specs) {
             }
             print("</tr>\n\n");
         }
-    }
+    };
 
-    this.find = function(baseQuery) {
-        return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).limit(300);
-    }
+    this.find = function(baseQuery, baseSort) {
+        return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
+    };
 
     this.dbview = function(cursor) {
         print("<table>\n");
@@ -184,12 +212,12 @@ function htmltable(specs) {
         if( cursor.numSeen() == 300 )
             print( tr(["Only first 300 results displayed."]) );
         print("</table>\n");
-    }
+    };
 
     this.arrview = function( arr ){
         print("<table>\n");
         this._rows( arr.iterator() );
         print("</table>\n");
-    }
+    };
 
 };
