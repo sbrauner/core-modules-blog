@@ -3,7 +3,7 @@
    this has to work client and server side
  */
 
-ui.chart.checkHead();
+ui.chart.checkHead( head );
 
 ui.chart.DateTime = function(){
 
