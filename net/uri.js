@@ -6,6 +6,10 @@ URI = function(s){
     // same arg in a URI.
     // (If we ever write a multidict or anything, it should be used here.)
 
+    // FIXME:
+    // This doesn't do anything with the #anchor part of a URI; it might get parsed
+    // as either part of the query args or part of the path.
+
     // Parse scheme and hostname. Sometimes this is absent
     // (the URI starts with a slash).
     if(s.indexOf('://') == -1){
@@ -24,20 +28,11 @@ URI = function(s){
     } else {
         this.path = s.substring(0, s.indexOf('?'));
         s = s.substring(s.indexOf('?')+1, s.length);
-        // FIXME: rewrite using split, probably
-        var cont = true;
-        while(cont){
-            if(s.indexOf('&') == -1){
-                cont = false;
-                var pair = s;
-            }
-            else {
-                var pair = s.substring(0, s.indexOf('&'));
-                s = s.substring(s.indexOf('&')+1, s.length);
-            }
-            var key = pair.substring(0, pair.indexOf('='));
-            var val = pair.substring(pair.indexOf('=')+1, pair.length);
-            this.args.push({key: key, value: val});
+        var ary = s.split('&');
+        for(var i in ary){
+            var pair = ary[i].split('=');
+            if(pair.length == 1) pair[1] = "";
+            this.args.push({key: pair[0], value: pair[1]});
         }
     }
 };
@@ -52,11 +47,7 @@ URI.prototype.toString = function(){
     if(this.args.length > 0){
         str += '?';
 
-        // FIXME: use Array.join.
-        for(var i in this.args){
-            str += encodeURIComponent(this.args[i].key) + '=' + encodeURIComponent(this.args[i].value) + '&';
-        }
-        str = str.substring(0, str.length-1);
+        str += this.args.map(function(a){return encodeURIComponent(a.key)+'='+encodeURIComponent(a.value);}).join('&');
     }
     return str;
 };
