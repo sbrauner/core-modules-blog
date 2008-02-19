@@ -39,6 +39,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 */
 
 core.content.html2();
+core.util.uri();
 
 function htmltable(specs) {
     this.specs = specs;
@@ -94,11 +95,37 @@ function htmltable(specs) {
         return q;
     }
 
+    this._sort = function(baseSort){
+        baseSort = baseSort || {};
+        var s = {};
+        var key = false;
+        this.specs.cols.forEach( function(x) {
+            var sval = request["sort"+x.name];
+            if(sval){
+                if(sval == "-1")
+                    s[x.name] = -1;
+                else s[x.name] = 1;
+                key = true;
+            }
+        });
+        return key ? s : baseSort;
+    }
+
     this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
+
+        for(var i in displaycolnames){
+            if(this.specs.cols[i].sortable){
+                if(request['sort'+colnames[i]] == 1)
+                    var newval = "-1";
+                else var newval = "1";
+                var u = new URI(request.getURL()).replaceArg('sort'+colnames[i], newval).toString();
+                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+"</a>";
+            }
+        }
 
         print( tr(displaycolnames, {header:true}) );
 
@@ -174,8 +201,8 @@ function htmltable(specs) {
         }
     }
 
-    this.find = function(baseQuery) {
-        return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).limit(300);
+    this.find = function(baseQuery, baseSort) {
+        return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
     }
 
     this.dbview = function(cursor) {
