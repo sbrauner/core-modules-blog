@@ -43,3 +43,16 @@ URI.prototype.toString = function(){
     }
     return str;
 };
+
+URI.prototype.addArg = function(key, value){
+    this.args.push({key: key, value: value});
+};
+
+URI.prototype.replaceArg = function(key, value){
+    for(var i in this.args){
+        if(this.args[i].key == key){
+            this.args[i].value = value;
+            return;
+        }
+    }
+};
