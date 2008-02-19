@@ -103,7 +103,7 @@ function htmltable(specs) {
         this.specs.cols.forEach( function(x) {
             var sval = request["sort"+x.name];
             if(sval){
-                if(sval == "-1")
+                if(sval == "d")
                     s[x.name] = -1;
                 else s[x.name] = 1;
                 key = true;
@@ -117,23 +117,28 @@ function htmltable(specs) {
         var displaycolnames = this._displaycolnames();
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
+        var sort = this._sort();
+        var u = new URI(request.getURL());
+        for(var i in sort){
+            u = u.removeArg("sort"+i);
+        }
 
         for(var i in displaycolnames){
             if(has_index(this.specs.ns, this.specs.cols[i].name)){
                 var using = false;
                 var asc = false;
-                var newval = "1";
-                if(request['sort'+colnames[i]] == 1){
+                var newval = "a";
+                if(request['sort'+colnames[i]] == "a"){
                     asc = true;
                     using = true;
-                    newval = "-1";
+                    newval = "d";
                 }
-                else if(request['sort'+colnames[i]] == -1){
+                else if(request['sort'+colnames[i]] == "d"){
                     asc = false;
                     using = true;
                 }
-                var u = new URI(request.getURL()).replaceArg('sort'+colnames[i], newval).toString();
-                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+ "</a>"
+                var target = u.replaceArg('sort'+colnames[i], newval).toString();
+                displaycolnames[i] = "<a href=\""+target+"\">"+displaycolnames[i]+ "</a>"
                     +(using?(asc?"^":"v"):"");
             }
         }
