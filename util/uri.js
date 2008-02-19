@@ -7,6 +7,7 @@ URI = function(s){
     }
     this.hostname = s.substring(0, s.indexOf('/'));
     s = s.substring(s.indexOf('/'), s.length);
+
     this.args = [];
     if(s.indexOf('?') == -1){
         this.path = s;
@@ -32,7 +33,10 @@ URI = function(s){
 
 core.util.format();
 URI.prototype.toString = function(){
-    var str = this.scheme + "://" + this.hostname + this.path;
+    if(this.hostname)
+        var str = this.scheme + "://" + this.hostname + this.path;
+    else
+        var str = this.path;
     var encodeURIComponent = Util.escape_queryargs;
     if(this.args.length > 0){
         str += '?';
