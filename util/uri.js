@@ -48,22 +48,42 @@ URI.prototype.toString = function(){
     return str;
 };
 
+URI.prototype.clone = function(){
+    return new URI(this.toString());
+};
+
 URI.prototype.addArg = function(key, value){
+    c = this.clone();
+    return c._addArg(key, value);
+};
+
+URI.prototype._addArg = function(key, value){
     this.args.push({key: key, value: value});
     return this;
 };
 
 URI.prototype.replaceArg = function(key, value){
+    c = this.clone();
+    return c._replaceArg(key, value);
+};
+
+URI.prototype._replaceArg = function(key, value){
     for(var i in this.args){
         if(this.args[i].key == key){
             this.args[i].value = value;
             return this;
         }
     }
-    return this.addArg(key, value);
+    return this._addArg(key, value);
 };
 
 URI.prototype.removeArg = function(key){
+    c = this.clone();
+    c._removeArg(key);
+    return c;
+};
+
+URI.prototype._removeArg = function(key){
     var start = false;
     for(var i in this.args){
         if(!start && this.args[i].key == key){
@@ -73,7 +93,8 @@ URI.prototype.removeArg = function(key){
             this.args[i-1] = this.args[i];
         }
     }
-    this.args.pop();
+    if(start)
+        this.args.pop();
     return this;
 };
 

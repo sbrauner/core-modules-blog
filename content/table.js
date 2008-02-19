@@ -117,6 +117,11 @@ function htmltable(specs) {
         var displaycolnames = this._displaycolnames();
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
+        var sort = this._sort();
+        var u = new URI(request.getURL());
+        for(var i in sort){
+            u = u.removeArg("sort"+i);
+        }
 
         for(var i in displaycolnames){
             if(has_index(this.specs.ns, this.specs.cols[i].name)){
@@ -132,8 +137,8 @@ function htmltable(specs) {
                     asc = false;
                     using = true;
                 }
-                var u = new URI(request.getURL()).replaceArg('sort'+colnames[i], newval).toString();
-                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+ "</a>"
+                var target = u.replaceArg('sort'+colnames[i], newval).toString();
+                displaycolnames[i] = "<a href=\""+target+"\">"+displaycolnames[i]+ "</a>"
                     +(using?(asc?"^":"v"):"");
             }
         }
