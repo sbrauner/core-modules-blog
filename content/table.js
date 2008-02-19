@@ -40,6 +40,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 
 core.content.html2();
 core.util.uri();
+core.util.db();
 
 function htmltable(specs) {
     this.specs = specs;
@@ -118,7 +119,7 @@ function htmltable(specs) {
             displaycolnames.push( "Actions" );
 
         for(var i in displaycolnames){
-            if(this.specs.cols[i].sortable){
+            if(has_index(this.specs.ns, this.specs.cols[i].name)){
                 if(request['sort'+colnames[i]] == 1)
                     var newval = "-1";
                 else var newval = "1";
