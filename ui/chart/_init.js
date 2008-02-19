@@ -19,21 +19,23 @@ ui.chart._checkHeadArray = function( a ){
     return true;
 }
 
-ui.chart.checkHead = function(){
+ui.chart.checkHead = function( myHead ){
     
     if ( globalHead && ui.chart._checkHeadArray( globalHead ) )
         return;
+    
+    if ( ! head ) head = myHead;
 
     if ( head && ui.chart._checkHeadArray( head ) )
         return;
+
+    if ( head ){
+	if ( head.isLocked() )
+	    throw "why is head locked";
+        head.addAll( ui.chart.head );
+	return;
+    }
     
-    if ( head && ! head.isLocked() ){
-        SYSOUT( "have head :(" );
-        head.concat( ui.chart.head );
-    }
-    else {
-        SYSOUT( "have nothing!!!" );
-    }
+    throw "have no way to add head";
 };
   
-ui.chart.checkHead();

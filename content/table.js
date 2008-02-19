@@ -16,22 +16,22 @@ cols: column specs
 detailUrl: drill down url prefix.  uses obj id (_id)
 detail: function which takes object and returns detail url
 searchable: if you want it searchable.
-filter: a function, which if specified, returns true if the row from the db should be included for display.  Note you are 
+filter: a function, which if specified, returns true if the row from the db should be included for display.  Note you are
   generally better off including the condition in the query rather than using this client-side facility.
 
 Example:
 
-var tab = new htmltable( 
- { 
+var tab = new htmltable(
+ {
   ns : posts,
   cols : [
     { name: "title", searchWidth: 40 },
     { name: "author" },
-    { name: "ts" }, 
+    { name: "ts" },
     { name: "live", view: function(x){return x?"yes":"no";}, searchable: false }
   ],
   detailUrl: "/post_edit?id="
- } 
+ }
 );
 
 tab.dbview( tab.find().sort({ts:-1}) );
@@ -40,25 +40,25 @@ tab.dbview( tab.find().sort({ts:-1}) );
 
 core.content.html2();
 
-function htmltable(specs) { 
+function htmltable(specs) {
     this.specs = specs;
 
     this._colnames = function() { return this.specs.cols.map( function(x) { return x.name; } ); }
 
-    this._displaycolnames = function() 
+    this._displaycolnames = function()
         { return this.specs.cols.map( function(x) { return x.heading?x.heading:x.name; } ); }
 
     /* returns the fields we want, as one needs them to filter them from the db
        e.g., { name:true, address:true }
     */
-    this._fieldsFilter = function() { 
+    this._fieldsFilter = function() {
         f = {};
         this.specs.cols.forEach( function(x) { f[x.name] = true } );
         return f;
     }
 
     // returns the query object to filter by
-    this._query = function(baseQuery) { 
+    this._query = function(baseQuery) {
         if( !this.specs.searchable )
             return {};
         var q = baseQuery;
@@ -68,22 +68,22 @@ function htmltable(specs) {
                     s = "" + s;
                     s = s.trim();
                     if( s.length > 0 ) {
-                        if( x.queryForm ) { 
+                        if( x.queryForm ) {
                             var v = x.queryForm(s);
                             if( v )
                                 q[x.name] = v;
                         }
                         else if( x.type == "boolean" ) {
-                            var val = 
+                            var val =
                                 s == "yes" || s == "y" || s == "true" || s == "True" || s == "t" || s == "T" || s == "1" ||
                                 (x.view && x.view(true) == s);
                             q[x.name] = val;
                         }
-                        else { 
+                        else {
                             try {
                                 q[x.name] = RegExp(s, "i");
                             }
-                            catch( e ) { 
+                            catch( e ) {
                                 print("error: Your search regular expression is not valid");
                                 q[x.name] = s;
                             }
@@ -94,12 +94,12 @@ function htmltable(specs) {
         return q;
     }
 
-    this._rows = function(cursor) { 
+    this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
-     
+
         print( tr(displaycolnames, {header:true}) );
 
         if( this.specs.searchable ) {
@@ -107,26 +107,26 @@ function htmltable(specs) {
             var first = true;
             print( tr(this.specs.cols.map( function(x){
                             var s = "";
-                            if( first ) { 
+                            if( first ) {
                                 first = false;
                                 s = '<input type="submit" value="search"> ';
                             }
-		
+
                             if( x.searchable == false ) return s;
-		
+
                             return s+'<input ' +
                                 (request[x.name]?'value="'+request[x.name]+'" ':'') +
                                 (x.searchWidth?'size="'+x.searchWidth+'" ':'') +
                                 'name="'+x.name+'">';} )) );
             print("</form>");
         }
-     
+
         var hasIsLink = false;
         this.specs.cols.forEach( function( z ){
                 if ( z.isLink )
                     hasIsLink = true;
             } );
- 
+
 
         //var arr = cursor.toArray();
         while( cursor.hasNext() ) {
@@ -138,17 +138,17 @@ function htmltable(specs) {
                 var fieldValue = obj[colnames[c]];
                 var isLink = this.specs.cols[c].isLink;
                 var cssClassName = this.specs.cols[c].cssClassName;
-	     
+
                 print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
                 {
                     var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
                     if( linkToDetails ) {
-                        var post = obj; 
+                        var post = obj;
                         var fieldUrl;
-    		     
+
                         if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
                         else fieldUrl = this.specs.detail(obj);
-    		     
+
                         print('<a href="' + fieldUrl + '">');
                     }
                     var viewMethod = this.specs.cols[c].view;
@@ -174,7 +174,7 @@ function htmltable(specs) {
         }
     }
 
-    this.find = function(baseQuery) { 
+    this.find = function(baseQuery) {
         return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).limit(300);
     }
 
@@ -191,5 +191,5 @@ function htmltable(specs) {
         this._rows( arr.iterator() );
         print("</table>\n");
     }
-    
+
 };

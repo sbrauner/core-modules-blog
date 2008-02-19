@@ -67,7 +67,7 @@ if ( request.action == "save" ) {
             print( "<i>Saved.</i>" );
             // ping blogging services
 	    print( "Pinging Services<br>" );
-            if ( allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
+            if ( request.getHost().match( /^www\./ ) && allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
 		Blog.ping(siteUrl + '/' + thePost.name);
 	    }
 	 }
