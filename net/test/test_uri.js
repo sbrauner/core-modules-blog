@@ -41,3 +41,20 @@ s = "/bugs/?number=&title=&whee=";
 u = new URI(s);
 u = u.removeArg("title");
 assert(u.toString() == "/bugs/?number=&whee=");
+
+s = "/bugs/#anchor1";
+u = new URI(s);
+assert(u.toString() == s);
+assert(u.anchor == "anchor1");
+
+s = "localhost:8080/bugs/?number=1#anchor";
+u = new URI(s);
+assert(u.toString() == "http://"+s);
+assert(u.anchor == "anchor");
+assert(u.hostname == "localhost:8080");
+assert(u.path == "/bugs/");
+
+s = "/bugs/#anchor1";
+u = new URI(s).addArg("number", "40").addArg("truth", "").addArg("you", "honey");
+assert(u.toString() == "/bugs/?number=40&truth=&you=honey#anchor1");
+

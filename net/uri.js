@@ -6,10 +6,6 @@ URI = function(s){
     // same arg in a URI.
     // (If we ever write a multidict or anything, it should be used here.)
 
-    // FIXME:
-    // This doesn't do anything with the #anchor part of a URI; it might get parsed
-    // as either part of the query args or part of the path.
-
     // Parse scheme and hostname. Sometimes this is absent
     // (the URI starts with a slash).
     if(s.indexOf('://') == -1){
@@ -21,8 +17,14 @@ URI = function(s){
     this.hostname = s.substring(0, s.indexOf('/'));
     s = s.substring(s.indexOf('/'), s.length);
 
-    // Parse the path and query args (if any).
+    // Parse the anchor, path and query args (if any).
     this.args = [];
+    this.anchor = "";
+    // Check for an anchor first, and trim it.
+    if(s.indexOf('#') != -1){
+        this.anchor = s.substring(s.indexOf('#')+1, s.length);
+        s = s.substring(0, s.indexOf('#'));
+    }
     if(s.indexOf('?') == -1){
         this.path = s;
     } else {
@@ -48,6 +50,7 @@ URI.prototype.toString = function(){
 
         str += this.args.map(function(a){return encodeURIComponent(a.key)+'='+encodeURIComponent(a.value);}).join('&');
     }
+    if(this.anchor) str += "#"+encodeURIComponent(this.anchor);
     return str;
 };
 
