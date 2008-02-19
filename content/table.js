@@ -120,11 +120,21 @@ function htmltable(specs) {
 
         for(var i in displaycolnames){
             if(has_index(this.specs.ns, this.specs.cols[i].name)){
-                if(request['sort'+colnames[i]] == 1)
-                    var newval = "-1";
-                else var newval = "1";
+                var using = false;
+                var asc = false;
+                var newval = "1";
+                if(request['sort'+colnames[i]] == 1){
+                    asc = true;
+                    using = true;
+                    newval = "-1";
+                }
+                else if(request['sort'+colnames[i]] == -1){
+                    asc = false;
+                    using = true;
+                }
                 var u = new URI(request.getURL()).replaceArg('sort'+colnames[i], newval).toString();
-                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+"</a>";
+                displaycolnames[i] = "<a href=\""+u+"\">"+displaycolnames[i]+ "</a>"
+                    +(using?(asc?"^":"v"):"");
             }
         }
 
