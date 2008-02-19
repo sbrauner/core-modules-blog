@@ -46,20 +46,20 @@ clientEditLoader.insert({
 
                 // only set these up on a non-edit page
                 if (!isEditPage) {
-                    editKeyListener = new YAHOO.util.KeyListener(document, { ctrl: true, keys: 69 }, handleEditKeyPress);
+                    editKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: 69 }, handleEditKeyPress);
                     editKeyListener.enable();
 
-                    renameKeyListener = new YAHOO.util.KeyListener(document, { ctrl: true, keys: 82 }, handleRenameKeyPress);
+                    renameKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: 82 }, handleRenameKeyPress);
                     renameKeyListener.enable();
 
-                    deleteKeyListener = new YAHOO.util.KeyListener(document, { ctrl: true, keys: 68 }, handleDeleteKeyPress);
+                    deleteKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: 68 }, handleDeleteKeyPress);
                     deleteKeyListener.enable();
                 }
                 
                 // only set this up on an edit page
                 if (isEditPage) {
-//                    saveKeyListener = new YAHOO.util.KeyListener(document, { ctrl: true, keys: 13 }, handleConfirm);
-//                    saveKeyListener.enable();
+                    saveKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: [13, 3] }, handleEnterKeyPress);
+                    saveKeyListener.enable();
                 } 
             });
     }
@@ -76,6 +76,10 @@ var handleRenameKeyPress = function() {
 
 var handleDeleteKeyPress = function() {
     deleteDialog.show();
+}
+
+var handleEnterKeyPress = function() {
+    document.forms.wiki_edit_form.submit();
 }
 
 var handleConfirm = function() {
