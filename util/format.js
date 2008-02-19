@@ -20,7 +20,7 @@ Util.format_queryargs = function(obj){
 };
 
 Util.escape_queryargs = function(s){
-    var re = /[^A-Za-z\._~-]/;
+    var re = /[^A-Za-z0-9\._~-]/;
     var strhex = '0123456789abcdef';
     var t = '';
     while(true){
