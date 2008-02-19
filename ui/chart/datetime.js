@@ -7,8 +7,8 @@ ui.chart.checkHead( head );
 
 ui.chart.DateTime = function(){
 
-    this._dataName = "data123" ;
-    this._dataCode = "";// var " + this._dataName + " = [];";
+    this._dataName = "data" + md5( Math.random() );
+    this._dataCode = "";
     this._series = {};
 
     this.height = 500;
