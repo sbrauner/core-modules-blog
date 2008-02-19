@@ -45,6 +45,25 @@ function mungeData( cursor , t ){
 		   return { time : z.time , num : z.num / ( minutes * 60 ) };
 	       } );
     
+    var msDiff = minutes * 60 * 1000;
+
+    var n = [];
+    for ( var i=0; i<a.length; i++ ){
+
+	if ( i == 0 ){
+	    n.push( a[i] );
+	    continue;
+	}
+	
+	var cur = a[i-1].time;
+	while ( ( cur.getTime() + msDiff + 5000  ) < a[i].time.getTime() ){
+	    cur = new Date( cur.getTime() + msDiff );
+	    a.push( { time : cur , num : 0 } );
+	}
+	
+	n.push( a[i] );
+    }
+    a = n;
     return a;
     
 }
