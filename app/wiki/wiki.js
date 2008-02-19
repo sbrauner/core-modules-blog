@@ -8,7 +8,7 @@ app.wiki.WikiController.renamePage = function(wikiPage, newPageName) {
     if (app.wiki.config.readOnly) return false;
     
     // ensure our newPageName is valid
-    if (!validatePageName(newPageName)) return false;
+    if (!app.wiki.WikiController.validatePageName(newPageName)) return false;
 
     // ensure we don't have a page with the new name already
     if (db.wiki.findOne( { name: newPageName } )) {

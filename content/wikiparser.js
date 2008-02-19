@@ -10,11 +10,11 @@ content.WikiParser = function() {
 
     // ==header==
     this.h = [
-        { r: /^=====(.*)=====/, s: "<h5>$1</h5>" },
-        { r: /^====(.*)====/, s: "<h4>$1</h4>" },
-        { r: /^===(.*)===/, s: "<h3>$1</h3>" },
-        { r: /^==(.*)==/, s: "<h2>$1</h2>" },
-        { r: /^=(.*)=/, s: "<h1>$1</h1>" } ];
+        { r: /^=====\s*(.*)\s*=====/, s: "<h5>$1</h5>" },
+        { r: /^====\s*(.*)\s*====/, s: "<h4>$1</h4>" },
+        { r: /^===\s*(.*)\s*===/, s: "<h3>$1</h3>" },
+        { r: /^==\s*(.*)\s*==/, s: "<h2>$1</h2>" },
+        { r: /^=\s*(.*)\s*=/, s: "<h1>$1</h1>" } ];
 
     this.link = [
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
@@ -29,8 +29,8 @@ content.WikiParser = function() {
         ];
 
     this.basics = [
-        { r: /'''([^']+)'''/g , s: "<b>$1</b>" }, // '''bold
-        { r: /''([^']+)''/g , s: "<i>$1</i>" } // ''italics'
+        { r: /'''([^']+)'''/g , s: "<strong>$1</strong>" }, // '''bold
+        { r: /''([^']+)''/g , s: "<em>$1</em>" } // ''italics'
     ];
 };
 
@@ -43,8 +43,16 @@ content.WikiParser._repl = function(patts, str) {
 
 content.WikiParser.prototype._reLevel = function(newLevel) {
     var str = "";
-    while( this.level < newLevel ) { this.level++; str = "<ul>" + str; }
-    while( this.level > newLevel ) { this.level = this.level-1; str = "</ul>" + str; }
+    while ( this.level < newLevel ) { 
+        this.level++;
+        str = "<ul>" + str;
+    }
+    
+    while ( this.level > newLevel ) {
+        this.level = this.level-1;
+        str = "</ul>" + str;
+    }
+    
     this.outp += str;
 };
 
