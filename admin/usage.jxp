@@ -1,0 +1,79 @@
+<%
+
+core.ui.chart.datetime();
+
+/**
+ * @return [ { time : Date , num : Number } ... ]
+*/
+function mungeData( cursor , t ){
+    cursor.sort( { ts : -1 } );
+    
+    var last = null;
+    var a = [];
+    
+    cursor.forEach( function( z ){ 
+			var n = z.ts;
+			
+			if ( t == "h" )
+			    n = n.roundHour();
+			else if ( t == "d" )
+			    n = n.roundDay();
+			else if ( t == "w" )
+			    n = n.roundWeek();
+			else if ( t == "m" )
+			    n = n.roundMonth();
+			
+			if ( ! last || ( n.getTime() != last.getTime()  ) )
+			    a.push( { time : n , num : 0 } );
+			
+			a[a.length - 1 ].num += z.num;
+			last = n;
+		    } );
+
+    var minutes = 5;
+    if ( t == "h" )
+	minutes = 60;
+    else if ( t == "d" )
+	minutes = 60 * 24;
+    else if ( t == "w" )
+	minutes = 60 * 24 * 7;
+    else if ( t == "m" )
+	minutes = 60 * 24 * 30;
+
+    // convert sums to per second
+    a = a.map( function( z ){
+		   return { time : z.time , num : z.num / ( minutes * 60 ) };
+	       } );
+    
+    return a;
+    
+}
+
+function go( type , limit , t , header ){
+    var dt = new ui.chart.DateTime();
+    
+    data = mungeData( db._system.usage[type].find().limit( limit ) , t );
+    data.forEach( function( z ){
+		      dt.add( z.time , z.num  );
+		  } );
+    dt.width = 500;
+    dt.height = 100;
+    print( "<h3>" + ( header || type ) + "</h3>" );
+    dt.print( print );
+}
+
+print( "<center>" );
+
+print( "<h1>Last 24 hours</h1>" );
+go( "bytes_in" , 12 * 24 );
+go( "bytes_out" , 12 * 24 );
+go( "cpu_millis" , 12 * 24 );
+
+print( "<h1>Last 7 Days</h1>" );
+go( "bytes_in" , 12 * 24 * 7 , "h" );
+go( "bytes_out" , 12 * 24 * 7 , "h" );
+go( "cpu_millis" , 12 * 24 * 7 , "h" );
+
+print( "</center>" );
+
+%>
