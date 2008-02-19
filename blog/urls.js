@@ -68,16 +68,16 @@ Blog.handleRequest = function( request , arg ){
 	    var pageStart = (pageNumber - 1) * pageSize;
 	    var pageEnd = Math.min(pageNumber * pageSize, posts.length);
 	    
-// SYSOUT("posts: " + posts.length);
+// log.debug("posts: " + posts.length);
         posts = posts.filter( function( z ) { 
             postResults++
             return postResults > pageStart && postResults <= pageEnd;
         });
         
-//SYSOUT("pageStart: " + pageStart);
-//SYSOUT("pageEnd: " + pageEnd);
-// SYSOUT("postResults: " + postResults);
-// SYSOUT("page: " + pageNumber);
+//log.debug("pageStart: " + pageStart);
+//log.debug("pageEnd: " + pageEnd);
+// log.debug("postResults: " + postResults);
+// log.debug("page: " + pageNumber);
     
         if (postResults == 0) {
             return {isPage: true,
@@ -112,8 +112,8 @@ Blog.handleRequest = function( request , arg ){
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
         uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/^.rss/ , "/" ).replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
-        //SYSOUT("base URI: " + uri);
-        //SYSOUT("pageNumber: " + pageNumber);
+        //log.debug("base URI: " + uri);
+        //log.debug("pageNumber: " + pageNumber);
         
         // look for a page or post with name = URL, and display it if it exists
         // TODO: look for a page or post with name = URL replacing '-' with '_', and display it if it exists
@@ -121,7 +121,7 @@ Blog.handleRequest = function( request , arg ){
         var entry = db.blog.posts.findOne(searchCriteria);
 
         if (entry) {
-            //SYSOUT('found a matching ' + entry.cls);
+            //log.debug('found a matching ' + entry.cls);
             search = request.q;
             return {isPage: true,
                     posts: [entry],
@@ -144,7 +144,7 @@ Blog.handleRequest = function( request , arg ){
             entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
 
             if (entries.length() > 0) {
-                // SYSOUT('found matching entries for category: ' + uri);
+                // log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: uri });
             } else {
@@ -154,7 +154,7 @@ Blog.handleRequest = function( request , arg ){
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
                 if (entries.length() > 0) {
-                    // SYSOUT('found matching entries for: ' + uri);
+                    // log.debug('found matching entries for: ' + uri);
                 }
             }
         }
@@ -194,7 +194,7 @@ Blog.handlePosts = function( request , thePost , user ){
     if ( request.addComment == "yes" ) {
 	var comment = null;
 	
-	SYSOUT( "want to add comment" );
+	log.debug( "want to add comment" );
 	
 	var hasYourName = request.yourname && request.yourname.trim().length != 0;
 	var hasEmail = request.email && request.email.trim().length != 0;
