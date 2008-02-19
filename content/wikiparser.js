@@ -24,8 +24,8 @@ content.WikiParser = function() {
 
     this.urls = [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '[$2]$4'}, // raw URL
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '[$2]$4'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$2]$4'}, // raw URL
+        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$2]$4'}, // raw URL
         ];
 
     this.basics = [
@@ -43,16 +43,16 @@ content.WikiParser._repl = function(patts, str) {
 
 content.WikiParser.prototype._reLevel = function(newLevel) {
     var str = "";
-    while ( this.level < newLevel ) { 
+    while ( this.level < newLevel ) {
         this.level++;
         str = "<ul>" + str;
     }
-    
+
     while ( this.level > newLevel ) {
         this.level = this.level-1;
         str = "</ul>" + str;
     }
-    
+
     this.outp += str;
 };
 
