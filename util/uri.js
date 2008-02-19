@@ -76,3 +76,4 @@ URI.prototype.removeArg = function(key){
     this.args.pop();
     return this;
 };
+
