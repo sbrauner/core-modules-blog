@@ -6,7 +6,7 @@
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger'],
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete'],
            base: '/@@/yui/2.4.1/',
            onSuccess: function(loader) {
                this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
@@ -21,20 +21,42 @@
                        return "<span class=\"response\">" + msg.msg + "</span><br/>";
                    }
                };
+
+
+               pastCommands = new Array();
+
+               // Set up autocompletion stuff
+               YAHOO.ACJSArray = new function(){ // Object construction
+                   this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
+                   this.oAutoComp = new YAHOO.widget.AutoComplete("commandac", "commandcontainer", this.oACDS);
+                   this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
+                   this.oAutoComp.typeAhead = true;
+                   this.oAutoComp.useShadow = true;
+                   this.oAutoComp.minQueryLength = 0;
+                   this.oAutoComp.textboxFocusEvent.subscribe(function(){
+                       var sInputValue = YAHOO.util.Dom.get('commandac').value;
+                       if(sInputValue.length === 0){
+                           var oSelf = this;
+                           //setTimeout(function(){oSelf.sendQuery(sInputValue);},0);
+                       }
+                   });
+               };
            }
        });
      </script>
-     <form onSubmit="return doRun();">
+     <form onSubmit="return doRun('command');">
        Command:<input id="command" size=70><input type="submit" value="run">
      </form>
+     <form onSubmit="return doRun('commandac');">
+       Command (auto-completes): <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
+    </form>
 </div>
 
 <script>
     shellId = "shell-" + Math.random();
-    command = document.getElementById( "command" );
-    var pastCommands = new Array();
     var historyLocation = 0;
-    function doRun(){
+    function doRun(el){
+        var command = document.getElementById( el );
         if (historyLocation != -1) {
             pastCommands[pastCommands.length] = command.value;
         }

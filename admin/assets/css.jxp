@@ -144,3 +144,12 @@ div#customer_body {
     color: #00f;
 }
 
+/* Taken from the YUI docs */
+#commandautocomplete {
+    width: 15em;
+    padding-bottom: 2em;
+}
+
+#commandac {
+    _position: absolute;
+}
