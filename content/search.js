@@ -103,6 +103,8 @@ Search = {
         var weights = Search._weights[ table.getName() ] || Search._default;
 	if ( weights.length == 0 )
 	    weights = Search._default;
+	if ( weights.length == 0 )
+	    weights.push( { idx : "_searchIndex" , w : 1 } );
         if ( Search.DEBUG ) SYSOUT( "\t weights.length : " + weights.length );
 	
 
