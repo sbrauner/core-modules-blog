@@ -24,6 +24,7 @@
 
 
                pastCommands = new Array();
+               historyAry = new Array();
 
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
@@ -44,11 +45,8 @@
            }
        });
      </script>
-     <form onSubmit="return doRun('command');">
-       Command:<input id="command" size=70><input type="submit" value="run">
-     </form>
      <form onSubmit="return doRun('commandac');">
-       Command (auto-completes): <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
+       Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
     </form>
 </div>
 
@@ -57,8 +55,12 @@
     var historyLocation = 0;
     function doRun(el){
         var command = document.getElementById( el );
-        if (historyLocation != -1) {
-            pastCommands[pastCommands.length] = command.value;
+        var usr = command.value;
+        if(pastCommands.indexOf(usr) == -1){
+            pastCommands.push(usr);
+        }
+        if (historyAry.length == 0 || historyAry.lastIndexOf(pastCommands.indexOf(usr)) != historyAry.length-1) {
+            historyAry.push(pastCommands.indexOf(usr));
         }
         historyLocation = 0;
 
@@ -74,13 +76,13 @@
     }
 
     window.onkeydown = function( e ) {
-        var cmd = document.getElementById("command");
+        var cmd = document.getElementById("commandac");
         var setcmd = function () {
             if ( arguments.length ) {
                 cmd.value = arguments[0];
             }
             else {
-                cmd.value = pastCommands[pastCommands.length + historyLocation];
+                cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
             }
         }
         var key = e.keyCode || e.which;
@@ -91,8 +93,8 @@
         }
         if( key == 38 ) { // up arrow
             historyLocation -= 1;
-            if (historyLocation < -pastCommands.length){
-                historyLocation = -pastCommands.length;
+            if (historyLocation < -historyAry.length){
+                historyLocation = -historyAry.length;
             }
             else {
                 setcmd();
