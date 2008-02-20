@@ -129,3 +129,9 @@ div#customer_body {
 .module_menu_item {
     background: <%= header_dark_red %>;
 }
+
+.transcript {
+    margin-left: auto;
+    margin-right: auto;
+    width: 75% !important;
+}
