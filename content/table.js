@@ -123,7 +123,7 @@ function htmltable(specs) {
             u = u.removeArg("sort"+i);
         }
 
-        for(var i in displaycolnames){
+        for(var i in this.specs.cols){
             if(has_index(this.specs.ns, this.specs.cols[i].name)){
                 var using = false;
                 var asc = false;
