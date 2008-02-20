@@ -39,7 +39,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 */
 
 core.content.html2();
-core.util.uri();
+core.net.uri();
 core.util.db();
 
 function htmltable(specs) {
