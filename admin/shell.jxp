@@ -26,6 +26,10 @@
                pastCommands = new Array();
                historyAry = new Array();
 
+               // Install this handler before the autocompleter because it will
+               // grab up/down key events
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
                    this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
@@ -44,6 +48,45 @@
                };
            }
        });
+
+var histfunc = function( e ) {
+
+    if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
+    var key = e.keyCode || e.which;
+    var key = e.which;
+    if(e.shiftKey){
+        // cheap hack to make this work in konqueror
+        key = key + 17;
+    }
+    var cmd = document.getElementById("commandac");
+    var setcmd = function () {
+        if ( arguments.length ) {
+            cmd.value = arguments[0];
+        }
+        else {
+            cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
+        }
+    }
+    if( key == 38 ) { // up arrow
+        historyLocation -= 1;
+        if (historyLocation < -historyAry.length){
+            historyLocation = -historyAry.length;
+        }
+        else {
+            setcmd();
+        }
+    }
+    else if( key == 40 ) { // down arrow
+        historyLocation += 1;
+        if (historyLocation >= 0){
+            historyLocation = 0;
+            setcmd("");
+        }
+        else {
+            setcmd();
+        }
+    }
+};
      </script>
      <form onSubmit="return doRun('commandac');">
        Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
@@ -75,40 +118,5 @@
         return false;
     }
 
-    window.onkeydown = function( e ) {
-        var cmd = document.getElementById("commandac");
-        var setcmd = function () {
-            if ( arguments.length ) {
-                cmd.value = arguments[0];
-            }
-            else {
-                cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
-            }
-        }
-        var key = e.keyCode || e.which;
-        var key = e.which;
-        if(e.shiftKey){
-            // cheap hack to make this work in konqueror
-            key = key + 17;
-        }
-        if( key == 38 ) { // up arrow
-            historyLocation -= 1;
-            if (historyLocation < -historyAry.length){
-                historyLocation = -historyAry.length;
-            }
-            else {
-                setcmd();
-            }
-        }
-        else if( key == 40 ) { // down arrow
-            historyLocation += 1;
-            if (historyLocation >= 0){
-                historyLocation = 0;
-                setcmd("");
-            }
-            else {
-                setcmd();
-            }
-        }
-    }
+window.onkeydown = histfunc;
 </script>
