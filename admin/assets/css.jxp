@@ -146,10 +146,14 @@ div#customer_body {
 
 /* Taken from the YUI docs */
 #commandautocomplete {
-    width: 15em;
+    text-align: left;
     padding-bottom: 2em;
+    width: 70% !important;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #commandac {
     _position: absolute;
 }
+
