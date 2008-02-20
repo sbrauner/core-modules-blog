@@ -1,7 +1,6 @@
 
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
-     <p><textarea id="transcript" disabled rows=20 cols=80></textarea></p><br>
      <div id="console" class="transcript"></div>
      <script type="text/javascript" src="/@@/yui/2.4.1/yuiloader/yuiloader-beta.js"></script>
      <script type="text/javascript">
@@ -10,7 +9,6 @@
            require: ['fonts', 'dragdrop', 'logger'],
            base: '/@@/yui/2.4.1/',
            onSuccess: function(loader) {
-               document.getElementById( "transcript" ).rows = 1;
                this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -33,12 +31,10 @@
 
 <script>
     shellId = "shell-" + Math.random();
-    commandTranscript = document.getElementById( "transcript" );
     command = document.getElementById( "command" );
     var pastCommands = new Array();
     var historyLocation = 0;
     function doRun(){
-        commandTranscript.value += "\n> " + command.value;
         if (historyLocation != -1) {
             pastCommands[pastCommands.length] = command.value;
         }
@@ -46,14 +42,10 @@
 
         YAHOO.log(command.value, "user", "shell");
         var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
-        //commandTranscript.value += "\t" + url;
 
         var res = loadDocSync( url );
         res = res.replace( /(^\s+|\s+$)/g , "" );
         YAHOO.log(res, "response", "shell");
-        if ( res.length != 0 )
-            commandTranscript.value += "\n" + res;
-
         command.value = "";
 
         return false;
