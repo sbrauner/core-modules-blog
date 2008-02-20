@@ -38,13 +38,6 @@
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
                    this.oAutoComp.minQueryLength = 0;
-                   this.oAutoComp.textboxFocusEvent.subscribe(function(){
-                       var sInputValue = YAHOO.util.Dom.get('commandac').value;
-                       if(sInputValue.length === 0){
-                           var oSelf = this;
-                           //setTimeout(function(){oSelf.sendQuery(sInputValue);},0);
-                       }
-                   });
                };
            }
        });
@@ -99,6 +92,7 @@ var histfunc = function( e ) {
     function doRun(el){
         var command = document.getElementById( el );
         var usr = command.value;
+        command.value = "";
         if(pastCommands.indexOf(usr) == -1){
             pastCommands.push(usr);
         }
@@ -107,13 +101,12 @@ var histfunc = function( e ) {
         }
         historyLocation = 0;
 
-        YAHOO.log(command.value, "user", "shell");
-        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
+        YAHOO.log(usr, "user", "shell");
+        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
 
         var res = loadDocSync( url );
         res = res.replace( /(^\s+|\s+$)/g , "" );
         YAHOO.log(res, "response", "shell");
-        command.value = "";
 
         return false;
     }
