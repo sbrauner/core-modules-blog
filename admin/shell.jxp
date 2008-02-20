@@ -87,17 +87,30 @@ var histfunc = function( e ) {
 </div>
 
 <script>
+    indexOf = function(ary, v){
+        for(var i=0; i<ary.length; ++i){
+            if(ary[i] == v)
+                return i;
+
+        }
+    };
+lastIndexOf = function(ary, v){
+    for(var i=ary.length-1; i>=0; --i){
+        if(ary[i] == v)
+            return i;
+    }
+};
     shellId = "shell-" + Math.random();
     var historyLocation = 0;
     function doRun(el){
         var command = document.getElementById( el );
         var usr = command.value;
         command.value = "";
-        if(pastCommands.indexOf(usr) == -1){
+        if(indexOf(pastCommands, usr) == -1){
             pastCommands.push(usr);
         }
-        if (historyAry.length == 0 || historyAry.lastIndexOf(pastCommands.indexOf(usr)) != historyAry.length-1) {
-            historyAry.push(pastCommands.indexOf(usr));
+        if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
+            historyAry.push(indexOf(pastCommands,usr));
         }
         historyLocation = 0;
 
