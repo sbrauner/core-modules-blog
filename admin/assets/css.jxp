@@ -135,3 +135,12 @@ div#customer_body {
     margin-right: auto;
     width: 75% !important;
 }
+
+.usercmd {
+    color: #f00;
+}
+
+.response {
+    color: #00f;
+}
+

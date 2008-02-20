@@ -17,10 +17,10 @@
                this.myLogReader.hideSource("LogReader");
                this.myLogReader.formatMsg = function(msg){
                    if(msg.category == "user"){
-                       return "js&gt; " + msg.msg + "<br/>";
+                       return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
-                       return msg.msg + "<br/>";
+                       return "<span class=\"response\">" + msg.msg + "</span><br/>";
                    }
                };
            }
