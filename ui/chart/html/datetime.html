@@ -25,7 +25,11 @@
     <%= obj.layoutName %>.evaluate();
     
     var chart = new SweetCanvasRenderer(  document.getElementById( "chart$chart._dataName" ) , $layoutName );
-    chart.options.shouldFill = false; 
+
+    chart.options.shouldFill = true;
+    chart.options.shouldStroke = false; 
+    chart.options.backgroundColor = Color.whiteColor();
+    
     chart.render();
 
   </script> 
