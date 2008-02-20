@@ -7,7 +7,7 @@ if ( Search && Search._doneInit )
 
 Search = { 
 
-    DEBUG : false ,
+    DEBUG : true ,
 
     _weights : {} ,
     _default : [ { idx : "_searchIndex" , w : 1 } ] ,
@@ -32,7 +32,7 @@ Search = {
         if ( Search.DEBUG ) SYSOUT( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );
         
-        if ( weights ){
+        if ( weights && weights.length > 0 ){
             
             var num = [];
 
@@ -101,7 +101,10 @@ Search = {
         var min = options.min || 10;
         
         var weights = Search._weights[ table.getName() ] || Search._default;
+	if ( weights.length == 0 )
+	    weights = Search._default;
         if ( Search.DEBUG ) SYSOUT( "\t weights.length : " + weights.length );
+	
 
         var fullObjects = Object();
         var matchCounts = Object(); // _id -> num
