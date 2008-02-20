@@ -64,7 +64,7 @@ Mail.SMTP = function( addr , server , username , password , ssl , port ){
     this.password = password;
     
     this.ssl = ssl || false;
-    this.port = port || 25;
+    this.port = port || ( ssl ? 465 : 25 );
 
     if ( ! this.server )
         throw "server is required";
@@ -88,3 +88,10 @@ Mail.SMTP = function( addr , server , username , password , ssl , port ){
     
 };
 
+
+Mail.SMTP.gmail = function( username , password ){
+    if ( ! username.match( /@gmail.com$/ ) )
+        username += "@gmail.com";
+    
+    return new Mail.SMTP( username , "smtp.gmail.com" , username , password , true , 465 );
+};
