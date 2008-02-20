@@ -1,4 +1,6 @@
 
+SERVER_HOSTNAME = javaStatic( "java.net.InetAddress" , "getLocalHost" ).getHostName();
+
 function mapUrlToJxpFileCore( uri , request ){
 
     if ( ( 
