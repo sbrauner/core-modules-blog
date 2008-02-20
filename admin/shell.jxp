@@ -37,7 +37,7 @@
                    this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
-                   this.oAutoComp.minQueryLength = 0;
+                   this.oAutoComp.minQueryLength = 1;
                };
            }
        });
