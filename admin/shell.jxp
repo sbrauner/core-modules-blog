@@ -48,8 +48,12 @@ var histfunc = function( e ) {
     var key = e.keyCode || e.which;
     var key = e.which;
     if(e.shiftKey){
-        // cheap hack to make this work in konqueror
-        key = key + 17;
+        // In Konqueror and Safari, the keys for lparen and up-arrow generate
+        // the same keycode. Because of this, YUI blocks lparen.
+        // This is no good, so we block YUI's block by sabotaging the event's
+        // preventDefault method.
+        //        e.preventDefault = function(){};
+        return;
     }
     var cmd = document.getElementById("commandac");
     var setcmd = function () {
@@ -91,14 +95,15 @@ var histfunc = function( e ) {
         for(var i=0; i<ary.length; ++i){
             if(ary[i] == v)
                 return i;
-
         }
+        return -1;
     };
 lastIndexOf = function(ary, v){
     for(var i=ary.length-1; i>=0; --i){
         if(ary[i] == v)
             return i;
     }
+    return -1;
 };
     shellId = "shell-" + Math.random();
     var historyLocation = 0;
