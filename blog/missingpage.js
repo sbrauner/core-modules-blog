@@ -1,7 +1,7 @@
 
 MissingPage = function (uri) {
     this.uri = uri || '';
-    this.date = Date().roundHour();
+    this.date = new Date().roundHour();
 };
 
 if (db) {

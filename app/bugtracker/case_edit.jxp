@@ -35,7 +35,7 @@ head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
-        feature.lastModified = Date();
+        feature.lastModified = new Date();
         if(feature.owner == "null") feature.owner = null;
         else
             feature.owner = db.users.findOne({_id: feature.owner});
