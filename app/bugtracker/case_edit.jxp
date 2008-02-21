@@ -260,7 +260,7 @@ if(project.areas.length > 0){
         <div class="field">
             <div class="field_name">&nbsp;</div>
             <div class="field_value"><input type="submit" value="Delete"
-                                            onclick="return confirm('Are you sure you want to delete this item?');"></div>
+                                            onclick="return confirm('Are you sure you want to delete this item?');" <%= request.id == null? "disabled=\"true\"" : ""%>></div>
       </div>
       </form>
 <div class="comments">
