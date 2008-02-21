@@ -46,13 +46,12 @@ var histfunc = function( e ) {
 
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
-    var key = e.which;
     if(e.shiftKey){
         // In Konqueror and Safari, the keys for lparen and up-arrow generate
         // the same keycode. Because of this, YUI blocks lparen.
         // This is no good, so we block YUI's block by sabotaging the event's
         // preventDefault method.
-        //        e.preventDefault = function(){};
+        e.preventDefault = function(){};
         return;
     }
     var cmd = document.getElementById("commandac");
