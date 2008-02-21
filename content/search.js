@@ -175,3 +175,6 @@ Search = {
 };
 
 Search._doneInit = true;
+Search._default.lock();
+Search._default[0].setReadOnly( true );
+

@@ -12,6 +12,12 @@
     $chart._dataCode;
 
     <%= obj.layoutName %>.options.xAxis = [  $chart._min.getTime() ,  $chart._max.getTime() ]; 
+    var myDiff = <%= obj.chart._max.getTime() - obj.chart._min.getTime() %>;
+
+    var myTicks = null;
+    if ( myDiff < ( 1000 * 3600 * 48  ) ) myTicks = null;
+    else if ( myDiff < ( 1000 * 3600 * 24 * 10  ) ) myTicks = myDiff / ( 1000 * 3600 * 24 );
+    if ( myTicks ) <%= obj.layoutName %>.options.xNumberOfTicks = myTicks;
 
 <% for ( var s in obj.chart._series ){
         print( obj.layoutName + ".addDataset( \"" + s + "\" , " + obj.chart._dataName + s + " );\n" );    
@@ -19,7 +25,11 @@
     
     <%= obj.layoutName %>.xTickLabeler = function(z){ 
         var d = new Date(z);
-        return ( 1 + d.getMonth() ) + "/" + d.getDate() + ":" + d.getHours();
+
+        if ( myDiff < ( 1000 * 3600 * 48  ) ) return d.getHours();
+        if ( myDiff < ( 1000 * 3600 * 24 * 10  ) ) return ( 1 + d.getMonth() ) + "/" + d.getDate();
+        return ( 1 + d.getMonth() ) + "/" + d.getDate();
+
     }; 
     
     <%= obj.layoutName %>.evaluate();
