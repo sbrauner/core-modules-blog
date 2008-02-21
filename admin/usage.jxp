@@ -2,33 +2,36 @@
 
 core.ui.chart.datetime();
 
+function doRound( date , t ){
+    if ( t == "h" )
+        return date.roundHour();
+    if ( t == "d" )
+        return data.roundDay();
+    if ( t == "w" )
+        return date.roundWeek();
+    if ( t == "m" )
+        return date.roundMonth();
+    return date.roundMinutes( 5 );
+}
+
 /**
  * @return [ { time : Date , num : Number } ... ]
 */
-function mungeData( cursor , t ){
+function mungeData( cursor , t , startTime ){
     cursor.sort( { ts : -1 } );
     
     var last = null;
     var a = [];
     
     cursor.forEach( function( z ){ 
-			var n = z.ts;
-			
-			if ( t == "h" )
-			    n = n.roundHour();
-			else if ( t == "d" )
-			    n = n.roundDay();
-			else if ( t == "w" )
-			    n = n.roundWeek();
-			else if ( t == "m" )
-			    n = n.roundMonth();
-			
-			if ( ! last || ( n.getTime() != last.getTime()  ) )
-			    a.push( { time : n , num : 0 } );
-			
-			a[a.length - 1 ].num += z.num;
-			last = n;
-		    } );
+            var n = doRound( z.ts , t );
+            
+            if ( ! last || ( n.getTime() != last.getTime()  ) )
+                a.push( { time : n , num : 0 } );
+            
+            a[a.length - 1 ].num += z.num;
+            last = n;
+        } );
 
     var minutes = 5;
     if ( t == "h" )
@@ -46,6 +49,11 @@ function mungeData( cursor , t ){
 	       } );
     
     var msDiff = minutes * 60 * 1000;
+
+    while ( a[0].time.getTime() > ( startTime.getTime() + 5000 ) ){
+        var d = new Date( a[0].time.getTime() - msDiff );
+        a.unshift( { time : d , num : 0 } );
+    }
 
     var n = [];
     for ( var i=0; i<a.length; i++ ){
@@ -68,10 +76,17 @@ function mungeData( cursor , t ){
     
 }
 
+/**
+ * @param limit 5 minute chunks to go back
+ */
 function go( type , limit , t , header ){
     var dt = new ui.chart.DateTime();
     
-    data = mungeData( db._system.usage[type].find().limit( limit ) , t );
+    var start = new Date();
+    start = new Date( start.getTime() - ( limit * 5 * 60 * 1000 ) );
+    start = doRound( start , t );
+
+    data = mungeData( db._system.usage[type].find().limit( limit ) , t , start );
     data.forEach( function( z ){
 		      dt.add( z.time , z.num  );
 		  } );
@@ -94,8 +109,8 @@ function doAllTypes( limit , t ){
   <tr>
     
     <td>
-      <h1>Last 24 hours</h1>
-      <%  doAllTypes( 12 * 24 ); %>
+      <h1>Last 36 hours</h1>
+      <%  doAllTypes( 12 * 36 ); %>
     </td>
 
     <td>
