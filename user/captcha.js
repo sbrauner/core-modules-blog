@@ -56,7 +56,7 @@ Captcha = {
                 db.user._captcha.remove( { ts : { $lt : d } } );
             }
 
-            var obj = { s : s , ts : Date() };
+            var obj = { s : s , ts : new Date() };
             db.user._captcha.save( obj );
             if ( Captcha.DEBUG ) SYSOUT( tojson( obj ) );
             response.addCookie( "cid" , obj._id );

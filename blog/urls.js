@@ -101,7 +101,7 @@ Blog.handleRequest = function( request , arg ){
                     searchTerm: request.q};
         }
     } else {
-        var searchCriteria = { live : true , ts : { $lt : Date() } }; // add ts filter
+        var searchCriteria = { live : true , ts : { $lt : new Date() } }; // add ts filter
             var entries;
 
             if(arg.filter) {
@@ -218,7 +218,7 @@ Blog.handlePosts = function( request , thePost , user ){
 
         if ( comment ) {
 
-            comment.ts = Date();
+            comment.ts = new Date();
             comment.text = request.txt;
 
             thePost.addComment( comment );

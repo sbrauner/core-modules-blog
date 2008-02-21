@@ -37,12 +37,12 @@ if ( request._run == "true" ){
 
         if ( cron.lastRun ){
             var nextRun = cron.lastRun.getTime() + ( cron.xminutes * 60 * 1000.0 );
-            if ( nextRun > Date().getTime() )
+            if ( nextRun > new Date().getTime() )
                 continue;
         }
 
         print( "running : " + cron.name + "<BR>" );
-        cron.lastRun = Date();
+        cron.lastRun = new Date();
         db.cron.save( cron );
 
         var func = scope.eval( cron.url );

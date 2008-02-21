@@ -1,5 +1,5 @@
 threaded.data.Reply = function(){
-    this.ts = Date();
+    this.ts = new Date();
     this.author = "";
     this.title = "";
     this.content = "";
