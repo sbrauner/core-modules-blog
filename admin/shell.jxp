@@ -30,6 +30,19 @@
                // grab up/down key events
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
 
+               // YUI autocomplete tries to autocomplete even if there's been
+               // an intervening "Enter" and the input field has been cleared.
+               // We block this by keeping a "lastSent"
+               // variable with the last complete command we've sent and
+               // if we get a query for that exact command, we replace it
+               // with a gibberish !!!!!! query.
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",function(e){
+                   if(e.keyCode == 13){
+                       window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
+                   }
+               });
+
+
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
                    this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
@@ -38,6 +51,17 @@
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
                    this.oAutoComp.minQueryLength = 1;
+                   //this.oAutoComp.queryDelay = 0;
+                   this.oAutoComp.doBeforeSendQuery = function(q){
+                       if(q == window.lastSent){
+                           // We only want to throw this away once.
+                           // Otherwise the user might type in the exact query
+                           // to try to complete a longer query..
+                           window.lastSent = "";
+                           return "!!!!!!";
+                       }
+                       return q;
+                   };
                };
            }
        });
