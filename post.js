@@ -31,11 +31,11 @@ Post.prototype.getContent = function( full ){
 Post.prototype.hasJump = function(){
 
     var idx = this.content.indexOf( "---JUMP---" );
-    
+
     if ( idx < 0 ) return false;
-    
+
     idx = idx + 10;
-    
+
     return ( idx + 10 ) < this.content.length;
 };
 
@@ -43,7 +43,7 @@ Post.prototype.hasJump = function(){
 Post.prototype.getNumComments = function(){
     if ( !this.comments )
         return 0;
-    
+
     var numComments = 0;
     for (var key in this.comments) {
         if (key == 'length') continue;
@@ -69,13 +69,13 @@ Post.prototype.addComment = function( comment ){
 
 Post.prototype.getComments = function() {
     if (!this.comments) return Array();
-    
+
     var commentsArray = Array();
     for (var key in this.comments) {
         if (key == 'length') continue;
         commentsArray.push(this.comments[key]);
     }
-    
+
     // sort them by date
     return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
 };
@@ -91,17 +91,17 @@ Post.prototype.getExcerpt = function(){
     var foo = this.getTeaserContent();
     if ( foo == null )
         return null;
-    
+
     return Text.snippet( foo );
 };
 
 Post.prototype.getUrl = function( r ){
     if ( ! r && request )
         r = request;
-    
+
     var u = r ? "http://" + r.getHeader( "Host" ) : "";
     u += "/" + this.name;
-    
+
     return u;
 };
 
@@ -113,7 +113,7 @@ Post.get404 = function() {
         http404Page.live = true;
         db.blog.posts.save(http404Page);
     }
-    return http404Page;    
+    return http404Page;
 };
 
 Post.getNoResults = function() {
@@ -124,7 +124,7 @@ Post.getNoResults = function() {
         noResultsPage.live = true;
         db.blog.posts.save(noResultsPage);
     }
-    return noResultsPage;    
+    return noResultsPage;
 };
 
 function fixComments() {
@@ -138,13 +138,13 @@ SYSOUT('Fixing Comments!');
 SYSOUT('Converting Post ID (' + post._id + ')');
                 // if its an array, change it to an object, and reassign all of the objects
                 var convertedComments = Object();
-                
+
                 post.comments.forEach(function(comment) {
                     comment.cid = ObjectId();
                     SYSOUT('\tMigrating Comment ID (' + comment.cid + ')');
                     convertedComments[comment.cid.toString()] = comment;
                 });
-                
+
                 post.comments = convertedComments;
                 db.blog.posts.save(post);
 SYSOUT('\tSaving Post ID (' + post._id + ')');
@@ -163,6 +163,6 @@ if ( db ) {
     db.blog.posts.setConstructor( Post );
 
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
-    
+
 //    fixComments();
 }
