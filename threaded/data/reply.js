@@ -16,6 +16,14 @@ threaded.data.Reply.prototype.decoratorsRender = function(){
     }
 };
 
+threaded.data.Reply.prototype.validateReply = function(r){
+    return true;
+};
+
+threaded.data.Reply.prototype.encodeContent = function(content){
+    return content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+};
+
 threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
     args = args || {};
@@ -35,9 +43,11 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
             r.author = user;
         }
         r.title = request.ntitle;
-        r.content = request.ncontent;
-        desc.addReply(r);
-        ret = r;
+        r.content = this.encodeContent(request.ncontent);
+        if(this.validateReply(r)){
+            desc.addReply(r);
+            ret = r;
+        }
     }
     if(replylink){
         u = addQuery({reply: true});

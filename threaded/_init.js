@@ -51,6 +51,8 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.decoratorsRender = rcls.decoratorsRender;
     cls.prototype.decoratorsLinks = rcls.decoratorsLinks;
     cls.prototype.decoratorsHandle = rcls.decoratorsHandle;
+    cls.prototype.encodeContent = rcls.encodeContent;
+    cls.prototype.validateReply = rcls.validateReply;
 
     // Wrap the class itself so that we can let the reply class add its own
     // fields.

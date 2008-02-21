@@ -267,7 +267,7 @@ if(project.areas.length > 0){
 <hr>
 Comments:
 <div><% if(feature.decoratorsHandle()){
-    feature.lastModified = Date();
+    feature.lastModified = new Date();
     db.bugtracker.cases.save(feature);
 }%></div>
 <%

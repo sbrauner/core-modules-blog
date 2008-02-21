@@ -9,7 +9,7 @@
 **/
 
 app.bugtracker.data.Feature = function() {
-     // member variables
+    // member variables
     this.status = this.STATUS.NEW;
     this.severity = this.SEVERITY.NORMAL;
     this.creationDate = new Date();
