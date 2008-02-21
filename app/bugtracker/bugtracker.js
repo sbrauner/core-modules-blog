@@ -44,7 +44,7 @@ app.App.getlist = function(){
 
 app.bugtracker.BugTracker = function() {};
 app.bugtracker.BugTracker.prototype = new app.App();
-app.bugtracker.BugTracker.prototype.name = "bugs";
+app.bugtracker.BugTracker.prototype.name = "bugtracker";
 app.bugtracker.BugTracker.prototype.list_projects = function(){
     var cur = db.bugtracker.projects.find();
     return cur.toArray();
