@@ -3,8 +3,8 @@
 
 <%
 
- var tab = new htmltable( 
-  { 
+ var tab = new htmltable(
+  {
    ns : db.cron ,
    cols : [
     { name: "name", isLink: true, searchWidth: 50 },
@@ -22,12 +22,12 @@ tab.dbview( tab.find().sort( { name : 1 } ) );
 
 if ( request._run == "true" ){
     var debug = request._debug;
-    
+
     var all = db.cron.find().toArray();
     for ( var i=0; i<all.length; i++ ){
         var cron = all[i];
-	// doing this so if someone else updated i'll know about it
-	cron = db.cron.findOne( cron._id );
+        // doing this so if someone else updated i'll know about it
+        cron = db.cron.findOne( cron._id );
 
         if ( ! cron.xminutes ){
             cron.lastResult = "Error - no xminutes set";
@@ -40,27 +40,27 @@ if ( request._run == "true" ){
             if ( nextRun > Date().getTime() )
                 continue;
         }
-        
+
         print( "running : " + cron.name + "<BR>" );
         cron.lastRun = Date();
         db.cron.save( cron );
-        
-	var func = scope.eval( cron.url );
-	if ( ! func ){
-	    cron.lastResult = "can't find : " + cron.url;
-	}
-	else {
-	    var printSave = print;
-	    var buf = "";
-	    print = function(z){
-		buf += z;
-	    };
-	    func();
-	    print = printSave;
-	    cron.lastResult = buf;
-	}
 
-	if ( debug ) print( "<div style='border:1px solid black;'>result: " + cron.lastResult + "</div>" );
+        var func = scope.eval( cron.url );
+        if ( ! func ){
+            cron.lastResult = "can't find : " + cron.url;
+        }
+        else {
+            var printSave = print;
+            var buf = "";
+            print = function(z){
+                buf += z;
+            };
+            func();
+            print = printSave;
+            cron.lastResult = buf;
+        }
+
+        if ( debug ) print( "<div style='border:1px solid black;'>result: " + cron.lastResult + "</div>" );
         db.cron.save( cron );
         print( "<hr>" );
     }
