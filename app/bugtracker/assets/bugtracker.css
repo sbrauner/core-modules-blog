@@ -1,5 +1,5 @@
 table {
-	border-collapse: collapse;
+       	border-collapse: collapse;
 	border: #000;
 }
 
@@ -9,8 +9,8 @@ td.field {
 }
 
 th {
-	color: #fff;
-	background: #333;
+   color: #fff;
+   background: #333;
 }
 
 textarea {
@@ -20,7 +20,7 @@ textarea {
 	color: red;
 }
 
-.field {
+div.field {
 	float:  left;
 	clear: both;
 	padding: 5px 5px 5px 0;
