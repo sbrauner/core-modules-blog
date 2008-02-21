@@ -1,6 +1,10 @@
 <%
 core.forum.data.thread();
 var thread = db.forum.threads.findOne({_id: request.id});
+if(thread == null){
+    print("thread not found");
+    return;
+}
 print("<!-- " + thread._id + "-->");
 
 %>
