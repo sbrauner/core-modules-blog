@@ -266,7 +266,10 @@ if(project.areas.length > 0){
 <div class="comments">
 <hr>
 Comments:
-        <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
+<div><% if(feature.decoratorsHandle()){
+    feature.lastModified = Date();
+    db.bugtracker.cases.save(feature);
+}%></div>
 <%
 feature.decoratorsRender();
  %>
