@@ -5,7 +5,7 @@
 core.blog.post(); 
 
 var requestResult = Blog.handleRequest(request);
-var now = Date();
+var now = new Date();
 
 function clean( s ){
     

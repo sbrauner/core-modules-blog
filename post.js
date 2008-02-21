@@ -6,7 +6,7 @@ function Post(name, title) {
     this.name = name;
     this.title = title;
     this.commentsEnabled = true;
-    this.ts = Date();
+    this.ts = new Date();
     this.cls = "entry";
     this.content = "";
     this.categories = new Array();
