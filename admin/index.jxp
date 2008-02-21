@@ -37,7 +37,6 @@ if ( section == null && sectionName.match( /\// ) ){
     var locations = [core[moduleName], core.app[moduleName]];
     for(var i in locations){
         var moduleThing = locations[i];
-        log.admin.debug("trying location " +i+ " for module " + moduleName + " " + moduleThing);
         if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] ){
             section = moduleThing.admin[piece];
             if ( section && moduleThing.admin.pieces ){
