@@ -37,5 +37,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     tab.dbview(tab.find(null, {number: 1}));
 }
 
-    <a href="case_edit">New case</a>
+    <a href="case_edit">New case</a><br/>
+
+<% if(user){ %>
+<a href="http://localhost:8080/bugs/?number=&title=&owner=<%=user.name%>&status=new&severity=&type=&project=&area=&creationDate=&lastModified=">My new bugs</a>
+<% } %>
+
 </body>
