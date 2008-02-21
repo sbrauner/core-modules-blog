@@ -15,8 +15,8 @@ arg ex. {  limit: 2, filter: {categories: "new_york"} } );
 */
 Blog._addFilters = function( searchCriteria , filter ){
     if ( filter ){
-	for ( var foo in filter )
-	    searchCriteria[foo] = filter[foo];
+        for ( var foo in filter )
+            searchCriteria[foo] = filter[foo];
     }
 };
 
@@ -30,12 +30,12 @@ Blog.handleMissingUri = function(uri) {
             isCategorySearch: false,
             baseSearch: uri,
             hasNext: false};
-    
+
 };
 
 Blog.handleRequest = function( request , arg ){
     if (!arg) arg = {};
-    
+
     var posts = Array();
     var isPage = false; // page vs. post
     var pageSize = arg.limit || 30;
@@ -48,7 +48,7 @@ Blog.handleRequest = function( request , arg ){
     var category;
 
     // define a standard search, which restricts pages/posts to entries that are live, and publishDate earlier than now
-    
+
     // find any paging instructions in the url
     page = uri.match(/\/page\/([0-9]*)$/);
     if (page) {
@@ -62,23 +62,23 @@ Blog.handleRequest = function( request , arg ){
     if (request.q) {
         posts = Search.search(db.blog.posts, request.q , { min : 100 } );
         posts = posts.filter( function( z ){ return z.live; } );
-	    posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
-	
-	    var postResults = 0;
-	    var pageStart = (pageNumber - 1) * pageSize;
-	    var pageEnd = Math.min(pageNumber * pageSize, posts.length);
-	    
+            posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
+
+            var postResults = 0;
+            var pageStart = (pageNumber - 1) * pageSize;
+            var pageEnd = Math.min(pageNumber * pageSize, posts.length);
+
 // log.debug("posts: " + posts.length);
-        posts = posts.filter( function( z ) { 
+        posts = posts.filter( function( z ) {
             postResults++
             return postResults > pageStart && postResults <= pageEnd;
         });
-        
+
 //log.debug("pageStart: " + pageStart);
 //log.debug("pageEnd: " + pageEnd);
 // log.debug("postResults: " + postResults);
 // log.debug("page: " + pageNumber);
-    
+
         if (postResults == 0) {
             return {isPage: true,
                     posts: [Post.getNoResults()],
@@ -102,19 +102,19 @@ Blog.handleRequest = function( request , arg ){
         }
     } else {
         var searchCriteria = { live : true , ts : { $lt : Date() } }; // add ts filter
-	    var entries;
-	
-	    if(arg.filter) {
-	        Blog._addFilters( searchCriteria , arg.filter );
-	    }
-	
+            var entries;
+
+            if(arg.filter) {
+                Blog._addFilters( searchCriteria , arg.filter );
+            }
+
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
         uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/^.rss/ , "/" ).replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
         //log.debug("base URI: " + uri);
         //log.debug("pageNumber: " + pageNumber);
-        
+
         // look for a page or post with name = URL, and display it if it exists
         // TODO: look for a page or post with name = URL replacing '-' with '_', and display it if it exists
         searchCriteria.name = uri;
@@ -129,14 +129,14 @@ Blog.handleRequest = function( request , arg ){
                     baseSearch: search,
                     hasNext: hasNext};
         }
-	
-	    delete searchCriteria.name;
-	
+
+            delete searchCriteria.name;
+
         // if the URL is empty, display the home page
         if (uri == '') {
             searchCriteria.cls = 'entry';
-	        if ( ! searchCriteria.categories )
-		        searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
+                if ( ! searchCriteria.categories )
+                        searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         } else {
             // search categories
@@ -149,7 +149,7 @@ Blog.handleRequest = function( request , arg ){
                 category = db.blog.categories.findOne({ name: uri });
             } else {
                 // this isn't a category search, so we just assume its a date search or partial url search
-        	    delete searchCriteria.categories;
+                    delete searchCriteria.categories;
 
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
@@ -158,7 +158,7 @@ Blog.handleRequest = function( request , arg ){
                 }
             }
         }
-        
+
         search = uri;
 
         posts = entries.toArray();
@@ -171,8 +171,8 @@ Blog.handleRequest = function( request , arg ){
 
     if (posts.length == 0) {
         return Blog.handleMissingUri(uri);
-    }   
-    
+    }
+
     return {isPage: isPage,
             posts: posts,
             isCategorySearch: isCategorySearch,
@@ -186,51 +186,51 @@ Blog.handleRequest = function( request , arg ){
 
 Blog.handlePosts = function( request , thePost , user ){
     if ( user && user.isAdmin() && request.action == "delete" ) {
-    	thePost.deleteComment( request.cid );
-    	db.blog.posts.save( thePost );
-    	return;
+        thePost.deleteComment( request.cid );
+        db.blog.posts.save( thePost );
+        return;
     }
-    
+
     if ( request.addComment == "yes" ) {
-	var comment = null;
-	
-	log.debug( "want to add comment" );
-	
-	var hasYourName = request.yourname && request.yourname.trim().length != 0;
-	var hasEmail = request.email && request.email.trim().length != 0;
+        var comment = null;
 
-    	if ( user ) {
-    	    comment = {};
-    	    comment.author = user.name;
-    	    comment.email = user.email;
-    	} 
-	else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-    	    if ( Captcha.valid( request ) ) {
-    		comment = {};
-    		comment.author = request.yourname;
-    		comment.email = request.email;
-    		comment.url = request.url;
-    	    } 
-	    else {
-    		return "invalid captcha response : " + request.captcha;
-    	    }
-    	}
-	
-    	if ( comment ) {
-	    
-	    comment.ts = Date();
-	    comment.text = request.txt;
+        log.debug( "want to add comment" );
 
-    	    thePost.addComment( comment );
-    	    db.blog.posts.save( thePost );
-	    
-	    return "Comment Saved";
-    	}
+        var hasYourName = request.yourname && request.yourname.trim().length != 0;
+        var hasEmail = request.email && request.email.trim().length != 0;
 
-	if ( ! hasYourName )
-	    return "need to specify name";
-	
-	if ( ! hasEmail )
-	    return "need to specify email address";
+        if ( user ) {
+            comment = {};
+            comment.author = user.name;
+            comment.email = user.email;
+        }
+        else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+            if ( Captcha.valid( request ) ) {
+                comment = {};
+                comment.author = request.yourname;
+                comment.email = request.email;
+                comment.url = request.url;
+            }
+            else {
+                return "invalid captcha response : " + request.captcha;
+            }
+        }
+
+        if ( comment ) {
+
+            comment.ts = Date();
+            comment.text = request.txt;
+
+            thePost.addComment( comment );
+            db.blog.posts.save( thePost );
+
+            return "Comment Saved";
+        }
+
+        if ( ! hasYourName )
+            return "need to specify name";
+
+        if ( ! hasEmail )
+            return "need to specify email address";
     }
 };
