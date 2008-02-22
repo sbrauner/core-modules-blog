@@ -85,22 +85,35 @@ Diff = {
     diffObj : function( a , b ){
         var d = {};
         for(var prop in a){
-            if(! b[prop]){
+            if(! (prop in b) ){
                 // mark it as removed
+                d[prop] = {remove: a[prop]};
             }
 
             if(typeof a[prop] == "number" && typeof b[prop] == "number"){
-                d[prop] = Diff.diffInt(a[prop], b[prop]);
+                d[prop] = {change: Diff.diffInt(a[prop], b[prop])};
             }
             else if(typeof a[prop] == "string" && typeof b[prop] == "string"){
-                d[prop] = Diff.diffString(a[prop], b[prop]);
+                d[prop] = {change: Diff.diffStr(a[prop], b[prop])};
+            }
+            else if(a[prop] instanceof Array && b[prop] instanceof Array){
+                d[prop] = {change: Diff.diffArray(a[prop], b[prop])};
+            }
+            else if(a[prop] instanceof Object && b[prop] instanceof Object){
+                d[prop] = {change: Diff.diffObj(a[prop], b[prop])};
+            }
+            else {
+                log.diff.warning("property " + prop + " is of different types in the two objects");
+                d[prop] = {remove: a[prop], add: b[prop]};
             }
         }
         for(var prop in b){
-            if(! a[prop]){
+            if(! (prop in a) ){
                 // add it
+                d[prop] = {add: b[prop]};
             }
         }
+        return d;
     },
 
     applyBackwardsObj : function( base , diff ){
@@ -109,8 +122,39 @@ Diff = {
             res[prop] = base[prop];
         }
         for(var prop in diff){
+            var d = diff[prop];
+            if(d.add){
+                // apply backwards, i.e. delete it
+                // i.e. don't add it to res
+            }
+            if(d.remove){
+                // apply backwards, i.e. add it
+                res[prop] = d.remove;
+            }
+            if(d.change){
+                if(typeof base[prop] == "number"){
+                    res[prop] = Diff.applyBackwardsInt(base[prop], diff[prop].change);
+                }
+                else if(typeof base[prop] == "string"){
+                    res[prop] = Diff.applyBackwardsStr(base[prop], diff[prop].change);
+                }
+                else{
+                    throw new Exception("not implemented, leave me alone");
+                }
+
+            }
             if(typeof base[prop] == "number")
                 res[prop] = Diff.applyBackwardsInt(base[prop], diff[prop]);
         }
+        return res;
+    },
+
+    diff : function(a, b){
+        return Diff.diffObj({arg: a}, {arg: b})["arg"].change;
+    },
+
+    applyBackwards : function(base, diff){
+        return Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
     }
+
 };
