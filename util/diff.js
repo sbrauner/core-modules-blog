@@ -125,7 +125,7 @@ Diff = {
             var d = diff[prop];
             if(d.add){
                 // apply backwards, i.e. delete it
-                // i.e. don't add it to res
+                delete res[prop];
             }
             if(d.remove){
                 // apply backwards, i.e. add it
@@ -143,8 +143,6 @@ Diff = {
                 }
 
             }
-            if(typeof base[prop] == "number")
-                res[prop] = Diff.applyBackwardsInt(base[prop], diff[prop]);
         }
         return res;
     },

@@ -24,9 +24,6 @@ var d2 = Diff.diff(a, b);
 var n2 = Diff.applyBackwards(b, d2);
 assert(d2 == d);
 
-print(tojson(n2));
-print(tojson(n));
-print(tojson(d2));
 assert(n2 == n);
 assert(n2 == a);
 
