@@ -80,7 +80,7 @@ if(request.fstatus){
             link.port = request.getPort();
             link = link.toString();
 
-            body = "This bug report changed. To see it, follow this link:\n\n"+link;
+            body = "The bug report titled \""+feature.title+"\" changed. To see it, follow this link:\n\n"+link;
             m = new Mail.Message( subj, body );
             m.addRecipient(  "dev@10gen.com" ); m.send( mail );
             append = "";
