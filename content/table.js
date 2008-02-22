@@ -183,6 +183,7 @@ function htmltable(specs) {
                 var cssClassName = this.specs.cols[c].cssClassName;
 
                 print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
+                print("<nobr>");
                 {
                     var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
                     if( linkToDetails ) {
@@ -199,6 +200,7 @@ function htmltable(specs) {
                     print( fieldDisplay || ( linkToDetails ? "go to" : "" ) );
                     if( linkToDetails ) print("</a>");
                 }
+                print("</nobr>");
                 print("</td>");
             }
 
