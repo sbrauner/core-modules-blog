@@ -80,8 +80,6 @@ app.wiki.WikiController.getVersion = function(wikiPage, vid){
     for(var i in hist){
         v = hist[i];
         text = Diff.applyBackwards(text, v.diff);
-        log.wiki.history.debug(text);
-        log.wiki.history.debug(v.diff);
         if(v._id == vid) break;
     }
     return text;
