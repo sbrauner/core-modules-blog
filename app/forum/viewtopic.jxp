@@ -1,10 +1,13 @@
 <%
+core.content.table();
 core.app.forum.data.thread();
+core.app.forum.data.topic();
 var id = request.id;
 var t = db.forum.topics.findOne({_id: id});
+var subs = Forum.data.Topic.list(t).toArray();
 
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else { 
+else {
 %>
 <html>
   <head>
@@ -13,6 +16,12 @@ else {
   </head>
   <body>
     <h1><a href="./">Forum</a></h1>
+
+        <% if(subs.length > 0){ %>
+        <h1>Available sub-topics</h1>
+        <% subs.forEach(Forum.renderer.topic); %>
+        <% } %>
+
     <h1>Available threads</h1>
     <table>
       <tr>
@@ -40,6 +49,8 @@ else {
 %>
 </table>
 <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
+<a href="topic_new?parent=<%= id %>">New sub-topic</a>
+
 <a href="./">Back to toplevel</a>
   </body>
 </html>

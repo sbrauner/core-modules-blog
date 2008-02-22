@@ -21,7 +21,7 @@ else
     print ("No topics right now!");
 
 %>
-<a href="maketopic">New topic</a>
+<a href="topic_new">New topic</a>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }

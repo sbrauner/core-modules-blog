@@ -1,5 +1,5 @@
 <%
-core.app.forum.topic();
+core.app.forum.data.topic();
 core.content.forms();
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 
@@ -8,11 +8,14 @@ Forms.fillInObject( "new", topic );
 print.setFormObject( topic );
 if(request.newname){
     topic.order = parseInt(topic.order);
+    if(request.parent != "null")
+        topic.parent = db.forum.topics.findOne({_id: request.parent});
     db.forum.topics.save(topic);
 }
 %>
     <h3>Make a new topic</h3>
     <form>
+      <input type="hidden" name="parent" value="<%= request.parent%>"/>
       Name: <input type="text" name="newname"><br/>
       Description: <input type="text" name="newdescription"><br/>
       Order: <input type="text" name="neworder"><br/>
