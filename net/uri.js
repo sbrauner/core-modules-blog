@@ -15,6 +15,11 @@ URI = function(s){
         s = s.substring(s.indexOf('://')+3, s.length);
     }
     this.hostname = s.substring(0, s.indexOf('/'));
+    if(this.hostname.indexOf(':') != -1){
+        this.port = this.hostname.substring(this.hostname.indexOf(':')+1,
+                                            this.hostname.length);
+        this.hostname = this.hostname.substring(0, this.hostname.indexOf(':'));
+    }
     s = s.substring(s.indexOf('/'), s.length);
 
     // Parse the anchor, path and query args (if any).
@@ -40,8 +45,12 @@ URI = function(s){
 
 URI.prototype.toString = function(){
     // Generate the string for this URI object.
-    if(this.hostname)
-        var str = this.scheme + "://" + this.hostname + this.path;
+    if(this.hostname){
+        var str = this.scheme + "://" + this.hostname;
+        if(this.port)
+            str = str+':'+this.port;
+        str += this.path;
+    }
     else
         var str = this.path;
     var encodeURIComponent = URI.escape_queryargs;
