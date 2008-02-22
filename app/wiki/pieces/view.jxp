@@ -4,9 +4,7 @@
   <% if(request.version == null){ %>
           <%= wikiPage.getParsedText() %>
   <% } else { %>
-  <pre>
-    <%= app.wiki.WikiController.getVersion(wikiPage, request.version) %>
-  </pre>
+  <pre><%= app.wiki.WikiController.getVersion(wikiPage, request.version) %></pre>
 
   <% } %>
              
