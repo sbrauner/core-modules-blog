@@ -87,6 +87,10 @@ app.wiki.WikiController.getVersion = function(wikiPage, vid){
     return text;
 };
 
+app.wiki.WikiController.versionDate = function(vid){
+    return db.wiki_history.findOne({_id: vid}).ts;
+};
+
 app.wiki.WikiController.getCookieCrumb = function(wikiPage) {
     if (!wikiPage) return '';
 
