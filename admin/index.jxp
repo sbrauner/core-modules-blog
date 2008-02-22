@@ -26,8 +26,13 @@ var section = null;
 var sectionHeader = null;
 var sectionFooter = null;
 
-if ( sectionName.match( /^my\// ) )
+if ( sectionName.match( /^my\// ) && jxp.admin ){
     section = jxp.admin[ sectionName.substring( 3 )];
+    if ( section && jxp.admin.pieces ){
+        sectionHeader = jxp.admin.pieces.header;
+        sectionFooter = jxp.admin.pieces.footer;
+    }
+}
 
 if ( section == null && sectionName.match( /\// ) ){
     var idx = sectionName.indexOf( "/" );
