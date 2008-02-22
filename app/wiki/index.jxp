@@ -1,5 +1,5 @@
 <%
-    /* determine the base url we are running under.  
+    /* determine the base url we are running under.
     */
 
     var uri = request.getURI();
@@ -12,7 +12,7 @@
     }
 
     var base = request.getURI().match( /^.*?wiki\// );
-    if( !base && request.getURI().match(/wiki/) ) { 
+    if( !base && request.getURI().match(/wiki/) ) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
         return;
@@ -23,7 +23,7 @@
     // Get the name of the page we are supposed to display. Assume we want the Main page if no page name is provided
     var displayName = request.name;
     if (!displayName) displayName = "Main";
-    
+
     // Construct the full name of the page if we have a prefix defined for this instance
     var name = displayName;
 
@@ -35,21 +35,21 @@
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
     if ( ! app.wiki.config.readOnly ){
-    
-    	if (request['rename'] ) {
-    	    app.wiki.WikiController.renamePage(wikiPage, request.newName);
-    	} 
-    	else if ( request['delete']  ) {
-    	    app.wiki.WikiController.deletePage(wikiPage);
-    	}
-    	else if (request['update'] ) {
-    	    log(tojson(request));
-    	    app.wiki.WikiController.updatePage(wikiPage, request.wikitext);
-    	}
+
+        if (request['rename'] ) {
+            app.wiki.WikiController.renamePage(wikiPage, request.newName);
+        }
+        else if ( request['delete']  ) {
+            app.wiki.WikiController.deletePage(wikiPage);
+        }
+        else if (request['update'] ) {
+            log(tojson(request));
+            app.wiki.WikiController.updatePage(wikiPage, request.wikitext);
+        }
     }
 
     if ( request.edit )
-	    core.app.wiki.pieces.edit();
+            core.app.wiki.pieces.edit();
     else
-	    core.app.wiki.pieces.view();
+            core.app.wiki.pieces.view();
 %>
