@@ -1,3 +1,4 @@
+core.util.diff();
 app.wiki.WikiController = function() {};
 
 app.wiki.WikiController.TEXT_PARSER = content.WikiParser;
@@ -63,8 +64,27 @@ app.wiki.WikiController.updatePage = function(wikiPage, text) {
     if (!text || text.length == 0) return false;
     if (app.wiki.config.readOnly) return false;
 
+    var diff = Diff.diff(wikiPage.text, text);
     wikiPage.text = text;
+    db.wiki_history.save({parent: wikiPage._id, diff: diff, ts: new Date()});
     db.wiki.save(wikiPage);
+};
+
+app.wiki.WikiController.getHistory = function(wikiPage){
+    return db.wiki_history.find({parent: wikiPage._id}).sort({ts: -1});
+};
+
+app.wiki.WikiController.getVersion = function(wikiPage, vid){
+    var text = wikiPage.text;
+    var hist = app.wiki.WikiController.getHistory(wikiPage);
+    for(var i in hist){
+        v = hist[i];
+        text = Diff.applyBackwards(text, v.diff);
+        log.wiki.history.debug(text);
+        log.wiki.history.debug(v.diff);
+        if(v._id == vid) break;
+    }
+    return text;
 };
 
 app.wiki.WikiController.getCookieCrumb = function(wikiPage) {

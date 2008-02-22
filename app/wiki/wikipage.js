@@ -6,6 +6,8 @@ app.wiki.WikiPage = function (name) {
 if (db) {
     db.wiki.ensureIndex( { name : 1 } );
 
+    db.wiki_history.ensureIndex( { name : 1 , ts: 1} );
+
     db.wiki.setConstructor( app.wiki.WikiPage );
 }
 
@@ -26,9 +28,14 @@ app.wiki.WikiPage.prototype.getParsedText = function() {
     if ( this.text.trim().length == 0 )
         return "";
 
-    var s = (new app.wiki.WikiController.TEXT_PARSER()).toHtml(this.text, app.wiki.config.prefix).trim();
+    return this.formatText(this.text);
+};
+
+app.wiki.WikiPage.prototype.formatText = function(text){
+    var s = (new app.wiki.WikiController.TEXT_PARSER()).toHtml(text, app.wiki.config.prefix).trim();
     if ( s.length == 0 )
         throw "parser broken?";
 
     return s;
 };
+

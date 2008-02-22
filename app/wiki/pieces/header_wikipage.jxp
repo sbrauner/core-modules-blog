@@ -13,3 +13,4 @@
 
 <div id="wiki">
     <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>
+    <a href="?history=true">History of this page</a>

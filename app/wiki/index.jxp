@@ -50,6 +50,10 @@
 
     if ( request.edit )
             core.app.wiki.pieces.edit();
+    else if ( request.history )
+            core.app.wiki.pieces.history();
+    else if ( request.pastpage )
+            core.app.wiki.pieces.pastpage();
     else
             core.app.wiki.pieces.view();
 %>
