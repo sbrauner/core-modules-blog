@@ -4,6 +4,7 @@ core.app.bugtracker.data.project();
 core.app.bugtracker.data.helper();
 core.user.user();
 core.user.auth();
+core.net.uri();
 core.content.forms();
 if (! user ){
     user = Auth.getUser(request);
@@ -66,10 +67,31 @@ if(request.fstatus){
         if(feature.number == 0)
             feature.number = app.bugtracker.data.Feature.nextNumber();
 
+        feature_new = feature._id == null;
+
         db.bugtracker.cases.save(feature);
+
+        if(mail){
+            var subj = "[cases] Case number " + feature.number;
+            if(! feature_new) subj += " changed";
+            else subj += " added";
+            var link = new URI(request.getURL()).addArg("id", feature._id)
+            link.hostname = request.getHost();
+            link.port = request.getPort();
+            link = link.toString();
+
+            body = "This bug report changed. To see it, follow this link:\n\n"+link;
+            m = new Mail.Message( subj, body );
+            m.addRecipient(  "dev@10gen.com" ); m.send( mail );
+            append = "";
+        }
+        else {
+            append = "?msg=No+mail+sent";
+        }
+
         // Redirect back to bugs/ or whatever
         response.setResponseCode(301);
-        response.setHeader("Location", "./");
+        response.setHeader("Location", "./"+append);
     }
     else{
         timestamp = feature.lastModified;

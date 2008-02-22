@@ -1,5 +1,6 @@
 <%
 core.content.table();
+core.content.html();
 core.user.user();
 core.user.auth();
 core.app.bugtracker.data.feature();
@@ -12,6 +13,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
   </head>
   <body>
     <h1>Cases</h1>
+
+    <% if(request.msg){ %>
+    <div class="notice"><%= content.HTML.escape_html(request.msg) %>
+    <% } %>
 
 {
     var tab = new htmltable({
