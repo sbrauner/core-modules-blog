@@ -56,7 +56,61 @@ Diff = {
         return true;
     },
 
-    diffObj : function( a , b ){
+    diffArray : function( a , b ){
+        // This is really hard!
+        // OK, start with the simplest cases:
+        // An array of a strings vs another array of strings.
+        // We can't just join the strings with newlines and pass it to the
+        // underlying string method..
+        // In this case we should probably expose more of the underlying bmsi diff
+        // code. Pass the arrays of strings "a", "b", "d" and "a", "b", "c", "d"
+        // and hope it does the right thing -- try to insert a c.
+        // I'm concerned that it always pick the "smallest" when it comes to
+        // inserting elements.
+        // An array of ints could be tricky too, especially when it comes to insert
+        // them.
+        // Arrays of objects are really hairy. I guess maybe come up with a
+        // "distance" metric? I'd really have to look at the actual diff code
 
+        // For now, throw an exception and hope it never happens.
+        throw new Exception("diff on array not supported");
+    },
+
+    applyBackwardsArray : function( base , diff ){
+        throw new Exception("how did you get a diff on an array??");
+    },
+
+    // Note: these functions are totally incomplete
+
+    diffObj : function( a , b ){
+        var d = {};
+        for(var prop in a){
+            if(! b[prop]){
+                // mark it as removed
+            }
+
+            if(typeof a[prop] == "number" && typeof b[prop] == "number"){
+                d[prop] = Diff.diffInt(a[prop], b[prop]);
+            }
+            else if(typeof a[prop] == "string" && typeof b[prop] == "string"){
+                d[prop] = Diff.diffString(a[prop], b[prop]);
+            }
+        }
+        for(var prop in b){
+            if(! a[prop]){
+                // add it
+            }
+        }
+    },
+
+    applyBackwardsObj : function( base , diff ){
+        var res = {};
+        for(var prop in base){
+            res[prop] = base[prop];
+        }
+        for(var prop in diff){
+            if(typeof base[prop] == "number")
+                res[prop] = Diff.applyBackwardsInt(base[prop], diff[prop]);
+        }
     }
 };
