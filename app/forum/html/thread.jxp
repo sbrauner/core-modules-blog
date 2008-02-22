@@ -1,5 +1,5 @@
 <%
-core.forum.data.thread();
+core.app.forum.data.thread();
     var t = arguments[0];
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };

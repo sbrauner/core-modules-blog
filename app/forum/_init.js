@@ -1,3 +1,3 @@
 Forum = {
-    renderer: (allowModule && allowModule.forum && allowModule.forum.renderer) || core.forum.html,
+    renderer: (allowModule && allowModule.forum && allowModule.forum.renderer) || core.app.forum.html,
 };
