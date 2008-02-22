@@ -1,0 +1,15 @@
+<% core.app.wiki.pieces.header_wikipage(); %>
+
+<ul id="wiki_history" class="content">
+      <%
+      c = app.wiki.WikiController.getHistory(wikiPage);
+while(c.hasNext()){
+    var diff = c.next(); %>
+      <li>
+        <a href="?version=<%=diff._id%>"><%= diff.ts %></a>
+      </li>
+      <% } %>
+</ul>
+
+<% core.app.wiki.pieces.footer_wikipage(); %>
+

@@ -1,6 +1,6 @@
 <%
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-core.forum.data.thread();
+core.app.forum.data.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){
     var thread = new Forum.data.Thread();

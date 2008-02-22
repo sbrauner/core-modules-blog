@@ -13,7 +13,7 @@ else {
 
 <%
 	}
-core.forum.data.topic();
+core.app.forum.data.topic();
 var list = Forum.data.Topic.list();
 if (list)
     list.forEach(Forum.renderer.topic);

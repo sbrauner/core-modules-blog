@@ -1,5 +1,5 @@
 <%
-core.forum.data.thread();
+core.app.forum.data.thread();
 var thread = db.forum.threads.findOne({_id: request.id});
 if(thread == null){
     print("thread not found");

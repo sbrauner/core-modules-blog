@@ -20,8 +20,8 @@ threaded.data.Reply.prototype.validateReply = function(r){
     return true;
 };
 
-threaded.data.Reply.prototype.encodeContent = function(content){
-    return content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+threaded.data.Reply.prototype.encodeContent = function(txt){
+    return content.HTML.escape_html(txt);
 };
 
 threaded.data.Reply.prototype.decoratorsHandle = function(args){

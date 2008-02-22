@@ -1,5 +1,5 @@
 <%
-core.forum.topic();
+core.app.forum.topic();
 core.content.forms();
 if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
 

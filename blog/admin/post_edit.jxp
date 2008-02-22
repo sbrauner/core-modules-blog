@@ -127,7 +127,7 @@ tinyMCE.init({
     if ( ! newPost ) return;
     
     var t = document.getElementById( "title" ).value;
-    t = t.replace( /[^a-zA-Z0-9]/g , "_" ).toLowerCase();
+    t = t.replace( /[^a-zA-Z0-9]+/g , "_" ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
   

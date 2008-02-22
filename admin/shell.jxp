@@ -30,6 +30,19 @@
                // grab up/down key events
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
 
+               // YUI autocomplete tries to autocomplete even if there's been
+               // an intervening "Enter" and the input field has been cleared.
+               // We block this by keeping a "lastSent"
+               // variable with the last complete command we've sent and
+               // if we get a query for that exact command, we replace it
+               // with a gibberish !!!!!! query.
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",function(e){
+                   if(e.keyCode == 13){
+                       window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
+                   }
+               });
+
+
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
                    this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
@@ -38,6 +51,17 @@
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
                    this.oAutoComp.minQueryLength = 1;
+                   //this.oAutoComp.queryDelay = 0;
+                   this.oAutoComp.doBeforeSendQuery = function(q){
+                       if(q == window.lastSent){
+                           // We only want to throw this away once.
+                           // Otherwise the user might type in the exact query
+                           // to try to complete a longer query..
+                           window.lastSent = "";
+                           return "!!!!!!";
+                       }
+                       return q;
+                   };
                };
            }
        });
@@ -46,10 +70,13 @@ var histfunc = function( e ) {
 
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
-    var key = e.which;
     if(e.shiftKey){
-        // cheap hack to make this work in konqueror
-        key = key + 17;
+        // In Konqueror and Safari, the keys for lparen and up-arrow generate
+        // the same keycode. Because of this, YUI blocks lparen.
+        // This is no good, so we block YUI's block by sabotaging the event's
+        // preventDefault method.
+        e.preventDefault = function(){};
+        return;
     }
     var cmd = document.getElementById("commandac");
     var setcmd = function () {
@@ -91,14 +118,15 @@ var histfunc = function( e ) {
         for(var i=0; i<ary.length; ++i){
             if(ary[i] == v)
                 return i;
-
         }
+        return -1;
     };
 lastIndexOf = function(ary, v){
     for(var i=ary.length-1; i>=0; --i){
         if(ary[i] == v)
             return i;
     }
+    return -1;
 };
     shellId = "shell-" + Math.random();
     var historyLocation = 0;

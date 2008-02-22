@@ -1,5 +1,5 @@
 <%
-core.forum.data.thread();
+core.app.forum.data.thread();
 var id = request.id;
 var t = db.forum.topics.findOne({_id: id});
 
