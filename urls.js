@@ -7,6 +7,9 @@ core.blog.category();
 core.blog.missingpage();
 core.content.search();
 
+Blog.log = log.app.blog;
+Blog.log.level = log.LEVEL.ERROR;
+
 /**
 arg ex. {  limit: 2, filter: {categories: "new_york"} } );
 
@@ -36,6 +39,10 @@ Blog.handleMissingUri = function(uri) {
 Blog.handleRequest = function( request , arg ){
     if (!arg) arg = {};
 
+    var result = {
+        
+    };
+
     var posts = Array();
     var isPage = false; // page vs. post
     var pageSize = arg.limit || 30;
@@ -62,22 +69,22 @@ Blog.handleRequest = function( request , arg ){
     if (request.q) {
         posts = Search.search(db.blog.posts, request.q , { min : 100 } );
         posts = posts.filter( function( z ){ return z.live; } );
-            posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
+        posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
+        
+        var postResults = 0;
+        var pageStart = (pageNumber - 1) * pageSize;
+        var pageEnd = Math.min(pageNumber * pageSize, posts.length);
+        
+        Blog.log.debug("posts: " + posts.length);
 
-            var postResults = 0;
-            var pageStart = (pageNumber - 1) * pageSize;
-            var pageEnd = Math.min(pageNumber * pageSize, posts.length);
-
-// log.debug("posts: " + posts.length);
         posts = posts.filter( function( z ) {
-            postResults++
-            return postResults > pageStart && postResults <= pageEnd;
-        });
-
-//log.debug("pageStart: " + pageStart);
-//log.debug("pageEnd: " + pageEnd);
-// log.debug("postResults: " + postResults);
-// log.debug("page: " + pageNumber);
+                postResults++
+                return postResults > pageStart && postResults <= pageEnd;
+            });
+        
+        Blog.log.debug("pageStart: " + pageStart + " pageEnd " + pageEnd );
+        Blog.log.debug("postResults: " + postResults);
+        Blog.log.debug("page: " + pageNumber);
 
         if (postResults == 0) {
             return {isPage: true,
@@ -89,39 +96,39 @@ Blog.handleRequest = function( request , arg ){
                     category: category,
                     pageNumber: 1,
                     searchTerm: request.q};
-        } else {
-            return {isPage: isPage,
-                    posts: posts,
-                    isCategorySearch: false,
-                    baseSearch: '',
+        } 
+        
+        return {isPage: isPage,
+                posts: posts,
+                isCategorySearch: false,
+                baseSearch: '',
                     hasPrevious: pageStart > 1,
-                    hasNext: postResults > pageEnd,
-                    category: category,
-                    pageNumber: pageNumber,
-                    searchTerm: request.q};
-        }
-    } else {
-        var searchCriteria = { live : true , ts : { $lt : new Date() } }; // add ts filter
-            var entries;
-
-            if(arg.filter) {
-                Blog._addFilters( searchCriteria , arg.filter );
-            }
-
-        // process the URL
-        // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
-        uri = uri.replace(/\.html$/, '').replace(/index$/, '').replace(/^.rss/ , "/" ).replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
-
-        //log.debug("base URI: " + uri);
-        //log.debug("pageNumber: " + pageNumber);
-
-        // look for a page or post with name = URL, and display it if it exists
-        // TODO: look for a page or post with name = URL replacing '-' with '_', and display it if it exists
+                hasNext: postResults > pageEnd,
+                category: category,
+                pageNumber: pageNumber,
+                searchTerm: request.q};
+    } 
+    
+    var searchCriteria = { live : true , ts : { $lt : new Date() } }; // add ts filter
+    var entries;
+    
+    if(arg.filter)
+        Blog._addFilters( searchCriteria , arg.filter );
+    
+    // process the URL
+    // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
+    uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '').replace(/^.rss/ , "/" ).replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
+    
+    Blog.log.debug("base URI: " + uri);
+    Blog.log.debug("pageNumber: " + pageNumber);
+    
+    // look for a page or post with name = URL, and display it if it exists.
+    if ( uri.length != 0 ){
         searchCriteria.name = uri;
         var entry = db.blog.posts.findOne(searchCriteria);
-
+        
         if (entry) {
-            //log.debug('found a matching ' + entry.cls);
+            //Blog.log.debug('found a matching ' + entry.cls);
             search = request.q;
             return {isPage: true,
                     posts: [entry],
@@ -129,50 +136,51 @@ Blog.handleRequest = function( request , arg ){
                     baseSearch: search,
                     hasNext: hasNext};
         }
-
-            delete searchCriteria.name;
-
-        // if the URL is empty, display the home page
-        if (uri == '') {
-            searchCriteria.cls = 'entry';
-                if ( ! searchCriteria.categories )
-                        searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
-            entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
-        } else {
-            // search categories
-            searchCriteria.categories = uri;
+        
+        delete searchCriteria.name;
+    }
+    
+    // if the URL is empty, display the home page
+    if (uri == '') {
+        searchCriteria.cls = 'entry';
+        if ( ! searchCriteria.categories )
+            searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
+        entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+    } 
+    else {
+        // search categories
+        searchCriteria.categories = uri;
+        entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+        
+        if (entries.length() > 0) {
+            // Blog.log.debug('found matching entries for category: ' + uri);
+            isCategorySearch = true;
+            category = db.blog.categories.findOne({ name: uri });
+        } 
+        else {
+            // this isn't a category search, so we just assume its a date search or partial url search
+            delete searchCriteria.categories;
+            
+            searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
             entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
-
             if (entries.length() > 0) {
-                // log.debug('found matching entries for category: ' + uri);
-                isCategorySearch = true;
-                category = db.blog.categories.findOne({ name: uri });
-            } else {
-                // this isn't a category search, so we just assume its a date search or partial url search
-                    delete searchCriteria.categories;
-
-                searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
-                if (entries.length() > 0) {
-                    // log.debug('found matching entries for: ' + uri);
-                }
+                // Blog.log.debug('found matching entries for: ' + uri);
             }
         }
-
-        search = uri;
-
-        posts = entries.toArray();
-        hasNext = (entries.length() > pageSize);
-        if (posts.length > pageSize) {
-            hasNext = true;
-            posts.remove(pageSize);
-        }
     }
-
-    if (posts.length == 0) {
+    
+    search = uri;
+    
+    posts = entries.toArray();
+    hasNext = entries.length() > pageSize;
+    if (posts.length > pageSize) {
+        hasNext = true;
+        posts.remove(pageSize);
+    }
+    
+    if (posts.length == 0)
         return Blog.handleMissingUri(uri);
-    }
-
+    
     return {isPage: isPage,
             posts: posts,
             isCategorySearch: isCategorySearch,
@@ -194,7 +202,7 @@ Blog.handlePosts = function( request , thePost , user ){
     if ( request.addComment == "yes" ) {
         var comment = null;
 
-        log.debug( "want to add comment" );
+        Blog.log.debug( "want to add comment" );
 
         var hasYourName = request.yourname && request.yourname.trim().length != 0;
         var hasEmail = request.email && request.email.trim().length != 0;
