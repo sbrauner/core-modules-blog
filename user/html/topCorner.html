@@ -1,0 +1,11 @@
+<div id="login_status">
+
+  <if user >
+    Logged in as <%= user.name %> &mdash; <a href="/~~/user/logout">logout</a>
+  </if>
+  
+  <if ( ! user )  >
+    <a href="#">login</a> &mdash; <a href="#">signup</a>
+  </if>
+
+</div>

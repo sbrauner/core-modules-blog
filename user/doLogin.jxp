@@ -1,0 +1,18 @@
+<%
+
+    user = Auth.getUser( request );
+
+if ( ! user ){
+    print( "invalid pasword" );
+    Auth.cookie.reject( request , response );
+    return;
+}
+
+to = request.to || "/";
+
+response.setResponseCode( 301 );
+response.setHeader( "Location" , to );
+
+%>
+
+

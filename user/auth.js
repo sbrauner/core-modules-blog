@@ -2,15 +2,27 @@
 core.user.user();
 
 Auth = {
-
+    
     debug : false ,
     
-    getUser : function( req ){
-        return Auth.digest.getUser( req , db.getName() );
+    getUser : function( req , res ){
+
+        if ( user )
+            return user;
+        
+        var u = Auth.digest.getUser( req || request , res || response , db.getName() );
+        if ( ! u )
+            u = Auth.cookie.getUser( req || request , res || response , db.getName() );
+
+        if ( ! u )
+            return null;
+        
+        log.user.auth.info( "got user : " + u.name );
+        return u;
     } ,
 
     reject : function( req , res ){
-        return Auth.digest.reject( req , res , db.getName() );
+        return Auth.digest.reject( req || request , res || response , db.getName() );
     } ,
 
     basic : { 
@@ -53,7 +65,7 @@ Auth = {
     
     digest : {
 
-        getUser : function( req , name ){
+        getUser : function( req , res , name ){
             var auth = req.getHeader("Authorization");
             if ( ! auth )
                 return null;
@@ -151,7 +163,112 @@ Auth = {
             res.setResponseCode( 401 );
             return "no";
         } 
+    } ,
+
+    cookie :  {
+        getUser : function( request , response , name ){
+            var now = new Date();
+
+            var username = request.getCookie( "username" );
+            var myHash = request.getCookie( "userhash" );
+
+            if ( username && myHash ){
+                
+                log.user.auth.cookie.debug( "got old username and hash " + username + " , " + myHash );
+
+                var u = User.find( username );
+                if ( u && u.tokens ){
+                    log.user.auth.cookie.debug( "\t found user" );
+                    
+                    var found = false;
+                    u.tokens.forEach( function(z){ 
+                            log.user.auth.cookie.debug( "\t\t got old : "  + tojson( z ) );
+                            if ( z.hash != myHash )
+                                return;
+                            log.user.auth.cookie.debug( "\t\t\t hash match!" );
+                            
+                            if ( expires < now ){
+                                log.user.auth.cookie.debug( "\t\t\t too old" );
+                                return;
+                            }
+                            
+                            found = true;
+                        } );
+                    
+                    if ( found )
+                        return u;
+                }
+
+            }
+            
+            // check for login
+            if ( ! request.username )
+                return null;
+            
+            var prefix = request.prefix;
+            var hash = request.hash;
+            
+            if ( ! ( prefix && hash ) )
+                return null;
+            
+            var prefixOk = false;
+            if ( prefix == md5( SERVER_HOSTNAME + ( new Date() ).roundMinutes( 7 ) ) ) prefixOk = true;
+            if ( prefix == md5( SERVER_HOSTNAME + ( new Date( (new Date()).getTime() - ( 7 * 60 * 1000 )  ) ).roundMinutes( 7 ) ) ) prefixOk = true;
+            if ( ! prefixOk )
+                return null;
+
+            log.user.auth.cookie.debug( "prefix ok.  username : " + request.username );
+            
+            var u = User.find( request.username );
+            if ( ! u )
+                return null;
+            
+            log.user.auth.cookie.debug( "got user : " + request.username  );
+            if ( hash != md5( prefix + ":" + u.pass_ha1_name ) &&
+                 hash != md5( prefix + ":" + u.pass_ha1_email ) ){
+                log.user.auth.cookie.debug( " hashes don't match" );
+            }
+            
+            log.user.auth.cookie.debug( "yay - got valid user : " + request.getURL() );
+            
+            // gen token
+            if ( ! u.tokens ){
+                u.tokens = [];
+            }
+            else { // lets take this oppurunity to do some cleaning
+                u.tokens = u.tokens.filter( function(z){
+                        return z.expires > now;
+                    } );
+            }
+            
+            var myHash = md5( Math.random() );
+            var remember = request.remember;
+
+            var secs = 0;
+            if ( remember )
+                secs = 7 * 86400;
+            
+            var expires = null;
+            if ( remember )
+                expires = new Date( now.getTime() + ( secs * 1000 ) );
+            else
+                expires = new Date( now.getTime() + ( 86400 * 1000 ) );
+            
+            u.tokens.push( { hash : myHash , expires : expires } );
+            db.users.save( u );
+            
+            response.addCookie( "username" , request.username , secs );
+            response.addCookie( "userhash" , myHash , secs );
+                             
+            return u;
+            
+        } ,
+
+        reject : function ( req , res , name ){
+            core.user.html.loginForce();
+        }
     }
     
 };
 
+log.user.auth.level = log.LEVEL.ERROR;

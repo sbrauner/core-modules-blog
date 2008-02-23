@@ -14,7 +14,7 @@ if ( ! user ){
 }
 
 if ( !_openAccess && (! user || ! user.isAdmin()) ){
-    return Auth.reject( request , response );
+    return Auth.cookie.reject( request , response );
 }
 
 var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
