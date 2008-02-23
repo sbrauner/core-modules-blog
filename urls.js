@@ -8,7 +8,7 @@ core.blog.missingpage();
 core.content.search();
 
 Blog.log = log.app.blog;
-Blog.log.level = log.LEVEL.ERROR; 
+Blog.log.level = log.LEVEL.ERROR;
 
 /**
    arg ex. {  limit: 2, filter: {categories: "new_york"} } );
@@ -122,10 +122,15 @@ Blog.handleRequest = function( request , arg ){
         // look for a page or post with name = URL, and display it if it exists.
         if ( uri.length != 0 ){
             searchCriteria.name = uri;
+            Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             var entry = db.blog.posts.findOne(searchCriteria);
         
             if (entry) {
                 Blog.log.debug('found a matching ' + entry.cls);
+
+                // TODO: uncomment this line when ed/src/test/ed/db/inc1.js passes
+                //db.blog.posts.update( { name : uri } , { $inc : { views : 1 } } );
+
                 isPage = true;
                 posts.push( entry );
                 return result;
