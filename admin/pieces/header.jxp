@@ -3,7 +3,7 @@
 <% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
 <html>
   <head>
-    <title>10Gen Admin</title>
+    <title><%= db.getName() %> Admin | 10 GEN </title>
     <link rel="stylesheet" href="NOCDN/~~/admin/assets/css.jxp" type="text/css" />
     <script src="/~~/ui/js/common.js"></script>
   </head>
