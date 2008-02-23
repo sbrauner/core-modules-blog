@@ -147,7 +147,7 @@ Blog.handleRequest = function( request , arg ){
             entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         
             if (entries.length() > 0) {
-                // Blog.log.debug('found matching entries for category: ' + uri);
+                Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: uri });
             } 
@@ -158,7 +158,7 @@ Blog.handleRequest = function( request , arg ){
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
                 if (entries.length() > 0) {
-                    // Blog.log.debug('found matching entries for: ' + uri);
+                    Blog.log.debug('found matching entries for: ' + uri);
                 }
             }
         }
