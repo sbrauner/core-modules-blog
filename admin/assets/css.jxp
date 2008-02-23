@@ -114,7 +114,7 @@ div#admin_logo {
     padding: 4px 15px;
 }
 
-div#admin_user {
+div#login_status {
     float: right;
     vertical-align: top;
     padding: 3px;
