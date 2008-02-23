@@ -1,35 +1,34 @@
 <% 
 
-var debug = false;
+var log = log.webdav;
+log.level = log.LEVEL.DEBUG;
 
 core.user.auth();
 core.content.xml();
 
 var method = request.getMethod();
 
-if ( debug ){ 
-    SYSOUT( "-----" );
-    SYSOUT( "entering webdav" );
-    SYSOUT( request.getRawHeader() );
-}
+log.debug( "-----" );
+log.debug( "entering webdav" );
+log.debug( request.getRawHeader() );
 
 if ( method == "OPTIONS" ){
     // OPTIONS bypases security b/c some clients need it
     response.setHeader( "Allow" , "OPTIONS,GET,PROPFIND,PUT,PROPPATCH,LOCK,UNLOCK" );
     response.setHeader( "Dav" , "1,2" );
     response.setHeader( "MS-Author-Via" , "DAV" );
-    if ( debug ) SYSOUT( response );
+    log.debug( response );
     return;
 }
 
 
 var user = Auth.getUser( request );
 if ( ! user ) {
-    if ( debug ) SYSOUT( "no user" );
+    log.debug( "no user" );
     return Auth.reject( request , response );
 }
 if ( ! user.isAdmin() ){
-    if ( debug ) SYSOUT( "not admin" );
+    log.debug( "not admin" );
     return Auth.reject( request , response );
 }
 
@@ -44,7 +43,7 @@ if ( ! request.file ){
 if ( ! request.file )
     throw "no file:(";
 
-if ( debug ) SYSOUT( "file:" + request.file );
+log.debug( "file:" + request.file );
 
 var theFile = openFile( request.file );
 
@@ -79,7 +78,7 @@ else if ( method == "GET" ){
         if ( theFile.isDirectory() ){
         }
         else {
-            if ( debug ) SYSOUT( "sending " + theFile + " length::" + theFile.length );
+            log.debug( "sending " + theFile + " length::" + theFile.length );
             response.sendFile( theFile );
         }
     }
@@ -108,13 +107,13 @@ else if ( method == "MKCOL" ){
 }
 else if ( method == "PUT" || method == "POST" ){
     var pd = request.getPostData();
-    if ( debug ) SYSOUT( "PUT : pd=" + ( ! ( ! pd ) ) );
+    log.debug( "PUT : pd=" + ( ! ( ! pd ) ) );
     if ( ! pd ){
         theFile.touch();
     }
     else {
         try {
-            if ( debug ) SYSOUT( "writing to " + theFile );
+            log.debug( "writing to " + theFile );
             pd.writeTo( theFile );
         }
         catch ( e ){
@@ -128,11 +127,11 @@ else if ( method == "MOVE" ){
     if ( ! to )
         throw ( "no to" );
     
-    if ( debug ) SYSOUT( "a:" + to );
+    log.debug( "a:" + to );
     to = to.replace( /^https?:..[^\/]+/ , "" );
-    if ( debug ) SYSOUT( "b:" + to );
+    log.debug( "b:" + to );
     to = to.replace( /\/~~.webdav/ , "" );
-    if ( debug ) SYSOUT( "c:" + to );
+    log.debug( "c:" + to );
 
     theFile.renameTo( openFile( to ) );
     

@@ -7,7 +7,7 @@ if ( Search && Search._doneInit )
 
 Search = {
     
-    log : log.search;
+    log : log.search ,
     DEBUG : true ,
 
     _weights : {} ,
