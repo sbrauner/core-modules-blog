@@ -56,12 +56,13 @@ Post.prototype.getNumComments = function(){
 };
 
 Post.prototype.deleteComment = function(cid){
+
     if ( ! this.comments )
         return;
     
     if ( isArray( this.comments ) ){
         this.comments = this.comments.filter( function(z){
-                return z.cid != cid;
+                return z.cid.toString() != cid.toString();
             } );
         return;
     }
