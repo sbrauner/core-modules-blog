@@ -8,7 +8,7 @@ core.blog.missingpage();
 core.content.search();
 
 Blog.log = log.app.blog;
-Blog.log.level = log.LEVEL.ERROR;
+Blog.log.level = log.LEVEL.ERROR; 
 
 /**
    arg ex. {  limit: 2, filter: {categories: "new_york"} } );
