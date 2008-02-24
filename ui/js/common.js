@@ -1,3 +1,13 @@
+
+String.prototype.trim = function(){
+    return this.replace( /(^ *| *$)/ , "" );
+}
+
+function showElement( e ){
+    e = document.getElementById( e );
+    e.style.display = "block";
+}
+
 function loadDocSync( url ){
     if ( ! window.XMLHttpRequest && ! window.ActiveXObject ){
         return "";
