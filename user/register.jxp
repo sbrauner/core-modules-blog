@@ -1,0 +1,40 @@
+<%
+    core.user.auth();
+
+var username = request.username;
+var email = request.email;
+var password = request.password;
+
+var to = request.getHeader( "Referer" );
+
+// validate
+if ( ! ( username && username.trim().length >= 5 ) )
+    throw "username error";
+
+if ( ! ( password && password.trim().length >= 5 ) )
+    throw "password error";
+
+if ( ! ( email && email.trim().length >= 3 ) )
+    throw "email error";
+
+// add 
+
+if ( db.users.findOne( { name : username } ) )
+    throw "username exists";
+
+if ( db.users.findOne( { email : email } ) )
+    throw "email exists";
+
+u = new User();
+u.name = username;
+u.email = email;
+u.setPassword( password );
+db.users.save( u );
+
+// log in
+Auth.cookie.login( request , response , u );
+
+// re-direct back
+response.setResponseCode( 301 );
+response.setHeader( "Location" ,  to || "/" );
+%>

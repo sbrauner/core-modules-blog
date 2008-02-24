@@ -1,0 +1,17 @@
+<%
+  
+var u = request.username;
+var e = request.email;
+
+if ( ! ( u && e ) )
+    return print( "Need Username and Email Address" );
+
+if ( db.users.findOne( { name : u } ) )
+    return print( "Username Taken" );
+
+if ( db.users.findOne( { email : e } ) )
+    return print( "Email Address Already Registered" );
+    
+print( "good" );
+
+%>

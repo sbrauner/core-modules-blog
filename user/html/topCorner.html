@@ -1,3 +1,4 @@
+<% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <div id="login_status">
 
   <if user >
@@ -5,7 +6,18 @@
   </if>
   
   <if ( ! user )  >
-    <a href="#">login</a> &mdash; <a href="#">signup</a>
+    <a href="javascript:showElement( 'login_login' )">login</a> &mdash; <a href="javascript:showElement( 'login_register' )">signup</a>
+
+    <div id="login_login" 
+         style="position: absolute; display:none; width: 200px; height: 150px; right: 50px; top:20px; background-color: white; border:1px solid black; color: black; ">
+      <% core.user.html.login(); %>
+    </div>
+
+    <div id="login_register" 
+         style="position: absolute; display:none; width: 500px; height: 250px; right: 50px; top:20px; background-color: white; border:1px solid black; color: black; ">
+      <% core.user.html.register(); %>
+    </div>
+    
   </if>
 
 </div>

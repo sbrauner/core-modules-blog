@@ -231,6 +231,14 @@ Auth = {
             
             log.user.auth.cookie.debug( "yay - got valid user : " + request.getURL() );
             
+            
+            Auth.cookie.login( request , response , u );
+            return u;
+        } ,
+        
+        login : function( request , response , u ){
+            var now = new Date();
+
             // gen token
             if ( ! u.tokens ){
                 u.tokens = [];
@@ -240,7 +248,7 @@ Auth = {
                         return z.expires > now;
                     } );
             }
-            
+
             var myHash = md5( Math.random() );
             var remember = request.remember;
 
