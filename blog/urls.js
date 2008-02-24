@@ -128,8 +128,7 @@ Blog.handleRequest = function( request , arg ){
             if (entry) {
                 Blog.log.debug('found a matching ' + entry.cls);
 
-                // TODO: uncomment this line when ed/src/test/ed/db/inc1.js passes
-                //db.blog.posts.update( { name : uri } , { $inc : { views : 1 } } );
+                db.blog.posts.update( { name : uri } , { $inc : { views : 1 } } , { ids : false } );
 
                 isPage = true;
                 posts.push( entry );
