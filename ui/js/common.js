@@ -1,11 +1,22 @@
 
 String.prototype.trim = function(){
     return this.replace( /(^ *| *$)/ , "" );
-}
+};
+
+function getElement( e ){
+    if ( typeof(e) == "string" )
+        return document.getElementById( e );
+    return e;
+};
 
 function showElement( e ){
-    e = document.getElementById( e );
+    e = getElement( e );
     e.style.display = "block";
+}
+
+function hideElement( e ){
+    e = getElement( e );
+    e.style.display = "none";
 }
 
 function loadDocSync( url ){

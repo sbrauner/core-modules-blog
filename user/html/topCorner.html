@@ -9,12 +9,14 @@
     <a href="javascript:showElement( 'login_login' )">login</a> &mdash; <a href="javascript:showElement( 'login_register' )">signup</a>
 
     <div id="login_login" 
-         style="position: absolute; display:none; width: 200px; height: 150px; right: 50px; top:20px; background-color: white; border:1px solid black; color: black; ">
+         style="position: absolute; display:none; width: 250px; height: 150px; right: 40px; top:20px; background-color: white; border:1px solid black; color: black; ">
+      <% core.ui.elements.closeButton( "login_login" ); %>
       <% core.user.html.login(); %>
     </div>
 
     <div id="login_register" 
          style="position: absolute; display:none; width: 500px; height: 250px; right: 50px; top:20px; background-color: white; border:1px solid black; color: black; ">
+      <% core.ui.elements.closeButton( "login_register" ); %>
       <% core.user.html.register(); %>
     </div>
     
