@@ -8,7 +8,8 @@ app.wiki.WikiPage = function(name) {
 };
 
 if (db) {
-    db.wiki.ensureIndex( { name : 1, lastEdit: true } );
+    db.wiki.ensureIndex( { name : 1 } );
+    db.wiki.ensureIndex( { lastEdit : 1 } );
 
     db.wiki.setConstructor( app.wiki.WikiPage );
 }

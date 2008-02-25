@@ -3,6 +3,8 @@ Category = function (name, label) {
     this.name = name || '';
     this.label = label || ''; //should be renamed displayName
     this.description = '';
+    
+    this.label = this.label.toLowerCase();
 };
 
 Category.prototype.getLabel = function(label) {
