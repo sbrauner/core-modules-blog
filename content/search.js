@@ -16,6 +16,10 @@ Search = {
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
     cleanString : function( s ){
+        
+        if ( ! s.match( /\w/ ) )
+            return "";
+
         s = s.trim().toLowerCase();
         s = Stem.stem( s );
         s = s.trim();
