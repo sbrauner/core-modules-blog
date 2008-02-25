@@ -1,3 +1,4 @@
+core.content.wikiparser();
 app.wiki.WikiController = function() {};
 
 app.wiki.WikiController.TEXT_PARSER = content.WikiParser;

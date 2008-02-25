@@ -1,4 +1,5 @@
 core.util.diff();
+core.app.wiki.wikipagehistory();
 
 app.wiki.WikiPage = function(name) {
     this.name = name || '';
@@ -49,14 +50,14 @@ app.wiki.WikiPage.prototype.setText = function(newText) {
 
     // get a diff of the text of the Wiki, and save it in a WikiHistory object.
     var textDiff = Util.Diff.diff(this.text, newText);
-    var wikiPageHistory = new app.wiki.WikiPageHistory(wikiPage._id, diff);
+    var wikiPageHistory = new app.wiki.WikiPageHistory(this._id, diff);
 
     // change the wikiPage text now, after we have an historical log.
-    wikiPage.text = newText;
+    this.text = newText;
 
     // save the updated wikiPand the history for the page.
     db.wiki_history.save(wikiPageHistory);
-    db.wiki.save(wikiPage);
+    db.wiki.save(this);
 };
 
 /**
