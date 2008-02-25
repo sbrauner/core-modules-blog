@@ -5,7 +5,7 @@ app.wiki.WikiPageHistory = function(wikiPageId, textDiff) {
 };
 
 if (db) {
-    db.wiki_history.ensureIndex( { name : 1 , ts: 1} );
+    db.wiki_history.ensureIndex( { ts: 1} );
 
     db.wiki_history.setConstructor( app.wiki.WikiPageHistory );
 }
