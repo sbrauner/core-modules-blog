@@ -1,1 +1,7 @@
 <% htmlheader('10gen Public Forum | Deleted posts'); %>
+<h1>Deleted posts</h1>
+<% 
+    var posts = Forum.data.Thread.getAllPostsDeletedByUser_Query(user);
+posts.forEach(Forum.renderer.deletedpost);
+%>
+<% htmlfooter(); %>

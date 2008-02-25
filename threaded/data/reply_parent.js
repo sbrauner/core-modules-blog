@@ -34,3 +34,6 @@ threaded.data.ReplyParent.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
 };
 
+threaded.data.ReplyParent.find_Query = function(query){
+    return db[this.prototype.threaded_tablename].find(query);
+};

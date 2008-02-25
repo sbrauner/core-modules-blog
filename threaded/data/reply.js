@@ -3,6 +3,7 @@ threaded.data.Reply = function(){
     this.author = "";
     this.title = "";
     this.content = "";
+    this.deleted = false;
 };
 
 threaded.data.Reply.sort = function(ary){
