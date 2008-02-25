@@ -1,15 +1,14 @@
 <% 
-var id = request.id;
 var isNewCategory = true;
 var category = new Category();
 
-if (id) {
-    foundCategory = db.blog.categories.findOne( CrID( id ) );
+if (request.id) {
+    foundCategory = db.blog.categories.findOne( CrID( request.id ) );
     if (foundCategory) {
         category = foundCategory;
         isNewCategory = false;
     } else {
-        id = null;
+        request.id = null;
     }
 }
 
@@ -29,8 +28,7 @@ if ( request.action == "save" ) {
 
 	    db.blog.categories.save( category );
 
-	    id = category._id;
-	    if (!id) print( "Error saving category." );
+	    if (!category._id) print( "Error saving category." );
 	    else {
 	        justSaved = true;	
             print( "<i>Saved.</i>" );
@@ -87,6 +85,7 @@ tinyMCE.init({
 
 <form method="post" action="category_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">
+    <input type="hidden" name="id" value="<%= category._id || '' %>">
     <div id="post_form">
         <div id="post_action">
             <input type="submit" value="Save">
