@@ -1,11 +1,12 @@
 {
+  core.content.html();
   function outp(x) {
     if( typeof x != 'string' ) {
       print(x); return;
     }
     if( x.length<=20 )
-      print(x);
-    else print( x.substring(0,18)+"..." );
+        print(content.HTML.escape_html(x));
+      else print( content.HTML.escape_html(x).substring(0,18)+"..." );
   }
 
   var top = request.ns == null;
