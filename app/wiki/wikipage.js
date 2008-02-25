@@ -50,14 +50,18 @@ app.wiki.WikiPage.prototype.setText = function(newText) {
 
     // get a diff of the text of the Wiki, and save it in a WikiHistory object.
     var textDiff = Util.Diff.diff(this.text, newText);
+
     var wikiPageHistory = new app.wiki.WikiPageHistory(this._id, textDiff);
 
     // change the wikiPage text now, after we have an historical log.
     this.text = newText;
 
     // save the updated wikiPand the history for the page.
-    db.wiki_history.save(wikiPageHistory);
     db.wiki.save(this);
+
+    // If the page is new, the parent needs to be set (again).
+    if(wikiPageHistory.parent == null) wikiPageHistory.parent = this._id;
+    db.wiki_history.save(wikiPageHistory);
 };
 
 /**
