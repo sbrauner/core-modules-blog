@@ -50,7 +50,7 @@ app.wiki.WikiPage.prototype.setText = function(newText) {
 
     // get a diff of the text of the Wiki, and save it in a WikiHistory object.
     var textDiff = Util.Diff.diff(this.text, newText);
-    var wikiPageHistory = new app.wiki.WikiPageHistory(this._id, diff);
+    var wikiPageHistory = new app.wiki.WikiPageHistory(this._id, textDiff);
 
     // change the wikiPage text now, after we have an historical log.
     this.text = newText;
