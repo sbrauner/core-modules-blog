@@ -4,10 +4,11 @@ core.app.wiki.wikipagehistory();
 app.wiki.WikiPage = function(name) {
     this.name = name || '';
     this.text = 'New WikiPage';
+    this.lastEdit = new Date();
 };
 
 if (db) {
-    db.wiki.ensureIndex( { name : 1 } );
+    db.wiki.ensureIndex( { name : 1, lastEdit: true } );
 
     db.wiki.setConstructor( app.wiki.WikiPage );
 }
@@ -56,6 +57,7 @@ app.wiki.WikiPage.prototype.setText = function(newText) {
     // change the wikiPage text now, after we have an historical log.
     this.text = newText;
 
+    this.lastEdit = new Date();
     // save the updated wikiPand the history for the page.
     db.wiki.save(this);
 
