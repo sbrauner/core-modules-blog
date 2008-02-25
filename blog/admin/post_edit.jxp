@@ -104,7 +104,7 @@ tinyMCE.init({
 	height: "500",
 	theme : "advanced",
 	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
-	theme_advanced_buttons1_add : "fontselect,fontsizeselect,separator,forecolor,backcolor",
+	theme_advanced_buttons2_add: "separator,forecolor,backcolor",
 	theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
 	theme_advanced_buttons3_add_before : "tablecontrols,separator",
 	theme_advanced_toolbar_location : "top",
