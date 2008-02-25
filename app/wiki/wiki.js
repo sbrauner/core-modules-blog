@@ -1,4 +1,3 @@
-core.util.diff();
 app.wiki.WikiController = function() {};
 
 app.wiki.WikiController.TEXT_PARSER = content.WikiParser;
@@ -59,36 +58,6 @@ app.wiki.WikiController.deletePage = function(wikiPage) {
     response.setHeader("Location", wikiPage.name);
 };
 
-app.wiki.WikiController.updatePage = function(wikiPage, text) {
-    if (!wikiPage) return false;
-    if (!text || text.length == 0) return false;
-    if (app.wiki.config.readOnly) return false;
-
-    var diff = Diff.diff(wikiPage.text, text);
-    wikiPage.text = text;
-    db.wiki_history.save({parent: wikiPage._id, diff: diff, ts: new Date()});
-    db.wiki.save(wikiPage);
-};
-
-app.wiki.WikiController.getHistory = function(wikiPage){
-    return db.wiki_history.find({parent: wikiPage._id}).sort({ts: -1});
-};
-
-app.wiki.WikiController.getVersion = function(wikiPage, vid){
-    var text = wikiPage.text;
-    var hist = app.wiki.WikiController.getHistory(wikiPage);
-    for(var i in hist){
-        v = hist[i];
-        text = Diff.applyBackwards(text, v.diff);
-        if(v._id == vid) break;
-    }
-    return text;
-};
-
-app.wiki.WikiController.versionDate = function(vid){
-    return db.wiki_history.findOne({_id: vid}).ts;
-};
-
 app.wiki.WikiController.getCookieCrumb = function(wikiPage) {
     if (!wikiPage) return '';
 
@@ -109,7 +78,7 @@ app.wiki.WikiController.getCookieCrumb = function(wikiPage) {
     }
 
     return cookieCrumb;
-}
+};
 
 app.wiki.WikiController.getChildPageNames = function(wikiPage) {
     if (!wikiPage) return [];
@@ -132,4 +101,4 @@ app.wiki.WikiController.getChildPageNames = function(wikiPage) {
         var s = app.wiki.config.prefix.replace(/\./g, '\.');
         prefixRegularExpression = RegExp(s);
     }
-}
+};

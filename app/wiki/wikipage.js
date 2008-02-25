@@ -1,12 +1,12 @@
-app.wiki.WikiPage = function (name) {
+core.util.diff();
+
+app.wiki.WikiPage = function(name) {
     this.name = name || '';
     this.text = 'New WikiPage';
 };
 
 if (db) {
     db.wiki.ensureIndex( { name : 1 } );
-
-    db.wiki_history.ensureIndex( { name : 1 , ts: 1} );
 
     db.wiki.setConstructor( app.wiki.WikiPage );
 }
@@ -39,3 +39,40 @@ app.wiki.WikiPage.prototype.formatText = function(text){
     return s;
 };
 
+/**
+ * Updates the text of a saved WikiPage with the new text. The new text is expected to be in a markup language.
+ * @returns true if page was properly saved with history, false if newText was empty or wiki is read only.
+ */
+app.wiki.WikiPage.prototype.setText = function(newText) {
+    if (!newText || newText.length == 0) return false;
+    if (app.wiki.config.readOnly) return false;
+
+    // get a diff of the text of the Wiki, and save it in a WikiHistory object.
+    var textDiff = Util.Diff.diff(this.text, newText);
+    var wikiPageHistory = new app.wiki.WikiPageHistory(wikiPage._id, diff);
+
+    // change the wikiPage text now, after we have an historical log.
+    wikiPage.text = newText;
+
+    // save the updated wikiPand the history for the page.
+    db.wiki_history.save(wikiPageHistory);
+    db.wiki.save(wikiPage);
+};
+
+/**
+ * Gets the list of all WikiPageHistory objects for the current page
+ * @returns null if no history is found
+ */
+app.wiki.WikiPage.prototype.getWikiPageHistories = function() {
+    // get the WikiPageHistory objects for the current page
+    return db.wiki_history.find( { parent: this._id } ).sort( { ts: -1 } );
+};
+
+/**
+ * Gets the WikiPageHistory object identified by the given id
+ * @returns null if no history is found
+ */
+app.wiki.WikiPage.prototype.getWikiPageHistory = function(wikiPageHistoryId) {
+    // get the WikiPageHistory objects for the current page
+    return db.wiki_history.findOne( { parent: this._id, _id: wikiPageHistoryId } );
+}

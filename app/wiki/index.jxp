@@ -34,8 +34,13 @@
     var wikiPage = db.wiki.findOne( { name : name } );
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
+    // Check to see if we have been asked for an historical version of this wiki page
+    var wikiPageHistoricalVersion;
+    if (request.version) {
+        wikiPageHistoricalVersion = wikiPage.getWikiPageHistory(request.version);
+    }
+    
     if ( ! app.wiki.config.readOnly ){
-
         if (request['rename'] ) {
             app.wiki.WikiController.renamePage(wikiPage, request.newName);
         }
@@ -44,7 +49,7 @@
         }
         else if (request['update'] ) {
             log(tojson(request));
-            app.wiki.WikiController.updatePage(wikiPage, request.wikitext);
+            wikiPage.setText(request.wikitext);
         }
     }
 
