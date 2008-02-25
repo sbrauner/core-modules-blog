@@ -13,8 +13,9 @@
 
 <div id="wiki">
     <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>
-        <% if(request.version){ %>
-        <div class="historydate">Version as of <%= app.wiki.WikiController.versionDate(request.version) %></div>
-        <% } else { %>
+
+    <% if (wikiPageHistoricalVersion) { %>
+        <div class="historydate">Version as of <%= wikiPageHistoricalVersion.ts %></div>
+    <% } else { %>
         <a href="?history=true">History of this page</a>
-        <% } %>
+    <% } %>

@@ -3,6 +3,9 @@ core.content.table();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 var id = request.id;
+if(request.id == "deleted"){
+    return core.app.forum.deleted_view();
+}
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();
 

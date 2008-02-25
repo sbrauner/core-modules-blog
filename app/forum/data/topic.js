@@ -1,7 +1,11 @@
 Forum.data.Topic = function(){
     this.name = null;
     this.description = null;
+    this.hidden = false;
+    this.allowPosts = true;
     this.order = null;
+
+    // Housekeeping fields
     this.latestPost = null;
     this.parent = null;
     this.postCount = 0;

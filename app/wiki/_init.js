@@ -1,6 +1,7 @@
 app.wiki = Object();
 
 core.app.wiki.wikipage();
+core.app.wiki.wikipagehistory();
 core.content.wikiparser();
 core.content.htmlhelper();
 core.html.html();

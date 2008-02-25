@@ -6,7 +6,8 @@ if ( Search && Search._doneInit )
     return;
 
 Search = {
-
+    
+    log : log.search ,
     DEBUG : true ,
 
     _weights : {} ,
@@ -15,6 +16,10 @@ Search = {
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
     cleanString : function( s ){
+        
+        if ( ! s.match( /\w/ ) )
+            return "";
+
         s = s.trim().toLowerCase();
         s = Stem.stem( s );
         s = s.trim();
@@ -29,7 +34,7 @@ Search = {
     } ,
 
     fixTable : function( table , weights ){
-        if ( Search.DEBUG ) SYSOUT( "fixTable : " + table.getName() );
+        if ( Search.DEBUG ) Search.log( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );
 
         if ( weights && weights.length > 0 ){
@@ -45,7 +50,7 @@ Search = {
                 var o = {}
                 o[idx] = 1;
 
-                if ( Search.DEBUG ) SYSOUT( "\t putting index on " + tojson( o ) );
+                if ( Search.DEBUG ) Search.log( "\t putting index on " + tojson( o ) );
                 table.ensureIndex( o );
             }
 
@@ -95,7 +100,7 @@ Search = {
 
     search : function( table , queryString , options ){
 
-        if ( Search.DEBUG ) SYSOUT( table.getName() + "\t" + queryString );
+        if ( Search.DEBUG ) Search.log( table.getName() + "\t" + queryString );
 
         options = options || {};
         var min = options.min || 10;
@@ -105,7 +110,7 @@ Search = {
             weights = Search._default;
         if ( weights.length == 0 )
             weights.push( { idx : "_searchIndex" , w : 1 } );
-        if ( Search.DEBUG ) SYSOUT( "\t weights.length : " + weights.length );
+        if ( Search.DEBUG ) Search.log( "\t weights.length : " + weights.length );
 
 
         var fullObjects = Object();
@@ -126,10 +131,10 @@ Search = {
             var idx = weights[i].idx;
             var w = weights[i].w;
 
-            if ( Search.DEBUG ) SYSOUT( "\t using index " + idx );
+            if ( Search.DEBUG ) Search.log( "\t using index " + idx );
 
             words.forEach( function(z){
-                    if ( Search.DEBUG ) SYSOUT( "\t\t searching on word [" + z + "]" );
+                    if ( Search.DEBUG ) Search.log( "\t\t searching on word [" + z + "]" );
                     var s = {}; s[idx] = z;
                     var res = table.find( s );
 
@@ -144,7 +149,7 @@ Search = {
 
                         max = Math.max( max , matchCounts[temp] );
 
-                        if ( Search.DEBUG ) SYSOUT( "\t\t " + temp + "\t" + tempObject.title );
+                        if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title );
 
                         fullObjects[temp] = tempObject;
                         if ( ! all.contains( temp ) )
@@ -156,7 +161,7 @@ Search = {
                 break;
         }
 
-        if ( Search.DEBUG ) SYSOUT( "matchCounts: " + tojson( matchCounts ) );
+        if ( Search.DEBUG ) Search.log( "matchCounts: " + tojson( matchCounts ) );
 
         all.sort( function( l , r ){
                 return matchCounts[r] - matchCounts[l];

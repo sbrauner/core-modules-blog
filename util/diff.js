@@ -1,5 +1,4 @@
-
-Diff = {
+Util.Diff = {
 
     diffStr : function( a , b ){
         return javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b );
@@ -34,22 +33,22 @@ Diff = {
         var a = "1\n2";
         var b = "1\n3";
 
-        var d = Diff.diffStr( a , b );
-        var n = Diff.applyBackwardsStr( b , d );
+        var d = Util.Diff.diffStr( a , b );
+        var n = Util.Diff.applyBackwardsStr( b , d );
 
         assert( a == n );
 
         var a = 3;
         var b = 5;
-        var d = Diff.diffInt( a , b );
-        var n = Diff.applyBackwardsInt( b , d );
+        var d = Util.Diff.diffInt( a , b );
+        var n = Util.Diff.applyBackwardsInt( b , d );
 
         assert( a == n );
 
         var a = new Date( 2008, 01, 03, 7, 30, 0, 0 );
         var b = new Date( 2008, 01, 04, 7, 30, 0, 0 );
-        var d = Diff.diffDate( a , b );
-        var n = Diff.applyBackwardsDate( b, d );
+        var d = Util.Diff.diffDate( a , b );
+        var n = Util.Diff.applyBackwardsDate( b, d );
 
         assert( a == n );
 
@@ -91,16 +90,16 @@ Diff = {
             }
 
             if(typeof a[prop] == "number" && typeof b[prop] == "number"){
-                d[prop] = {change: Diff.diffInt(a[prop], b[prop])};
+                d[prop] = {change: Util.Diff.diffInt(a[prop], b[prop])};
             }
             else if(typeof a[prop] == "string" && typeof b[prop] == "string"){
-                d[prop] = {change: Diff.diffStr(a[prop], b[prop])};
+                d[prop] = {change: Util.Diff.diffStr(a[prop], b[prop])};
             }
             else if(a[prop] instanceof Array && b[prop] instanceof Array){
-                d[prop] = {change: Diff.diffArray(a[prop], b[prop])};
+                d[prop] = {change: Util.Diff.diffArray(a[prop], b[prop])};
             }
             else if(a[prop] instanceof Object && b[prop] instanceof Object){
-                d[prop] = {change: Diff.diffObj(a[prop], b[prop])};
+                d[prop] = {change: Util.Diff.diffObj(a[prop], b[prop])};
             }
             else {
                 log.diff.warning("property " + prop + " is of different types in the two objects");
@@ -133,10 +132,10 @@ Diff = {
             }
             if(d.change){
                 if(typeof base[prop] == "number"){
-                    res[prop] = Diff.applyBackwardsInt(base[prop], diff[prop].change);
+                    res[prop] = Util.Diff.applyBackwardsInt(base[prop], diff[prop].change);
                 }
                 else if(typeof base[prop] == "string"){
-                    res[prop] = Diff.applyBackwardsStr(base[prop], diff[prop].change);
+                    res[prop] = Util.Diff.applyBackwardsStr(base[prop], diff[prop].change);
                 }
                 else{
                     throw new Exception("not implemented, leave me alone");
@@ -148,11 +147,11 @@ Diff = {
     },
 
     diff : function(a, b){
-        return Diff.diffObj({arg: a}, {arg: b})["arg"].change;
+        return Util.Diff.diffObj({arg: a}, {arg: b})["arg"].change;
     },
 
     applyBackwards : function(base, diff){
-        return Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
+        return Util.Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
     }
 
 };

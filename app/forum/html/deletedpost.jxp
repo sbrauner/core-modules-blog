@@ -1,0 +1,23 @@
+<%
+var t = arguments[0];
+var thread = Forum.data.Thread.findThreadFromReply(t); %>
+<ul class="post">
+  <li>
+  <div class="postbox">
+    <a name="<%= t.getID() %>"/>
+    <span class="titlebar">
+      <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
+      (<a href="#<%= t.getID() %>"/>#</a>)
+    </span>
+    <span>
+    posted in thread <%= thread.getName() %>
+    </span>
+    <div class="content">
+      <%= t.content %>
+    </div>
+    <form action="undelete?id=<%=t._id%>">
+      <input type="submit" name="Undelete">
+    </form>
+  </div>
+  </li>
+</ul>
