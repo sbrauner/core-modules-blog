@@ -18,6 +18,11 @@ Blog.pingService = [
 ];
     
 Blog.ping = function(articleUrl) {
+    t = fork( Blog.pingSync , articleUrl );
+    t.start();
+}
+
+Blog.pingSync = function(articleUrl) {
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
     if (!articleUrl || articleUrl.length == 0) articleUrl = siteUrl;
     
