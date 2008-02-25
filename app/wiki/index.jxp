@@ -49,7 +49,7 @@
         }
         else if (request['update'] ) {
             log(tojson(request));
-            wikiPage.setText(request.wikitext);
+            wikiPage.setText(request.wikitext.replace(/\r?\n/g, "\n"));
         }
     }
 
