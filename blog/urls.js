@@ -128,7 +128,7 @@ Blog.handleRequest = function( request , arg ){
             if (entry) {
                 Blog.log.debug('found a matching ' + entry.cls);
 
-                db.blog.posts.update( { name : uri } , { $inc : { views : 1 } } , { ids : false } );
+                db.blog.posts.update( { name : uri } , { $inc : { views : 1 } } );
 
                 isPage = true;
                 posts.push( entry );

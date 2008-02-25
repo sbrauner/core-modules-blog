@@ -125,6 +125,17 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
+Post.prototype.getFirstImageSrc = function(){
+    if ( ! this.content )
+        return null;
+    var p = /<img[^>]+src="(.*?)"/;
+    var r = p.exec( this.content );
+    if ( ! r )
+        return null;
+    return r[1];
+};
+
+
 Post.get404 = function() {
     http404Page = db.blog.posts.findOne({ name: '404' });
     if (!http404Page) {
@@ -146,6 +157,7 @@ Post.getNoResults = function() {
     }
     return noResultsPage;
 };
+
 
 function fixComments() {
     
