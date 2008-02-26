@@ -1,0 +1,14 @@
+<html>
+    <body>
+    
+<%    
+    a = [ "threads" , "mem" ];
+a.forEach( function(z){ %>
+<a href="<%= z %>"><%= z %></a> | 		
+		<%
+		    }
+	    );
+
+
+%>
+<hr>

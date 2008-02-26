@@ -1,0 +1,36 @@
+<% jxp.sys.pieces.header(); %>
+
+<style>
+    .js { color: red; }
+    .ed { color: blue; }
+</style>
+<%
+
+    if ( request.f )
+	f = new RegExp( request.f );
+
+all = javaStatic( "java.lang.Thread" , "getAllStackTraces" );
+cur = javaStatic( "java.lang.Thread" , "currentThread" );
+
+for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
+    myThread = i.next();
+    if ( cur == myThread )
+	continue;
+
+    var savePrint = print;
+    var buf = "";
+    print = function(z){
+	buf += z;
+    }
+    jxp.sys.pieces.thread( myThread , all.get( myThread ) );
+    print = savePrint;
+    
+    if ( f && ! buf.match( f ) )
+	continue;
+    
+    print( buf );
+}
+
+
+ %>
+<% jxp.sys.pieces.footer(); %>
