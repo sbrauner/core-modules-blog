@@ -1,3 +1,4 @@
+log.threaded.data.reply.debug("Running replyfile. threaded="+threaded + " data="+threaded.data);
 core.content.html();
 
 threaded.data.Reply = function(){
@@ -12,10 +13,12 @@ threaded.data.Reply.sort = function(ary){
     return ary.sort( function (a, b) { return b.ts - a.ts; });
 };
 
-threaded.data.Reply.prototype.decoratorsRender = function(){
+threaded.data.Reply.prototype.decoratorsRender = function(options){
+    options = options || {};
+    if(options.replyable == null) options.replyable = this.threaded_replyable;
     var reps = this.getReplies();
     for (var i in reps){
-        this.threaded_pieces.reply(reps[i]);
+        this.threaded_pieces.reply(reps[i], options);
     }
 };
 

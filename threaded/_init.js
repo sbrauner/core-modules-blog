@@ -21,6 +21,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     var tablename = args.tablename || clsname.toLowerCase()+"_replies";
     var style = args.style || "parent";
     var users = args.users || "auth";
+    var replyable = args.replyable == null ? true : false;
     if(style == "parent"){
         var rcls = threaded.data.ReplyParent;
     }
@@ -40,12 +41,14 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.Reply.prototype.threaded_tablename = tablename;
     cls.prototype.Reply.prototype.threaded_pieces = core.threaded.html;
     cls.prototype.Reply.prototype.threaded_users = users;
+    cls.prototype.Reply.prototype.threaded_replyable = replyable;
 
     // Add to cls the functions to make it behave like a Reply.
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
     cls.prototype.getDescendant = rcls.getDescendant;
     cls.prototype.threaded_tablename = tablename;
+    cls.prototype.threaded_replyable = replyable;
     cls.prototype.threaded_pieces = core.threaded.html;
     cls.prototype.threaded_users = users;
     cls.prototype.decoratorsRender = rcls.decoratorsRender;
