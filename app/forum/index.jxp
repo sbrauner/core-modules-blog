@@ -23,13 +23,19 @@ else
     print ("No topics right now!");
 
 %>
-<a href="topic_new">New topic</a>
-
     <% if(Forum.ForumController.hasPermission(user, "viewSpecialTopic_Deleted")){
         Forum.renderer.topic({_id: Forum.ForumController.specialDeletedID, name: "Deleted posts",
-                              description: "Manage posts which have been deleted",
+                              description: "Manage posts which you have deleted",
                               threadCount: 0, postCount: 0});
     } %>
+    <% if(Forum.ForumController.hasPermission(user, "viewSpecialTopic_Moderated")){
+        Forum.renderer.topic({_id: Forum.ForumController.specialModeratedID, name: "Moderated posts",
+                              description: "Manage posts you have moderated",
+                              threadCount: 0, postCount: 0});
+    } %>
+
+<a href="topic_new">New topic</a>
+
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
 else {
