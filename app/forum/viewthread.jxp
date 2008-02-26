@@ -22,13 +22,13 @@ else {
     <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
 <%
 }
-if(thread.decoratorsHandle({noreplylink: true})){
+thread.decoratorsRender();
+if(thread.decoratorsHandle()){
     thread.count ++;
     thread.topic.postCount ++;
     db.forum.topics.save(thread.topic);
     db.forum.threads.save(thread);
 }
-thread.decoratorsRender();
 %>
 
 <%
