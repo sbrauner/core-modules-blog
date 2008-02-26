@@ -8,6 +8,7 @@ else {
     <link rel="stylesheet" type="text/css" href="css/forum.css"/>
   </head>
   <body>
+        <% core.user.html.topCorner(); %>
     <h1><a href="./">Forum</a></h1>
     <h1>Available topics</h1>
 
