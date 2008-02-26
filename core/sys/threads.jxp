@@ -1,4 +1,4 @@
-<% jxp.sys.pieces.header(); %>
+<% core.core.sys.pieces.header(); %>
 
 <style>
     .js { color: red; }
@@ -22,7 +22,7 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
     print = function(z){
 	buf += z;
     }
-    jxp.sys.pieces.thread( myThread , all.get( myThread ) );
+    core.core.sys.pieces.thread( myThread , all.get( myThread ) );
     print = savePrint;
     
     if ( f && ! buf.match( f ) )
@@ -33,4 +33,4 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
 
 
  %>
-<% jxp.sys.pieces.footer(); %>
+<% core.core.sys.pieces.footer(); %>
