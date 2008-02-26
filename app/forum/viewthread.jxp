@@ -29,18 +29,19 @@ thread.decoratorsRender({actions:
                                  return "<input name='select' value=\""+u._id+"\" type=\"checkbox\">";
                              }
                          ],
-                         filter: function(post){ log.app.forum.debug("filtering "+tojson(post)); return ! (post.deleted || post.moderated); }
+                         filter: function(post){ return ! (post.deleted || post.moderated); }
                         });
+%>
+
+<input type="submit" name="action" value="delete">
+</form>
+<% 
 if(thread.decoratorsHandle()){
     thread.count ++;
     thread.topic.postCount ++;
     db.forum.topics.save(thread.topic);
     db.forum.threads.save(thread);
-}
-%>
-
-<input type="submit" name="action" value="delete">
-</form>
+}%>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
