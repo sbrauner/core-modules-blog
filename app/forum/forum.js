@@ -9,18 +9,27 @@ Forum.ForumController.anonymousPermissions = function(){
 };
 
 Forum.ForumController.userPermissions = function(){
-    return {}; // plus anonymousPermissions
+    var p = {};
+    // add anonymousPermissions
+    return Object.extend(p, Forum.ForumController.anonymousPermissions());
 };
 
 Forum.ForumController.moderatorPermissions = function(){
-    return {}; // plus userPermissions
+    var p = {viewSpecialTopic_Moderated: true};
+
+    // add userPermissions
+    return Object.extend(p, Forum.ForumController.userPermissions());
 };
 
 Forum.ForumController.adminPermissions = function(){
-    var p = {banUser: true, banIP: true, editPost: true, deletePost: true,
-        createTopic: true, renameTopic: true, moveTopic: true, deleteTopic: true,
-        hideTopic: true};
-    return p; // plus moderator permissions
+    var p = {banUser: true, banIP: true, editPost: true,
+        deletePost: true,
+        createTopic: true, renameTopic: true,
+        moveTopic: true, deleteTopic: true,
+        hideTopic: true,
+        viewSpecialTopic_Deleted: true};
+    // add moderator permissions
+    return Object.extend(p, Forum.ForumController.moderatorPermissions());
 };
 
 
@@ -35,7 +44,10 @@ Forum.ForumController.hasPermission = function(user, perm){
 
 };
 
-Forum.ForumController.getDeletedPosts = function(){
-
+Forum.ForumController.getAllPostsDeletedByUser_Query = function(user){
+    return db.forum.posts.find({deleted: user});
 };
 
+// Special ObjectIds to refer to the special "deleted" and "moderated" topics.
+Forum.ForumController.specialDeletedID = ObjectId("00000000000000000000001");
+Forum.ForumController.specialModeratedID = ObjectId("00000000000000000000002");

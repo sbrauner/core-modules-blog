@@ -13,14 +13,10 @@ Forum.data.Thread.prototype.findFirstPost = function(){
 };
 
 core.threaded.data.reply_parent();
-threaded.repliesEnabled(Forum.data, "Thread", {users: "auth", tablename: "forum.posts"});
+threaded.repliesEnabled(Forum.data, "Thread", {users: "auth", tablename: "forum.posts", replyable: false});
 
 Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1});
-};
-
-Forum.data.Thread.getAllPostsDeletedByUser_Query = function(user){
-    return db.forum.posts.find({deleted: user});
 };
 
 Forum.data.Thread.findThreadFromReply = function(reply_id){

@@ -16,4 +16,4 @@ Forum.data.Topic.list = function(parent){
     return db.forum.topics.find({parent: parent}).sort({order: 1});
 };
 
-db.forum.forums.setConstructor(Forum.data.Topic);
+db.forum.topics.setConstructor(Forum.data.Topic);
