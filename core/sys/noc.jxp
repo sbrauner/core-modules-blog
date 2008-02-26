@@ -1,0 +1,7 @@
+<%
+
+response.setHeader( "ContentType" , "text/json" );
+core.core.sys.obj.stat();
+print( tojson( Stats.all() ) );
+
+%>

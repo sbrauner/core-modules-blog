@@ -1,0 +1,30 @@
+<% core.core.sys.pieces.header(); %>
+<%
+    core.core.sys.obj.stat();
+    mem = Stats.mem();
+
+%>
+<table border=1 >
+
+  <tr>
+    <th></th>
+    <td>max</td>
+    <td>total</td>
+    <td>used</td>
+    <td>free</td>
+  </tr>  
+
+    <% [ 
+    { name : "KB" , div : 1024 } , 
+    { name : "MB" , div : 1024 * 1024 } ].forEach( function(z){ %>
+      <tr>
+    <th><%= z.name %></th>
+    <td><%= ( mem.max / z.div ).toFixed(0) %></td>
+    <td><%= ( mem.total / z.div ).toFixed(0) %></td>
+    <td><%= ( mem.used / z.div ).toFixed(0)%></td>
+    <td><%= ( mem.free / z.div ).toFixed(0) %></td>
+  </tr>  
+<% } ); %>
+
+<table>
+<% core.core.sys.pieces.footer(); %>
