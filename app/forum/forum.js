@@ -13,13 +13,23 @@ Forum.ForumController.userPermissions = function(){
 };
 
 Forum.ForumController.moderatorPermissions = function(){
-    return {}; // plus userPermissions
+    var p = {viewSpecialTopic_Moderated: true}; // plus userPermissions
+    var up = Forum.ForumController.userPermissions();
+    for(var i in up){
+        p[i] = up[i];
+    }
+    return p;
 };
 
 Forum.ForumController.adminPermissions = function(){
     var p = {banUser: true, banIP: true, editPost: true, deletePost: true,
         createTopic: true, renameTopic: true, moveTopic: true, deleteTopic: true,
-        hideTopic: true};
+        hideTopic: true,
+        viewSpecialTopic_Deleted: true};
+    var mp = Forum.ForumController.moderatorPermissions();
+    for(var i in mp){
+        p[i] = mp[i];
+    }
     return p; // plus moderator permissions
 };
 
@@ -39,3 +49,5 @@ Forum.ForumController.getDeletedPosts = function(){
 
 };
 
+Forum.ForumController.specialDeletedID = ObjectId("00000000000000000000001");
+Forum.ForumController.specialModeratedID = ObjectId("00000000000000000000002");

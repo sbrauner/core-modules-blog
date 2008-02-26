@@ -26,7 +26,7 @@ else
 <a href="topic_new">New topic</a>
 
     <% if(Forum.ForumController.hasPermission(user, "viewSpecialTopic_Deleted")){
-        Forum.renderer.topic({id: "deleted", name: "Deleted posts",
+        Forum.renderer.topic({_id: Forum.ForumController.specialDeletedID, name: "Deleted posts",
                               description: "Manage posts which have been deleted",
                               threadCount: 0, postCount: 0});
     } %>

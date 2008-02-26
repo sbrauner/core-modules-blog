@@ -3,7 +3,7 @@ core.content.table();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 var id = request.id;
-if(request.id == "deleted"){
+if(request.id == Forum.ForumController.specialDeletedID){
     return core.app.forum.deleted_view();
 }
 var t = db.forum.topics.findOne({_id: id});
