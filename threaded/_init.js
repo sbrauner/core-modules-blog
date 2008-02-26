@@ -66,4 +66,5 @@ threaded.repliesEnabled = function(ns, clsname, args){
     ns[clsname].prototype = new cls();
     ns[clsname].prototype.constructor = ns[clsname];
     db[tablename].setConstructor(cls.prototype.Reply);
+    db[tablename].ensureIndex({ts: true});
 };
