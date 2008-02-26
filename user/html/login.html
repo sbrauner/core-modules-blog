@@ -24,7 +24,12 @@
   }
 </script>
 
-<div id="login" >
+<div ? user >
+  error you are already logged in
+  have to <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">logout</a>
+</div>
+
+<div ? ( ! user ) id="login" >
 
   <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" >
 
