@@ -1,4 +1,5 @@
 <%
+    core.user.auth();
 
     u = Auth.getUser();
 var hash = request.getCookie( "userhash" );
