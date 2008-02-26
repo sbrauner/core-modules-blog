@@ -19,10 +19,6 @@ Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1});
 };
 
-Forum.data.Thread.getAllPostsDeletedByUser_Query = function(user){
-    return db.forum.posts.find({deleted: user});
-};
-
 Forum.data.Thread.findThreadFromReply = function(reply_id){
     // Obviously this depends on the replies style.
     // Right now, it should be parent-style, so we can find the thread by

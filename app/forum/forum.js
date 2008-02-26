@@ -45,9 +45,10 @@ Forum.ForumController.hasPermission = function(user, perm){
 
 };
 
-Forum.ForumController.getDeletedPosts = function(){
-
+Forum.ForumController.getAllPostsDeletedByUser_Query = function(user){
+    return db.forum.posts.find({deleted: user});
 };
 
+// Special ObjectIds to refer to the special "deleted" and "moderated" topics.
 Forum.ForumController.specialDeletedID = ObjectId("00000000000000000000001");
 Forum.ForumController.specialModeratedID = ObjectId("00000000000000000000002");

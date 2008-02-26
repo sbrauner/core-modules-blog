@@ -1,10 +1,14 @@
 <%
 core.content.table();
+core.app.forum.forum();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 var id = request.id;
 if(request.id == Forum.ForumController.specialDeletedID){
     return core.app.forum.deleted_view();
+}
+if(request.id == Forum.ForumController.specialModeratedID){
+    return core.app.forum.moderated_view();
 }
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();

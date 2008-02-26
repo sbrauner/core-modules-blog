@@ -14,7 +14,7 @@ if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 var l = t.getDescendant(t.latestPost);
 
 var title = f.title;
-if(deletedPosts) f.title += " (deleted posts)";
+if(deletedPosts) title += " (deleted posts)";
 
 var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";

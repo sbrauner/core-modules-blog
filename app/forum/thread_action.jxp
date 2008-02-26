@@ -24,7 +24,7 @@ var decPost = function(post){
 if(request.action == "delete"){
     for(var i in selected){
         var p = db.forum.posts.findOne({_id: selected[i]});
-        p.deleted = true;
+        p.deleted = user;
         decPost(p);
         db.forum.posts.save(p);
     }
@@ -34,7 +34,7 @@ if(request.action == "delete"){
 if(request.action == "moderate"){
     for(var i in selected){
         var p = db.forum.posts.findOne({_id: selected[i]});
-        p.moderated = true;
+        p.moderated = user;
         decPost(p);
         db.forum.posts.save(p);
     }

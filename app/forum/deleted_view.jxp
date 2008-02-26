@@ -1,12 +1,24 @@
 <% htmlheader('10gen Public Forum | Topic: Deleted'); %>
 <h1>Deleted</h1>
+    <table>
+      <tr>
+        <td>
+          Thread
+        </td>
+        <td>
+          Replies
+        </td>
+        <td>
+          Last post
+        </td>
+      </tr>
 <%
-    var posts = Forum.data.Thread.getAllPostsDeletedByUser_Query(user);
+    var posts = Forum.ForumController.getAllPostsDeletedByUser_Query(user);
 // All threads with a deleted post in it
 var threads = {};
-posts.forEach(function(p){threads[p._id] = true; });
+posts.forEach(function(p){threads[p.parent._id.toString()] = true; });
 for(var threadId in threads){
-    var thread = Forum.data.Thread.find({_id: threadID});
+    var thread = db.forum.threads.findOne({_id: threadId});
     Forum.renderer.thread(thread, {deleted: true});
 }
 %>
