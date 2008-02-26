@@ -21,6 +21,18 @@ var decPost = function(post){
     }
 }
 
+var incPost = function(post){
+    post.parent.count += 1;
+    db.forum.threads.save(post.parent);
+
+    var topic = post.parent.topic;
+    while(topic){
+        topic.postCount += 1;
+        db.forum.topics.save(topic);
+        topic = topic.parent;
+    }
+}
+
 if(request.action == "delete"){
     for(var i in selected){
         var p = db.forum.posts.findOne({_id: selected[i]});
@@ -29,6 +41,25 @@ if(request.action == "delete"){
         db.forum.posts.save(p);
     }
 
+}
+
+if(request.action == "undelete"){
+    for(var i in selected){
+        var p = db.forum.posts.findOne({_id: selected[i]});
+        p.deleted = false;
+        incPost(p);
+        db.forum.posts.save(p);
+    }
+
+}
+
+if(request.action == "moderate"){
+    for(var i in selected){
+        var p = db.forum.posts.findOne({_id: selected[i]});
+        p.moderated = user;
+        decPost(p);
+        db.forum.posts.save(p);
+    }
 }
 
 if(request.action == "moderate"){
