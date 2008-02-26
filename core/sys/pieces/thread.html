@@ -1,0 +1,16 @@
+<div>
+   $getName() $getState()
+   <br>
+   <ul> 
+     <% arguments[1].forEach( function( z ){ 
+          z = z.toString();
+          var cls = "";
+	  if ( z.startsWith( "ed.js.gen." ) ) cls = "js";
+	  else if ( z.startsWith( "ed." ) ) cls = "ed";
+	  	  
+     %>
+     <li class="<%= cls %>" ><%= z %></li>
+     <% } ); %>
+   </ul>
+</div>
+<hr>
