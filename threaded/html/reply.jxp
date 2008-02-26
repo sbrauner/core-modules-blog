@@ -1,8 +1,10 @@
 <%
 var t = arguments[0];
 var options = arguments[1] || {};
-var actions = (options.actions == null)? false : options.actions;
+var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
+var filter = (options.filter == null)? function(){return true;} : options.filter;
+if(! filter(t)) return;
  %>
 <ul class="post">
   <li>
@@ -12,6 +14,8 @@ var replyable = (options.replyable == null)? true : options.replyable;
       <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
       (<a href="#<%= t.getID() %>"/>#</a>)
     </span>
+    <div class="actions">
+    <% for(var i in actions){ print(actions[i](t)); } %>
     <div class="content">
       <%= t.content %>
     </div>

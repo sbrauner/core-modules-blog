@@ -1,0 +1,30 @@
+<%
+// Form handler to deal with actions on posts in threads.
+    core.net.uri();
+var uri = new URI(request.getURL());
+var selected = [];
+for(var i in uri.args){
+    if(uri.args[i].key == "select"){
+        selected.push(uri.args[i].value);
+    }
+}
+
+if(request.action == "delete"){
+    for(var i in selected){
+        var p = db.forum.posts.findOne({_id: selected[i]});
+        p.deleted = true;
+        db.forum.posts.save(p);
+    }
+}
+
+if(request.action == "moderate"){
+    for(var i in selected){
+        var p = db.forum.posts.findOne({_id: selected[i]});
+        p.moderated = true;
+        db.forum.posts.save(p);
+    }
+}
+
+response.setResponseCode(301);
+response.setHeader("Location", "./");
+%>
