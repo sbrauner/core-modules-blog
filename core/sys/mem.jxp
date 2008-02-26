@@ -1,6 +1,6 @@
-<% jxp.sys.pieces.header(); %>
+<% core.core.sys.pieces.header(); %>
 <%
-    jxp.sys.obj.stat();
+    core.core.sys.obj.stat();
     mem = Stats.mem();
 
 %>
@@ -27,4 +27,4 @@
 <% } ); %>
 
 <table>
-<% jxp.sys.pieces.footer(); %>
+<% core.core.sys.pieces.footer(); %>

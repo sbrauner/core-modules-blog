@@ -1,7 +1,7 @@
 <%
 
 response.setHeader( "ContentType" , "text/json" );
-jxp.sys.obj.stat();
+core.core.sys.obj.stat();
 print( tojson( Stats.all() ) );
 
 %>
