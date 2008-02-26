@@ -1,3 +1,5 @@
+core.content.html();
+
 threaded.data.Reply = function(){
     this.ts = new Date();
     this.author = "";

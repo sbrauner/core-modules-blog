@@ -1,21 +1,37 @@
 <%
+// app/forum/html/thread.jxp: template to "show" a thread.
+// This is used in viewtopic, to display all the threads in a topic.
+// In other words, displaying a thread here means displaying a summary,
+// rather than showing all the posts.
 core.app.forum.data.thread();
-    var t = arguments[0];
+
+// t is the thread to show.
+var t = arguments[0];
+var opts = arguments[1];
+var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted;
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 var l = t.getDescendant(t.latestPost);
+
+var title = f.title;
+if(deletedPosts) f.title += " (deleted posts)";
+
+var link = "viewthread?id="+t._id;
+if(deletedPosts) link += "&deleted=true";
 %>
 <tr>
   <td>
-    <a href="viewthread?id=<%= t._id%>"><%= f.title%></a> started by <%= f.author %> <br/>
+    <a href="<%= link %>"><%= title%></a> started by <%= f.author %> <br/>
 at <%= f.ts %>
   </td>
   <td>
     <%= t.count.toFixed() %>
   </td>
+  <% if (!deletedPosts) { %>
   <td>
-    by <%= l.author %> (<a href="viewthread?id=<%= t._id %>#<%= l._id %>">go</a>)<br/>
-      at <%= l.ts %>
+    by <%= l.author %> (<a href="<%= link %>#<%= l._id %>">go</a>)<br/>
+    at <%= l.ts %>
   </td>
+  <% } %>
 
 </div>
