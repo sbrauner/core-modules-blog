@@ -21,7 +21,7 @@ if(deletedPosts) link += "&deleted=true";
 %>
 <tr>
   <td>
-    <a href="<%= link %>"><%= title%></a> started by <%= f.author %> <br/>
+    <a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/>
 at <%= f.ts %>
   </td>
   <td>
