@@ -49,18 +49,18 @@ function validate( collection ) {
     return _dbCommand( { validate: collection } );
 }
 
-/* drops all rows 
-function truncate( collection ) 
+/* drops all rows.  alpha: space not reclaimed.
+ */
+function drop( collection ) 
 {
-    var res = _dbCommand( { truncate: collection } );
+    var res = _dbCommand( { drop: collection } );
     if( res && res.ok && res.ok == 1 ) { 
 	db.system.indexes.remove( { ns: ""+db+"."+collection } );
     }
     return res;
 }
-*/
 
-/* drop deleted space. Normally not used. */
+/* Drop free lists. Normally not used. */
 function clean( collection ) {
     return _dbCommand( { clean: collection } );
 }

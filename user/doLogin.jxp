@@ -1,5 +1,5 @@
 <%
-
+    core.user.auth();
     user = Auth.getUser( request );
 
 if ( ! user ){

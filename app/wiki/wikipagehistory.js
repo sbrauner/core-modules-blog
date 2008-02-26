@@ -1,3 +1,4 @@
+log("importing wikipage history, app="+app+" app.wiki="+app.wiki);
 app.wiki.WikiPageHistory = function(wikiPageId, textDiff) {
     this.parent = wikiPageId;
     this.diff = textDiff;
@@ -5,7 +6,7 @@ app.wiki.WikiPageHistory = function(wikiPageId, textDiff) {
 };
 
 if (db) {
-    db.wiki_history.ensureIndex( { name : 1 , ts: 1} );
+    db.wiki_history.ensureIndex( { ts: 1} );
 
     db.wiki_history.setConstructor( app.wiki.WikiPageHistory );
 }

@@ -1,4 +1,5 @@
 <%
+    core.user.auth();
 
     u = Auth.getUser();
 var hash = request.getCookie( "userhash" );
@@ -19,6 +20,6 @@ response.removeCookie( "username" );
 response.removeCookie( "userhash" );
 
 response.setResponseCode( 301 );
-response.setHeader( "Location", "/" );
+response.setHeader( "Location", request.to || "/" );
 
 %>

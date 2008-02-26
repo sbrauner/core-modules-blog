@@ -1,12 +1,15 @@
 core.util.diff();
+core.app.wiki.wikipagehistory();
 
 app.wiki.WikiPage = function(name) {
     this.name = name || '';
     this.text = 'New WikiPage';
+    this.lastEdit = new Date();
 };
 
 if (db) {
     db.wiki.ensureIndex( { name : 1 } );
+    db.wiki.ensureIndex( { lastEdit : 1 } );
 
     db.wiki.setConstructor( app.wiki.WikiPage );
 }
@@ -49,14 +52,19 @@ app.wiki.WikiPage.prototype.setText = function(newText) {
 
     // get a diff of the text of the Wiki, and save it in a WikiHistory object.
     var textDiff = Util.Diff.diff(this.text, newText);
-    var wikiPageHistory = new app.wiki.WikiPageHistory(wikiPage._id, diff);
+
+    var wikiPageHistory = new app.wiki.WikiPageHistory(this._id, textDiff);
 
     // change the wikiPage text now, after we have an historical log.
-    wikiPage.text = newText;
+    this.text = newText;
 
+    this.lastEdit = new Date();
     // save the updated wikiPand the history for the page.
+    db.wiki.save(this);
+
+    // If the page is new, the parent needs to be set (again).
+    if(wikiPageHistory.parent == null) wikiPageHistory.parent = this._id;
     db.wiki_history.save(wikiPageHistory);
-    db.wiki.save(wikiPage);
 };
 
 /**

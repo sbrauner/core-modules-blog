@@ -24,7 +24,12 @@
   }
 </script>
 
-<div id="login" >
+<div ? user >
+  error you are already logged in
+  have to <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">logout</a>
+</div>
+
+<div ? ( ! user ) id="login" >
 
   <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" >
 
@@ -43,7 +48,8 @@
       <input type="checkbox" name="login_remember" value="yes" >
     </div>
     
-    <input type="submit" nane="action" value="Login">
+    <input type="submit" name="action" value="Login">
+    <b ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</b>
     
   </form>
 

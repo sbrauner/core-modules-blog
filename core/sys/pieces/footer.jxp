@@ -1,0 +1,7 @@
+
+<hr>
+<%= Date() %>
+<meta http-equiv="refresh" content="5" />
+
+</body>
+</html>
