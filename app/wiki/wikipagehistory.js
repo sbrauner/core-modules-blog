@@ -1,3 +1,4 @@
+log("importing wikipage history, app="+app+" app.wiki="+app.wiki);
 app.wiki.WikiPageHistory = function(wikiPageId, textDiff) {
     this.parent = wikiPageId;
     this.diff = textDiff;
