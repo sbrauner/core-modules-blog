@@ -6,7 +6,7 @@ function doRound( date , t ){
     if ( t == "h" )
         return date.roundHour();
     if ( t == "d" )
-        return data.roundDay();
+        return date.roundDay();
     if ( t == "w" )
         return date.roundWeek();
     if ( t == "m" )
@@ -14,10 +14,8 @@ function doRound( date , t ){
     return date.roundMinutes( 5 );
 }
 
-/**
- * @return [ { time : Date , num : Number } ... ]
-*/
-function mungeData( cursor , t , startTime ){
+
+function getTotalByteArray(cursor, t) {
     cursor.sort( { ts : -1 } );
     
     var last = null;
@@ -32,6 +30,15 @@ function mungeData( cursor , t , startTime ){
             a[a.length - 1 ].num += z.num;
             last = n;
         } );
+
+    return a;
+}
+
+/**
+ * @return [ { time : Date , num : Number } ... ]
+*/
+function mungeData( cursor , t , startTime ){
+    var a = getTotalByteArray(cursor, t);
 
     var minutes = 5;
     if ( t == "h" )
@@ -104,6 +111,80 @@ function doAllTypes( limit , t ){
     
 }
 
+function formatBytes(bytes) {
+	suffix = [" bytes", " KB", " MB", "GB", " TB", " PB", " EB", " ZB", " YB"];
+	i = 0;
+	while(bytes >= 10000) {
+	 	bytes = bytes / 1000;     
+		i++;
+	}
+	return bytes.toFixed(2) + suffix[i];
+}
+
+function formatMillis(millis) {
+	 if(millis/(1000*60*60) > 0)
+	 	return (millis/(1000*60*60)).toFixed(2) + " hours";
+	 if(millis/(1000*60) > 0)
+	 	return (millis/(1000*60)).toFixed(2) + " minutes";
+	 if(millis/(1000) > 0)
+	 	return (millis/(1000)).toFixed(2) + " seconds";
+  	 return millis + " ms";
+}
+
+
+function threeMonthSummary(limit, t) {
+
+    data_i = getTotalByteArray( db._system.usage.bytes_in.find().limit( limit ) , t );
+    data_o = getTotalByteArray( db._system.usage.bytes_out.find().limit( limit ) , t );
+    millis = getTotalByteArray( db._system.usage.cpu_millis.find().limit( limit ) , t );
+
+    var sum = [];
+    var i = 0;
+    total = { b_in : 0, b_out: 0, io : 0, millis: 0 };
+
+    data_i.forEach( function( b_in ){ sum[i] = b_in.num; } );
+    data_o.forEach( function( b_out ){ sum[i++] += b_out.num; } );
+
+    var m_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var start = new Date();
+    var month = start.getMonth();
+
+    print("<table><tr><th>Month</th><th>Bytes In</th><th>Bytes Out</th><th>Total Bytes</th><th>CPU Milliseconds</th></tr>");
+    for(i = 0; i<3; i++) {
+
+    	  m_index =  (month-1-i < 0) ? ( month + (12 - (i+1)) ) : (month - 1 - i);
+    	  print("<tr><td>"+m_names[m_index]+"</td>");
+
+    	  // so... if there is data for the month, check that the month doesn't wrap around to the previous year (month-1-i >= 0)
+	  // ("month" starts at 1:January and goes to 12:December)
+	  // if it "crosses" the year, it is (month+(12-(i+1))), otherwise it is just month-1-i.
+
+    	  if(i<sum.length) {
+	       print("<td>"+formatBytes(data_i[i].num)+"</td>");
+	       print("<td>"+formatBytes(data_o[i].num)+"</td>");
+	       print("<td>"+formatBytes(sum[i])+"</td>");
+	       print("<td>"+formatMillis(millis[i].num)+"</td>");
+
+
+	       total.b_in += data_i[i].num;
+	       total.b_out += data_o[i].num;
+	       total.io += sum[i]
+	       total.millis += millis[i].num;
+	  }
+	  else {
+	       print("<td>0 bytes</td>");
+	       print("<td>0 bytes</td>");
+	       print("<td>0 bytes</td>");
+	       print("<td>0 ms</td>");
+	  }
+
+	  print("</tr>");
+    }
+
+    print("<tr style=\"border-top:2px solid black;\"><td>Total</td><td>"+formatBytes(total.b_in)+"</td><td>"+formatBytes(total.b_out)+"</td><td>"+formatBytes(total.io)+"</td><td>"+formatMillis(total.millis)+"</td></tr></table>");
+
+}
+
 %>
 <table>
   <tr>
@@ -117,6 +198,15 @@ function doAllTypes( limit , t ){
       <h1>Last 7 days</h1>
 	<%  doAllTypes( 12 * 24 * 7 , "h" ); %>
     </td>
-
+    <td>
+      <h1>Last 60 days</h1>
+      	<% doAllTypes(12*24*60, "d"); %>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">
+       <h2>Last 3 months - total</h2>
+       <% threeMonthSummary(12 * 24 * 91, "m"); %>
+    </td>
   </tr>
 </table>
