@@ -9,28 +9,27 @@ Forum.ForumController.anonymousPermissions = function(){
 };
 
 Forum.ForumController.userPermissions = function(){
-    return {}; // plus anonymousPermissions
+    var p = {};
+    // add anonymousPermissions
+    return Object.extend(p, Forum.ForumController.anonymousPermissions());
 };
 
 Forum.ForumController.moderatorPermissions = function(){
-    var p = {viewSpecialTopic_Moderated: true}; // plus userPermissions
-    var up = Forum.ForumController.userPermissions();
-    for(var i in up){
-        p[i] = up[i];
-    }
-    return p;
+    var p = {viewSpecialTopic_Moderated: true};
+
+    // add userPermissions
+    return Object.extend(p, Forum.ForumController.userPermissions());
 };
 
 Forum.ForumController.adminPermissions = function(){
-    var p = {banUser: true, banIP: true, editPost: true, deletePost: true,
-        createTopic: true, renameTopic: true, moveTopic: true, deleteTopic: true,
+    var p = {banUser: true, banIP: true, editPost: true,
+        deletePost: true,
+        createTopic: true, renameTopic: true,
+        moveTopic: true, deleteTopic: true,
         hideTopic: true,
         viewSpecialTopic_Deleted: true};
-    var mp = Forum.ForumController.moderatorPermissions();
-    for(var i in mp){
-        p[i] = mp[i];
-    }
-    return p; // plus moderator permissions
+    // add moderator permissions
+    return Object.extend(p, Forum.ForumController.moderatorPermissions());
 };
 
 
