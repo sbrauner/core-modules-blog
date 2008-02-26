@@ -1,7 +1,13 @@
-<% htmlheader('10gen Public Forum | Deleted posts'); %>
-<h1>Deleted posts</h1>
-<% 
+<% htmlheader('10gen Public Forum | Topic: Deleted'); %>
+<h1>Deleted</h1>
+<%
     var posts = Forum.data.Thread.getAllPostsDeletedByUser_Query(user);
-posts.forEach(Forum.renderer.deletedpost);
+// All threads with a deleted post in it
+var threads = {};
+posts.forEach(function(p){threads[p._id] = true; });
+for(var threadId in threads){
+    var thread = Forum.data.Thread.find({_id: threadID});
+    Forum.renderer.thread(thread, {deleted: true});
+}
 %>
 <% htmlfooter(); %>
