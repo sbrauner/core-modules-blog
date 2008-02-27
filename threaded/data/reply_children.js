@@ -30,13 +30,29 @@ threaded.data.ReplyChildren.prototype.getDescendant = function(desc_id){
     if(desc_id == "true"){
         return this;
     }
-    ary = desc_id.split(/\./);
+    var ary = desc_id.split(/\./);
+    return threaded.data.ReplyChildren.prototype.getDescendantFromArray.call(this, ary);
+};
+
+threaded.data.ReplyChildren.prototype.getDescendantFromArray = function(ary){
     var child = this;
     for(var i in ary){
         var index = ary[i];
         child = child.threaded_children[index];
     }
     return child;
+};
+
+threaded.data.ReplyChildren.prototype.removeDescendant = function(desc_id){
+    this.placeDescendant(null, desc_id);
+};
+
+threaded.data.ReplyChildren.prototype.placeDescendant = function(r, desc_id){
+    var ary = desc_id.split(/\./);
+    var last = ary.pop();
+
+    var child = threaded.data.ReplyChildren.prototype.getDescendantFromArray.call(this, ary);
+    child.threaded_children[last] = r;
 };
 
 threaded.data.ReplyChildren.saveDescendant = function(desc_id){

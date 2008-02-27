@@ -2,6 +2,7 @@
 // Form handler to deal with actions on posts in threads.
     core.net.uri();
 core.app.forum.data.thread();
+core.app.forum.data.deletion();
 var uri = new URI(request.getURL());
 var thread = db.forum.threads.findOne({_id: request.threadId});
 var selected = [];
@@ -26,19 +27,31 @@ var modifyPostCount = function(thread, num){
 var subtPost = function(attr){
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
-        p[attr] = user;
+
+        var dlist = db.forum.deleted.findOne({thread: thread});
+        if(! dlist) dlist = new Forum.data.DeletionList(thread);
+        dlist.deletions.push(new Forum.data.Deletion(p, p.getID(), attr, user));
+        db.forum.deleted.save(dlist);
+
         modifyPostCount(thread, -1);
-        thread.saveDescendant(p);
+        thread.removeDescendant(selected[i]);
         db.forum.threads.save(thread);
     }
 }
 
 var addPost = function(attr){
     for(var i in selected){
-        var p = thread.getDescendant(selected[i]);
-        p[attr] = false;
+        var dlist = db.forum.deleted.findOne({thread: thread});
+        for(var deletion in dlist.deletions){
+            if(deletion.location == selected[i]){
+                thread.placeDescendant(deletion.post, deletion.location);
+                dlist.deletions.splice(i, 1);
+            }
+        }
+
+        db.forum.deleted.save(dlist);
         modifyPostCount(thread, 1);
-        thread.saveDescendant(p);
+        thread.saveDescendant(thread.getDescendant(selected[i]));
         db.forum.threads.save(thread);
     }
 }

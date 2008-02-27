@@ -10,6 +10,7 @@ threaded.data.Reply = function(){
 };
 
 threaded.data.Reply.sort = function(ary){
+    ary = ary.filter(function(u){return u});
     return ary.sort( function (a, b) { return b.ts - a.ts; });
 };
 
