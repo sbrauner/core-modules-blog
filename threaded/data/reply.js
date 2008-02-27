@@ -35,7 +35,7 @@ threaded.data.Reply.prototype.encodeContent = function(txt){
 threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
     args = args || {};
-    var replylink = ! args.noreplylink;
+    var replylink = args.replylink == null? true: args.replylink;
     if(request.reply == "true" && ! request.reply_target ){
         this.threaded_pieces.reply_form.call(this, true);
         return;

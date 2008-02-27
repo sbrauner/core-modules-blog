@@ -30,7 +30,8 @@ options = {actions:
                function(u){
                    return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
                }
-           ]
+           ],
+           replyable: false
           }
 if(request.deleted) {
     var dlist = db.forum.deleted.findOne({thread: thread});
@@ -51,7 +52,7 @@ else { %>
 <% } %>
 </form>
 <%
-if(thread.decoratorsHandle()){
+    if(thread.decoratorsHandle({replylink: false})){
     thread.count ++;
     thread.topic.postCount ++;
     db.forum.topics.save(thread.topic);
