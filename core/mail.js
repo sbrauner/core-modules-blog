@@ -96,9 +96,7 @@ Mail.SMTP.gmail = function( username , password ){
 };
 
 
-//-----------------------------------------------------------------------------------------------------------------
-
-
+// Creates a new imap session (not connected)
 Mail.IMAP = function( addr , server , username , password , ssl , port ){
     
     this.addr = addr;
@@ -134,29 +132,7 @@ Mail.IMAP = function( addr , server , username , password , ssl , port ){
 };
 
 
-function getMessages(folder) {
-    if(!folder.exists()) {
-	log("the folder does not exist.");
-	return;
-    }
-
-    folder.open(1);
-    var message = folder.getMessages();
-
-    var tbd = ""; var j=0;
-    for(var j=0; j<message.length; j++) {
-	tbd += message[j].getSender()+"<br />";
-	tbd += message[j].getSubject()+"<br />";
-    	tbd += message[j].getReceivedDate()+"<br />";
-	tbd += message[j].getReplyTo()+"<br />";
-	tbd += message[j].getFrom()+"<br />";
-    }
-
-
-    return tbd;
-}
-
-
+// Returns an array of Java MimeMessages from the gmail inbox
 Mail.IMAP.gmail = function( username , password ){
     if ( ! username.match( /@gmail.com$/ ) )
         username += "@gmail.com";
@@ -173,8 +149,13 @@ Mail.IMAP.gmail = function( username , password ){
     }
 
     var folder = store.getFolder("INBOX");
-    return getMessages(folder);
+    if(!folder.exists()) {
+	log("the folder does not exist.");
+	return;
+    }
+
+    folder.open(1);
+    return folder.getMessages();
 };
 
 
-x = Mail.IMAP.gmail("10gen.auto@gmail.com", "jumpy171");
