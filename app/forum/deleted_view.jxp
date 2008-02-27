@@ -1,4 +1,3 @@
-<% htmlheader('10gen Public Forum | Topic: Deleted'); %>
 <h1>Deleted</h1>
     <table>
       <tr>
@@ -20,4 +19,3 @@ dlists.forEach(function(dlist){
     Forum.renderer.thread(thread, {deleted: true});
 });
 %>
-<% htmlfooter(); %>
