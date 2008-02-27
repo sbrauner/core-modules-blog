@@ -1,19 +1,7 @@
-<%
-if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else {
-%>
-<html>
-  <head>
-    <title>Forums</title>
-    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
-  </head>
-  <body>
-        <% core.user.html.topCorner(); %>
-    <h1><a href="./">Forum</a></h1>
-    <h1>Available topics</h1>
+<% 
+htmlheader("Forums");
+core.user.html.topCorner();
 
-<%
-        }
 core.app.forum.data.topic();
 core.app.forum.forum();
 var list = Forum.data.Topic.list();
@@ -36,10 +24,4 @@ else
 
 <a href="topic_new">New topic</a>
 
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-else {
-%>
-  </body>
-</html>
-<% } %>
+<% htmlfooter(); %>

@@ -1,5 +1,7 @@
 <%
-if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
+htmlheader("Forums | New Thread");
+core.user.html.topCorner();
+
 core.app.forum.data.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){
@@ -36,6 +38,4 @@ var backurl = "viewtopic?id="+request.top_id;
   </body>
 </html>
 
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-%>
+<% htmlfooter(); %>
