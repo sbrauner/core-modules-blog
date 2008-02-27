@@ -16,12 +16,17 @@ function doRound( date , t ){
 
 
 function getTotalByteArray(cursor, t) {
-    cursor.sort( { ts : -1 } );
+    cursor.sort( { ts : 1 } );
     
-    var last = null;
+    var lastTS = null;
     var a = [];
     
+    var last = null;
+
     cursor.forEach( function( z ){ 
+	    assert( lastTS == null || lastTS <= z.ts );
+	    lastTS = z.ts;
+	
             var n = doRound( z.ts , t );
             
             if ( ! last || ( n.getTime() != last.getTime()  ) )
@@ -92,8 +97,11 @@ function go( type , limit , t , header ){
     var start = new Date();
     start = new Date( start.getTime() - ( limit * 5 * 60 * 1000 ) );
     start = doRound( start , t );
+    
+    var coll = db._system.usage[type];
+    coll.ensureIndex( { ts : 1 } );
 
-    data = mungeData( db._system.usage[type].find().limit( limit ) , t , start );
+    data = mungeData( coll.find().limit( limit ) , t , start );
     data.forEach( function( z ){
 		      dt.add( z.time , z.num  );
 		  } );
