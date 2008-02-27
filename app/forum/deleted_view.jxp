@@ -13,13 +13,11 @@
         </td>
       </tr>
 <%
-    var posts = Forum.ForumController.getAllPostsDeletedByUser_Query(user);
-// All threads with a deleted post in it
-var threads = {};
-posts.forEach(function(p){threads[p.parent._id.toString()] = true; });
-for(var threadId in threads){
-    var thread = db.forum.threads.findOne({_id: threadId});
+    var dlists = db.forum.deleted.find();
+dlists.forEach(function(dlist){
+    thread = db.forum.threads.findOne(dlist.thread);
+    thread.count = dlist.deletions.length;
     Forum.renderer.thread(thread, {deleted: true});
-}
+});
 %>
 <% htmlfooter(); %>

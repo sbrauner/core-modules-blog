@@ -10,6 +10,7 @@ threaded.data.Reply = function(){
 };
 
 threaded.data.Reply.sort = function(ary){
+    ary = ary.filter(function(u){return u});
     return ary.sort( function (a, b) { return b.ts - a.ts; });
 };
 
@@ -18,7 +19,8 @@ threaded.data.Reply.prototype.decoratorsRender = function(options){
     if(options.replyable == null) options.replyable = this.threaded_replyable;
     var reps = this.getReplies();
     for (var i in reps){
-        this.threaded_pieces.reply(reps[i], options);
+        if(i == "_dbCons") continue;
+        reps[i].render(options, this.threaded_pieces);
     }
 };
 
@@ -33,7 +35,7 @@ threaded.data.Reply.prototype.encodeContent = function(txt){
 threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
     args = args || {};
-    var replylink = ! args.noreplylink;
+    var replylink = args.replylink == null? true: args.replylink;
     if(request.reply == "true" && ! request.reply_target ){
         this.threaded_pieces.reply_form.call(this, true);
         return;
@@ -62,6 +64,11 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
     return ret;
 };
 
+threaded.data.Reply.prototype.render = function(options, pieces){
+    pieces = pieces || core.threaded.html;
+    pieces.reply(this, options);
+};
+
 threaded.data.Reply.initialize = function(obj){
     obj.threaded_numPosts = 0;
 };
@@ -83,3 +90,5 @@ addQuery = function(args){
     var uri = request.getURI();
     return uri+"?"+Util.format_queryargs(obj);
 };
+
+log.threaded.data.reply.level = log.LEVEL.ERROR;

@@ -32,8 +32,6 @@ Forum.ForumController.adminPermissions = function(){
     return Object.extend(p, Forum.ForumController.moderatorPermissions());
 };
 
-
-
 Forum.ForumController.hasPermission = function(user, perm){
     if(user == null || user in Forum.ForumController.bannedUsers()){
         // treat user as anonymous

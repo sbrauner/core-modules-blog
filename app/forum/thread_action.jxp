@@ -1,7 +1,10 @@
 <%
 // Form handler to deal with actions on posts in threads.
     core.net.uri();
+core.app.forum.data.thread();
+core.app.forum.data.deletion();
 var uri = new URI(request.getURL());
+var thread = db.forum.threads.findOne({_id: request.threadId});
 var selected = [];
 for(var i in uri.args){
     if(uri.args[i].key == "select"){
@@ -9,66 +12,66 @@ for(var i in uri.args){
     }
 }
 
-var decPost = function(post){
-    post.parent.count -= 1;
-    db.forum.threads.save(post.parent);
+var modifyPostCount = function(thread, num){
+    thread.count += num;
+    db.forum.threads.save(thread);
 
-    var topic = post.parent.topic;
+    var topic = thread.topic;
     while(topic){
-        topic.postCount -= 1;
+        topic.postCount += num;
         db.forum.topics.save(topic);
         topic = topic.parent;
     }
+};
+
+var subtPost = function(attr){
+    for(var i in selected){
+        var p = thread.getDescendant(selected[i]);
+
+        var dlist = db.forum.deleted.findOne({thread: thread});
+        if(! dlist) dlist = new Forum.data.DeletionList(thread);
+        dlist.deletions.push(new Forum.data.Deletion(p, p.getID(), attr, user));
+        db.forum.deleted.save(dlist);
+
+        modifyPostCount(thread, -1);
+        thread.removeDescendant(selected[i]);
+        db.forum.threads.save(thread);
+    }
 }
 
-var incPost = function(post){
-    post.parent.count += 1;
-    db.forum.threads.save(post.parent);
+var addPost = function(attr){
+    for(var i in selected){
+        var dlist = db.forum.deleted.findOne({thread: thread});
+        for(var deletionIndex = 0; deletionIndex < dlist.deletions.length; deletionIndex++){
+            var deletion = dlist.deletions[deletionIndex];
+            if(deletion.location == selected[i]){
+                thread.placeDescendant(deletion.post, deletion.location);
+                dlist.deletions.splice(deletionIndex, 1);
+                thread.saveDescendant(thread.getDescendant(selected[i]));
+                db.forum.threads.save(thread);
+                break;
+            }
+        }
 
-    var topic = post.parent.topic;
-    while(topic){
-        topic.postCount += 1;
-        db.forum.topics.save(topic);
-        topic = topic.parent;
+        db.forum.deleted.save(dlist);
+        modifyPostCount(thread, 1);
     }
 }
 
 if(request.action == "delete"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.deleted = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
-
+    subtPost("deleted");
 }
 
 if(request.action == "undelete"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.deleted = false;
-        incPost(p);
-        db.forum.posts.save(p);
-    }
-
+    addPost("deleted");
 }
 
 if(request.action == "moderate"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.moderated = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
+    subtPost("moderated");
 }
 
-if(request.action == "moderate"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.moderated = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
+if(request.action == "unmoderate"){
+    addPost("moderated");
 }
 
 response.setResponseCode(301);

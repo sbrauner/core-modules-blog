@@ -47,6 +47,9 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
     cls.prototype.getDescendant = rcls.getDescendant;
+    cls.prototype.saveDescendant = rcls.saveDescendant;
+    cls.prototype.removeDescendant = rcls.removeDescendant;
+    cls.prototype.placeDescendant = rcls.placeDescendant;
     cls.prototype.threaded_tablename = tablename;
     cls.prototype.threaded_replyable = replyable;
     cls.prototype.threaded_pieces = core.threaded.html;
@@ -66,4 +69,5 @@ threaded.repliesEnabled = function(ns, clsname, args){
     ns[clsname].prototype = new cls();
     ns[clsname].prototype.constructor = ns[clsname];
     db[tablename].setConstructor(cls.prototype.Reply);
+    db[tablename].ensureIndex({ts: true});
 };
