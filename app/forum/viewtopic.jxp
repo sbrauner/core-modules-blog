@@ -28,6 +28,7 @@ else {
         <h1>Available sub-topics</h1>
         <% subs.forEach(Forum.renderer.topic); %>
         <% } %>
+<%}%>
 
     <h1>Available threads</h1>
     <table>
@@ -42,7 +43,6 @@ else {
           Last post
         </td>
       </tr>
-<%}%>
 <%
 var list = Forum.data.Thread.list(t);
 if (list)
@@ -50,14 +50,14 @@ if (list)
 else
     print ("No topics right now!");
 %>
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-else {
-%>
 </table>
 <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
 <a href="topic_new?parent=<%= id %>">New sub-topic</a>
 
+<%
+if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
+else {
+%>
 <a href="./">Back to toplevel</a>
   </body>
 </html>
