@@ -1,5 +1,7 @@
+core.app.forum.data.thread();
+
 Forum.data.Deletion = function(post, location, reason, user){
-    this.post = post;
+    this.post = post || new Forum.data.Thread.Reply;
     this.location = location;
     this.reason = reason;
     this.user = user;

@@ -20,7 +20,7 @@ threaded.data.Reply.prototype.decoratorsRender = function(options){
     var reps = this.getReplies();
     for (var i in reps){
         if(i == "_dbCons") continue;
-        this.threaded_pieces.reply(reps[i], options);
+        reps[i].render(options, this.threaded_pieces);
     }
 };
 
@@ -62,6 +62,11 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
         print("<a href=\""+u+"\">Reply</a>");
     }
     return ret;
+};
+
+threaded.data.Reply.prototype.render = function(options, pieces){
+    pieces = pieces || core.threaded.html;
+    pieces.reply(this, options);
 };
 
 threaded.data.Reply.initialize = function(obj){

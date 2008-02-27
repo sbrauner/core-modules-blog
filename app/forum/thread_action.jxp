@@ -42,17 +42,19 @@ var subtPost = function(attr){
 var addPost = function(attr){
     for(var i in selected){
         var dlist = db.forum.deleted.findOne({thread: thread});
-        for(var deletion in dlist.deletions){
+        for(var deletionIndex = 0; deletionIndex < dlist.deletions.length; deletionIndex++){
+            var deletion = dlist.deletions[deletionIndex];
             if(deletion.location == selected[i]){
                 thread.placeDescendant(deletion.post, deletion.location);
-                dlist.deletions.splice(i, 1);
+                dlist.deletions.splice(deletionIndex, 1);
+                thread.saveDescendant(thread.getDescendant(selected[i]));
+                db.forum.threads.save(thread);
+                break;
             }
         }
 
         db.forum.deleted.save(dlist);
         modifyPostCount(thread, 1);
-        thread.saveDescendant(thread.getDescendant(selected[i]));
-        db.forum.threads.save(thread);
     }
 }
 
