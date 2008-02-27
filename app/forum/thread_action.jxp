@@ -33,8 +33,15 @@ var subtPost = function(attr){
         dlist.deletions.push(new Forum.data.Deletion(p, p.getID(), attr, user));
         db.forum.deleted.save(dlist);
 
-        modifyPostCount(thread, -1);
-        thread.removeDescendant(selected[i]);
+        if(p == thread.findFirstPost()){
+            // create new "fake" post with the same title, author, etc.
+            p.content = "(post deleted)";
+            thread.saveDescendant(p);
+        }
+        else {
+            thread.removeDescendant(selected[i]);
+            modifyPostCount(thread, -1);
+        }
         db.forum.threads.save(thread);
     }
 }
@@ -53,7 +60,12 @@ var addPost = function(attr){
             }
         }
 
-        db.forum.deleted.save(dlist);
+        if(dlist.deletions.length == 0){
+            db.forum.deleted.remove(dlist);
+        }
+        else {
+            db.forum.deleted.save(dlist);
+        }
         modifyPostCount(thread, 1);
     }
 }
