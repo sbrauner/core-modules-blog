@@ -27,7 +27,7 @@ var subtPost = function(attr){
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
         p[attr] = user;
-        modifyPostCount(p, -1);
+        modifyPostCount(thread, -1);
         thread.saveDescendant(p);
         db.forum.threads.save(thread);
     }
@@ -37,7 +37,7 @@ var addPost = function(attr){
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
         p[attr] = false;
-        modifyPostCount(p, 1);
+        modifyPostCount(thread, 1);
         thread.saveDescendant(p);
         db.forum.threads.save(thread);
     }
