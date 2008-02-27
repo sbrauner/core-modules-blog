@@ -120,8 +120,6 @@ Mail.IMAP = function( addr , server , username , password , ssl , port ){
         throw "password is required";
     
 
-    //    javaStatic("java.security.Security.addProvider", "new com.sun.net.ssl.internal.ssl.Provider()");
-
     this._props = javaCreate( "java.util.Properties" );
     this._props.setProperty( "mail.imap.host" , this.server );
     this._props.setProperty( "mail.imap.port" , this.port );
@@ -136,6 +134,29 @@ Mail.IMAP = function( addr , server , username , password , ssl , port ){
 };
 
 
+function getMessages(folder) {
+    if(!folder.exists()) {
+	log("the folder does not exist.");
+	return;
+    }
+
+    folder.open(1);
+    var message = folder.getMessages();
+
+    var tbd = ""; var j=0;
+    for(var j=0; j<message.length; j++) {
+	tbd += message[j].getSender()+"<br />";
+	tbd += message[j].getSubject()+"<br />";
+    	tbd += message[j].getReceivedDate()+"<br />";
+	tbd += message[j].getReplyTo()+"<br />";
+	tbd += message[j].getFrom()+"<br />";
+    }
+
+
+    return tbd;
+}
+
+
 Mail.IMAP.gmail = function( username , password ){
     if ( ! username.match( /@gmail.com$/ ) )
         username += "@gmail.com";
@@ -144,78 +165,16 @@ Mail.IMAP.gmail = function( username , password ){
     imap._session.setDebug(true);
 
     var store = imap._session.getStore("imap");
-    log("url: "+store.toString());
-
-    log("entering try");
-    try {
-
-	store.connect("imap.gmail.com", 993, "10gen.auto@gmail.com","jumpy171");
+    store.connect("imap.gmail.com", 993, "10gen.auto@gmail.com","jumpy171");
     
-    }
-    catch (e) {
-	log("exception: "+e);
-    }
-    finally {
-	log("leaving try");
-    }
-
-
     if(!store.isConnected()) {
 	log("not connected");
 	return;
     }
 
-    log("namespaces: "+store.getUserNamespaces("10gen.auto@gmail.com"));
-    var folder = store.getUserNamespaces();
-
-    for(i=0; i<folder.length; i++) {
-	message = folder.getMessages();
-	for(j=0; j<message[i].length; j++) {
-	    log(message[i].getSubject());
-	}
-    }
-
-
-
-    return imap;
-
-
+    var folder = store.getFolder("INBOX");
+    return getMessages(folder);
 };
 
 
-
-Mail.Message.prototype.receive = function( imap ){
-      var m = javaCreate( "javax.mail.Session" , imap._session );
-    var store = m.getStore();
-    log(store.getUserNamespaces());
-    var folder = store.getUserNamespaces();
-
-    for(i=0; i<folder.length; i++) {
-	message = folder.getMessages();
-	for(j=0; j<message[i].length; j++) {
-	    log(message[i].getSubject());
-	}
-    }
-
-
-
-    
-    /*    for ( var i=0; i<Mail.recipientTypes.length; i++ ){
-        
-        var type = Mail.recipientTypes[i];
-        
-        if ( ! this[type] ) 
-            continue;
-        
-        var realType = Mail.recipientTypesJava[i];
-        
-        this[type].forEach( function(z){
-                m.addRecipient( realType , javaCreate( "javax.mail.internet.InternetAddress" , z ) );
-            } );
-        
-    }
-
-    javaStatic( "javax.mail.Transport" , "send" , m );
-    */
-
-};
+x = Mail.IMAP.gmail("10gen.auto@gmail.com", "jumpy171");
