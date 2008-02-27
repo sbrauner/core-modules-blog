@@ -28,8 +28,8 @@ var subtPost = function(attr){
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
 
-        var dlist = db.forum.deleted.findOne({thread: thread});
-        if(! dlist) dlist = new Forum.data.DeletionList(thread);
+        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
+        if(! dlist) dlist = new Forum.data.DeletionList(thread, attr);
         dlist.deletions.push(new Forum.data.Deletion(p, p.getID(), attr, user));
         db.forum.deleted.save(dlist);
 
@@ -48,7 +48,7 @@ var subtPost = function(attr){
 
 var addPost = function(attr){
     for(var i in selected){
-        var dlist = db.forum.deleted.findOne({thread: thread});
+        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
         for(var deletionIndex = 0; deletionIndex < dlist.deletions.length; deletionIndex++){
             var deletion = dlist.deletions[deletionIndex];
             if(deletion.location == selected[i]){
