@@ -13,13 +13,18 @@
         </td>
       </tr>
 <%
-    var posts = Forum.ForumController.getAllPostsDeletedByUser_Query(user);
-// All threads with a deleted post in it
-var threads = {};
-posts.forEach(function(p){threads[p.parent._id.toString()] = true; });
-for(var threadId in threads){
-    var thread = db.forum.threads.findOne({_id: threadId});
-    Forum.renderer.thread(thread, {deleted: true});
-}
+    var threads = db.forum.threads.find();
+threads.forEach(function(t){
+    var posts = t.getReplies();
+    var numDeleted = 0;
+    for(var i in posts){
+        if(posts[i].deleted)
+            numDeleted += 1;
+    }
+    if(numDeleted > 0){
+        t.count = numDeleted;
+        Forum.renderer.thread(t, {deleted: true});
+    }
+});
 %>
 <% htmlfooter(); %>
