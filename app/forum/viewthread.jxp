@@ -11,20 +11,15 @@ print("<!-- " + thread._id + "-->");
 canDelete = Forum.ForumController.hasPermission(user, "deletePost");
 canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
 
+htmlheader("Viewing thread: "+thread.findFirstPost().title);
+core.user.html.topCorner();
+
 %>
-<%
-if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else {
-%>
-<html>
-  <head>
-    <title>Viewing thread: <%= thread.findFirstPost().title %></title>
-    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
-  </head>
-  <body>
-    <h1><a href="./">Forum</a></h1>
-    <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
-<% } %>
+
+<h1><a href="./">Forum</a></h1>
+<h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
+
+
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
 <%

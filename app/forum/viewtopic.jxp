@@ -13,36 +13,29 @@ if(request.id == Forum.ForumController.specialModeratedID){
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();
 
-if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else {
+htmlheader("Forum");
+core.user.html.topCorner();
+
+if(subs.length > 0){ %>
+   <h1>Available sub-topics</h1>
+   <% subs.forEach(Forum.renderer.topic); 
+} 
 %>
-<html>
-  <head>
-    <title>Forum <%= t.name %></title>
-    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
-  </head>
-  <body>
-    <h1><a href="./">Forum</a></h1>
 
-        <% if(subs.length > 0){ %>
-        <h1>Available sub-topics</h1>
-        <% subs.forEach(Forum.renderer.topic); %>
-        <% } %>
-<%}%>
+<h1>Available threads</h1>
+  <table>
+    <tr>
+      <td>
+        Thread
+      </td>
+      <td>
+        Replies
+      </td>
+      <td>
+        Last post
+      </td>
+    </tr>
 
-    <h1>Available threads</h1>
-    <table>
-      <tr>
-        <td>
-          Thread
-        </td>
-        <td>
-          Replies
-        </td>
-        <td>
-          Last post
-        </td>
-      </tr>
 <%
 var list = Forum.data.Thread.list(t);
 if (list)
@@ -54,11 +47,4 @@ else
 <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
 <a href="topic_new?parent=<%= id %>">New sub-topic</a>
 
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-else {
-%>
-<a href="./">Back to toplevel</a>
-  </body>
-</html>
-<% } %>
+<% htmlfooter(); %>
