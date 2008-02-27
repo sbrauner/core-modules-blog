@@ -8,7 +8,6 @@ if(request.getMethod() == "POST"){
     var rep = thread.decoratorsHandle();
 
     if(rep){
-        thread.count += 1;
         thread.topic = db.forum.topics.findOne({_id: request.top_id});
         thread.topic.threadCount += 1;
 
