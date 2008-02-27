@@ -47,6 +47,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
     cls.prototype.getDescendant = rcls.getDescendant;
+    cls.prototype.saveDescendant = rcls.saveDescendant;
     cls.prototype.threaded_tablename = tablename;
     cls.prototype.threaded_replyable = replyable;
     cls.prototype.threaded_pieces = core.threaded.html;

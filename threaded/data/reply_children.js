@@ -23,7 +23,7 @@ threaded.data.ReplyChildren.prototype.addReply = function(r){
 };
 
 threaded.data.ReplyChildren.prototype.getID = function(){
-    return this.parentid? this.parentid + '.': "" + this.index;
+    return this.parentid? this.parentid + '.': "" + this.index.toFixed(0);
 };
 
 threaded.data.ReplyChildren.prototype.getDescendant = function(desc_id){
@@ -37,6 +37,10 @@ threaded.data.ReplyChildren.prototype.getDescendant = function(desc_id){
         child = child.threaded_children[index];
     }
     return child;
+};
+
+threaded.data.ReplyChildren.saveDescendant = function(desc_id){
+    // Be sure to save your object too!
 };
 
 threaded.data.ReplyChildren.initialize = function(obj){

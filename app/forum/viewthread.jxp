@@ -30,11 +30,12 @@ else {
     <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
 <% } %>
 <form action="thread_action">
+  <input type="hidden" name="threadId" value="<%= thread._id %>">
 <%
 thread.decoratorsRender({actions:
                          [
                              function(u){
-                                 return "<input name='select' value=\""+u._id+"\" type=\"checkbox\">";
+                                 return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
                              }
                          ],
                          filter: filter

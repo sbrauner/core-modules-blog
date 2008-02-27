@@ -1,7 +1,9 @@
 <%
 // Form handler to deal with actions on posts in threads.
     core.net.uri();
+core.app.forum.data.thread();
 var uri = new URI(request.getURL());
+var thread = db.forum.threads.findOne({_id: request.threadId});
 var selected = [];
 for(var i in uri.args){
     if(uri.args[i].key == "select"){
@@ -9,66 +11,52 @@ for(var i in uri.args){
     }
 }
 
-var decPost = function(post){
-    post.parent.count -= 1;
-    db.forum.threads.save(post.parent);
+var modifyPostCount = function(thread, num){
+    thread.count += num;
+    db.forum.threads.save(thread);
 
-    var topic = post.parent.topic;
+    var topic = thread.topic;
     while(topic){
-        topic.postCount -= 1;
+        topic.postCount += num;
         db.forum.topics.save(topic);
         topic = topic.parent;
     }
+};
+
+var subtPost = function(attr){
+    for(var i in selected){
+        var p = thread.getDescendant(selected[i]);
+        p[attr] = user;
+        modifyPostCount(p, -1);
+        thread.saveDescendant(p);
+        db.forum.threads.save(thread);
+    }
 }
 
-var incPost = function(post){
-    post.parent.count += 1;
-    db.forum.threads.save(post.parent);
-
-    var topic = post.parent.topic;
-    while(topic){
-        topic.postCount += 1;
-        db.forum.topics.save(topic);
-        topic = topic.parent;
+var addPost = function(attr){
+    for(var i in selected){
+        var p = thread.getDescendant(selected[i]);
+        p[attr] = false;
+        modifyPostCount(p, 1);
+        thread.saveDescendant(p);
+        db.forum.threads.save(thread);
     }
 }
 
 if(request.action == "delete"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.deleted = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
-
+    subtPost("deleted");
 }
 
 if(request.action == "undelete"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.deleted = false;
-        incPost(p);
-        db.forum.posts.save(p);
-    }
-
+    addPost("deleted");
 }
 
 if(request.action == "moderate"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.moderated = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
+    subtPost("moderated");
 }
 
-if(request.action == "moderate"){
-    for(var i in selected){
-        var p = db.forum.posts.findOne({_id: selected[i]});
-        p.moderated = user;
-        decPost(p);
-        db.forum.posts.save(p);
-    }
+if(request.action == "unmoderate"){
+    addPost("moderated");
 }
 
 response.setResponseCode(301);

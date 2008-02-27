@@ -31,6 +31,10 @@ threaded.data.ReplyParent.prototype.getDescendant = function(desc_id){
     return db[this.threaded_tablename].findOne({_id: desc_id});
 };
 
+threaded.data.ReplyParent.saveDescendant = function(desc){
+    db[this.threaded_tablename].save(desc);
+};
+
 threaded.data.ReplyParent.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
 };
@@ -38,3 +42,4 @@ threaded.data.ReplyParent.initialize = function(obj){
 threaded.data.ReplyParent.find_Query = function(query){
     return db[this.prototype.threaded_tablename].find(query);
 };
+
