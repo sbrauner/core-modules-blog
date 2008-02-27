@@ -5,6 +5,7 @@ var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
 var filter = (options.filter == null)? function(){return true;} : options.filter;
 if(! filter(t)) return;
+log.threaded.data.reply.debug("Trying to show " + tojson(t));
  %>
 <ul class="post">
   <li>

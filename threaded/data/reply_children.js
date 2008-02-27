@@ -4,6 +4,7 @@ core.threaded.data.reply();
 threaded.data.ReplyChildren = function(){
     threaded.data.Reply.call(this);
     this.threaded_children = [];
+    this.threaded_children._dbCons = threaded.data.ReplyChildren;
     this.parentid = "";
     this.index = "";
 };
@@ -41,5 +42,6 @@ threaded.data.ReplyChildren.prototype.getDescendant = function(desc_id){
 threaded.data.ReplyChildren.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
     obj.threaded_children = [];
+    obj.threaded_children._dbCons = threaded.data.ReplyChildren;
 };
 

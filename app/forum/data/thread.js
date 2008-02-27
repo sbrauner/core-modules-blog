@@ -12,8 +12,8 @@ Forum.data.Thread.prototype.findFirstPost = function(){
     return this.getReplies()[0];
 };
 
-core.threaded.data.reply_parent();
-threaded.repliesEnabled(Forum.data, "Thread", {users: "auth", tablename: "forum.posts", replyable: false});
+core.threaded.data.reply_children();
+threaded.repliesEnabled(Forum.data, "Thread", {style: "children", users: "auth", tablename: "forum.posts", replyable: false});
 
 Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1});

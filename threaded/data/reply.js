@@ -18,6 +18,7 @@ threaded.data.Reply.prototype.decoratorsRender = function(options){
     if(options.replyable == null) options.replyable = this.threaded_replyable;
     var reps = this.getReplies();
     for (var i in reps){
+        if(i == "_dbCons") continue;
         this.threaded_pieces.reply(reps[i], options);
     }
 };
@@ -83,3 +84,5 @@ addQuery = function(args){
     var uri = request.getURI();
     return uri+"?"+Util.format_queryargs(obj);
 };
+
+log.threaded.data.reply.level = log.LEVEL.ERROR;
