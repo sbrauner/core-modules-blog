@@ -13,6 +13,7 @@
         </td>
       </tr>
 <%
+    core.app.forum.data.thread();
     var dlists = db.forum.deleted.find();
 dlists.forEach(function(dlist){
     thread = db.forum.threads.findOne(dlist.thread);
