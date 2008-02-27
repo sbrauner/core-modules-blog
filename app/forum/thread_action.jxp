@@ -61,7 +61,7 @@ var addPost = function(attr){
         }
 
         if(dlist.deletions.length == 0){
-            db.forum.deleted.remove(dlist);
+            db.forum.deleted.remove({_id: dlist._id});
         }
         else {
             db.forum.deleted.save(dlist);
