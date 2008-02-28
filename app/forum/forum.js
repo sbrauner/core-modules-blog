@@ -9,7 +9,9 @@ Forum.ForumController.anonymousPermissions = function(){
 };
 
 Forum.ForumController.memberPermissions = function(){
-    var p = {};
+    var p = {createTopic: true,
+        makePost: true
+    };
     // add anonymousPermissions
     return Object.extend(p, Forum.ForumController.anonymousPermissions());
 };

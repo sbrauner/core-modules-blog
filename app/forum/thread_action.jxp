@@ -4,6 +4,7 @@
     core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.deletion();
+core.user.auth();
 var uri = new URI(request.getURL());
 if(request.threadId)
     var thread = db.forum.threads.findOne({_id: request.threadId});
@@ -93,22 +94,32 @@ var addPost = function(attr){
 };
 
 if(request.action == "delete"){
+    if(! Forum.ForumController.hasPermission(user, "deletePost"))
+        return Auth.cookie.reject(request, response);
     subtPost("deleted");
 }
 
 if(request.action == "undelete"){
+    if(! Forum.ForumController.hasPermission(user, "deletePost"))
+        return Auth.cookie.reject(request, response);
     addPost("deleted");
 }
 
 if(request.action == "moderate"){
+    if(! Forum.ForumController.hasPermission(user, "moderatePost"))
+        return Auth.cookie.reject(request, response);
     subtPost("moderated");
 }
 
 if(request.action == "unmoderate"){
+    if(! Forum.ForumController.hasPermission(user, "moderatePost"))
+        return Auth.cookie.reject(request, response);
     addPost("moderated");
 }
 
 if(request.action == "sticky"){
+    if(! Forum.ForumController.hasPermission(user, "stickyThread"))
+        return Auth.cookie.reject(request, response);
     log.app.forum.thread_action.debug("stickifying " + selected);
     selected.forEach(function(sel1){
         var thread = db.forum.threads.findOne({_id: sel1});
@@ -118,6 +129,8 @@ if(request.action == "sticky"){
 }
 
 if(request.action == "unsticky"){
+    if(! Forum.ForumController.hasPermission(user, "stickyThread"))
+        return Auth.cookie.reject(request, response);
     selected.forEach(function(sel1){
         var thread = db.forum.threads.findOne({_id: sel1});
         thread.pinned = false;

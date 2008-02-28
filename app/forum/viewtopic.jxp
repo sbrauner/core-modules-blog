@@ -127,7 +127,9 @@ else
     print ("No topics right now!");
 %>
 </table>
-<a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
+  <% if(Forum.ForumController.hasPermission(user, "createThread")){ %>
+  <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
+  <% } %>
 <% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
 <a href="topic_new?parent=<%= id %>">New topic</a>
 <% } %>
