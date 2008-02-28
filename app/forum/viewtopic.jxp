@@ -117,10 +117,8 @@ if (list)
 		}
 		print("</select>");
 	}
-	Forum.renderer.thread(t);
-    }
-);
-    list.forEach(function(thread){Forum.renderer.thread(thread, opts);});
+	Forum.renderer.thread(t, opts);
+    });   
 else
     print ("No topics right now!");
 %>
