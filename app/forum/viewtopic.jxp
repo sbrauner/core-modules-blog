@@ -79,6 +79,21 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
         return "<form action=\"thread_action\"><input type=\"hidden\" name=\"select\" value=\""+thread._id+"\"><input type=\"hidden\" name=\"action\" value=\""+action+"\"><input type=\"submit\" value=\""+text+"\"></form>";
       });
 }
+
+if(moveThread) {
+       var topics = db.forum.topics.find();
+       topics = topics.toArray();
+
+	actions.push(function(t) {
+		print("move to <select>");
+		for(i=0; i<topics.length; i++) {
+			if(t.topic._id != topics[i]._id) { 
+				 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
+			}
+		}
+	});
+}
+
 %>
 
 <h1>Available threads</h1>
@@ -103,20 +118,9 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
 <%
 opts = {actions: actions};
 var list = Forum.data.Thread.list(t);
-var topics = db.forum.topics.find();
-topics = topics.toArray();
-select_id = 0;
 
 if (list)
     list.forEach( function(t) {
-        if(moveThread) {
-		print("move to <select id=\"s"+(select_id++)+"\">");
-		for(i=0; i<topics.length; i++) {
-			 if(t.topic._id != topics[i]._id) 
-			 	 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
-		}
-		print("</select>");
-	}
 	Forum.renderer.thread(t, opts);
     });   
 else

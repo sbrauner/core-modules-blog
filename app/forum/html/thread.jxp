@@ -26,10 +26,11 @@ if(deletedPosts) title += " (deleted posts)";
 var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
-<tr>
+
+
+<tr valign="top">
   <td>
-    <a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/>
-at <%= f.ts %>
+    <a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/> at <%= f.ts %>
   </td>
   <td>
     <%= t.count.toFixed() %>
@@ -41,11 +42,13 @@ at <%= f.ts %>
   </td>
   <% } %>
       <% if (actions.length > 0){ %>
-      <td>
         <% for(var i in actions){ %>
+	<td>
         <%= actions[i](t) %>
+	</td>
         <% } %>
-      </td>
+   </tr>
       <% } %>
 
 </div>
+
