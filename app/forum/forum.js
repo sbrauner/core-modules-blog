@@ -15,7 +15,8 @@ Forum.ForumController.userPermissions = function(){
 };
 
 Forum.ForumController.moderatorPermissions = function(){
-    var p = {viewSpecialTopic_Moderated: true};
+    var p = {viewSpecialTopic_Moderated: true,
+        moderatePost: true};
 
     // add userPermissions
     return Object.extend(p, Forum.ForumController.userPermissions());
@@ -31,8 +32,6 @@ Forum.ForumController.adminPermissions = function(){
     // add moderator permissions
     return Object.extend(p, Forum.ForumController.moderatorPermissions());
 };
-
-
 
 Forum.ForumController.hasPermission = function(user, perm){
     if(user == null || user in Forum.ForumController.bannedUsers()){

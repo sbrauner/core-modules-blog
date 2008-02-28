@@ -1,18 +1,17 @@
 <%
 core.app.forum.data.thread();
+core.app.forum.data.deletion();
+core.app.forum.forum();
 var thread = db.forum.threads.findOne({_id: request.id});
-if(request.deleted){
-    var filter = function(post) {  log.app.forum.debug("Help" + tojson(post.deleted)); return (typeof post.deleted == "object") && (post.deleted._id == user._id); };
-}
-else {
-    var filter = function(post) { return !( post.deleted || post.moderated ); };
-}
 
 if(thread == null){
     print("thread not found");
     return;
 }
 print("<!-- " + thread._id + "-->");
+
+canDelete = Forum.ForumController.hasPermission(user, "deletePost");
+canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
 
 %>
 <%
@@ -29,26 +28,45 @@ else {
     <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
 <% } %>
 <form action="thread_action">
+  <input type="hidden" name="threadId" value="<%= thread._id %>">
 <%
-thread.decoratorsRender({actions:
-                         [
-                             function(u){
-                                 return "<input name='select' value=\""+u._id+"\" type=\"checkbox\">";
-                             }
-                         ],
-                         filter: filter
-                        });
+    options = {replyable: false};
+if(canDelete || canModerate){
+options.actions = [
+    function(u){
+        return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
+    }
+];
+}
+
+if(request.deleted) {
+    var dlist = db.forum.deleted.findOne({thread: thread});
+    dlist.deletions.forEach(function(deletion){
+        deletion.post.render(options);
+    });
+}
+else {
+thread.decoratorsRender(options);
+}
 %>
 
-<% if(request.deleted){ %>
-<input type="submit" name="action" value="undelete">
-<% }
-else { %>
-<input type="submit" name="action" value="delete">
-<% } %>
+    <% if(request.deleted && canDelete){ %>
+    <input type="submit" name="action" value="undelete">
+    <% }
+else if(request.moderated && canModerate){ %>
+    <input type="submit" name="action" value="unmoderate">
+    <% }
+else {
+    if(Forum.ForumController.hasPermission(user, "deletePost")){ %>
+    <input type="submit" name="action" value="delete">
+    <% } %>
+    <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
+    <input type="submit" name="action" value="moderate">
+    <% } %>
+    <% } %>
 </form>
 <%
-if(thread.decoratorsHandle()){
+    if(thread.decoratorsHandle({replylink: false})){
     thread.count ++;
     thread.topic.postCount ++;
     db.forum.topics.save(thread.topic);
