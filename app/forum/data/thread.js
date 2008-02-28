@@ -20,23 +20,15 @@ Forum.data.Thread.prototype.getFirstPost = function() {
     return this.findFirstPost();
 };
 
-Forum.data.Thread.setTopic = function(newTopic) {
-    oldTopic = thread.topic;
-    this.count--;
+Forum.data.Thread.prototype.setTopic = function(newTopic) {
+    oldTopic = this.topic;
+    oldTopic.postCount -= this.count;
+    oldTopic.threadCount--;
 
+    newTopic.postCount += this.count;
+    newTopic.threadCount++;
 
-    this.name = null;
-    this.description = null;
-    this.hidden = false;
-    this.allowPosts = true;
-    this.order = null;
-
-    // Housekeeping fields
-    this.latestPost = null;
-    this.parent = null;
-    this.postCount = 0;
-    this.threadCount = 0;
-
+    this.topic = newTopic;
 };
 
 Forum.data.Thread.prototype.getLatestPost = function() {
