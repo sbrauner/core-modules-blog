@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+<% 
+
+core.app.forum.data.thread();
+core.content.html();
+
+core.app.forum.data.topic();
+core.app.forum.forum();
+
+var topic = db.forum.topics.findOne( { _id: request.id } );
+var threads = db.forum.threads.find( { topic : topic } ).sort( { created : -1 } );
+var now = new Date();
+
+response.setHeader( "Content-Type" , "text/xml"); %>
+
+<channel>
+   <title><%= topic.name  %></title>
+   <link>http://<%= request.getHeader( "Host")+"/forum/viewtopic?id="+topic._id %></link>
+   <language>en-us</language>
+   <pubDate><%= now.webFormat() %></pubDate>
+   <description></description>
+
+   <%
+      while(threads.hasNext()) {
+        thread = threads.next();
+        post = thread.getFirstPost();
+        %>
+   
+        <item>
+	  <title><%= post.title %></title>
+	  <link><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></link>
+	  <pubDate><%= thread.created.webFormat() %></pubDate>
+	  <author><%= post.author.name %></author>
+	  <source><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></source>
+	  <language>en-us</language>
+	  <date>2008-02-28T03:43:44-08:00</date>
+	  <description>
+	    Number of posts: <%= thread.count %><br />
+	    Most recent post: <%= thread.getReplies()[thread.latestPost].content  %>
+	  </description>
+	</item>
+	<%
+      }     
+
+   %>
+   </channel>
+
+</rss>
