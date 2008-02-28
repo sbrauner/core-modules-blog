@@ -18,8 +18,14 @@ var subs = Forum.data.Topic.list(t).toArray();
 
 if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
-   <% subs.forEach(Forum.renderer.topic); 
-} 
+   <% subs.forEach(Forum.renderer.topic);
+}
+var actions = [];
+if(Forum.ForumController.hasPermission(user, "stickyThread")){
+    actions.push(function(thread){
+        return "<form><input type=\"hidden\" name=\"sticky\" value=\""+thread._id+"\"><input type=\"submit\" value=\"Sticky\"></form>";
+      });
+}
 %>
 
 <h1>Available threads</h1>
@@ -34,12 +40,18 @@ if(subs.length > 0){ %>
       <td>
         Last post
       </td>
+      <% if(actions.length > 0){ %>
+      <td>
+        Actions
+      </td>
+      <% } %>
     </tr>
 
 <%
+opts = {actions: actions};
 var list = Forum.data.Thread.list(t);
 if (list)
-    list.forEach(Forum.renderer.thread);
+    list.forEach(function(thread){Forum.renderer.thread(thread, opts);});
 else
     print ("No topics right now!");
 %>

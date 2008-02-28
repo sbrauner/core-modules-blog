@@ -8,7 +8,14 @@ core.app.forum.data.thread();
 // t is the thread to show.
 var t = arguments[0];
 var opts = arguments[1];
+
+// Are we displaying the deleted posts of a thread?
+// i.e. Are we displaying a DeletionList?
 var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted;
+
+// actions is a list of functions which will be called on the thread and the
+// results put in a fourth cell
+var actions = (opts == null || opts.actions == null) ? [] : opts.actions;
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 var l = t.getDescendant(t.latestPost);
@@ -33,5 +40,12 @@ at <%= f.ts %>
     at <%= l.ts %>
   </td>
   <% } %>
+      <% if (actions.length > 0){ %>
+      <td>
+        <% for(var i in actions){ %>
+        <%= actions[i](t) %>
+        <% } %>
+      </td>
+      <% } %>
 
 </div>
