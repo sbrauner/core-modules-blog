@@ -1,0 +1,32 @@
+<h3>404s last 24 hours</h3>
+<%
+
+    var all = {};
+
+var cursor = db.blog.missingpages.find( { date : { $gt : ( new Date() ).roundDay() } } );
+cursor.forEach( function(z){
+		    var c = all[z.uri] || 0;
+		    c += z.num;
+		    all[z.uri] = c;
+		} );
+
+a = [];
+
+for ( uri in all ){
+    a.push( { uri : uri , num : all[uri] } );
+}
+
+a = a.sort( function( a , b ){
+		return b.num - a.num;
+	    } );
+
+print( "<table>" );
+a.forEach( function(z){
+	       print( "<tr>" );
+	       print( "<td>" + z.num + "</td>" );
+	       print( "<td>" + z.uri + "</td>" );
+	       print( "</tr>" );
+	   } );
+print( "</table>" );
+
+%>
