@@ -61,13 +61,16 @@ else {
     <% } %>
 </form>
 <%
-    if(!request.deleted)
-        if(thread.decoratorsHandle()){
+    if(!request.deleted){
+        var p = thread.decoratorsHandle();
+        if( p ){
             thread.count ++;
             thread.topic.postCount ++;
+            thread.latestPost = p.getID();
             db.forum.topics.save(thread.topic);
             db.forum.threads.save(thread);
-        }%>
+        }
+    }%>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
