@@ -5,8 +5,8 @@ core.user.html.topCorner();
 core.app.forum.data.topic();
 core.app.forum.forum();
 var list = Forum.data.Topic.list();
-if (list.length == 0) 
-    list.forEach(Forum.renderer.topic);
+if (list.length > 0) 
+    list.forEach( Forum.renderer.topic);
 else
     print ("No topics right now!");
 
