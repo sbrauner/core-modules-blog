@@ -68,11 +68,7 @@ else {
     db.forum.threads.save(thread);
 }%>
 
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-else {
-%>
+
 <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
-  </body>
-</html>
-        <% } %>
+
+<% htmlfooter(); %>

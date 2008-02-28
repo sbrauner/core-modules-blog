@@ -1,4 +1,7 @@
 <%
+htmlheader("Forum");
+core.user.html.topCorner();
+
 core.content.table();
 core.app.forum.forum();
 core.app.forum.data.thread();
@@ -12,9 +15,6 @@ if(request.id == Forum.ForumController.specialModeratedID){
 }
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();
-
-htmlheader("Forum");
-core.user.html.topCorner();
 
 if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
