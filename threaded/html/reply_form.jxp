@@ -22,4 +22,15 @@
        <div class="field_value"><input type="submit" value="Save"></div>
      </div>
 
+    <% var opts = arguments[1] || {};
+if(opts.actions){
+    opts.actions.forEach(function(action){
+        var field = action(arguments[0]);
+            %>
+    <div class="field">
+      <div class="field_name"><%= field.name %></div>
+      <div class="field_value"><%= field.value %></div>
+    </div>
+         <%});
+}%>
 </form>

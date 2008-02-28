@@ -1,7 +1,10 @@
 core.db.db();
 Forum.data.Thread = function(){
     this.commentsEnabled = true;
-    this.pinned = true;
+    // Whether a thread is "sticky", "pinned", or otherwise. Such threads
+    // are "higher priority" and come first when listing the
+    // threads in a topic.
+    this.pinned = false;
     this.created = new Date();
     this.latestPost = null;
     this.count = 1;
@@ -28,4 +31,6 @@ Forum.data.Thread.list = function(topic){
 };
 
 db.forum.threads.setConstructor(Forum.data.Thread);
+
 db.forum.threads.ensureIndex({created : -1});
+db.forum.threads.ensureIndex({pinned: 1});
