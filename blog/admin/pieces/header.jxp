@@ -5,6 +5,7 @@
     <li><a href="/admin/blog/posts">Posts</a></li>
     <li><a href="/admin/blog/pages">Pages</a></li>
     <li><a href="/admin/blog/categories">Categories</a></li>
+    <li><a href="/admin/blog/missing">404s</a></li>
 </ul>
 </div>
     

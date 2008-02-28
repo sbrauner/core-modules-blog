@@ -13,6 +13,9 @@ for(var i in uri.args){
 }
 
 var modifyPostCount = function(thread, num){
+    // Modifies the post count of a thread, the topic the thread is in,
+    // the topic that topic is in, etc.,
+    // by num (probably 1 or -1).
     thread.count += num;
     db.forum.threads.save(thread);
 
@@ -25,23 +28,36 @@ var modifyPostCount = function(thread, num){
 };
 
 var subtPost = function(attr){
+    // Remove all the posts in selected from thread.
+    // attr is "deleted" or "moderated", and this function marks all deletions
+    // as that.
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
 
-        var dlist = db.forum.deleted.findOne({thread: thread});
-        if(! dlist) dlist = new Forum.data.DeletionList(thread);
+        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
+        if(! dlist) dlist = new Forum.data.DeletionList(thread, attr);
         dlist.deletions.push(new Forum.data.Deletion(p, p.getID(), attr, user));
         db.forum.deleted.save(dlist);
 
-        modifyPostCount(thread, -1);
-        thread.removeDescendant(selected[i]);
+        if(p == thread.findFirstPost()){
+            // create new "fake" post with the same title, author, etc.
+            p.content = "(post deleted)";
+            thread.saveDescendant(p);
+        }
+        else {
+            thread.removeDescendant(selected[i]);
+            modifyPostCount(thread, -1);
+        }
         db.forum.threads.save(thread);
     }
-}
+};
 
 var addPost = function(attr){
+    // Add all the posts in selected back into thread.
+    // attr is "deleted" or "moderated"; only modify posts to which that
+    // was done.
     for(var i in selected){
-        var dlist = db.forum.deleted.findOne({thread: thread});
+        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
         for(var deletionIndex = 0; deletionIndex < dlist.deletions.length; deletionIndex++){
             var deletion = dlist.deletions[deletionIndex];
             if(deletion.location == selected[i]){
@@ -53,10 +69,15 @@ var addPost = function(attr){
             }
         }
 
-        db.forum.deleted.save(dlist);
+        if(dlist.deletions.length == 0){
+            db.forum.deleted.remove({_id: dlist._id});
+        }
+        else {
+            db.forum.deleted.save(dlist);
+        }
         modifyPostCount(thread, 1);
     }
-}
+};
 
 if(request.action == "delete"){
     subtPost("deleted");

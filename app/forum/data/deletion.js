@@ -1,12 +1,12 @@
 core.app.forum.data.thread();
 
-Forum.data.Deletion = function(post, location, reason, user){
-    this.post = post || new Forum.data.Thread.Reply;
+Forum.data.Deletion = function(post, location, user){
+    this.post = post || new Forum.data.Thread.Reply();
     this.location = location;
     this.user = user;
 };
 
-Forum.data.DeletionList = function(thread, dels){
+Forum.data.DeletionList = function(thread, reason, dels){
     this.thread = thread;
     this.reason = reason;
     this.deletions = [];

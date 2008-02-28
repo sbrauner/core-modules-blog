@@ -1,7 +1,0 @@
-<%
-    var postid = request.id;
-var post = Forum.data.Thread.Reply.find_Query({_id: postid});
-post.deleted = false;
-post._save();
-
-%>

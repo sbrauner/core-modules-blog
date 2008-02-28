@@ -1,5 +1,7 @@
 <%
 core.app.forum.data.thread();
+core.app.forum.data.deletion();
+core.app.forum.forum();
 var thread = db.forum.threads.findOne({_id: request.id});
 
 if(thread == null){
