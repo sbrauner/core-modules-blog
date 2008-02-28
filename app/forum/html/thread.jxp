@@ -18,7 +18,7 @@ var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted
 var actions = (opts == null || opts.actions == null) ? [] : opts.actions;
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
-var l = t.getDescendant(t.latestPost);
+var l = t.getLatestPost();
 
 var title = f.title;
 if(deletedPosts) title += " (deleted posts)";

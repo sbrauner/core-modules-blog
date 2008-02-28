@@ -20,7 +20,7 @@ Forum.data.Thread.prototype.getFirstPost = function() {
     return this.findFirstPost();
 };
 
-Forum.data.Thread.prototype.getLastPost = function() {
+Forum.data.Thread.prototype.getLatestPost = function() {
     // Try to find a post to use for "last post in this thread by..."
     // functionality in html/thread or whatever.
     // Start by seeing if we have a descendant with the ID of
