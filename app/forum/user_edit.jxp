@@ -1,0 +1,51 @@
+<%
+htmlheader("Forums | Edit User");
+core.user.user();
+
+var user = null;
+
+if(request.userid){
+    user = db.users.findOne({_id: request.userid});
+}
+
+if(! user){ %>
+<form>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value">
+    <select name="userid">
+      <% db.users.find({}).forEach(function(u){ %>
+      <option value="<%= u._id%>"><%= u.name %></option>
+      <% }); %>
+    </select>
+  </div>
+</div>
+<input type="submit" value="Select">
+</form>
+     <% } else { %>
+<form method="POST">
+<input type="hidden" name="userid" value="<%= user._id %>"/>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value"><%= user.name %></div>
+</div>
+<div class="field">
+  <div class="field_name">Permissions</div>
+  <div class="field_value">
+    <select>
+      <% var isAdmin = user.hasPermission("core.app.forum.admin");
+    var isModerator = user.hasPermission("core.app.forum.moderator");
+    var isMember = user.hasPermission("core.app.forum.member") || (! isAdmin && ! isModerator); %>
+      <option <%= isAdmin? "selected=\"selected\"" : "" %> value="core.app.forum.admin">Admin</option>
+      <option <%= isModerator? "selected=\"selected\"" : "" %> value="core.app.forum.moderator">Moderator</option>
+      <option <%= isMember? "selected=\"selected\"" : "" %> value="core.app.forum.member">Member</option>
+    </select>
+  </div>
+</div>
+<div class="field">
+  <div class="field_name">&nbsp;</div>
+  <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+</form>
+        <% } %>
+            <% htmlfooter() %>
