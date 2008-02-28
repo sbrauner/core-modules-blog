@@ -1,6 +1,17 @@
 core.util.format();
 app.bugtracker.data.helper = {
     select: function(obj, field, prefix, opts, conf){
+        // Return the HTML for a select element, with options given by opts.
+        // Give the select element the name of the field, plus a prefix.
+        // Mark selected the option which is the same as obj[field].
+
+        // conf can specify a view element, which is a function to render the
+        // text for an option, and a value element, which is a function to
+        // render the value for an option.
+
+        // If opts aren't provided, they default to obj[FIELD]. This is a
+        // cute, but possibly not very useful default.
+
         if(! conf) conf = { view: null, value: null };
         var viewfunc = conf.view;
         delete conf.view;
