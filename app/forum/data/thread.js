@@ -6,6 +6,7 @@ Forum.data.Thread = function(){
     // threads in a topic.
     this.pinned = false;
     this.created = new Date();
+    this.lastPostTime = new Date();
     this.latestPost = null;
     this.count = 1;
     this.topic = null;
@@ -27,10 +28,12 @@ core.threaded.data.reply_children();
 threaded.repliesEnabled(Forum.data, "Thread", {style: "children", users: "auth", tablename: "forum.posts", replyable: false});
 
 Forum.data.Thread.list = function(topic){
-    return db.forum.threads.find({topic: topic}).sort({pinned: -1});
+    return db.forum.threads.find({topic: topic}).sort({pinned: -1, lastPostTime: -1});
 };
 
 db.forum.threads.setConstructor(Forum.data.Thread);
 
 db.forum.threads.ensureIndex({created : -1});
+db.forum.threads.ensureIndex({lastPostTime : -1});
 db.forum.threads.ensureIndex({pinned: 1});
+db.forum.threads.ensureIndex({pinned: 1, lastPostTime: 1});
