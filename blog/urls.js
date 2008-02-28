@@ -125,7 +125,12 @@ Blog.handleRequest = function( request , arg ){
             searchCriteria.name = uri;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             var entry = db.blog.posts.findOne(searchCriteria);
-        
+	    
+	    if ( ! entry && uri.match( /\/\d\d\d\d\/\d\d?\// ) ){
+		searchCriteria.name = new RegExp( uri.substring( uri.lastIndexOf( "/" ) ) + "$" );
+		entry = db.blog.posts.findOne(searchCriteria);
+	    }
+
             if (entry) {
                 Blog.log.debug('found a matching ' + entry.cls);
 
