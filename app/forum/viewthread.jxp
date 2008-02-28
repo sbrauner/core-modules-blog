@@ -61,19 +61,21 @@ else {
     <% } %>
 </form>
 <%
-    if(!request.deleted){
-        var p = thread.decoratorsHandle();
-        if( p ){
-            thread.count ++;
-            thread.topic.postCount ++;
-            thread.latestPost = p.getID();
-            thread.lastPostTime = new Date();
-            db.forum.topics.save(thread.topic);
-            db.forum.threads.save(thread);
+    if(Forum.ForumController.hasPermission(user, "makePost")){
+        if(!request.deleted){
+            var p = thread.decoratorsHandle();
+            if( p ){
+                thread.count ++;
+                thread.topic.postCount ++;
+                thread.latestPost = p.getID();
+                thread.lastPostTime = new Date();
+                db.forum.topics.save(thread.topic);
+                db.forum.threads.save(thread);
+            }
         }
-    }%>
+    }
+    %>
 
-
-<a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
+        <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
 
 <% htmlfooter(); %>
