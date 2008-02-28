@@ -8,7 +8,7 @@ Forum.ForumController.anonymousPermissions = function(){
     return {viewTopicNonHidden: true, viewThreadNonHidden: true};
 };
 
-Forum.ForumController.userPermissions = function(){
+Forum.ForumController.memberPermissions = function(){
     var p = {};
     // add anonymousPermissions
     return Object.extend(p, Forum.ForumController.anonymousPermissions());
@@ -18,8 +18,8 @@ Forum.ForumController.moderatorPermissions = function(){
     var p = {viewSpecialTopic_Moderated: true,
         moderatePost: true};
 
-    // add userPermissions
-    return Object.extend(p, Forum.ForumController.userPermissions());
+    // add memberPermissions
+    return Object.extend(p, Forum.ForumController.memberPermissions());
 };
 
 Forum.ForumController.adminPermissions = function(){
@@ -53,8 +53,14 @@ Forum.ForumController.hasPermission = function(user, perm){
         // treat user as anonymous
         return (perm in Forum.ForumController.anonymousPermissions());
     }
-    // Right now, all "real users" are admins
-    return (perm in Forum.ForumController.adminPermissions());
+
+    var type = Forum.ForumController.userPermissionType(user);
+
+    // if type == "MEMBER" we go to Forum.ForumController.memberPermissions,
+    // if type == "MODERATOR" we go to ...moderatorPermissions,
+    // etc. So we do a lookup; use the type to find the right function, and call
+    // it. If the permission is in the returned object, return true.
+    return (perm in Forum.ForumController[type.toLowerCase()+'Permissions']());
 
 };
 
@@ -74,7 +80,7 @@ Forum.ForumController.permissions = {
 
 Forum.ForumController.userPermissionType = function(user){
     if(! user) return null;
-    if(user.admin || user.hasPermission(Forum.ForumController.permissions.ADMIN))
+    if(user.isAdmin() || user.hasPermission(Forum.ForumController.permissions.ADMIN))
         return "ADMIN";
     if(user.hasPermission(Forum.ForumController.permissions.MODERATOR))
         return "MODERATOR";

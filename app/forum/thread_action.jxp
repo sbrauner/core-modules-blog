@@ -1,16 +1,23 @@
 <%
-// Form handler to deal with actions on posts in threads.
+// Form handler to deal with actions on posts in threads, or sometimes
+// the thread themselves.
     core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.deletion();
 var uri = new URI(request.getURL());
-var thread = db.forum.threads.findOne({_id: request.threadId});
+if(request.threadId)
+    var thread = db.forum.threads.findOne({_id: request.threadId});
 var selected = [];
 for(var i in uri.args){
     if(uri.args[i].key == "select"){
         selected.push(uri.args[i].value);
     }
 }
+
+// Which URL should we redirect to? Some handlers change this.
+var back = request.getHeader("Referer");
+if(back == "")
+    back = "./";
 
 var modifyPostCount = function(thread, num){
     // Modifies the post count of a thread, the topic the thread is in,
@@ -71,6 +78,12 @@ var addPost = function(attr){
 
         if(dlist.deletions.length == 0){
             db.forum.deleted.remove({_id: dlist._id});
+            var specialID;
+            if(attr == "deleted")
+                specialID = Forum.ForumController.specialDeletedID;
+            else
+                specialID = Forum.ForumController.specialModeratedID;
+                back = "viewtopic?id="+specialID;
         }
         else {
             db.forum.deleted.save(dlist);
@@ -95,6 +108,23 @@ if(request.action == "unmoderate"){
     addPost("moderated");
 }
 
+if(request.action == "sticky"){
+    log.app.forum.thread_action.debug("stickifying " + selected);
+    selected.forEach(function(sel1){
+        var thread = db.forum.threads.findOne({_id: sel1});
+        thread.pinned = true;
+        db.forum.threads.save(thread);
+    });
+}
+
+if(request.action == "unsticky"){
+    selected.forEach(function(sel1){
+        var thread = db.forum.threads.findOne({_id: sel1});
+        thread.pinned = false;
+        db.forum.threads.save(thread);
+    });
+}
+
 response.setResponseCode(301);
-response.setHeader("Location", "./");
+response.setHeader("Location", back);
 %>

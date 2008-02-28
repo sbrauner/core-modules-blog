@@ -67,6 +67,7 @@ else {
             thread.count ++;
             thread.topic.postCount ++;
             thread.latestPost = p.getID();
+            thread.lastPostTime = new Date();
             db.forum.topics.save(thread.topic);
             db.forum.threads.save(thread);
         }

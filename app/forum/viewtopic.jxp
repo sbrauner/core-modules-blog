@@ -63,8 +63,22 @@ var subs = Forum.data.Topic.list(t).toArray();
 
 if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
-   <% subs.forEach(Forum.renderer.topic); 
-} 
+   <% subs.forEach(Forum.renderer.topic);
+}
+var actions = [];
+if(Forum.ForumController.hasPermission(user, "stickyThread")){
+    actions.push(function(thread){
+        if(thread.pinned == false){
+            var action = "sticky";
+            var text = "Sticky";
+        }
+        else {
+            var action = "unsticky";
+            var text = "Unsticky";
+        }
+        return "<form action=\"thread_action\"><input type=\"hidden\" name=\"select\" value=\""+thread._id+"\"><input type=\"hidden\" name=\"action\" value=\""+action+"\"><input type=\"submit\" value=\""+text+"\"></form>";
+      });
+}
 %>
 
 <h1>Available threads</h1>
@@ -79,9 +93,15 @@ if(subs.length > 0){ %>
       <td>
         Last post
       </td>
+      <% if(actions.length > 0){ %>
+      <td>
+        Actions
+      </td>
+      <% } %>
     </tr>
 
 <%
+opts = {actions: actions};
 var list = Forum.data.Thread.list(t);
 var topics = db.forum.topics.find();
 topics = topics.toArray();
@@ -100,13 +120,14 @@ if (list)
 	Forum.renderer.thread(t);
     }
 );
+    list.forEach(function(thread){Forum.renderer.thread(thread, opts);});
 else
     print ("No topics right now!");
 %>
 </table>
 <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
 <% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
-<a href="topic_new">New topic</a>
+<a href="topic_new?parent=<%= id %>">New topic</a>
 <% } %>
 
 <% htmlfooter(); %>

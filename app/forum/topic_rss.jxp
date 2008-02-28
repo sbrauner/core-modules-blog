@@ -37,7 +37,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
 	  <date>2008-02-28T03:43:44-08:00</date>
 	  <description>
 	    Number of posts: <%= thread.count %><br />
-	    Most recent post: <%= thread.getReplies()[thread.latestPost].content  %>
+	    Most recent post: <%= thread.getLatestPost().content  %>
 	  </description>
 	</item>
 	<%
