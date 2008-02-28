@@ -15,6 +15,8 @@ if(request.getMethod() == "POST"){
 
         thread.topic.postCount += 1;
         thread.latestPost = rep.getID();
+        if(request.sticky)
+            thread.pinned = true;
         db.forum.threads.save(thread);
         db.forum.topics.save(thread.topic);
         response.setResponseCode(301);
@@ -33,7 +35,15 @@ var backurl = "viewtopic?id="+request.top_id;
   </head>
   <body>
     <h3>New thread</h3>
-    <% Forum.data.Thread.decoratorsHandle(); %>
+    <%
+    opts = {};
+if(Forum.ForumController.hasPermission(user, "stickyThread")){
+    opts.actions = [
+        function(){
+            return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
+        }];
+} %>
+    <% Forum.data.Thread.decoratorsHandle(opts); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>
