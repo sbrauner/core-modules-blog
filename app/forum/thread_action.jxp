@@ -115,5 +115,8 @@ if(request.action == "unsticky"){
 }
 
 response.setResponseCode(301);
-response.setHeader("Location", "./");
+var back = request.getHeader("Referer");
+if(back == "")
+    back = "./";
+response.setHeader("Location", back);
 %>
