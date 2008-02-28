@@ -61,12 +61,16 @@ else {
     <% } %>
 </form>
 <%
-    if(thread.decoratorsHandle({replylink: false})){
-    thread.count ++;
-    thread.topic.postCount ++;
-    db.forum.topics.save(thread.topic);
-    db.forum.threads.save(thread);
-}%>
+    if(!request.deleted){
+        var p = thread.decoratorsHandle();
+        if( p ){
+            thread.count ++;
+            thread.topic.postCount ++;
+            thread.latestPost = p.getID();
+            db.forum.topics.save(thread.topic);
+            db.forum.threads.save(thread);
+        }
+    }%>
 
 
 <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>

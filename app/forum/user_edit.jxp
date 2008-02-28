@@ -1,0 +1,60 @@
+<%
+htmlheader("Forums | Edit User");
+core.app.forum.forum();
+core.user.user();
+
+var user = null;
+
+if(request.userid){
+    user = db.users.findOne({_id: request.userid});
+}
+
+if(request.permission){
+    // validate the permission we want to set
+    var allowed = Object.values(Forum.ForumController.permissions);
+    if(allowed.indexOf(request.permission) == -1) throw new Error("I don't want to add that permission");
+
+    // Remove all other forum permissions
+    allowed.forEach(function(p) { user.removePermission(p); });
+    user.addPermission(request.permission);
+}
+
+if(! user){ %>
+<form>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value">
+    <select name="userid">
+      <% db.users.find({}).forEach(function(u){ %>
+      <option value="<%= u._id%>"><%= u.name %></option>
+      <% }); %>
+    </select>
+  </div>
+</div>
+<input type="submit" value="Select">
+</form>
+     <% } else { %>
+<form method="POST">
+<input type="hidden" name="userid" value="<%= user._id %>"/>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value"><%= user.name %></div>
+</div>
+<div class="field">
+  <div class="field_name">Permissions</div>
+  <div class="field_value">
+    <select name="permission">
+        <% var type = Forum.ForumController.userPermissionType(user);
+    for(var key in Forum.ForumController.permissions){ %>
+      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= Forum.ForumController.permissions[key]%>"><%= key %></option>
+            <% } %>
+    </select>
+  </div>
+</div>
+<div class="field">
+  <div class="field_name">&nbsp;</div>
+  <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+</form>
+        <% } %>
+            <% htmlfooter() %>

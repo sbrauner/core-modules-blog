@@ -25,7 +25,7 @@ log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
           t.threaded_pieces.reply_form.call(t, t.getID());
       }
       else{ %>
-        <a href="<%=addQuery({reply: t.getID()}) %>">Reply to this</a>
+        <a href="<%=new URI(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
         <% } %>
     <% } %>
   </div>

@@ -1,5 +1,6 @@
 log.threaded.data.reply.debug("Running replyfile. threaded="+threaded + " data="+threaded.data);
 core.content.html();
+core.net.uri();
 
 threaded.data.Reply = function(){
     this.ts = new Date();
@@ -58,7 +59,7 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
         }
     }
     if(replylink){
-        u = addQuery({reply: true});
+        u = new URI(request.getURL()).addArg("reply", "true").toString();
         print("<a href=\""+u+"\">Reply</a>");
     }
     return ret;
@@ -74,21 +75,5 @@ threaded.data.Reply.initialize = function(obj){
 };
 
 core.util.format();
-addQuery = function(args){
-    var url = request.getURL();
-    var obj = {};
-    var qs = url.indexOf('?');
-    var opts = url.substring(qs+1, url.length);
-    var ary = opts.split(/&/);
-    for (var i in ary){
-        var pair = ary[i].split(/=/);
-        obj[pair[0]] = pair[1];
-    }
-    for (var i in args){
-        obj[i] = args[i];
-    }
-    var uri = request.getURI();
-    return uri+"?"+Util.format_queryargs(obj);
-};
 
 log.threaded.data.reply.level = log.LEVEL.ERROR;
