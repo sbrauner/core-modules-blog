@@ -20,6 +20,27 @@ Forum.data.Thread.prototype.getFirstPost = function() {
     return this.findFirstPost();
 };
 
+Forum.data.Thread.prototype.getLastPost = function() {
+    // Try to find a post to use for "last post in this thread by..."
+    // functionality in html/thread or whatever.
+    // Start by seeing if we have a descendant with the ID of
+    // this.latestPost. This'll probably work,
+    // unless that post was deleted, in which case we'll get a null.
+    var p = this.getDescendant(this.latestPost);
+    if(p) return p;
+
+    // Oh well, let's start proceeding backwards through all replies.
+    // We should always find something -- the first post in a thread always
+    // exists, even if it's been deleted.
+    var reps = this.getReplies();
+    for(var i = reps.length - 1; i >= 0; i--){
+        if(reps[i])
+            return reps[i];
+    }
+    log.app.forum.error("couldn't find the last post for "+ this._id);
+    return null;
+}
+
 // This adds children and the rendering thereof to the Thread class.
 // For more on this, check corejs/threaded/_init.js.
 // A bunch of functions are added to the Thread class -- getReplies(),
