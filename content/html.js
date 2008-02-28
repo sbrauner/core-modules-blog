@@ -29,3 +29,28 @@ content.HTML.unescape_html = function(str){
     }
     return str;
 };
+
+RSS = {};
+
+RSS.clean = function( s ){
+    
+    s = s.replace( /&nbsp;/g , " " );
+    s = s.replace( /&rsquo;/g , "'" );
+    s = s.replace( /&[mn]dash;/g , "-" );
+    s = s.replace( /&ldquo;/g , "'" );
+    s = s.replace( /&rdquo;/g , "'" );
+
+    s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+    
+    //s = s.replace( /<\/?embed[^>]*>/g , "" );
+    s = s.replace( /mt:asset.id=.*? /g , "" );
+    
+    s = s.replace( /&(\w+);/g , function(z){
+			return " ";
+		    } );
+
+    s = s.replace( /</g , "&lt;" );
+    s = s.replace( />/g , "&gt;" );
+
+    return s;
+}

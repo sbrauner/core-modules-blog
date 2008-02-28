@@ -2,6 +2,7 @@ core.db.db();
 Forum.data.Thread = function(){
     this.commentsEnabled = true;
     this.pinned = true;
+    this.created = new Date();
     this.latestPost = null;
     this.count = 1;
     this.topic = null;
