@@ -54,6 +54,15 @@ User.prototype.addPermission = function( perm ){
     this.permissions.push( perm.toLowerCase() );
 };
 
+User.prototype.removePermission = function( perm ){
+    if ( ! this.permissions )
+        return;
+    var i = this.permissions.indexOf(perm);
+    if ( i == -1 )
+        return;
+    this.permissions.splice(i, 1);
+};
+
 
 User.find = function( thing , theTable ){
     if ( ! theTable )

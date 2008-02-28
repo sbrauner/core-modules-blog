@@ -8,6 +8,16 @@ if(request.userid){
     user = db.users.findOne({_id: request.userid});
 }
 
+if(request.permission){
+    // validate the permission we want to set
+    var allowed = Object.values(Forum.ForumController.permissions);
+    if(allowed.indexOf(request.permission) == -1) throw new Error("I don't want to add that permission");
+
+    // Remove all other forum permissions
+    allowed.forEach(function(p) { user.removePermission(p); });
+    user.addPermission(request.permission);
+}
+
 if(! user){ %>
 <form>
 <div class="field">
@@ -32,13 +42,11 @@ if(! user){ %>
 <div class="field">
   <div class="field_name">Permissions</div>
   <div class="field_value">
-    <select>
-      <% var isAdmin = user.hasPermission("core.app.forum.admin");
-    var isModerator = user.hasPermission("core.app.forum.moderator");
-    var isMember = user.hasPermission("core.app.forum.member") || (! isAdmin && ! isModerator); %>
-      <option <%= isAdmin? "selected=\"selected\"" : "" %> value="core.app.forum.admin">Admin</option>
-      <option <%= isModerator? "selected=\"selected\"" : "" %> value="core.app.forum.moderator">Moderator</option>
-      <option <%= isMember? "selected=\"selected\"" : "" %> value="core.app.forum.member">Member</option>
+    <select name="permission">
+        <% var type = Forum.ForumController.userPermissionType(user);
+      <option <%= type == "ADMIN"? "selected=\"selected\"" : "" %> value="core.app.forum.admin">Admin</option>
+      <option <%= type == "MODERATOR"? "selected=\"selected\"" : "" %> value="core.app.forum.moderator">Moderator</option>
+      <option <%= type == "MEMBER"? "selected=\"selected\"" : "" %> value="core.app.forum.member">Member</option>
     </select>
   </div>
 </div>
