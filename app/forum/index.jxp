@@ -22,6 +22,8 @@ else
                               threadCount: 0, postCount: 0});
     } %>
 
-<a href="topic_new">New topic</a>
+        <% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
+    <a href="topic_new">New topic</a>
+    <% } %>
 
 <% htmlfooter(); %>
