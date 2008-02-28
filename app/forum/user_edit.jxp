@@ -1,5 +1,6 @@
 <%
 htmlheader("Forums | Edit User");
+core.app.forum.forum();
 core.user.user();
 
 var user = null;
@@ -44,9 +45,9 @@ if(! user){ %>
   <div class="field_value">
     <select name="permission">
         <% var type = Forum.ForumController.userPermissionType(user);
-      <option <%= type == "ADMIN"? "selected=\"selected\"" : "" %> value="core.app.forum.admin">Admin</option>
-      <option <%= type == "MODERATOR"? "selected=\"selected\"" : "" %> value="core.app.forum.moderator">Moderator</option>
-      <option <%= type == "MEMBER"? "selected=\"selected\"" : "" %> value="core.app.forum.member">Member</option>
+    for(var key in Forum.ForumController.permissions){ %>
+      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= Forum.ForumController.permissions[key]%>"><%= key %></option>
+            <% } %>
     </select>
   </div>
 </div>
