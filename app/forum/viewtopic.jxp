@@ -1,7 +1,49 @@
 <%
 htmlheader("Forum");
 core.user.html.topCorner();
+%>
 
+<script type="text/javascript">
+
+function move(thread, to) {
+	 var xmlhttp = null;
+ 	 try {
+	   xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	 } catch (e) {
+	   try {
+	      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	   } catch (E) {
+	      xmlhttp = false;
+  	   }
+        }
+	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+	   try {
+	          xmlhttp = new XMLHttpRequest();
+	   } catch (e) {
+       	     	  xmlhttp=false;
+	   }
+	}
+	if (!xmlhttp && window.createRequest) {
+	   try {
+	          xmlhttp = window.createRequest();
+           } catch (e) {
+    	      	 xmlhttp=false;
+	   }
+       }
+
+       xmlhttp.open("POST", "moveThread.jxp", true);
+       xmlhttp.onreadystatechange=function() {
+         if (xmlhttp.readyState==4) {
+	    location.reload();
+	 }
+       }
+       var pass = "thread="+thread+"&to="+to;
+       xmlhttp.send(pass);
+}
+
+</script>
+
+<%
 core.content.table();
 core.app.forum.forum();
 core.app.forum.data.thread();
@@ -13,6 +55,9 @@ if(request.id == Forum.ForumController.specialDeletedID){
 if(request.id == Forum.ForumController.specialModeratedID){
     return core.app.forum.moderated_view();
 }
+moveThread = Forum.ForumController.hasPermission(user, "moveThread");
+moveTopic = Forum.ForumController.hasPermission(user, "moveTopic");
+
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();
 
@@ -38,8 +83,23 @@ if(subs.length > 0){ %>
 
 <%
 var list = Forum.data.Thread.list(t);
+var topics = db.forum.topics.find();
+topics = topics.toArray();
+select_id = 0;
+
 if (list)
-    list.forEach(Forum.renderer.thread);
+    list.forEach( function(t) {
+        if(moveThread) {
+		print("move to <select id=\"s"+(select_id++)+"\">");
+		for(i=0; i<topics.length; i++) {
+			 if(t.topic._id != topics[i]._id) 
+			 	 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
+		}
+		print("</select>");
+	}
+	Forum.renderer.thread(t);
+    }
+);
 else
     print ("No topics right now!");
 %>

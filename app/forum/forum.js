@@ -23,13 +23,27 @@ Forum.ForumController.moderatorPermissions = function(){
 };
 
 Forum.ForumController.adminPermissions = function(){
-    var p = {banUser: true, banIP: true, editPost: true,
-        deletePost: true,
-        createTopic: true, renameTopic: true,
-        moveTopic: true, deleteTopic: true,
-        hideTopic: true,
-        stickyThread: true,
-        viewSpecialTopic_Deleted: true};
+    var p = {
+	// user stuff
+	banUser: true,
+	banIP: true, 
+	
+	// post stuff
+	editPost: true,
+	deletePost: true,
+
+	// topic stuff
+	createTopic: true, renameTopic: true,
+	moveTopic: true, deleteTopic: true,
+	hideTopic: true,
+	
+	// thread stuff
+	moveThread: true,
+	stickyThread: true,
+	     
+	// who the hell knows?
+	viewSpecialTopic_Deleted: true
+    };
     // add moderator permissions
     return Object.extend(p, Forum.ForumController.moderatorPermissions());
 };
