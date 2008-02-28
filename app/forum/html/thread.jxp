@@ -29,7 +29,7 @@ at <%= f.ts %>
   </td>
   <% if (!deletedPosts) { %>
   <td>
-    by <%= l.author.name %> (<a href="<%= link %>#<%= l._id %>">go</a>)<br/>
+    by <%= l.author.name %> (<a href="<%= link %>#<%= l.getID() %>">go</a>)<br/>
     at <%= l.ts %>
   </td>
   <% } %>
