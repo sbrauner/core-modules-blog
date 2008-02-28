@@ -18,7 +18,6 @@ response.setHeader( "Content-Type" , "text/xml"); %>
    <lastBuildDate><%= now.webFormat() %></lastBuildDate>
    <description></description>
 
-
    <% 
    children = thread.getReplies();
    for(var i=0; i < children.length; i++) {
@@ -36,6 +35,5 @@ response.setHeader( "Content-Type" , "text/xml"); %>
      <%
    }
 %>
-
 </channel>
 </rss>

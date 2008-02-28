@@ -12,6 +12,10 @@ Forum.data.Thread.prototype.findFirstPost = function(){
     return this.getReplies()[0];
 };
 
+Forum.data.Thread.prototype.getFirstPost = function() {
+    return this.findFirstPost();
+};
+
 // This adds children and the rendering thereof to the Thread class.
 // For more on this, check corejs/threaded/_init.js.
 // A bunch of functions are added to the Thread class -- getReplies(),
@@ -24,3 +28,4 @@ Forum.data.Thread.list = function(topic){
 };
 
 db.forum.threads.setConstructor(Forum.data.Thread);
+db.forum.threads.ensureIndex({created : -1});
