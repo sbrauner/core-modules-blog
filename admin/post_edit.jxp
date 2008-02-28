@@ -47,7 +47,10 @@ if ( request.action == "save" ) {
         
         if ( ! thePost.name ) {
             // Move this code out so it can be used by the interactive name generator below
-    	    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+	    if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+		thePost.name = request.name;
+    	    else
+		thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
     	}
     
         thePost.title = request.title;
