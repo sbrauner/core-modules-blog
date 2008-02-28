@@ -61,12 +61,13 @@ else {
     <% } %>
 </form>
 <%
-    if(thread.decoratorsHandle({replylink: false})){
-    thread.count ++;
-    thread.topic.postCount ++;
-    db.forum.topics.save(thread.topic);
-    db.forum.threads.save(thread);
-}%>
+    if(!request.deleted)
+        if(thread.decoratorsHandle()){
+            thread.count ++;
+            thread.topic.postCount ++;
+            db.forum.topics.save(thread.topic);
+            db.forum.threads.save(thread);
+        }%>
 
 <%
 if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
