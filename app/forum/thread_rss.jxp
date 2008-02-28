@@ -24,7 +24,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
      %>
 
      <item>
-       <guid><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id %></guid>
+       <guid><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id + "#" + children[i].getID() %></guid>
        <title><%= children[i].title %></title>
        <link><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id+"#"+children[i].getID() %></link>
        <pubDate><%= children[i].ts.webFormat() %></pubDate>
