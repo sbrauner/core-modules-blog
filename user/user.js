@@ -8,12 +8,12 @@
  */
 
 function User(){
-    
+
 };
 
 User.prototype.setPassword = function( pass , name ){
     if ( ! name )
-	name = db.getName();
+        name = db.getName();
     this.pass_ha1_name = md5( this.name + ":" + name + ":" + pass );
     this.pass_ha1_email = md5( this.email + ":" + name + ":" + pass );
 };
@@ -21,15 +21,15 @@ User.prototype.setPassword = function( pass , name ){
 User.prototype.checkPasswordClearText = function( pass ){
     if ( this.pass_ha1_name == md5( this.name + ":" + db.getName() + ":" + pass ) )
         return true;
-    
+
     if ( this.pass_ha1_email == md5( this.email + ":" + db.getName() + ":" + pass ) )
         return true;
-    
+
     return false;
 };
 
 User.prototype.checkPasswordDigest = function( pass ){
-    if ( this.pass_ha1_name == pass ) 
+    if ( this.pass_ha1_name == pass )
          return true;
     if ( this.pass_ha1_email == pass )
         return true;
@@ -54,32 +54,41 @@ User.prototype.addPermission = function( perm ){
     this.permissions.push( perm.toLowerCase() );
 };
 
+User.prototype.removePermission = function( perm ){
+    if ( ! this.permissions )
+        return;
+    var i = this.permissions.indexOf(perm);
+    if ( i == -1 )
+        return;
+    this.permissions.splice(i, 1);
+};
+
 
 User.find = function( thing , theTable ){
     if ( ! theTable )
-	theTable = db.users;
- 
+        theTable = db.users;
+
     theTable.setConstructor( User );
 
     if ( ! thing )
         return null;
-	
-    var u = null;    
+
+    var u = null;
     if ( thing.match( /@/ ) )
         u = theTable.findOne( { email : thing } );
-    
+
     if ( ! u )
-	u = theTable.findOne( { name : thing } );
+        u = theTable.findOne( { name : thing } );
 
     if ( ! u && theTable.base != "admin" && thing.match( /@10gen.com/ ) )
-	return User.find( thing , db[".admin.users"] );
+        return User.find( thing , db[".admin.users"] );
 
     return u;
 };
 
 if ( db ){
     db.users.setConstructor( User );
-    
+
     db.users.ensureIndex( { email : 1 } );
     db.users.ensureIndex( { name : 1 } );
     db.users.ensureIndex( { permissions : 1 } );

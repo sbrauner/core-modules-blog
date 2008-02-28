@@ -96,6 +96,10 @@ Mail.SMTP.gmail = function( username , password ){
 };
 
 
+// For now, IMAP is only being used with one account on gmail and only looking at the inbox.  
+// When this changes, these variables will need to change:
+
+
 // Creates a new imap session (not connected)
 Mail.IMAP = function( addr , server , username , password , ssl , port ){
     
@@ -157,5 +161,4 @@ Mail.IMAP.gmail = function( username , password ){
     folder.open(1);
     return folder.getMessages();
 };
-
 
