@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <rss version="2.0">
-<% 
+<%
 
-core.blog.post(); 
+core.blog.post();
 
 var requestResult = Blog.handleRequest(request);
 var now = new Date();
 
 function clean( s ){
-    
+
     s = s.replace( /&nbsp;/g , " " );
     s = s.replace( /&rsquo;/g , "'" );
     s = s.replace( /&[mn]dash;/g , "-" );
@@ -16,13 +16,13 @@ function clean( s ){
     s = s.replace( /&rdquo;/g , "'" );
 
     s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
-    
+
     //s = s.replace( /<\/?embed[^>]*>/g , "" );
     s = s.replace( /mt:asset.id=.*? /g , "" );
-    
+
     s = s.replace( /&(\w+);/g , function(z){
-			return " ";
-		    } );
+                        return " ";
+                    } );
 
     s = s.replace( /</g , "&lt;" );
     s = s.replace( />/g , "&gt;" );
@@ -40,9 +40,9 @@ function clean( s ){
         <lastBuildDate><%= now.webFormat() %></lastBuildDate>
         <description><%= siteDescription %></description>
 
-        <% 
+        <%
         for (var i = 0; i != requestResult.posts.length; i++) {
-            var post = requestResult.posts[i]; 
+            var post = requestResult.posts[i];
         %>
         <item>
             <guid><%= post.getUrl(request) %></guid>
@@ -50,11 +50,11 @@ function clean( s ){
             <link><%= post.getUrl(request) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
-	    <%
-	    var content = post.getFullContent();
-	    //content = post.getExcerpt();
+            <%
+            var content = post.getFullContent();
+            //content = post.getExcerpt();
 
-	    %>
+            %>
             <description> <%= clean( post.getFullContent() ) %> </description>
         </item>
         <% } %>
