@@ -41,12 +41,11 @@ if(deletedPosts) link += "&deleted=true";
     at <%= l.ts %>
   </td>
   <% } %>
-      <% if (actions.length > 0){ %>
-        <% for(var i in actions){ %>
-	<td>
-        <%= actions[i](t) %>
-	</td>
-        <% } %>
-   </tr>
-      <% } %>
-</div>
+  <% if (actions.length > 0){ %>
+  <% for(var i in actions){ %>
+  <td>
+    <%= actions[i](t) %>
+  </td>
+  <% } %>
+  <% } %>
+</tr>

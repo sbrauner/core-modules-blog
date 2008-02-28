@@ -134,4 +134,12 @@ else
 <a href="topic_new?parent=<%= id %>">New topic</a>
 <% } %>
 
+    <% if(t.parent){ %>
+<a href="viewtopic?id=<%= t.parent._id%>">Back to parent topic</a>
+<% } 
+else { %>
+<a href="./">Back to toplevel</a>
+<% } %>
+
+
 <% htmlfooter(); %>
