@@ -38,7 +38,7 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
     args = args || {};
     var replylink = args.replylink == null? true: args.replylink;
     if(request.reply == "true" && ! request.reply_target ){
-        this.threaded_pieces.reply_form.call(this, true);
+        this.threaded_pieces.reply_form.call(this, true, args);
         return;
     }
     else
