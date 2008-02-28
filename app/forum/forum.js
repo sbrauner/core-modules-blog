@@ -28,6 +28,7 @@ Forum.ForumController.adminPermissions = function(){
         createTopic: true, renameTopic: true,
         moveTopic: true, deleteTopic: true,
         hideTopic: true,
+        stickyThread: true,
         viewSpecialTopic_Deleted: true};
     // add moderator permissions
     return Object.extend(p, Forum.ForumController.moderatorPermissions());
