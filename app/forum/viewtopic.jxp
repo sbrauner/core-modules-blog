@@ -23,7 +23,15 @@ if(subs.length > 0){ %>
 var actions = [];
 if(Forum.ForumController.hasPermission(user, "stickyThread")){
     actions.push(function(thread){
-        return "<form><input type=\"hidden\" name=\"sticky\" value=\""+thread._id+"\"><input type=\"submit\" value=\"Sticky\"></form>";
+        if(thread.pinned == false){
+            var action = "sticky";
+            var text = "Sticky";
+        }
+        else {
+            var action = "unsticky";
+            var text = "Unsticky";
+        }
+        return "<form action=\"thread_action\"><input type=\"hidden\" name=\"select\" value=\""+thread._id+"\"><input type=\"hidden\" name=\"action\" value=\""+action+"\"><input type=\"submit\" value=\""+text+"\"></form>";
       });
 }
 %>
