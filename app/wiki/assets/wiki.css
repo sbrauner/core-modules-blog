@@ -4,7 +4,7 @@
 }
 
 .wiki blockquote {
-	background: #ddd;
+	background: red;
 	border: solid 1px #999;
 	margin: 5px;
 	padding: 5px;
@@ -86,4 +86,23 @@
 
 .wiki textarea {
     width: 100%;
+}
+
+/* Layout */
+
+#container {
+	width: 975px;
+	margin: 0 auto;
+}
+
+#nav {
+	width: 825px;
+}
+
+#nav ul {
+	margin: 84px 0 0 183px;
+}
+
+#maincontent {
+	width: 675px; 
 }
