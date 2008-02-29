@@ -17,3 +17,4 @@ Forum.data.Topic.list = function(parent){
 };
 
 db.forum.topics.setConstructor(Forum.data.Topic);
+db.forum.topics.ensureIndex({order: 1});
