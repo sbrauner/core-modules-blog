@@ -142,9 +142,14 @@ function ObjectId(){ return null; }
               //
           areatext.disabled = true;
       }
+<%if(request.id==null){%>
+function bodyLoad(){
+    document.getElementById( "ftitle" ).focus();
+}
+<%}%>
     </script>
   </head>
-  <body>
+<body onload="bodyLoad()" >
     <% if(feature.number != 0){ %>
     <h1>Editing case number <%= feature.number %></h1>
     <% } else { %>
@@ -177,7 +182,7 @@ function ObjectId(){ return null; }
       <div id="post_form">
         <div class="field">
           <div class="field_name">Title</div>
-          <div class="field_value"><input name="ftitle"/></div>
+          <div class="field_value"><input size="80" id="ftitle" name="ftitle"/></div>
         </div>
         <div class="field">
           <div class="field_name">Date reported</div>
