@@ -26,22 +26,26 @@ function togglePick(threadId) {
 
 <%
 core.content.table();
+core.net.uri();
 core.app.forum.forum();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
 
-var id = request.id;
-if(request.id == Forum.ForumController.specialDeletedID){
-    return core.app.forum.deleted_view();
+if(request.id){
+    if(request.id == Forum.ForumController.specialDeletedID){
+        return core.app.forum.deleted_view();
+    }
+    if(request.id == Forum.ForumController.specialModeratedID){
+        return core.app.forum.moderated_view();
+    }
 }
-if(request.id == Forum.ForumController.specialModeratedID){
-    return core.app.forum.moderated_view();
-}
+var name = request.name;
+
 moveThread = Forum.ForumController.hasPermission(user, "moveThread");
 moveTopic = Forum.ForumController.hasPermission(user, "moveTopic");
 
-var t = db.forum.topics.findOne({_id: id});
+var t = db.forum.topics.findOne({name: name});
 var subs = Forum.data.Topic.list(t).toArray();
 %>
 <h1><%= t.name %></h1>
@@ -112,8 +116,8 @@ if(Forum.ForumController.hasPermission(user, "edPickThread")) {
       <td>
         Last post
       </td>
-      
-      <% 
+
+      <%
       for(i=0; i < actions.length; i++) {
           %>
           <td><%= actions[i].title %></td>
@@ -133,14 +137,14 @@ else
 %>
 </table>
   <% if(Forum.ForumController.hasPermission(user, "createThread")){ %>
-  <a href="thread_new?top_id=<%= id %>&reply=true">New thread</a>
+  <a href="thread_new?top_id=<%= t._id %>&reply=true">New thread</a>
   <% } %>
 <% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
-<a href="topic_new?parent=<%= id %>">New topic</a>
+<a href="topic_new?parent=<%= t._id %>">New topic</a>
 <% } %>
 
     <% if(t.parent){ %>
-<a href="viewtopic?id=<%= t.parent._id%>">Back to parent topic</a>
+<a href="viewtopic?name=<%= URI.escape_queryargs(t.parent.name) %>">Back to parent topic</a>
 <% }
 else { %>
 <a href="./">Back to toplevel</a>
