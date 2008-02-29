@@ -1,9 +1,9 @@
 <%
 htmlheader("Forum");
+head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 core.user.html.topCorner();
 %>
 
-head.push("<script src="/~~/ui/js/common.js"></script>");
 <script type="text/javascript">
 
 function move(thread, to) {
