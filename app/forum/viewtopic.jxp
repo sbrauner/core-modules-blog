@@ -51,7 +51,8 @@ if(subs.length > 0){ %>
 
 var actions = [];
 if(Forum.ForumController.hasPermission(user, "stickyThread")){
-    actions.push(function(thread){
+    actions.push({ title : "Toggle Sticky",
+                   func : function(thread){
         if(thread.pinned == false){
             var action = "sticky";
             var text = "Sticky";
@@ -62,16 +63,17 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
         }
         stickyForm(thread._id, action, text);
         return "";
-      });
+      }});
 }
 
 if(moveThread) {
        var topics = db.forum.topics.find();
        topics = topics.toArray();
 
-        actions.push(function(t) {
+        actions.push({title : "Move Thread",
+                      func : function(t) {
            if(topics.length > 1) {
-              var retStr = "move to <select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
+              var retStr = "<select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
               retStr += "<option value=\"0\" selected>&nbsp;</option>";
               for(i=0; i<topics.length; i++) {
                  if(t.topic._id != topics[i]._id) {
@@ -81,14 +83,15 @@ if(moveThread) {
               return retStr += "</select>";
            }
            return "";
-       });
+       }});
 }
 
 if(Forum.ForumController.hasPermission(user, "edPickThread")) {
-   actions.push(function(thread) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
       editorPick(thread);
       return "";
-   });
+   }});
 }
 
 %>
@@ -105,10 +108,12 @@ if(Forum.ForumController.hasPermission(user, "edPickThread")) {
       <td>
         Last post
       </td>
-      <% if(actions.length > 0){ %>
-      <td>
-        Actions
-      </td>
+      
+      <% 
+      log(actions[0].title);
+      for(i=0; i < actions.length; i++) {
+          %>
+          <td><%= actions[i].title %></td>
       <% } %>
     </tr>
 

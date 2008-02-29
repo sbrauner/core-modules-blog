@@ -44,7 +44,7 @@ if(deletedPosts) link += "&deleted=true";
   <% if (actions.length > 0){ %>
   <% for(var i in actions){ %>
   <td>
-    <%= actions[i](t) %>
+    <%= actions[i].func(t) %>
   </td>
   <% } %>
   <% } %>
