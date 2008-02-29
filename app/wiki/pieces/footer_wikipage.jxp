@@ -1,7 +1,7 @@
 <div class="help">
     <% if (user) { %>
         <div class="user">hi <b><%= user.name %></b></div>
-        alt-e: edit &nbsp; alt-r: rename &nbsp; alt-d: delete &nbsp;
+        alt-e: <a href="?edit=true">edit</a> &nbsp; alt-r: rename &nbsp; alt-d: delete &nbsp;
     <% } %>
     alt-s: <a href="search">search</a> &nbsp; alt-h: <a href="Main">home</a>
     <% if( user ) { %>
