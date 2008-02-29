@@ -5,6 +5,6 @@ var topic = db.forum.topics.findOne({_id : request.to});
 
 thread.setTopic( topic );
 
-Forum.data.Thread.save(thread);
+thread.save();
 
 %>

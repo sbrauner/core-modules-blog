@@ -25,7 +25,7 @@ var modifyPostCount = function(thread, num){
     // the topic that topic is in, etc.,
     // by num (probably 1 or -1).
     thread.count += num;
-    Forum.data.Thread.save(thread);
+    thread.save();
 
     var topic = thread.topic;
     while(topic){
@@ -56,7 +56,7 @@ var subtPost = function(attr){
             thread.removeDescendant(selected[i]);
             modifyPostCount(thread, -1);
         }
-        Forum.data.Thread.save(thread);
+        thread.save();
     }
 };
 
@@ -72,7 +72,7 @@ var addPost = function(attr){
                 thread.placeDescendant(deletion.post, deletion.location);
                 dlist.deletions.splice(deletionIndex, 1);
                 thread.saveDescendant(thread.getDescendant(selected[i]));
-                Forum.data.Thread.save(thread);
+                thread.save();
                 break;
             }
         }
@@ -124,7 +124,7 @@ if(request.action == "sticky"){
     selected.forEach(function(sel1){
         var thread = Forum.data.Thread.findOne({_id: sel1});
         thread.pinned = true;
-        Forum.data.Thread.save(thread);
+        thread.save();
     });
 }
 
@@ -134,7 +134,7 @@ if(request.action == "unsticky"){
     selected.forEach(function(sel1){
         var thread = Forum.data.Thread.findOne({_id: sel1});
         thread.pinned = false;
-        Forum.data.Thread.save(thread);
+        thread.save();
     });
 }
 

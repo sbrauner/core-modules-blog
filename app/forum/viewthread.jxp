@@ -47,7 +47,7 @@ if(canPost){
         thread.latestPost = p.getID();
         thread.lastPostTime = new Date();
         db.forum.topics.save(thread.topic);
-        Forum.data.Thread.save(thread);
+        thread.save();
     }
 }
 

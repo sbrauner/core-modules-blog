@@ -6,7 +6,7 @@ core.app.forum.data.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){
     var thread = new Forum.data.Thread();
-    Forum.data.Thread.save(thread);
+    thread.save();
     var rep = thread.decoratorsHandle();
 
     if(rep){
@@ -17,7 +17,7 @@ if(request.getMethod() == "POST"){
         thread.latestPost = rep.getID();
         if(request.sticky)
             thread.pinned = true;
-        Forum.data.Thread.save(thread);
+        thread.save();
         db.forum.topics.save(thread.topic);
         response.setResponseCode(301);
         response.setHeader("Location", "./");
