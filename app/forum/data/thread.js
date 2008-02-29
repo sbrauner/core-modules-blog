@@ -9,6 +9,7 @@ Forum.data.Thread = function(){
     this.lastPostTime = new Date();
     this.latestPost = null;
     this.count = 1;
+    this.editorPick = false;
     this.topic = null;
 };
 
