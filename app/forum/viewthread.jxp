@@ -34,6 +34,24 @@ options.actions = [
 ];
 }
 
+if(request.getMethod() == "POST") {
+    if(Forum.ForumController.hasPermission(user, "makePost")){
+        if(!request.deleted){
+            var p = thread.decoratorsHandle();
+            if( p ){
+                thread.count ++;
+                thread.topic.postCount ++;
+                thread.latestPost = p.getID();
+                thread.lastPostTime = new Date();
+                db.forum.topics.save(thread.topic);
+                db.forum.threads.save(thread);
+            }
+        }
+    }
+}
+
+
+
 if(request.deleted) {
     var dlist = db.forum.deleted.findOne({thread: thread});
     dlist.deletions.forEach(function(deletion){
@@ -61,17 +79,9 @@ else {
     <% } %>
 </form>
 <%
-    if(Forum.ForumController.hasPermission(user, "makePost")){
+    if(request.getMethod() != "POST" && Forum.ForumController.hasPermission(user, "makePost")){
         if(!request.deleted){
-            var p = thread.decoratorsHandle();
-            if( p ){
-                thread.count ++;
-                thread.topic.postCount ++;
-                thread.latestPost = p.getID();
-                thread.lastPostTime = new Date();
-                db.forum.topics.save(thread.topic);
-                db.forum.threads.save(thread);
-            }
+            thread.decoratorsHandle();
         }
     }
     %>
