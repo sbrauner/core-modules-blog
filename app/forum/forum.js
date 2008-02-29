@@ -42,6 +42,7 @@ Forum.ForumController.adminPermissions = function(){
         // thread stuff
         moveThread: true,
         stickyThread: true,
+        edPickThread: true,
 
         // who the hell knows?
         viewSpecialTopic_Deleted: true

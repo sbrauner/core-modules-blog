@@ -12,15 +12,15 @@ function move(threadId) {
          ajax(passData, "moveThread.jxp", reload, "POST");
 }
 
-
-/*function move(thread, to) {
-         var passData = "thread="+thread+"&to="+to;
-         ajax(passData, "moveThread.jxp", reload, "POST");
-}*/
-
 function reload() {
          location.reload();
 }
+
+function togglePick(threadId) {
+         var passData = "thread="+threadId;
+         ajax(passData, "editorPick.jxp");
+}
+
 
 </script>
 
@@ -82,6 +82,13 @@ if(moveThread) {
            }
            return "";
        });
+}
+
+if(Forum.ForumController.hasPermission(user, "edPickThread")) {
+   actions.push(function(thread) {
+      editorPick(thread);
+      return "";
+   });
 }
 
 %>
