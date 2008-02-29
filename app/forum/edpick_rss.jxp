@@ -1,29 +1,23 @@
 <?xml version="1.0"?>
 <rss version="2.0">
-<%
+<% 
 
-core.app.forum.data.thread();
-core.content.html();
 
-core.app.forum.data.topic();
-core.app.forum.forum();
-
-var topic = db.forum.topics.findOne( { _id: request.id } );
-var threads = Forum.data.Thread.find( { topic : topic } ).sort( { created : -1 } );
+var picks = db.forum.threads.find( { editorPick : true } );
 var now = new Date();
 
 response.setHeader( "Content-Type" , "text/xml"); %>
 
 <channel>
-   <title><%= topic.name  %></title>
-   <link>http://<%= request.getHeader( "Host")+"/forum/viewtopic?id="+topic._id %></link>
+   <title><%= "Editor's Picks"  %></title>
+   <link>http://<%= request.getHeader( "Host") %>/forum/</link>
    <language>en-us</language>
    <pubDate><%= now.webFormat() %></pubDate>
    <description></description>
 
    <%
-      while(threads.hasNext()) {
-        thread = threads.next();
+      while(picks.hasNext()) {
+        thread = picks.next();
         post = thread.getFirstPost();
         %>
 

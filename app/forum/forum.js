@@ -9,9 +9,9 @@ Forum.ForumController.anonymousPermissions = function(){
 };
 
 Forum.ForumController.memberPermissions = function(){
-    var p = {createTopic: true,
+    var p = {createThread: true,
         makePost: true
-    };
+            };
     // add anonymousPermissions
     return Object.extend(p, Forum.ForumController.anonymousPermissions());
 };
@@ -42,6 +42,7 @@ Forum.ForumController.adminPermissions = function(){
         // thread stuff
         moveThread: true,
         stickyThread: true,
+        edPickThread: true,
 
         // who the hell knows?
         viewSpecialTopic_Deleted: true

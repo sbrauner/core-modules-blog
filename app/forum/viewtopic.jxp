@@ -1,45 +1,26 @@
 <%
 htmlheader("Forum");
+head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 core.user.html.topCorner();
 %>
 
 <script type="text/javascript">
 
-function move(thread, to) {
-	 var xmlhttp = null;
- 	 try {
-	   xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-	 } catch (e) {
-	   try {
-	      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	   } catch (E) {
-	      xmlhttp = false;
-  	   }
-        }
-	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-	   try {
-	          xmlhttp = new XMLHttpRequest();
-	   } catch (e) {
-       	     	  xmlhttp=false;
-	   }
-	}
-	if (!xmlhttp && window.createRequest) {
-	   try {
-	          xmlhttp = window.createRequest();
-           } catch (e) {
-    	      	 xmlhttp=false;
-	   }
-       }
-
-       xmlhttp.open("POST", "moveThread.jxp", true);
-       xmlhttp.onreadystatechange=function() {
-         if (xmlhttp.readyState==4) {
-	    location.reload();
-	 }
-       }
-       var pass = "thread="+thread+"&to="+to;
-       xmlhttp.send(pass);
+function move(threadId) {
+         topicId = document.getElementById(threadId).value;
+         var passData = "thread="+threadId+"&to="+topicId;
+         ajax(passData, "moveThread.jxp", reload, "POST");
 }
+
+function reload() {
+         location.reload();
+}
+
+function togglePick(threadId) {
+         var passData = "thread="+threadId;
+         ajax(passData, "editorPick.jxp");
+}
+
 
 </script>
 
@@ -48,6 +29,8 @@ core.content.table();
 core.app.forum.forum();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
+core.app.forum.html.form();
+
 var id = request.id;
 if(request.id == Forum.ForumController.specialDeletedID){
     return core.app.forum.deleted_view();
@@ -65,9 +48,11 @@ if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
    <% subs.forEach(Forum.renderer.topic);
 }
+
 var actions = [];
 if(Forum.ForumController.hasPermission(user, "stickyThread")){
-    actions.push(function(thread){
+    actions.push({ title : "Toggle Sticky",
+                   func : function(thread){
         if(thread.pinned == false){
             var action = "sticky";
             var text = "Sticky";
@@ -76,22 +61,37 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
             var action = "unsticky";
             var text = "Unsticky";
         }
-        return "<form action=\"thread_action\"><input type=\"hidden\" name=\"select\" value=\""+thread._id+"\"><input type=\"hidden\" name=\"action\" value=\""+action+"\"><input type=\"submit\" value=\""+text+"\"></form>";
-      });
+        stickyForm(thread._id, action, text);
+        return "";
+      }});
 }
 
 if(moveThread) {
        var topics = db.forum.topics.find();
        topics = topics.toArray();
 
-	actions.push(function(t) {
-		print("move to <select>");
-		for(i=0; i<topics.length; i++) {
-			if(t.topic._id != topics[i]._id) { 
-				 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
-			}
-		}
-	});
+        actions.push({title : "Move Thread",
+                      func : function(t) {
+           if(topics.length > 1) {
+              var retStr = "<select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
+              retStr += "<option value=\"0\" selected>&nbsp;</option>";
+              for(i=0; i<topics.length; i++) {
+                 if(t.topic._id != topics[i]._id) {
+                     retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
+                 }
+              }
+              return retStr += "</select>";
+           }
+           return "";
+       }});
+}
+
+if(Forum.ForumController.hasPermission(user, "edPickThread")) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
+      editorPick(thread);
+      return "";
+   }});
 }
 
 %>
@@ -108,10 +108,11 @@ if(moveThread) {
       <td>
         Last post
       </td>
-      <% if(actions.length > 0){ %>
-      <td>
-        Actions
-      </td>
+      
+      <% 
+      for(i=0; i < actions.length; i++) {
+          %>
+          <td><%= actions[i].title %></td>
       <% } %>
     </tr>
 
@@ -121,8 +122,8 @@ var list = Forum.data.Thread.list(t);
 
 if (list)
     list.forEach( function(t) {
-	Forum.renderer.thread(t, opts);
-    });   
+        Forum.renderer.thread(t, opts);
+    });
 else
     print ("No topics right now!");
 %>
@@ -136,7 +137,7 @@ else
 
     <% if(t.parent){ %>
 <a href="viewtopic?id=<%= t.parent._id%>">Back to parent topic</a>
-<% } 
+<% }
 else { %>
 <a href="./">Back to toplevel</a>
 <% } %>

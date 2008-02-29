@@ -9,6 +9,7 @@ Forum.data.Thread = function(){
     this.lastPostTime = new Date();
     this.latestPost = null;
     this.count = 1;
+    this.editorPick = false;
     this.topic = null;
 };
 
@@ -69,3 +70,5 @@ db.forum.threads.ensureIndex({created : -1});
 db.forum.threads.ensureIndex({lastPostTime : -1});
 db.forum.threads.ensureIndex({pinned: 1});
 db.forum.threads.ensureIndex({pinned: 1, lastPostTime: 1});
+core.db.db();
+dbutil.associate(Forum.data.Thread, db.forum.threads);
