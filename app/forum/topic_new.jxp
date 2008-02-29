@@ -9,10 +9,18 @@ var topic = new Forum.data.Topic();
 Forms.fillInObject( "new", topic );
 print.setFormObject( topic );
 if(request.newname){
+    var back;
     topic.order = parseInt(topic.order);
-    if(request.parent != "null")
+    if(request.parent != "null"){
         topic.parent = db.forum.topics.findOne({_id: request.parent});
+        back = "viewtopic?id="+parent._id;
+    }
+    else{
+        back = "./";
+    }
     db.forum.topics.save(topic);
+    response.setResponseCode(301);
+    response.setHeader("Location", back);
 }
 %>
     <h3>Make a new topic</h3>
