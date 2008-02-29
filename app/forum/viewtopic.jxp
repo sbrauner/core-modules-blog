@@ -43,7 +43,11 @@ moveTopic = Forum.ForumController.hasPermission(user, "moveTopic");
 
 var t = db.forum.topics.findOne({_id: id});
 var subs = Forum.data.Topic.list(t).toArray();
+%>
+<h1><%= t.name %></h1>
+<h2><%= t.description%></h2>
 
+<%
 if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
    <% subs.forEach(Forum.renderer.topic);
