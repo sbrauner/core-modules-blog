@@ -293,7 +293,9 @@ Comments:
     db.bugtracker.cases.save(feature);
 }%></div>
 <%
-feature.decoratorsRender();
+feature.decoratorsRender("threaded.replylink");
+feature.decoratorsRender("threaded.replyform");
+feature.decoratorsRender("threaded.replies");
  %>
 </div>
 
