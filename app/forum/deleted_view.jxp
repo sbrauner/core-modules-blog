@@ -15,7 +15,7 @@
     core.app.forum.data.thread();
     var dlists = db.forum.deleted.find();
 dlists.forEach(function(dlist){
-    thread = db.forum.threads.findOne(dlist.thread);
+    thread = Forum.data.Thread.findOne(dlist.thread);
     thread.count = dlist.deletions.length;
     Forum.renderer.thread(thread, {deleted: true});
 });

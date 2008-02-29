@@ -6,7 +6,7 @@ core.app.forum.data.thread();
 core.content.forms();
 if(request.getMethod() == "POST"){
     var thread = new Forum.data.Thread();
-    db.forum.threads.save(thread);
+    thread.save();
     var rep = thread.decoratorsHandle();
 
     if(rep){
@@ -17,14 +17,14 @@ if(request.getMethod() == "POST"){
         thread.latestPost = rep.getID();
         if(request.sticky)
             thread.pinned = true;
-        db.forum.threads.save(thread);
+        thread.save();
         db.forum.topics.save(thread.topic);
         response.setResponseCode(301);
         response.setHeader("Location", "./");
         return;
     }
     else {
-        db.forum.threads.remove(thread);
+        Forum.data.Thread.remove(thread);
     }
 }
 var backurl = "viewtopic?id="+request.top_id;
@@ -43,7 +43,7 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
             return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
         }];
 } %>
-    <% Forum.data.Thread.decoratorsHandle(opts); %>
+    <% Forum.data.Thread.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>

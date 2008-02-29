@@ -2,7 +2,7 @@
 core.app.forum.data.thread();
 core.app.forum.data.deletion();
 core.app.forum.forum();
-var thread = db.forum.threads.findOne({_id: request.id});
+var thread = Forum.data.Thread.findOne({_id: request.id});
 
 if(thread == null){
     print("thread not found");
@@ -12,6 +12,10 @@ print("<!-- " + thread._id + "-->");
 
 canDelete = Forum.ForumController.hasPermission(user, "deletePost");
 canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
+
+// can't post if you don't have permissions, or if we're looking at
+// all the posts deleted from a thread.
+canPost = Forum.ForumController.hasPermission(user, "makePost") && ! request.deleted;
 
 htmlheader("Viewing thread: "+thread.findFirstPost().title);
 core.user.html.topCorner();
@@ -34,19 +38,16 @@ options.actions = [
 ];
 }
 
-if(request.getMethod() == "POST") {
-    if(Forum.ForumController.hasPermission(user, "makePost")){
-        if(!request.deleted){
-            var p = thread.decoratorsHandle();
-            if( p ){
-                thread.count ++;
-                thread.topic.postCount ++;
-                thread.latestPost = p.getID();
-                thread.lastPostTime = new Date();
-                db.forum.topics.save(thread.topic);
-                db.forum.threads.save(thread);
-            }
-        }
+if(canPost){
+    // see if we got a post
+    var p = thread.decoratorsHandle();
+    if( p ){
+        thread.count ++;
+        thread.topic.postCount ++;
+        thread.latestPost = p.getID();
+        thread.lastPostTime = new Date();
+        db.forum.topics.save(thread.topic);
+        thread.save();
     }
 }
 
@@ -59,7 +60,7 @@ if(request.deleted) {
     });
 }
 else {
-thread.decoratorsRender(options);
+    thread.decoratorsRender("threaded.replies", options);
 }
 %>
 
@@ -79,10 +80,10 @@ else {
     <% } %>
 </form>
 <%
-    if(request.getMethod() != "POST" && Forum.ForumController.hasPermission(user, "makePost")){
-        if(!request.deleted){
-            thread.decoratorsHandle();
-        }
+    if(canPost){
+        // provide links or forms to post
+        thread.decoratorsRender("threaded.replylink");
+        thread.decoratorsRender("threaded.replyform");
     }
     %>
 
