@@ -8,10 +8,17 @@ core.app.forum.data.thread();
 // t is the thread to show.
 var t = arguments[0];
 var opts = arguments[1];
+
+// Are we displaying the deleted posts of a thread?
+// i.e. Are we displaying a DeletionList?
 var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted;
+
+// actions is a list of functions which will be called on the thread and the
+// results put in a fourth cell
+var actions = (opts == null || opts.actions == null) ? [] : opts.actions;
 var f = t.findFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
-var l = t.getDescendant(t.latestPost);
+var l = t.getLatestPost();
 
 var title = f.title;
 if(deletedPosts) title += " (deleted posts)";
@@ -19,19 +26,26 @@ if(deletedPosts) title += " (deleted posts)";
 var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
-<tr>
+
+
+<tr valign="top">
   <td>
-    <a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/>
-at <%= f.ts %>
+    <a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/> at <%= f.ts %>
   </td>
   <td>
     <%= t.count.toFixed() %>
   </td>
   <% if (!deletedPosts) { %>
   <td>
-    by <%= l.author.name %> (<a href="<%= link %>#<%= l._id %>">go</a>)<br/>
+    by <%= l.author.name %> (<a href="<%= link %>#<%= l.getID() %>">go</a>)<br/>
     at <%= l.ts %>
   </td>
   <% } %>
-
-</div>
+  <% if (actions.length > 0){ %>
+  <% for(var i in actions){ %>
+  <td>
+    <%= actions[i](t) %>
+  </td>
+  <% } %>
+  <% } %>
+</tr>

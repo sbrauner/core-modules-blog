@@ -29,3 +29,33 @@ content.HTML.unescape_html = function(str){
     }
     return str;
 };
+
+RSS = {};
+
+RSS.clean = function( s ){
+
+    // This is a slightly modified version of the RSS clean function in
+    // blog.rss. We put this in a namespace so that it wouldn't conflict
+    // with the clean function in the db namespace.
+    s = s.replace( /&nbsp;/g , " " );
+    s = s.replace( /&rsquo;/g , "'" );
+    s = s.replace( /&[mn]dash;/g , "-" );
+    s = s.replace( /&ldquo;/g , "'" );
+    s = s.replace( /&rdquo;/g , "'" );
+
+    s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+
+    //s = s.replace( /<\/?embed[^>]*>/g , "" );
+    s = s.replace( /mt:asset.id=.*? /g , "" );
+
+    // Not really sure what Dana meant for this code to do; originally
+    // he had it return " ", but I can't figure out what the rationale was.
+    s = s.replace( /&(\w+);/g , function(z){
+        return "&amp;";
+                    } );
+
+    s = s.replace( /</g , "&lt;" );
+    s = s.replace( />/g , "&gt;" );
+
+    return s;
+}

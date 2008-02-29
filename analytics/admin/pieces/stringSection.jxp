@@ -1,9 +1,10 @@
 <%
 
-    var config = arguments[0];
+var config = arguments[0];
+if ( ! config.hours ) config.hours = 1;
 
 var startDate = new Date();
-startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * 1 ) );
+startDate = new Date( startDate.getTime()  - ( 1000 * 3600 * config.hours ) );
 startDate = startDate.roundHour();
 %>
 
@@ -27,13 +28,14 @@ config.table.find( { time : { $gt : startDate } } ).forEach( function(z){
 								 else
 								     field = z[ config.field ];
 								 
+								 field = field.replace( /[ \s]+/g , " " );
 								 var n = allThings[ field ];
 								 if ( n )
 								     n += z.num;
 								 else 
 								     n = z.num;
-								 allThings[ field ] = n;
 								 
+								 allThings[ field ] = n;
 							     } );
 
 

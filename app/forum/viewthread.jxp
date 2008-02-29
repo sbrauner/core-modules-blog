@@ -1,5 +1,7 @@
 <%
 core.app.forum.data.thread();
+core.app.forum.data.deletion();
+core.app.forum.forum();
 var thread = db.forum.threads.findOne({_id: request.id});
 
 if(thread == null){
@@ -11,20 +13,15 @@ print("<!-- " + thread._id + "-->");
 canDelete = Forum.ForumController.hasPermission(user, "deletePost");
 canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
 
+htmlheader("Viewing thread: "+thread.findFirstPost().title);
+core.user.html.topCorner();
+
 %>
-<%
-if ( jxp.pieces && jxp.pieces.header ){ jxp.pieces.header(); }
-else {
-%>
-<html>
-  <head>
-    <title>Viewing thread: <%= thread.findFirstPost().title %></title>
-    <link rel="stylesheet" type="text/css" href="css/forum.css"/>
-  </head>
-  <body>
-    <h1><a href="./">Forum</a></h1>
-    <h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
-<% } %>
+
+<h1><a href="./">Forum</a></h1>
+<h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
+
+
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
 <%
@@ -64,18 +61,21 @@ else {
     <% } %>
 </form>
 <%
-    if(thread.decoratorsHandle({replylink: false})){
-    thread.count ++;
-    thread.topic.postCount ++;
-    db.forum.topics.save(thread.topic);
-    db.forum.threads.save(thread);
-}%>
+    if(Forum.ForumController.hasPermission(user, "makePost")){
+        if(!request.deleted){
+            var p = thread.decoratorsHandle();
+            if( p ){
+                thread.count ++;
+                thread.topic.postCount ++;
+                thread.latestPost = p.getID();
+                thread.lastPostTime = new Date();
+                db.forum.topics.save(thread.topic);
+                db.forum.threads.save(thread);
+            }
+        }
+    }
+    %>
 
-<%
-if ( jxp.pieces && jxp.pieces.footer ){ jxp.pieces.footer(); }
-else {
-%>
-<a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
-  </body>
-</html>
-        <% } %>
+        <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
+
+<% htmlfooter(); %>
