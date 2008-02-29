@@ -1,10 +1,10 @@
 <%
 
-var thread = db.forum.threads.findOne({_id : request.thread});
+var thread = Forum.data.Thread.findOne({_id : request.thread});
 var topic = db.forum.topics.findOne({_id : request.to});
 
 thread.setTopic( topic );
 
-db.forum.threads.save(thread);
+Forum.data.Thread.save(thread);
 
 %>

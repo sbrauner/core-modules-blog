@@ -2,7 +2,7 @@
 core.app.forum.data.thread();
 core.app.forum.data.deletion();
 core.app.forum.forum();
-var thread = db.forum.threads.findOne({_id: request.id});
+var thread = Forum.data.Thread.findOne({_id: request.id});
 
 if(thread == null){
     print("thread not found");
@@ -47,7 +47,7 @@ if(canPost){
         thread.latestPost = p.getID();
         thread.lastPostTime = new Date();
         db.forum.topics.save(thread.topic);
-        db.forum.threads.save(thread);
+        Forum.data.Thread.save(thread);
     }
 }
 
