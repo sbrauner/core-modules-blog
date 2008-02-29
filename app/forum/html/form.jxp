@@ -1,0 +1,9 @@
+<% function stickyForm(id, action, text) { %>
+
+<form action="thread_action">
+      <input type="hidden" name="select" value="<%= id %>">
+      <input type="hidden" name="action" value="<%= action %>">
+      <input type="submit" value="<%= text %>">
+</form>
+
+<% } %>

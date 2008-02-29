@@ -125,6 +125,7 @@ if(request.action == "sticky"){
         var thread = db.forum.threads.findOne({_id: sel1});
         thread.pinned = true;
         db.forum.threads.save(thread);
+//    log("pinned in action? "+thread._id);
     });
 }
 

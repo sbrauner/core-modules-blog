@@ -3,6 +3,7 @@ htmlheader("Forum");
 core.user.html.topCorner();
 %>
 
+<script src="/~~/ui/js/common.js"></script>
 <script type="text/javascript">
 
 function move(thread, to) {
@@ -14,6 +15,11 @@ function reload() {
          location.reload();
 }
 
+function toggleSticky(threadId, action) {
+         var passData = "threadId="+threadId+"&action="+action;
+         ajax(passData, "thread_action.jxp", reload, "POST");
+}
+
 </script>
 
 <%
@@ -21,6 +27,8 @@ core.content.table();
 core.app.forum.forum();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
+core.app.forum.html.form();
+
 var id = request.id;
 if(request.id == Forum.ForumController.specialDeletedID){
     return core.app.forum.deleted_view();
@@ -38,6 +46,7 @@ if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
    <% subs.forEach(Forum.renderer.topic);
 }
+
 var actions = [];
 if(Forum.ForumController.hasPermission(user, "stickyThread")){
     actions.push(function(thread){
@@ -49,7 +58,8 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
             var action = "unsticky";
             var text = "Unsticky";
         }
-        return "<form action=\"thread_action\"><input type=\"hidden\" name=\"select\" value=\""+thread._id+"\"><input type=\"hidden\" name=\"action\" value=\""+action+"\"><input type=\"submit\" value=\""+text+"\"></form>";
+        stickyForm(thread._id, action, text);
+        return "";
       });
 }
 
@@ -58,13 +68,14 @@ if(moveThread) {
        topics = topics.toArray();
 
         actions.push(function(t) {
-                print("move to <select>");
-                for(i=0; i<topics.length; i++) {
-                        if(t.topic._id != topics[i]._id) {
-                                 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
-                        }
-                }
-        });
+           var retStr = "move to <select>";
+           for(i=0; i<topics.length; i++) {
+               if(t.topic._id != topics[i]._id) {
+                    retStr+="<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>";
+               }
+           }
+           return retStr += "</select>";
+       });
 }
 
 %>
