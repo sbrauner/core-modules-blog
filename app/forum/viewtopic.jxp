@@ -110,7 +110,6 @@ if(Forum.ForumController.hasPermission(user, "edPickThread")) {
       </td>
       
       <% 
-      log(actions[0].title);
       for(i=0; i < actions.length; i++) {
           %>
           <td><%= actions[i].title %></td>
