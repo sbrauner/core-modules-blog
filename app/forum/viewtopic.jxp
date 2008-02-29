@@ -3,7 +3,7 @@ htmlheader("Forum");
 core.user.html.topCorner();
 %>
 
-<script src="/~~/ui/js/common.js"></script>
+head.push("<script src="/~~/ui/js/common.js"></script>");
 <script type="text/javascript">
 
 function move(thread, to) {
@@ -13,11 +13,6 @@ function move(thread, to) {
 
 function reload() {
          location.reload();
-}
-
-function toggleSticky(threadId, action) {
-         var passData = "threadId="+threadId+"&action="+action;
-         ajax(passData, "thread_action.jxp", reload, "POST");
 }
 
 </script>
