@@ -49,37 +49,41 @@ function loadDocSync( url ){
     return d;
 }
 
-function ajaxPost(passData, to, responder) {
-	 var xmlhttp = null;
- 	 try {
-	   xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-	 } catch (e) {
-	   try {
-	      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	   } catch (E) {
-	      xmlhttp = false;
-  	   }
+function ajax(passData, to, responder, method) {
+    if(!method) {
+        var method = "POST";
+    }
+    var xmlhttp = null;
+    try {
+        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e) {
+        try {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (E) {
+            xmlhttp = false;
         }
-	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-	   try {
-	          xmlhttp = new XMLHttpRequest();
-	   } catch (e) {
-       	     	  xmlhttp=false;
-	   }
-	}
-	if (!xmlhttp && window.createRequest) {
-	   try {
-	          xmlhttp = window.createRequest();
-           } catch (e) {
-    	      	 xmlhttp=false;
-	   }
-       }
+    }
+    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+        try {
+            xmlhttp = new XMLHttpRequest();
+        } catch (e) {
+            xmlhttp=false;
+        }
+    }
+    if (!xmlhttp && window.createRequest) {
+        try {
+            xmlhttp = window.createRequest();
+        } catch (e) {
+            xmlhttp=false;
+        }
+    }
 
-       xmlhttp.open("POST", to, true);
-       xmlhttp.onreadystatechange=function() {
-         if (xmlhttp.readyState==4) {
-	     responder(xmlhttp.responseText);
-	 }
-       }
-       xmlhttp.send(passData);
+    xmlhttp.open(method, to, true);
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState==4) {
+            if(responder)
+                responder(xmlhttp.responseText);
+        }
+    }
+    xmlhttp.send(passData);
 }
