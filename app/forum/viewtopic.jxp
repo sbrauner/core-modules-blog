@@ -57,14 +57,14 @@ if(moveThread) {
        var topics = db.forum.topics.find();
        topics = topics.toArray();
 
-	actions.push(function(t) {
-		print("move to <select>");
-		for(i=0; i<topics.length; i++) {
-			if(t.topic._id != topics[i]._id) { 
-				 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
-			}
-		}
-	});
+        actions.push(function(t) {
+                print("move to <select>");
+                for(i=0; i<topics.length; i++) {
+                        if(t.topic._id != topics[i]._id) {
+                                 print("<option onclick=\"move('"+t._id+"', '"+topics[i]._id+"')\">"+topics[i].name+"</option>");
+                        }
+                }
+        });
 }
 
 %>
@@ -94,8 +94,8 @@ var list = Forum.data.Thread.list(t);
 
 if (list)
     list.forEach( function(t) {
-	Forum.renderer.thread(t, opts);
-    });   
+        Forum.renderer.thread(t, opts);
+    });
 else
     print ("No topics right now!");
 %>
@@ -109,7 +109,7 @@ else
 
     <% if(t.parent){ %>
 <a href="viewtopic?id=<%= t.parent._id%>">Back to parent topic</a>
-<% } 
+<% }
 else { %>
 <a href="./">Back to toplevel</a>
 <% } %>
