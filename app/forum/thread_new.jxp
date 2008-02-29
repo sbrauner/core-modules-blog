@@ -43,7 +43,7 @@ if(Forum.ForumController.hasPermission(user, "stickyThread")){
             return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
         }];
 } %>
-    <% Forum.data.Thread.decoratorsHandle(opts); %>
+    <% Forum.data.Thread.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>
