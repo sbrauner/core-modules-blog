@@ -26,6 +26,7 @@ URI = function(s){
     this.args = [];
     this.anchor = "";
     // Check for an anchor first, and trim it.
+    // Note that we don't get an anchor from an incoming request!
     if(s.indexOf('#') != -1){
         this.anchor = s.substring(s.indexOf('#')+1, s.length);
         s = s.substring(0, s.indexOf('#'));
