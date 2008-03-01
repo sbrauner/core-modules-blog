@@ -1,7 +1,7 @@
 <% 
 
 var log = log.webdav;
-log.level = log.LEVEL.DEBUG;
+log.level = log.LEVEL.ERROR;
 
 core.user.auth();
 core.content.xml();
@@ -10,7 +10,7 @@ var method = request.getMethod();
 
 log.debug( "-----" );
 log.debug( "entering webdav" );
-log.debug( request.getRawHeader() );
+log.info( request.getRawHeader() );
 
 if ( method == "OPTIONS" ){
     // OPTIONS bypases security b/c some clients need it
@@ -187,7 +187,7 @@ function propfind( msg , uri , f , depth ){
     msg.push( r );
     
     r["D:href"] = root + uri;
-    
+
     var ps = Object();
     r["D:propstat"] = ps;    
 
@@ -208,7 +208,6 @@ function propfind( msg , uri , f , depth ){
                 if ( ! nextURI.endsWith( "/" ) )
                     nextURI += "/";
                 nextURI += children[i].getName();
-                
                 propfind( msg , nextURI , children[i] , depth - 1 );
             }
         }
