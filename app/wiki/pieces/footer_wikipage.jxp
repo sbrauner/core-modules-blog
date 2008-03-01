@@ -1,13 +1,15 @@
 <div class="help">
     <% if (user) { %>
         <div class="user">hi <b><%= user.name %></b></div>
-        alt-e: <a href="?edit=true">edit</a> &nbsp; alt-r: rename &nbsp; alt-d: delete &nbsp;
+        e: <a href="?edit=true">edit</a> &nbsp; r: rename &nbsp; d: delete &nbsp;
     <% } %>
-    alt-s: <a href="search">search</a> &nbsp; alt-h: <a href="Main">home</a>
+    s: <a href="search">search</a> &nbsp; h: <a href="Main">home</a>
     <% if( user ) { %>
         <br/>
-        alt-enter: saves after editing &nbsp; <a href="help.markup">markup help</a>
+        ctrl-enter: saves after editing &nbsp; <a href="help.markup">markup help</a> &nbsp; <a href="?history=true">history</a>
     <% } %>
+</div>
+<div>
     <hr />
     <b>Child Articles</b>
     <ul>
