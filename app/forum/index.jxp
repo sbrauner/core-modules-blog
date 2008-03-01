@@ -1,6 +1,7 @@
 <%
 htmlheader("Forums");
 core.user.html.topCorner();
+core.net.uri();
 
 core.app.forum.data.topic();
 core.app.forum.forum();

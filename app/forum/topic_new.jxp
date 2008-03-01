@@ -5,17 +5,34 @@ core.user.html.topCorner();
 core.app.forum.data.topic();
 core.content.forms();
 
+var error = "";
+
 var topic = new Forum.data.Topic();
 Forms.fillInObject( "new", topic );
 print.setFormObject( topic );
 if(request.newname){
+    var back;
     topic.order = parseInt(topic.order);
-    if(request.parent != "null")
+    if(request.parent != "null"){
         topic.parent = db.forum.topics.findOne({_id: request.parent});
-    db.forum.topics.save(topic);
+        back = "viewtopic?id="+parent._id;
+    }
+    else{
+        back = "./";
+    }
+    // Don't allow duplicate names.
+    if(db.forum.topics.findOne({name: topic.name}) == null){
+        db.forum.topics.save(topic);
+        response.setResponseCode(301);
+        response.setHeader("Location", back);
+    }
+    else {
+        error = "This name is already in use."
+    }
 }
 %>
     <h3>Make a new topic</h3>
+    <span class="error"><%= error %></span>
     <form>
       <input type="hidden" name="parent" value="<%= request.parent%>"/>
       Name: <input type="text" name="newname"><br/>

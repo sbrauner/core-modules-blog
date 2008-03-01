@@ -20,7 +20,7 @@ if(request.getMethod() == "POST"){
         thread.save();
         db.forum.topics.save(thread.topic);
         response.setResponseCode(301);
-        response.setHeader("Location", "./");
+        response.setHeader("Location", "viewthread?id="+thread._id);
         return;
     }
     else {

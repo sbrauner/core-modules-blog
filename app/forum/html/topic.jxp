@@ -1,8 +1,12 @@
 <%
     var f = arguments[0];
+var link = "viewtopic?name="+URI.escape_queryargs(f.name);
+if(f._id == Forum.ForumController.specialDeletedID || 
+   f._id == Forum.ForumController.specialModeratedID)
+    link = "viewtopic?id="+f._id;
 %>
 <div>
-<a href="viewtopic?id=<%= f._id%>"><%= f.name%></a>
+<a href="<%= link %>"><%= f.name%></a>
 (<%= f.threadCount.toFixed(0) %> threads)
 (<%= f.postCount.toFixed(0) %> posts)
 <br/>

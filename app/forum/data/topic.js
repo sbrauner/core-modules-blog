@@ -1,9 +1,9 @@
 Forum.data.Topic = function(){
-    this.name = null;
-    this.description = null;
+    this.name = "";
+    this.description = "";
     this.hidden = false;
     this.allowPosts = true;
-    this.order = null;
+    this.order = 0;
 
     // Housekeeping fields
     this.latestPost = null;
@@ -17,3 +17,4 @@ Forum.data.Topic.list = function(parent){
 };
 
 db.forum.topics.setConstructor(Forum.data.Topic);
+db.forum.topics.ensureIndex({order: 1});
