@@ -24,6 +24,9 @@
     collection.ensureIndex( {name:true} );
   }
 
+  // ignore internal transient variables
+  var ignore= { _ns:1, _save:1, _update:1 };
+
   var max = top?1000:100;
   var rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
 
@@ -55,9 +58,9 @@
     print('\n<table class="dbview">');
     print("<tr>");
     for( h in f ) {
-      if( f[h]>thresh ) { print("<th>");print(h);print("</th>"); }
+      if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
-    print("<th></th></tr>\n");
+    print("<th>(other)</th></tr>\n");
   }
 
   for( var i=0; i < rows.length; i++ ) {
@@ -77,16 +80,20 @@
  } else {
       print("<tr>");
       for( h in f ) {
-        if( f[h]>thresh ) {
-          print("<td>");
-          outp(obj[h]);
-          print("</td>");
-        }
+	  if( f[h]>thresh && !ignore[h] ) {
+	      print("<td>");
+	      outp(obj[h]);
+	      print("</td>");
+	  }
       }
       print("<td>");
+      var first = true;
       for( x in obj ) {
         if( f[x]<= thresh ) {
-                  print(x); print(": "); outp(obj[x]); print(" ");
+	    if( !first )
+		print(", ");
+	    first = false;
+	    print(x); print(": "); outp(tojson(obj[x])); 
         }
       }
       print("</td></tr>\n");
