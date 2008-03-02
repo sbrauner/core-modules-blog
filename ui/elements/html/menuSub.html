@@ -1,0 +1,11 @@
+<li class="yuimenuitem">
+  <a class="yuimenuitemlabel" href="$link">$name</a>
+
+  <div ? ( obj.submenu ) class="yuimenu">
+    <div class="bd">
+      <ul>
+        <% obj.submenu.forEach( core.ui.elements.html.menuSub ); %>
+      </ul>
+    </div>
+  </div>
+</li>
