@@ -12,9 +12,9 @@
 body {
     margin: 0px;
     padding: 0px;
-        font-family: sans-serif;
-        color: #000;
-        background: <%= background %>;
+    font-family: sans-serif;
+    color: #000;
+    background: <%= background %>;
 }
 
 a {
@@ -95,7 +95,7 @@ ul#admin_menu, ul#module_menu {
     padding: 0px;
 }
 
-ul#admin_menu li, ul#module_menu li {
+#admin_header li {
     float: left;
     border-right: 1px solid <%= background %>;
     padding: 5px 10px;
@@ -157,3 +157,8 @@ div#customer_body {
     _position: absolute;
 }
 
+#login_status {
+   position: absolute;
+   top: 0px;
+   right: 0px;
+}
