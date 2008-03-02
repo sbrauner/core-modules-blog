@@ -61,8 +61,7 @@ function htmltable(specs) {
 
     // returns the query object to filter by
     this._query = function(baseQuery) {
-        if( !this.specs.searchable )
-            return {};
+        //if( !this.specs.searchable ) return {};
         var q = baseQuery;
         this.specs.cols.forEach( function(x) {
                 var s = request[x.name];
