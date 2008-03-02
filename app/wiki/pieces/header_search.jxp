@@ -5,8 +5,8 @@
     head.push('<link rel="stylesheet" href="assets/wiki.css" type="text/css">');
     //  head.push('<link rel="stylesheet" href="/~~/misc/gitweb.css" type="text/css">');
     head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
-    head.push('<script type="text/javascript" src="assets/client.js"></script>');
-    if (!app.wiki.config.readOnly) head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
+//    head.push('<script type="text/javascript" src="assets/client.js"></script>');
+//    if (!app.wiki.config.readOnly) head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
 %>
 
 <% htmlheader('10gen Public Wiki | Search'); %>
