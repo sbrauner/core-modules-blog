@@ -48,21 +48,22 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
 if(moveThread) {
        var topics = db.forum.topics.find();
        topics = topics.toArray();
-
-        actions.push({title : "Move Thread",
+       if(topics.length > 1) {
+          actions.push({title : "Move Thread",
                       func : function(t) {
-           if(topics.length > 1) {
               var retStr = "<select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
-              retStr += "<option value=\"0\" selected>&nbsp;</option>";
-              for(i=0; i<topics.length; i++) {
-                 if(t.topic._id != topics[i]._id) {
-                     retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
-                 }
+              for(var i=0; i<topics.length; i++) {
+                   if(topics[i].parent == null) {
+                        retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
+                        var subtopics = db.forum.topics.find( { parent : topics[i] }).toArray();
+                        for(var j=0; j<subtopics.length; j++) {
+                            retStr+="<option value=\""+subtopics[j]._id+"\">---"+subtopics[j].name+"</option>";
+                        }
+                   }
               }
-              return retStr += "</select>";
-           }
-           return "";
-       }});
+              return retStr +"</select>";
+          }});
+       }
 }
 
 if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
