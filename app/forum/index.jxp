@@ -1,32 +1,33 @@
 <%
 htmlheader("Forums");
+head.addScript( "/~~/ui/js/common.js" );
+head.addCSS( "/~~/app/forum/css/forum.css" );
 core.user.html.topCorner();
 core.net.uri();
 
 core.app.forum.data.topic();
 core.app.forum.controller();
-var list = app.Forum.data.Topic.list();
-if (list.length != 0)
-    list.forEach(app.Forum.renderer.topic);
-else
-    print ("No topics right now!");
+core.app.forum.html.topictable();
 
-%>
-    <% if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Deleted")){
-        var delthreads = db.forum.deleted.find({reason: "deleted"}).length();
-        app.Forum.renderer.topic({_id: app.Forum.Controller.specialDeletedID, name: "Deleted posts",
-                              description: "Manage posts which you have deleted",
-                              threadCount: delthreads, postCount: 0});
-    } %>
-    <% if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
-        var modthreads = db.forum.deleted.find({reason: "moderated"}).length();
-        app.Forum.renderer.topic({_id: app.Forum.Controller.specialModeratedID, name: "Moderated posts",
+var topics = app.Forum.data.Topic.list().toArray();
+
+// Deal with the "virtual" topics for Deleted and Moderated posts by adding
+// "fake" topics to the topics array.
+if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Deleted")){
+    var delthreads = db.forum.deleted.find({reason: "deleted"}).length();
+    topics.push({_id: app.Forum.Controller.specialDeletedID, name: "Deleted posts",
+                 description: "Manage posts which you have deleted",
+                 threadCount: delthreads, postCount: 0});
+}
+
+if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
+    var modthreads = db.forum.deleted.find({reason: "moderated"}).length();
+    topics.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderated posts",
                               description: "Manage posts you have moderated",
                               threadCount: modthreads, postCount: 0});
-    } %>
+   }
 
-        <% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
-    <a href="topic_new">New topic</a>
-    <% } %>
+app.Forum.html.topicTable("Forums", null, topics, null, []);
+%>
 
 <% htmlfooter(); %>
