@@ -9,6 +9,7 @@ function Post(name, title) {
     this.ts = new Date();
     this.cls = "entry";
     this.content = "";
+    this.views = 0;
     this.categories = new Array();
 };
 
@@ -187,8 +188,10 @@ function fixComments() {
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+    db.blog.posts.ensureIndex( { views : 1 } );
+
     db.blog.posts.setConstructor( Post );
-    
+
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
 
     //fixComments();
