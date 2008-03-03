@@ -12,6 +12,12 @@ Forum.data.Topic = function(){
     this.threadCount = 0;
 };
 
+Forum.data.Topic.prototype.presave = function(){
+    if ( ! this.description || 
+	 "null" == this.description )
+	this.description = "";
+};
+
 Forum.data.Topic.list = function(parent){
     return db.forum.topics.find({parent: parent}).sort({order: 1});
 };

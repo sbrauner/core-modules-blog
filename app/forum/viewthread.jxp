@@ -2,6 +2,8 @@
 core.app.forum.data.thread();
 core.app.forum.data.deletion();
 core.app.forum.forum();
+head.addCSS( "/~~/app/forum/css/forum.css" );
+
 var thread = Forum.data.Thread.findOne({_id: request.id});
 
 if(thread == null){
@@ -22,12 +24,34 @@ core.user.html.topCorner();
 
 %>
 
-<h1><a href="./">Forum</a></h1>
-<h1>Viewing thread <%= thread.findFirstPost().title %> in <a href="viewtopic?id=<%=thread.topic._id%>"><%= thread.topic.name %></a></h1>
-
-
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
+
+<table id="style1" cellspacing="0" >
+  <tr>
+    <th scope="col" class="article">
+      <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
+      <div class="second_level">
+      <%= thread.findFirstPost().title %>
+      </div>
+    </th>
+    <th class="alignright">
+
+       <% if(request.deleted && canDelete){ %>
+       <input type="submit" name="action" value="undelete">
+       <% } else if(request.moderated && canModerate){ %>
+       <input type="submit" name="action" value="unmoderate">
+       <% } else {
+        if (Forum.ForumController.hasPermission(user, "deletePost")){ %>
+        <input type="submit" name="action" value="delete">
+        <% } %>
+        <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
+        <input type="submit" name="action" value="moderate">
+       <% } %>
+    </th>
+  </tr>
+</table>  
+
 <%
     options = {replyable: false};
 if(canDelete || canModerate){
@@ -62,22 +86,9 @@ if(request.deleted) {
 else {
     thread.decoratorsRender("threaded.replies", options);
 }
-%>
 
-    <% if(request.deleted && canDelete){ %>
-    <input type="submit" name="action" value="undelete">
-    <% }
-else if(request.moderated && canModerate){ %>
-    <input type="submit" name="action" value="unmoderate">
-    <% }
-else {
-    if(Forum.ForumController.hasPermission(user, "deletePost")){ %>
-    <input type="submit" name="action" value="delete">
-    <% } %>
-    <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
-    <input type="submit" name="action" value="moderate">
-    <% } %>
-    <% } %>
+   }
+ %>
 </form>
 <%
     if(canPost){

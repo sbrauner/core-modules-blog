@@ -29,13 +29,22 @@ if(deletedPosts) link += "&deleted=true";
 
 
 <tr valign="top">
-   <td><a href="<%= link %>"><%= title%></a> started by <%= f.author.name %> <br/> at <%= f.ts %></td>
-   <td><%= t.count.toFixed() %></td>
-   <% if (!deletedPosts) { %>
-      <td>by <%= l.author.name %> (<a href="<%= link %>#<%= l.getID() %>">go</a>)<br/>
-      at <%= l.ts %></td>
-      <% 
-  } 
+  <td class="alignleft">
+    <a href="<%= link %>"><%= title%></a>
+    <nobr>started by <%= f.author.name %> <br/> at <%= f.ts %></nobr>
+  </td>
+  <td ><%= t.count.toFixed() %></td>
+
+  <% if (!deletedPosts) { %>
+  <td class="alignleft">
+    by <%= l.author.name %> <br>
+    <nobr>
+    at <%= l.ts %>
+    </nobr>
+  </td>
+  <% } %>
+
+ <%
   if (actions.length > 0){ 
      for(var i in actions){ %>
         <td><%= actions[i].func(t) %></td>

@@ -1,6 +1,7 @@
 <%
 htmlheader("Forum");
-head.push("<script src=\"/~~/ui/js/common.js\"></script>");
+head.addScript( "/~~/ui/js/common.js" );
+head.addCSS( "/~~/app/forum/css/forum.css" );
 core.user.html.topCorner();
 %>
 
@@ -49,7 +50,9 @@ var t = db.forum.topics.findOne({name: name});
 var subs = Forum.data.Topic.list(t).toArray();
 %>
 <h1><%= t.name %></h1>
-<h2><%= t.description%></h2>
+<% if ( t.description ){ %>
+<h2><%= t.description %></h2>
+<% } %>
 
 <%
 if(subs.length > 0){ %>
@@ -104,23 +107,20 @@ if(Forum.ForumController.hasPermission(user, "edPickThread")) {
 
 %>
 
-<h1>Available threads</h1>
-  <table>
+  <table id="style1" >
     <tr>
-      <td>
+      <th>
         Thread
-      </td>
-      <td>
+      </th>
+      <th>
         Replies
-      </td>
-      <td>
+      </th>
+      <th>
         Last post
-      </td>
+      </th>
 
-      <%
-      for(i=0; i < actions.length; i++) {
-          %>
-          <td><%= actions[i].title %></td>
+      <% for(i=0; i < actions.length; i++) { %>
+          <th><%= actions[i].title %></th>
       <% } %>
     </tr>
 

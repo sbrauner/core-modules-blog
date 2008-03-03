@@ -16,6 +16,7 @@ var menu = [
     } ,
     { name : "Local" , link : "#" , 
       submenu : [
+          { name : "Local Edit" , link : "/admin/localEdit.jxp" } ,
           { name : "Git" , link : "/admin/gitLocal.jxp" } ,
           { name : "Shell" , link : "/admin/shell.jxp" } ,
           { name : "Docs" , link : "/admin/doc.jxp" } ,

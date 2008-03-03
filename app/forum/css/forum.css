@@ -1,3 +1,6 @@
+/* forum style */
+
+
 .post {
     position: relative;
     margin-left: 40px;
@@ -15,4 +18,95 @@ table {
 
 td {
     border: solid 1px #000;
+}
+
+.caption {
+	padding: 0 0 5px 0; 
+		font-size: 12px;
+		text-align: right;
+}
+
+table#style1 {
+	margin-bottom: 1em;
+	width: 100%;
+	border: 1px solid #157491;
+}
+
+#style1 form {
+	display:inline;
+}
+
+#style1 input {
+	margin:0; 
+	background-color: #369fbf;
+	font-size:11px;
+	color: #ffffff; 
+	border: 1px solid #ffffff;	
+}
+
+#style1 a {
+	display: block;
+	line-height: 1.2em;
+}
+
+#style1 nobr {
+	font-size:11px; 
+	color: #AAAAAA;	
+}
+
+#style1 th {
+	padding: 7px 6px 5px 12px;
+	font-size: 11px;
+	color: #4f6a72;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	text-align: center;
+	background: #cce5ec url(th_back.gif?v=2);
+	background-repeat: repeat-x;
+}
+
+#style1 th div.top_level {
+	float: left;
+	padding: 6px 6px 4px 12px;	
+	height: 13px;
+	color: #ffffff;
+	background-color: #369fbf;
+	background-repeat: repeat-x;
+}
+
+#style1 th.article {
+	padding: 4px; 	
+}
+
+#style1 th.article div.top_level a {
+	color: #ffffff;
+}
+
+#style1 th.article div.second_level {
+	float: left;
+	padding: 6px 6px 0px 18px;
+	height: 17px; 
+	background-image: url(th_arrow.gif?v=2);
+	background-repeat: no-repeat;	
+}
+
+#style1 .alignleft {
+	text-align: left;	
+}
+
+#style1 .alignright {
+	padding-right: 4px; 
+	text-align: right;	
+}
+
+#style1 td {
+	padding: 6px 6px 6px 12px;
+	font-size: 14px;
+	background: #fff;
+	text-align:center;
+	border-top: 1px solid #9ac0cc; 
+}
+
+#style1 tr.alt td {
+	background-color: #f4f8f9;
 }
