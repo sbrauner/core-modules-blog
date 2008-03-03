@@ -65,6 +65,19 @@ core.user.html.topCorner();
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
 
+<div class="caption">
+<% if(request.show == "deleted"){ %>
+<a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
+<% } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
+<a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
+<% } %>
+<% if(request.show == "moderated"){ %>
+<a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
+<% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
+<a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
+<% } %>
+<a href="viewtopic?name=<%= escape(thread.topic.name) %>">Back to thread list</a>
+</div>
 <table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
@@ -94,8 +107,6 @@ core.user.html.topCorner();
 <%
         thread.decoratorsRender("threaded.replies", postoptions);
  %>
-
-</form>
 <div class="threadFooter">
 <div class="opt">
 <%
@@ -106,22 +117,9 @@ core.user.html.topCorner();
     }
     %>
 </div>
-<div class="opt">
-<% if(request.show == "deleted"){ %>
-<a href="<%=uri.removeArg("show")%>">Hide deleted</a>
-<% } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-<a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a>
-<% } %>
 </div>
-<div class="opt">
-<% if(request.show == "moderated"){ %>
-<a href="<%=uri.removeArg("show")%>">Hide moderated</a>
-<% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
-<a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a>
-<% } %>
-</div>
-</div>
-        <a href="viewtopic?name=<%= escape(thread.topic.name) %>">Back to thread list</a>
+
+</form>
 
 <% htmlfooter(); %>
 
