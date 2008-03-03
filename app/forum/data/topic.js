@@ -13,9 +13,27 @@ Forum.data.Topic = function(){
 };
 
 Forum.data.Topic.prototype.presave = function(){
-    if ( ! this.description || 
-	 "null" == this.description )
-	this.description = "";
+    if ( ! this.description ||
+         "null" == this.description )
+        this.description = "";
+};
+
+Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
+    var topic = this;
+    while(topic){
+        topic.postCount += postCount;
+        topic.threadCount += threadCount;
+        db.forum.topics.save(topic);
+        topic = topic.parent;
+    }
+};
+
+Forum.data.Topic.prototype.subtThread = function(postCount){
+    this.changeCounts(-1, -postCount);
+};
+
+Forum.data.Topic.prototype.addThread = function(postCount){
+    this.changeCounts(1, postCount);
 };
 
 Forum.data.Topic.list = function(parent){

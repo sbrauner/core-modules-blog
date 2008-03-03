@@ -22,16 +22,11 @@ Forum.data.Thread.prototype.getFirstPost = function() {
 };
 
 Forum.data.Thread.prototype.setTopic = function(newTopic) {
-    oldTopic = this.topic;
-    oldTopic.postCount -= this.count;
-    oldTopic.threadCount--;
-    db.forum.topics.save(oldTopic);
-
-    newTopic.postCount += this.count;
-    newTopic.threadCount++;
-    db.forum.topics.save(newTopic);
+    var oldTopic = this.topic;
+    oldTopic.subtThread(this.count);
 
     this.topic = newTopic;
+    newTopic.addThread(this.count);
 };
 
 Forum.data.Thread.prototype.getLatestPost = function() {

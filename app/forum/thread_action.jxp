@@ -3,6 +3,7 @@
 // the thread themselves.
     core.net.uri();
 core.app.forum.data.thread();
+core.app.forum.data.topic();
 core.app.forum.data.deletion();
 core.user.auth();
 var uri = new URI(request.getURL());
@@ -27,12 +28,10 @@ var modifyPostCount = function(thread, num){
     thread.count += num;
     thread.save();
 
-    var topic = thread.topic;
-    while(topic){
-        topic.postCount += num;
-        db.forum.topics.save(topic);
-        topic = topic.parent;
-    }
+    // FIXME: another cross-reference thing
+    topic = db.forum.topics.findOne({_id: thread.topic._id});
+    topic.changeCounts(0, num);
+    thread.topic = topic;
 };
 
 var subtPost = function(attr){

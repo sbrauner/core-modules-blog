@@ -1,5 +1,6 @@
 <%
 core.app.forum.data.thread();
+core.app.forum.data.topic();
 core.app.forum.data.deletion();
 core.app.forum.forum();
 head.addCSS( "/~~/app/forum/css/forum.css" );
@@ -67,14 +68,15 @@ if(canPost){
     var p = thread.decoratorsHandle();
     if( p ){
         thread.count ++;
-        thread.topic.postCount ++;
+        // FIXME: why doesn't just using thread.topic work here?
+        topic = db.forum.topics.findOne({_id: thread.topic._id});
+        topic.changeCounts(0, 1);
         thread.latestPost = p.getID();
         thread.lastPostTime = new Date();
-        db.forum.topics.save(thread.topic);
+        db.forum.topics.save(topic);
         thread.save();
     }
 }
-
 
 
 if(request.deleted) {
