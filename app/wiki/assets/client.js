@@ -7,10 +7,10 @@ clientLoader.insert({
     onSuccess: function(loader) {
             YAHOO.util.Event.onDOMReady( function() {
                 // only set these up on a non-edit page
-		searchKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: 83 }, handleSearchKeyPress);
+		searchKeyListener = new YAHOO.util.KeyListener(document, { alt: false, keys: 83 }, handleSearchKeyPress);
                 searchKeyListener.enable();
 
-                homeKeyListener = new YAHOO.util.KeyListener(document, { alt: true, keys: 72 }, handleHomeKeyPress);
+                homeKeyListener = new YAHOO.util.KeyListener(document, { alt: false, keys: 72 }, handleHomeKeyPress);
                 homeKeyListener.enable();
             });
         }
