@@ -1,7 +1,18 @@
 <%
 
 var thread = app.Forum.data.Thread.findOne({_id : request.thread});
-var topic = db.forum.topics.findOne({_id : request.to});
+var topic = null;
+var o = request.to;
+if(o != app.Forum.Controller.specialDeletedID.toString() &&
+   o != app.Forum.Controller.specialModeratedID.toString())
+    topic = db.forum.topics.findOne({_id : request.to});
+else {
+    // FIXME: wait until Eliot fixes the ObjectId toString method
+    if(o == app.Forum.Controller.specialDeletedID.toString())
+        topic = app.Forum.Controller.specialDeletedID;
+    else
+        topic = app.Forum.Controller.specialModeratedID;
+}
 
 thread.setTopic( topic );
 

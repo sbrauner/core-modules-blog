@@ -10,6 +10,9 @@ app.Forum.data.Thread = function(){
     this.latestPost = null;
     this.count = 1;
     this.editorPick = false;
+    // This could be a reference to a db.forum.topic, or an ObjectId:
+    // app.Forum.Controller.specialDeletedID or
+    // app.Forum.Controller.specialModeratedID
     this.topic = null;
 };
 
@@ -23,10 +26,14 @@ app.Forum.data.Thread.prototype.getFirstPost = function() {
 
 app.Forum.data.Thread.prototype.setTopic = function(newTopic) {
     var oldTopic = this.topic;
-    oldTopic.subtThread(this.count);
+    if(oldTopic != app.Forum.Controller.specialDeletedID &&
+       oldTopic != app.Forum.Controller.specialModeratedID)
+        oldTopic.subtThread(this.count);
 
     this.topic = newTopic;
-    newTopic.addThread(this.count);
+    if(newTopic != app.Forum.Controller.specialDeletedID &&
+       newTopic != app.Forum.Controller.specialModeratedID)
+        newTopic.addThread(this.count);
 };
 
 app.Forum.data.Thread.prototype.getLatestPost = function() {
