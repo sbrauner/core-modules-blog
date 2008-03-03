@@ -15,7 +15,7 @@ if(request.newname){
     topic.order = parseInt(topic.order);
     if(request.parent != "null"){
         topic.parent = db.forum.topics.findOne({_id: request.parent});
-        back = "viewtopic?id="+parent._id;
+        back = "viewtopic?name="+escape(topic.parent.name);
     }
     else{
         back = "./";

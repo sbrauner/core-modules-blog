@@ -10,9 +10,9 @@
 
 function editorPick(thread) {
          if(thread.editorPick) { %>
-                <input type="checkbox" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')" checked>
+                <input type="checkbox" class="edPick" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')" checked>
          <% } else { %>
-                <input type="checkbox" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')">
+                <input type="checkbox" class="edPick" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')">
          <% }
 }
 %>

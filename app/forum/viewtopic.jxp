@@ -2,36 +2,15 @@
 htmlheader("Forum");
 head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
+
 core.user.html.topCorner();
-%>
-
-<script type="text/javascript">
-
-function move(threadId) {
-         topicId = document.getElementById(threadId).value;
-         var passData = "thread="+threadId+"&to="+topicId;
-         ajax(passData, "moveThread.jxp", reload, "POST");
-}
-
-function reload() {
-         location.reload();
-}
-
-function togglePick(threadId) {
-         var passData = "thread="+threadId;
-         ajax(passData, "editorPick.jxp");
-}
-
-
-</script>
-
-<%
 core.content.table();
 core.net.uri();
 core.app.forum.controller();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
+core.app.forum.html.topictable();
 
 if(request.id){
     if(request.id == app.Forum.Controller.specialDeletedID){
@@ -48,17 +27,6 @@ moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
 
 var t = db.forum.topics.findOne({name: name});
 var subs = app.Forum.data.Topic.list(t).toArray();
-%>
-<h1><%= t.name %></h1>
-<% if ( t.description ){ %>
-<h2><%= t.description %></h2>
-<% } %>
-
-<%
-if(subs.length > 0){ %>
-   <h1>Available sub-topics</h1>
-   <% subs.forEach(app.Forum.renderer.topic);
-}
 
 var actions = [];
 if(app.Forum.Controller.hasPermission(user, "stickyThread")){
@@ -105,50 +73,14 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
-%>
+// ---------------
 
-  <table id="style1" >
-    <tr>
-      <th>
-        Thread
-      </th>
-      <th>
-        Replies
-      </th>
-      <th>
-        Last post
-      </th>
-
-      <% for(i=0; i < actions.length; i++) { %>
-          <th><%= actions[i].title %></th>
-      <% } %>
-    </tr>
-
-<%
-opts = {actions: actions};
 var list = app.Forum.data.Thread.list(t);
+app.Forum.html.topicTable(t.name, t.description, subs, list, actions,
+                          {parent: t.parent, thisid: t._id});
 
-if (list)
-    list.forEach( function(t) {
-        app.Forum.renderer.thread(t, opts);
-    });
-else
-    print ("No topics right now!");
 %>
-</table>
-  <% if(app.Forum.Controller.hasPermission(user, "createThread")){ %>
-  <a href="thread_new?top_id=<%= t._id %>&reply=true">New thread</a>
-  <% } %>
-<% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
-<a href="topic_new?parent=<%= t._id %>">New topic</a>
-<% } %>
 
-    <% if(t.parent){ %>
-<a href="viewtopic?name=<%= URI.escape_queryargs(t.parent.name) %>">Back to parent topic</a>
-<% }
-else { %>
-<a href="./">Back to toplevel</a>
-<% } %>
 
 
 <% htmlfooter(); %>

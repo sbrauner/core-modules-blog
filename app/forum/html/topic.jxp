@@ -5,11 +5,17 @@ if(f._id == app.Forum.Controller.specialDeletedID ||
    f._id == app.Forum.Controller.specialModeratedID)
     link = "viewtopic?id="+f._id;
 %>
-<div>
-<a href="<%= link %>"><%= f.name%></a>
-(<%= f.threadCount.toFixed(0) %> threads)
-(<%= f.postCount.toFixed(0) %> posts)
-<br/>
-<%= f.description %>
+<tr>
+  <td class="alignleft">
+    <a href="<%= link %>"><%= f.name%></a>
+    <nobr><%= f.description %></nobr>
+  </td>
+  <td>
+    <%= f.threadCount.toFixed(0) %>
+  </td>
+  <td>
+    <%= f.postCount.toFixed(0) %>
+  </td>
+</tr>
 
 </div>
