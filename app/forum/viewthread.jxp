@@ -48,9 +48,10 @@ core.user.html.topCorner();
         <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
         <input type="submit" name="action" value="moderate">
        <% } %>
+       <% } %>
     </th>
   </tr>
-</table>  
+</table>
 
 <%
     options = {replyable: false};
@@ -60,7 +61,6 @@ options.actions = [
         return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
     }
 ];
-}
 
 if(canPost){
     // see if we got a post
