@@ -98,6 +98,6 @@ else {
     }
     %>
 
-        <a href="viewtopic?name=<%=thread.topic.name=>">Back to thread list</a>
+        <a href="viewtopic?name=<%=thread.topic.name%>">Back to thread list</a>
 
 <% htmlfooter(); %>
