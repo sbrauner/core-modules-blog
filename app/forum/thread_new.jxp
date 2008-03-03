@@ -37,13 +37,13 @@ var backurl = "viewtopic?id="+request.top_id;
     <h3>New thread</h3>
     <%
     opts = {};
-if(Forum.ForumController.hasPermission(user, "stickyThread")){
+if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     opts.actions = [
         function(){
             return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
         }];
 } %>
-    <% Forum.data.Thread.decoratorsRender("threaded.replyform", opts); %>
+    <% app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>
