@@ -1,10 +1,11 @@
 <%
 core.app.forum.data.thread();
+core.app.forum.data.topic();
 core.app.forum.data.deletion();
-core.app.forum.forum();
+core.app.forum.controller();
 head.addCSS( "/~~/app/forum/css/forum.css" );
 
-var thread = Forum.data.Thread.findOne({_id: request.id});
+var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
 if(thread == null){
     print("thread not found");
@@ -12,12 +13,12 @@ if(thread == null){
 }
 print("<!-- " + thread._id + "-->");
 
-canDelete = Forum.ForumController.hasPermission(user, "deletePost");
-canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
+canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-canPost = Forum.ForumController.hasPermission(user, "makePost") && ! request.deleted;
+canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
 
 htmlheader("Viewing thread: "+thread.findFirstPost().title);
 core.user.html.topCorner();
@@ -42,15 +43,16 @@ core.user.html.topCorner();
        <% } else if(request.moderated && canModerate){ %>
        <input type="submit" name="action" value="unmoderate">
        <% } else {
-        if (Forum.ForumController.hasPermission(user, "deletePost")){ %>
+        if (app.Forum.Controller.hasPermission(user, "deletePost")){ %>
         <input type="submit" name="action" value="delete">
         <% } %>
-        <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
+        <% if(app.Forum.Controller.hasPermission(user, "moderatePost")){ %>
         <input type="submit" name="action" value="moderate">
+       <% } %>
        <% } %>
     </th>
   </tr>
-</table>  
+</table>
 
 <%
     options = {replyable: false};
@@ -60,21 +62,21 @@ options.actions = [
         return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
     }
 ];
-}
 
 if(canPost){
     // see if we got a post
     var p = thread.decoratorsHandle();
     if( p ){
         thread.count ++;
-        thread.topic.postCount ++;
+        // FIXME: why doesn't just using thread.topic work here?
+        topic = db.forum.topics.findOne({_id: thread.topic._id});
+        topic.changeCounts(0, 1);
         thread.latestPost = p.getID();
         thread.lastPostTime = new Date();
-        db.forum.topics.save(thread.topic);
+        db.forum.topics.save(topic);
         thread.save();
     }
 }
-
 
 
 if(request.deleted) {
@@ -98,6 +100,6 @@ else {
     }
     %>
 
-        <a href="viewtopic?id=<%=thread.topic._id%>">Back to thread list</a>
+        <a href="viewtopic?name=<%=thread.topic.name%>">Back to thread list</a>
 
 <% htmlfooter(); %>

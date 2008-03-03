@@ -6,7 +6,7 @@ core.app.forum.data.thread();
 core.content.html();
 
 core.app.forum.data.topic();
-core.app.forum.forum();
+core.app.forum.controller();
 
 var topic = db.forum.topics.findOne( { _id: request.id } );
 var threads = Forum.data.Thread.find( { topic : topic } ).sort( { created : -1 } );

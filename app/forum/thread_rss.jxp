@@ -5,7 +5,7 @@
 core.app.forum.data.thread();
 core.content.html();
 
-var thread = Forum.data.Thread.findOne({_id: request.id});
+var thread = app.Forum.data.Thread.findOne({_id: request.id});
 var now = new Date();
 
 response.setHeader( "Content-Type" , "text/xml"); %>

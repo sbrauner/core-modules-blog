@@ -1,6 +1,6 @@
 <%
 htmlheader("Forums | Edit User");
-core.app.forum.forum();
+core.app.forum.controller();
 core.user.user();
 
 var user = null;
@@ -11,7 +11,7 @@ if(request.userid){
 
 if(request.permission){
     // validate the permission we want to set
-    var allowed = Object.values(Forum.ForumController.permissions);
+    var allowed = Object.values(app.Forum.Controller.permissions);
     if(allowed.indexOf(request.permission) == -1) throw new Error("I don't want to add that permission");
 
     // Remove all other forum permissions
@@ -44,9 +44,9 @@ if(! user){ %>
   <div class="field_name">Permissions</div>
   <div class="field_value">
     <select name="permission">
-        <% var type = Forum.ForumController.userPermissionType(user);
-    for(var key in Forum.ForumController.permissions){ %>
-      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= Forum.ForumController.permissions[key]%>"><%= key %></option>
+        <% var type = app.Forum.Controller.userPermissionType(user);
+    for(var key in app.Forum.Controller.permissions){ %>
+      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= app.Forum.Controller.permissions[key]%>"><%= key %></option>
             <% } %>
     </select>
   </div>

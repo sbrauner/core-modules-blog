@@ -11,9 +11,9 @@ if(request.getMethod() == "POST"){
 
     if(rep){
         thread.topic = db.forum.topics.findOne({_id: request.top_id});
-        thread.topic.threadCount += 1;
 
-        thread.topic.postCount += 1;
+        thread.topic.addThread(1);
+
         thread.latestPost = rep.getID();
         if(request.sticky)
             thread.pinned = true;

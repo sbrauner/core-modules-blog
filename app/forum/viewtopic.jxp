@@ -28,26 +28,26 @@ function togglePick(threadId) {
 <%
 core.content.table();
 core.net.uri();
-core.app.forum.forum();
+core.app.forum.controller();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
 
 if(request.id){
-    if(request.id == Forum.ForumController.specialDeletedID){
+    if(request.id == app.Forum.Controller.specialDeletedID){
         return core.app.forum.deleted_view();
     }
-    if(request.id == Forum.ForumController.specialModeratedID){
+    if(request.id == app.Forum.Controller.specialModeratedID){
         return core.app.forum.moderated_view();
     }
 }
 var name = request.name;
 
-moveThread = Forum.ForumController.hasPermission(user, "moveThread");
-moveTopic = Forum.ForumController.hasPermission(user, "moveTopic");
+moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
+moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
 
 var t = db.forum.topics.findOne({name: name});
-var subs = Forum.data.Topic.list(t).toArray();
+var subs = app.Forum.data.Topic.list(t).toArray();
 %>
 <h1><%= t.name %></h1>
 <% if ( t.description ){ %>
@@ -57,11 +57,11 @@ var subs = Forum.data.Topic.list(t).toArray();
 <%
 if(subs.length > 0){ %>
    <h1>Available sub-topics</h1>
-   <% subs.forEach(Forum.renderer.topic);
+   <% subs.forEach(app.Forum.renderer.topic);
 }
 
 var actions = [];
-if(Forum.ForumController.hasPermission(user, "stickyThread")){
+if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     actions.push({ title : "Toggle Sticky",
                    func : function(thread){
         if(thread.pinned == false){
@@ -97,7 +97,7 @@ if(moveThread) {
        }});
 }
 
-if(Forum.ForumController.hasPermission(user, "edPickThread")) {
+if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    actions.push({ title : "Editor's Pick",
                   func : function(thread) {
       editorPick(thread);
@@ -126,20 +126,20 @@ if(Forum.ForumController.hasPermission(user, "edPickThread")) {
 
 <%
 opts = {actions: actions};
-var list = Forum.data.Thread.list(t);
+var list = app.Forum.data.Thread.list(t);
 
 if (list)
     list.forEach( function(t) {
-        Forum.renderer.thread(t, opts);
+        app.Forum.renderer.thread(t, opts);
     });
 else
     print ("No topics right now!");
 %>
 </table>
-  <% if(Forum.ForumController.hasPermission(user, "createThread")){ %>
+  <% if(app.Forum.Controller.hasPermission(user, "createThread")){ %>
   <a href="thread_new?top_id=<%= t._id %>&reply=true">New thread</a>
   <% } %>
-<% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
+<% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
 <a href="topic_new?parent=<%= t._id %>">New topic</a>
 <% } %>
 
