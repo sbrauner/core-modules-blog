@@ -4,13 +4,14 @@ core.user.html.topCorner();
 
 core.app.forum.data.thread();
 core.content.forms();
+var topic = db.forum.topics.findOne({_id: request.top_id});
 if(request.getMethod() == "POST"){
     var thread = new Forum.data.Thread();
     thread.save();
     var rep = thread.decoratorsHandle();
 
     if(rep){
-        thread.topic = db.forum.topics.findOne({_id: request.top_id});
+        thread.topic = topic;
 
         thread.topic.addThread(1);
 
@@ -27,7 +28,7 @@ if(request.getMethod() == "POST"){
         Forum.data.Thread.remove(thread);
     }
 }
-var backurl = "viewtopic?id="+request.top_id;
+var backurl = "viewtopic?name="+topic.name;
 %>
 <html>
   <head>
@@ -37,13 +38,13 @@ var backurl = "viewtopic?id="+request.top_id;
     <h3>New thread</h3>
     <%
     opts = {};
-if(Forum.ForumController.hasPermission(user, "stickyThread")){
+if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     opts.actions = [
         function(){
             return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
         }];
 } %>
-    <% Forum.data.Thread.decoratorsRender("threaded.replyform", opts); %>
+    <% app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
   </body>
 </html>

@@ -1,0 +1,115 @@
+<%
+// topicTable: draw a table for a topic.
+// This includes: a name, a description, any subtopics, threads,
+// and actions for those threads.
+//
+// If threads is null, don't draw any part of the thread table.
+//
+// subs is expected to be a JavaScript array; threads is expected to be null or
+// a DBCursor.
+app.Forum.html.topicTable = function(name, description, subs, threads, actions,
+                                     opts){
+    opts = opts || {};
+
+    // Whether to try to create links for all these functions.
+    var createThread = (opts.createThread == null) ? true : opts.createThread;
+    var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+%>
+<script type="text/javascript">
+
+function move(threadId) {
+         topicId = document.getElementById(threadId).value;
+         var passData = "thread="+threadId+"&to="+topicId;
+         ajax(passData, "moveThread.jxp", reload, "POST");
+}
+
+function reload() {
+         location.reload();
+}
+
+function togglePick(threadId) {
+         var passData = "thread="+threadId;
+         ajax(passData, "editorPick.jxp");
+}
+
+
+</script>
+<h1><%= name %></h1>
+<% if ( description ){ %>
+<h2><%= description %></h2>
+<% } %>
+
+<div class="caption">
+  <% 
+    if(createThread && 
+       app.Forum.Controller.hasPermission(user, "createThread")){ %>
+  <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> | 
+  <%
+    }
+    if(createTopic &&
+       app.Forum.Controller.hasPermission(user, "createTopic")){ %>
+  <% if(opts.thisid){ %>
+  <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a> |
+  <% } else { %>
+  <a href="topic_new">New Topic</a> |
+  <% } %>
+  <% 
+    }
+    %>
+  <% if(opts.parent){ %>
+  <a href="viewtopic?name=<%= URI.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
+  <% }
+    else { %>
+  <a href="./">Back to Top Level</a>
+  <% } %>
+  </div>
+
+
+<%
+if(subs.length > 0){ %>
+   <table id="style1">
+     <tr>
+       <th>
+         Subtopic
+       </th>
+       <th>
+         Threads
+       </th>
+       <th>
+         Posts
+       </th>
+     </tr>
+   <% subs.forEach(app.Forum.renderer.topic); %>
+   </table>
+<%
+}
+if (threads){
+%>
+
+  <table id="style1" >
+    <tr>
+      <th>
+        Thread
+      </th>
+      <th>
+        Replies
+      </th>
+      <th>
+        Last post
+      </th>
+
+      <% for(i=0; i < actions.length; i++) { %>
+          <th><%= actions[i].title %></th>
+      <% } %>
+    </tr>
+<%
+    if(threads.hasNext())
+        threads.forEach( function(t) {
+            app.Forum.renderer.thread(t, {actions: actions});
+        });
+    else
+        print ("<tr><td>No threads right now!</td></tr>");
+}
+%>
+</table>
+                                                                                    <% }; %>
