@@ -13,7 +13,9 @@ if ( request.action == "ls" ){
 
         if ( s == ".git" )
             continue;
-        if ( s.endsWith( "~" ) )
+
+        if ( s.endsWith( "~" ) 
+	     || s.endsWith( "#" ) )
             continue;
         
         nice.push( { name : s , 
