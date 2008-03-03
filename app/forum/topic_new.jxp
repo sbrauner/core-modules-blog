@@ -7,7 +7,7 @@ core.content.forms();
 
 var error = "";
 
-var topic = new Forum.data.Topic();
+var topic = new app.Forum.data.Topic();
 Forms.fillInObject( "new", topic );
 print.setFormObject( topic );
 if(request.newname){

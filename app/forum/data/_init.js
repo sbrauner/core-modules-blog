@@ -1,1 +1,1 @@
-Forum.data = {};
+app.Forum.data = {};

@@ -2,10 +2,10 @@
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.data.deletion();
-core.app.forum.forum();
+core.app.forum.controller();
 head.addCSS( "/~~/app/forum/css/forum.css" );
 
-var thread = Forum.data.Thread.findOne({_id: request.id});
+var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
 if(thread == null){
     print("thread not found");
@@ -13,12 +13,12 @@ if(thread == null){
 }
 print("<!-- " + thread._id + "-->");
 
-canDelete = Forum.ForumController.hasPermission(user, "deletePost");
-canModerate = Forum.ForumController.hasPermission(user, "moderatePost");
+canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-canPost = Forum.ForumController.hasPermission(user, "makePost") && ! request.deleted;
+canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
 
 htmlheader("Viewing thread: "+thread.findFirstPost().title);
 core.user.html.topCorner();
@@ -43,10 +43,10 @@ core.user.html.topCorner();
        <% } else if(request.moderated && canModerate){ %>
        <input type="submit" name="action" value="unmoderate">
        <% } else {
-        if (Forum.ForumController.hasPermission(user, "deletePost")){ %>
+        if (app.Forum.Controller.hasPermission(user, "deletePost")){ %>
         <input type="submit" name="action" value="delete">
         <% } %>
-        <% if(Forum.ForumController.hasPermission(user, "moderatePost")){ %>
+        <% if(app.Forum.Controller.hasPermission(user, "moderatePost")){ %>
         <input type="submit" name="action" value="moderate">
        <% } %>
        <% } %>

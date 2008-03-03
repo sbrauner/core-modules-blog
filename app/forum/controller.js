@@ -1,30 +1,30 @@
-Forum.ForumController = {};
+app.Forum.Controller = {};
 
-Forum.ForumController.bannedUsers = function(){
+app.Forum.Controller.bannedUsers = function(){
     return {};
 };
 
-Forum.ForumController.anonymousPermissions = function(){
+app.Forum.Controller.anonymousPermissions = function(){
     return {viewTopicNonHidden: true, viewThreadNonHidden: true};
 };
 
-Forum.ForumController.memberPermissions = function(){
+app.Forum.Controller.memberPermissions = function(){
     var p = {createThread: true,
         makePost: true
             };
     // add anonymousPermissions
-    return Object.extend(p, Forum.ForumController.anonymousPermissions());
+    return Object.extend(p, app.Forum.Controller.anonymousPermissions());
 };
 
-Forum.ForumController.moderatorPermissions = function(){
+app.Forum.Controller.moderatorPermissions = function(){
     var p = {viewSpecialTopic_Moderated: true,
         moderatePost: true};
 
     // add memberPermissions
-    return Object.extend(p, Forum.ForumController.memberPermissions());
+    return Object.extend(p, app.Forum.Controller.memberPermissions());
 };
 
-Forum.ForumController.adminPermissions = function(){
+app.Forum.Controller.adminPermissions = function(){
     var p = {
         // user stuff
         banUser: true,
@@ -48,44 +48,44 @@ Forum.ForumController.adminPermissions = function(){
         viewSpecialTopic_Deleted: true
     };
     // add moderator permissions
-    return Object.extend(p, Forum.ForumController.moderatorPermissions());
+    return Object.extend(p, app.Forum.Controller.moderatorPermissions());
 };
 
-Forum.ForumController.hasPermission = function(user, perm){
-    if(user == null || user in Forum.ForumController.bannedUsers()){
+app.Forum.Controller.hasPermission = function(user, perm){
+    if(user == null || user in app.Forum.Controller.bannedUsers()){
         // treat user as anonymous
-        return (perm in Forum.ForumController.anonymousPermissions());
+        return (perm in app.Forum.Controller.anonymousPermissions());
     }
 
-    var type = Forum.ForumController.userPermissionType(user);
+    var type = app.Forum.Controller.userPermissionType(user);
 
-    // if type == "MEMBER" we go to Forum.ForumController.memberPermissions,
+    // if type == "MEMBER" we go to app.Forum.Controller.memberPermissions,
     // if type == "MODERATOR" we go to ...moderatorPermissions,
     // etc. So we do a lookup; use the type to find the right function, and call
     // it. If the permission is in the returned object, return true.
-    return (perm in Forum.ForumController[type.toLowerCase()+'Permissions']());
+    return (perm in app.Forum.Controller[type.toLowerCase()+'Permissions']());
 
 };
 
-Forum.ForumController.getAllPostsDeletedByUser_Query = function(user){
+app.Forum.Controller.getAllPostsDeletedByUser_Query = function(user){
     return db.forum.posts.find({deleted: user});
 };
 
 // Special ObjectIds to refer to the special "deleted" and "moderated" topics.
-Forum.ForumController.specialDeletedID = ObjectId("00000000000000000000001");
-Forum.ForumController.specialModeratedID = ObjectId("00000000000000000000002");
+app.Forum.Controller.specialDeletedID = ObjectId("00000000000000000000001");
+app.Forum.Controller.specialModeratedID = ObjectId("00000000000000000000002");
 
-Forum.ForumController.permissions = {
+app.Forum.Controller.permissions = {
     ADMIN: "core.app.forum.admin",
     MODERATOR: "core.app.forum.moderator",
     MEMBER: "core.app.forum.member"
 };
 
-Forum.ForumController.userPermissionType = function(user){
+app.Forum.Controller.userPermissionType = function(user){
     if(! user) return null;
-    if(user.isAdmin() || user.hasPermission(Forum.ForumController.permissions.ADMIN))
+    if(user.isAdmin() || user.hasPermission(app.Forum.Controller.permissions.ADMIN))
         return "ADMIN";
-    if(user.hasPermission(Forum.ForumController.permissions.MODERATOR))
+    if(user.hasPermission(app.Forum.Controller.permissions.MODERATOR))
         return "MODERATOR";
     return "MEMBER";
 };

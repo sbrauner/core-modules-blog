@@ -1,8 +1,8 @@
 <%
     var f = arguments[0];
 var link = "viewtopic?name="+URI.escape_queryargs(f.name);
-if(f._id == Forum.ForumController.specialDeletedID || 
-   f._id == Forum.ForumController.specialModeratedID)
+if(f._id == app.Forum.Controller.specialDeletedID || 
+   f._id == app.Forum.Controller.specialModeratedID)
     link = "viewtopic?id="+f._id;
 %>
 <div>

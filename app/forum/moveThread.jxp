@@ -1,6 +1,6 @@
 <%
 
-var thread = Forum.data.Thread.findOne({_id : request.thread});
+var thread = app.Forum.data.Thread.findOne({_id : request.thread});
 var topic = db.forum.topics.findOne({_id : request.to});
 
 thread.setTopic( topic );

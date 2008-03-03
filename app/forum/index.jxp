@@ -4,28 +4,28 @@ core.user.html.topCorner();
 core.net.uri();
 
 core.app.forum.data.topic();
-core.app.forum.forum();
-var list = Forum.data.Topic.list();
+core.app.forum.controller();
+var list = app.Forum.data.Topic.list();
 if (list.length != 0)
-    list.forEach(Forum.renderer.topic);
+    list.forEach(app.Forum.renderer.topic);
 else
     print ("No topics right now!");
 
 %>
-    <% if(Forum.ForumController.hasPermission(user, "viewSpecialTopic_Deleted")){
+    <% if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Deleted")){
         var delthreads = db.forum.deleted.find({reason: "deleted"}).length();
-        Forum.renderer.topic({_id: Forum.ForumController.specialDeletedID, name: "Deleted posts",
+        app.Forum.renderer.topic({_id: app.Forum.Controller.specialDeletedID, name: "Deleted posts",
                               description: "Manage posts which you have deleted",
                               threadCount: delthreads, postCount: 0});
     } %>
-    <% if(Forum.ForumController.hasPermission(user, "viewSpecialTopic_Moderated")){
+    <% if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
         var modthreads = db.forum.deleted.find({reason: "moderated"}).length();
-        Forum.renderer.topic({_id: Forum.ForumController.specialModeratedID, name: "Moderated posts",
+        app.Forum.renderer.topic({_id: app.Forum.Controller.specialModeratedID, name: "Moderated posts",
                               description: "Manage posts you have moderated",
                               threadCount: modthreads, postCount: 0});
     } %>
 
-        <% if(Forum.ForumController.hasPermission(user, "createTopic")) { %>
+        <% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
     <a href="topic_new">New topic</a>
     <% } %>
 

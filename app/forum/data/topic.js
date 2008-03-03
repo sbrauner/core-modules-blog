@@ -1,4 +1,4 @@
-Forum.data.Topic = function(){
+app.Forum.data.Topic = function(){
     this.name = "";
     this.description = "";
     this.hidden = false;
@@ -12,13 +12,13 @@ Forum.data.Topic = function(){
     this.threadCount = 0;
 };
 
-Forum.data.Topic.prototype.presave = function(){
+app.Forum.data.Topic.prototype.presave = function(){
     if ( ! this.description ||
          "null" == this.description )
         this.description = "";
 };
 
-Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
+app.Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
     var topic = this;
     while(topic){
         topic.postCount += postCount;
@@ -28,17 +28,17 @@ Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
     }
 };
 
-Forum.data.Topic.prototype.subtThread = function(postCount){
+app.Forum.data.Topic.prototype.subtThread = function(postCount){
     this.changeCounts(-1, -postCount);
 };
 
-Forum.data.Topic.prototype.addThread = function(postCount){
+app.Forum.data.Topic.prototype.addThread = function(postCount){
     this.changeCounts(1, postCount);
 };
 
-Forum.data.Topic.list = function(parent){
+app.Forum.data.Topic.list = function(parent){
     return db.forum.topics.find({parent: parent}).sort({order: 1});
 };
 
-db.forum.topics.setConstructor(Forum.data.Topic);
+db.forum.topics.setConstructor(app.Forum.data.Topic);
 db.forum.topics.ensureIndex({order: 1});
