@@ -23,12 +23,18 @@ LocalEdit.fixNotify = function(){
     $( "notify" ).innerHTML = html;
     
     
-}
+};
+
+LocalEdit.writeCallback = function(){
+    LocalEdit.doneEditing();
+    LocalEdit.save();
+};
 
 LocalEdit.edit = function(){
     LocalEdit.editing = true;
     editor( document.getElementById( "content" ) , LocalEdit.doneEditing );
-}
+    write_callback = LocalEdit.writeCallback;
+};
 
 LocalEdit.save = function(){
     if ( ! LocalEdit.needsSaving )
@@ -43,7 +49,7 @@ LocalEdit.save = function(){
     var res = loadDocSync( "/~~/admin/_localEditControl" , postData );
 
     if ( res.match( /OK/ ) ){
-        window.alert( "Saved" );
+        //window.alert( "Saved" );
         LocalEdit.needsSaving = false;
         LocalEdit.fixNotify();
         return;
