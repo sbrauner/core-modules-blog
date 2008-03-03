@@ -103,9 +103,11 @@ if (threads){
       <% } %>
     </tr>
 <%
+    var even = false;
     if(threads.hasNext())
         threads.forEach( function(t) {
-            app.Forum.renderer.thread(t, {actions: actions});
+            app.Forum.renderer.thread(t, {actions: actions}, even);
+            even = !even;
         });
     else
         print ("<tr><td>No threads right now!</td></tr>");

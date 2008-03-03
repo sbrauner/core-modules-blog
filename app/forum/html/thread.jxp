@@ -8,6 +8,8 @@ core.app.forum.data.thread();
 // t is the thread to show.
 var t = arguments[0];
 var opts = arguments[1];
+//var even = arguments[2] ? "class='even'" : "";
+var even = arguments[2] ? "even" : "" ;
 
 // Are we displaying the deleted posts of a thread?
 // i.e. Are we displaying a DeletionList?
@@ -27,18 +29,19 @@ var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
 
-<tr valign="top">
-  <td class="alignleft">
+<tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %>">
+  <td class="alignleft threadhead">
     <div class="title"><a href="<%= link %>"><%= title%></a></div>
-    <div class="author"><%= f.author.name %></div><div class="ts"> <%= f.ts %></div>
+    <div class="author">started by <%= f.author.name %></div>
+    <div class="ts">at <%= f.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %></div>
   </td>
-  <td ><%= t.count.toFixed() %></td>
+  <td><%= t.count.toFixed() %></td>
 
   <% if (!deletedPosts) { %>
-  <td class="alignleft">
-    by <%= l.author.name %> <br>
+  <td class="alignleft lastpost">
+    <div class="lp_author">by <%= l.author.name %> (go)</div>
     <nobr>
-    at <%= l.ts %>
+    at <%= l.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %>
     </nobr>
   </td>
   <% } %>
@@ -50,44 +53,8 @@ if(deletedPosts) link += "&deleted=true";
         <% 
       }
   } 
-  if(t.editorPick) { %>
-     <td>Editor's pick</td>
-  <% }
 %>
 </tr>
-
-
-
-
-<!--<tr valign="top">
-  <td class="alignleft">
-  
-    <a href="<%= link %>"><%= title%></a>
-    <div class="author"><%= f.author.name %></div><div class="ts"> <%= f.ts %></div>
-  </td>
-  <td ><%= t.count.toFixed() %></td>
-
-  <% if (!deletedPosts) { %>
-  <td class="alignleft">
-    by <%= l.author.name %> <br>
-    <nobr>
-    at <%= l.ts %>
-    </nobr>
-  </td>
-  <% } %>
-
- <%
-  if (actions.length > 0){ 
-     for(var i in actions){ %>
-        <td><%= actions[i].func(t) %></td>
-        <% 
-      }
-  } 
-  if(t.editorPick) { %>
-     <td>Editor's pick</td>
-  <% }
-%>
-</tr>-->
 
 
 

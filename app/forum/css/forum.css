@@ -1,5 +1,9 @@
 /* forum style */
 
+h2 {
+   margin-top: -10px;
+   font-size: 115%;
+}
 
 .post {
     position: relative;
@@ -135,12 +139,12 @@ div.postbox div.content {
          padding-top: 18px;
          padding-bottom: 16px;
 }
-.selectThread {
+div.postbox div.selectThread {
         float: left;
         text-align: left;
         padding: 0px 10px 0px 0px;;
 }
-.threadFooter {
+div.threadFooter {
         padding-bottom: 30px;
 }
 .threadFooter div.opt {
@@ -153,4 +157,31 @@ div.postbox div.content {
         font-size: 12px;
         margin-top: -10;
         padding-bottom: 15px;
+}
+
+#style1 td.threadhead div.author, td.threadhead div.ts {
+        color: grey;
+        font-size: 11px;
+}
+
+#style1 td {
+   border-left: none;
+   border-right: none;
+   border-bottom: none;
+}
+
+#style1 tr.even td {
+   background-color: #EEEEEE !important;
+}
+
+#style1 tr.edPick td {
+   font-weight: bold;
+}
+
+#style1 td.lastpost {
+   font-size: 13px;
+}
+
+#style1 td div.lp_author {
+   padding-bottom: 3px;
 }
