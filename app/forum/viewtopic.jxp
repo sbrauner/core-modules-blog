@@ -2,30 +2,8 @@
 htmlheader("Forum");
 head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
+
 core.user.html.topCorner();
-%>
-
-<script type="text/javascript">
-
-function move(threadId) {
-         topicId = document.getElementById(threadId).value;
-         var passData = "thread="+threadId+"&to="+topicId;
-         ajax(passData, "moveThread.jxp", reload, "POST");
-}
-
-function reload() {
-         location.reload();
-}
-
-function togglePick(threadId) {
-         var passData = "thread="+threadId;
-         ajax(passData, "editorPick.jxp");
-}
-
-
-</script>
-
-<%
 core.content.table();
 core.net.uri();
 core.app.forum.controller();
@@ -48,17 +26,6 @@ moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
 
 var t = db.forum.topics.findOne({name: name});
 var subs = app.Forum.data.Topic.list(t).toArray();
-%>
-<h1><%= t.name %></h1>
-<% if ( t.description ){ %>
-<h2><%= t.description %></h2>
-<% } %>
-
-<%
-if(subs.length > 0){ %>
-   <h1>Available sub-topics</h1>
-   <% subs.forEach(app.Forum.renderer.topic);
-}
 
 var actions = [];
 if(app.Forum.Controller.hasPermission(user, "stickyThread")){
@@ -105,6 +72,39 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
+// ---------------
+
+%>
+
+<script type="text/javascript">
+
+function move(threadId) {
+         topicId = document.getElementById(threadId).value;
+         var passData = "thread="+threadId+"&to="+topicId;
+         ajax(passData, "moveThread.jxp", reload, "POST");
+}
+
+function reload() {
+         location.reload();
+}
+
+function togglePick(threadId) {
+         var passData = "thread="+threadId;
+         ajax(passData, "editorPick.jxp");
+}
+
+
+</script>
+<h1><%= t.name %></h1>
+<% if ( t.description ){ %>
+<h2><%= t.description %></h2>
+<% } %>
+
+<%
+if(subs.length > 0){ %>
+   <h1>Available sub-topics</h1>
+   <% subs.forEach(app.Forum.renderer.topic);
+}
 %>
 
   <table id="style1" >
