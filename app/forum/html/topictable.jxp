@@ -10,6 +10,10 @@
 app.Forum.html.topicTable = function(name, description, subs, threads, actions,
                                      opts){
     opts = opts || {};
+
+    // Whether to try to create links for all these functions.
+    var createThread = (opts.createThread == null) ? true : opts.createThread;
+    var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 %>
 <script type="text/javascript">
 
@@ -34,6 +38,32 @@ function togglePick(threadId) {
 <% if ( description ){ %>
 <h2><%= description %></h2>
 <% } %>
+
+<div class="caption">
+  <% 
+    if(createThread && 
+       app.Forum.Controller.hasPermission(user, "createThread")){ %>
+  <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> | 
+  <%
+    }
+    if(createTopic &&
+       app.Forum.Controller.hasPermission(user, "createTopic")){ %>
+  <% if(opts.thisid){ %>
+  <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a> |
+  <% } else { %>
+  <a href="topic_new">New Topic</a> |
+  <% } %>
+  <% 
+    }
+    %>
+  <% if(opts.parent){ %>
+  <a href="viewtopic?name=<%= URI.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
+  <% }
+    else { %>
+  <a href="./">Back to Top Level</a>
+  <% } %>
+  </div>
+
 
 <%
 if(subs.length > 0){ %>

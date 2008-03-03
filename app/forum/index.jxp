@@ -27,10 +27,8 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
                               threadCount: modthreads, postCount: 0});
    }
 
-app.Forum.html.topicTable("Forums", null, topics, null, []);
+app.Forum.html.topicTable("Forums", null, topics, null, [],
+                          {createThread: false, thisid: null});
 %>
 
-<% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
-<a href="topic_new">New topic</a>
-<% } %>
 <% htmlfooter(); %>

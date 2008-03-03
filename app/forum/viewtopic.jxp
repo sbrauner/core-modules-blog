@@ -76,23 +76,11 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
 // ---------------
 
 var list = app.Forum.data.Thread.list(t);
-app.Forum.html.topicTable(t.name, t.description, subs, list, actions);
+app.Forum.html.topicTable(t.name, t.description, subs, list, actions,
+                          {parent: t.parent, thisid: t._id});
 
 %>
 
-  <% if(app.Forum.Controller.hasPermission(user, "createThread")){ %>
-  <a href="thread_new?top_id=<%= t._id %>&reply=true">New thread</a>
-  <% } %>
-<% if(app.Forum.Controller.hasPermission(user, "createTopic")) { %>
-<a href="topic_new?parent=<%= t._id %>">New topic</a>
-<% } %>
-
-    <% if(t.parent){ %>
-<a href="viewtopic?name=<%= URI.escape_queryargs(t.parent.name) %>">Back to parent topic</a>
-<% }
-else { %>
-<a href="./">Back to toplevel</a>
-<% } %>
 
 
 <% htmlfooter(); %>
