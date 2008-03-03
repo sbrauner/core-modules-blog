@@ -128,12 +128,12 @@ if(subs.length > 0){ %>
 opts = {actions: actions};
 var list = app.Forum.data.Thread.list(t);
 
-if (list)
+if (list.hasNext())
     list.forEach( function(t) {
         app.Forum.renderer.thread(t, opts);
     });
 else
-    print ("No topics right now!");
+    print ("<tr><td>No threads right now!</td></tr>");
 %>
 </table>
   <% if(app.Forum.Controller.hasPermission(user, "createThread")){ %>
