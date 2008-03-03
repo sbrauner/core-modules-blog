@@ -52,6 +52,7 @@ if(moveThread) {
           actions.push({title : "Move Thread",
                       func : function(t) {
               var retStr = "<select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
+              retStr+="<option value=\"\">&nbsp;</option>";
               for(var i=0; i<topics.length; i++) {
                    if(topics[i].parent == null) {
                         retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
