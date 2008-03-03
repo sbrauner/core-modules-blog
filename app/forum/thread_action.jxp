@@ -110,10 +110,11 @@ var addPost = function(attr){
         var p = thread.getDescendant(selected[i]);
         if(p.deleted == attr){
             p.deleted = false;
+            modifyPostCount(thread, 1);
+            thread.save();
+            thread.saveDescendant(p);
         }
-        modifyPostCount(thread, 1);
-        thread.save();
-        thread.saveDescendant(p);
+
     }
 };
 

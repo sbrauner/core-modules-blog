@@ -29,6 +29,7 @@ options.actions = [
     }
 ];
 }
+options.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 if(canPost){
     // see if we got a post
     var p = thread.decoratorsHandle();
@@ -66,17 +67,17 @@ core.user.html.topCorner();
     </th>
     <th class="alignright">
 
-       <% if(request.deleted && canDelete){ %>
+       <% if(request.show == "deleted" && canDelete){ %>
        <input type="submit" name="action" value="undelete">
-       <% } else if(request.moderated && canModerate){ %>
-       <input type="submit" name="action" value="unmoderate">
-       <% } else {
-        if (app.Forum.Controller.hasPermission(user, "deletePost")){ %>
-        <input type="submit" name="action" value="delete">
-        <% } %>
-        <% if(app.Forum.Controller.hasPermission(user, "moderatePost")){ %>
-        <input type="submit" name="action" value="moderate">
        <% } %>
+       <% if(request.show == "moderated" && canModerate){ %>
+       <input type="submit" name="action" value="unmoderate">
+       <% } %>
+       <% if (app.Forum.Controller.hasPermission(user, "deletePost")){ %>
+       <input type="submit" name="action" value="delete">
+       <% } %>
+       <% if(app.Forum.Controller.hasPermission(user, "moderatePost")){ %>
+       <input type="submit" name="action" value="moderate">
        <% } %>
     </th>
   </tr>
@@ -113,7 +114,7 @@ thread.decoratorsRender("threaded.replies", options);
 <% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
 <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a>
 <% } %>
-        <a href="viewtopic?name=<%=thread.topic.name%>">Back to thread list</a>
+        <a href="viewtopic?name=<%= escape(thread.topic.name) %>">Back to thread list</a>
 
 <% htmlfooter(); %>
 
