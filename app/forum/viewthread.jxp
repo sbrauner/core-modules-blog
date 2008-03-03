@@ -1,4 +1,5 @@
 <%
+    core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.data.deletion();
@@ -19,6 +20,33 @@ canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
 canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
+
+options = {replyable: false};
+if(canDelete || canModerate){
+options.actions = [
+    function(u){
+        return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
+    }
+];
+}
+if(canPost){
+    // see if we got a post
+    var p = thread.decoratorsHandle();
+    if( p ){
+        thread.count ++;
+        // FIXME: why doesn't just using thread.topic work here?
+        topic = db.forum.topics.findOne({_id: thread.topic._id});
+        topic.changeCounts(0, 1);
+        thread.latestPost = p.getID();
+        thread.lastPostTime = new Date();
+        db.forum.topics.save(topic);
+        thread.save();
+    }
+}
+
+var uri = new URI(request.getURL());
+
+// ------------
 
 htmlheader("Viewing thread: "+thread.findFirstPost().title);
 core.user.html.topCorner();
