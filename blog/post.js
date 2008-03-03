@@ -166,23 +166,23 @@ function fixComments() {
     cursor = db.blog.posts.find();
     // iterate through each post
     cursor.forEach(function(post) {
-            // see what kind of object comments is
-            if ( ! post.comments){
-                SYSOUT('Post ID (' + post._id + ') has no comments');
-                return;
-            }
-
-            if ( isArray( post.comments ) ){
-                SYSOUT('Post ID (' + post._id + ') already converted');
-                return;
-            }
-            
-            SYSOUT('Converting Post ID (' + post._id + ')');
-            post.comments = post.getComments();
-            db.blog.posts.save(post);
-
-            SYSOUT('\tSaving Post ID (' + post._id + ')');
-        });
+        // see what kind of object comments is
+        if ( ! post.comments){
+            SYSOUT('Post ID (' + post._id + ') has no comments');
+            return;
+        }
+	
+        if ( isArray( post.comments ) ){
+            SYSOUT('Post ID (' + post._id + ') already converted');
+            return;
+        }
+        
+        SYSOUT('Converting Post ID (' + post._id + ')');
+        post.comments = post.getComments();
+        db.blog.posts.save(post);
+	
+        SYSOUT('\tSaving Post ID (' + post._id + ')');
+    });
 }
 
 if ( db ) {

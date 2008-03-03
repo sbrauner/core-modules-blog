@@ -1,4 +1,5 @@
-// wiki.js
+/* transzlate wiki markup to html 
+*/
 
 content.WikiParser = function() {
     this.prefixRE = null;
@@ -16,6 +17,7 @@ content.WikiParser = function() {
         { r: /^==\s*(.*)\s*==/, s: "<h2>$1</h2>" },
         { r: /^=\s*(.*)\s*=/, s: "<h1>$1</h1>" } ];
 
+    // [[links]]
     this.link = [
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
         { r: /\[([^ \[]+\/[^ \[]+) +([^\[]+)\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
@@ -29,8 +31,8 @@ content.WikiParser = function() {
         ];
 
     this.basics = [
-        { r: /'''([^']+)'''/g , s: "<strong>$1</strong>" }, // '''bold
-        { r: /''([^']+)''/g , s: "<em>$1</em>" } // ''italics'
+        { r: /'''([^']+)'''/g , s: "<strong>$1</strong>" }, // '''bold'''
+        { r: /''([^']+)''/g , s: "<em>$1</em>" } // ''italics''
     ];
 };
 
