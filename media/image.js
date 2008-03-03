@@ -31,15 +31,15 @@ Media.Image.prototype._getImage = function(){
 Media.Image.prototype.scaleToSize = function( x , y , grow ){
     if ( ! ( x || y ) )
         throw "need x or y";
-    
+
     var img = this._getImage();
     var h = img.getHeight();
     var w = img.getWidth();
 
     if ( x && x > w )
-        return this;
+        return this._file;
     if ( y && y > h )
-        return this;
+        return this._file;
     
     var xRatio = null;
     if ( x )
@@ -52,8 +52,7 @@ Media.Image.prototype.scaleToSize = function( x , y , grow ){
     if ( ! x )
         xRatio = yRatio;
     
-    print( "xRatio : " + xRatio + " yRatio : " + yRatio );
-    //    return scaleRatio( xRatio , yRatio );
+    return this.scaleRatio( xRatio , yRatio );
 };
 
 /**
@@ -68,21 +67,21 @@ Media.Image.prototype.scaleRatio = function( xOrBoth , y ){
     var img = this._getImage();
     
     if ( xOrBoth == 1 && ( ! y || y == 1 ) )
-        return this;
+        return this.file;
 
     var at = javaStatic( "java.awt.geom.AffineTransform" , "getScaleInstance" , xOrBoth , y || xOrBoth );
     var op = javaCreate( "java.awt.image.AffineTransformOp" , at , null );
     
     img = op.filter( img , null );
-
+    
     var bao = javaCreate( "java.io.ByteArrayOutputStream" );
     var res = javaStatic( "javax.imageio.ImageIO" , "write" , img , "JPEG" , bao );
     if ( ! res )
         throw "i couldn't write";
     
     var bytes = bao.toByteArray();
-    print( bytes.getClass() );
-    img = javaCreate( "ed.js.JSInputFile" , this._file.filename.replace( /\.\w+$/ , ".jpg" ) , "image/jpeg" , bytes );
-
+    var input = javaCreate( "java.io.ByteArrayInputStream" , bytes );
+    img = javaCreate( "ed.js.JSInputFile" , this._file.filename.replace( /\.\w+$/ , ".jpg" ) , "image/jpeg" , input );
+    
     return img;
 };
