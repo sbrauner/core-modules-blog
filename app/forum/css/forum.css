@@ -11,11 +11,12 @@ h2 {
 }
 
 .postbox {
-         padding: 9px 0px;
+    padding: 9px 0px;
 }
 
-.deleted .postbox {
-    border: 1px solid red;
+div.deleted {
+    background: #FFDDDD;
+    padding: 5px;
 }
 
 table {
