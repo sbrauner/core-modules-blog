@@ -21,15 +21,15 @@ canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 // all the posts deleted from a thread.
 canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
 
-options = {replyable: false};
+postoptions = {replyable: false};
 if(canDelete || canModerate){
-options.actions = [
+postoptions.actions = [
     function(u){
         return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
     }
 ];
 }
-options.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
+postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 if(canPost){
     // see if we got a post
     var p = thread.decoratorsHandle();
@@ -43,6 +43,14 @@ if(canPost){
         db.forum.topics.save(topic);
         thread.save();
     }
+}
+
+
+if(request.show) {
+    postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
+}
+else {
+    postoptions.filter = function(p) { if (p.deleted) return false; return true; };
 }
 
 var uri = new URI(request.getURL());
@@ -84,14 +92,7 @@ core.user.html.topCorner();
 </table>
 
 <%
-
-if(request.show) {
-    options.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
-}
-else {
-    options.filter = function(p) { if (p.deleted) return false; return true; };
-}
-thread.decoratorsRender("threaded.replies", options);
+thread.decoratorsRender("threaded.replies", postoptions);
 
 
  %>
