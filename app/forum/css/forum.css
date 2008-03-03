@@ -7,13 +7,11 @@
 }
 
 .postbox {
-    border-style: solid;
-    border-width: 1px;
-    border-color: #000;
+         padding: 9px 0px;
 }
 
 .deleted .postbox {
-    border-color: #f00;
+    border: 1px solid red;
 }
 
 table {
@@ -113,4 +111,46 @@ table#style1 {
 
 #style1 tr.alt td {
 	background-color: #f4f8f9;
+}
+
+div.postbox span.titlebar {
+          padding-bottom: 10px;
+}
+
+div.postbox span.titlebar div.title {
+       padding-bottom: 8px;
+       font-size: 18px;
+}
+div.postbox span.titlebar div.author {
+        display: inline;
+        padding: 0px 10px 0px 0px;
+}
+div.postbox span.titlebar div.ts {
+      display: inline;
+}
+div.postbox span.titlebar div.ts span.time {
+      color: #5C0000;
+}
+div.postbox div.content {
+         padding-top: 18px;
+         padding-bottom: 16px;
+}
+.selectThread {
+        float: left;
+        text-align: left;
+        padding: 0px 10px 0px 0px;;
+}
+.threadFooter {
+        padding-bottom: 30px;
+}
+.threadFooter div.opt {
+        display: inline;
+        padding: 0px 20px 0px 0px;
+}
+
+#login_status {
+        text-align: right;
+        font-size: 12px;
+        margin-top: -10;
+        padding-bottom: 15px;
 }

@@ -27,11 +27,10 @@ var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
 
-
 <tr valign="top">
   <td class="alignleft">
-    <a href="<%= link %>"><%= title%></a>
-    <nobr>started by <%= f.author.name %> <br/> at <%= f.ts %></nobr>
+    <div class="title"><a href="<%= link %>"><%= title%></a></div>
+    <div class="author"><%= f.author.name %></div><div class="ts"> <%= f.ts %></div>
   </td>
   <td ><%= t.count.toFixed() %></td>
 
@@ -56,6 +55,39 @@ if(deletedPosts) link += "&deleted=true";
   <% }
 %>
 </tr>
+
+
+
+
+<!--<tr valign="top">
+  <td class="alignleft">
+  
+    <a href="<%= link %>"><%= title%></a>
+    <div class="author"><%= f.author.name %></div><div class="ts"> <%= f.ts %></div>
+  </td>
+  <td ><%= t.count.toFixed() %></td>
+
+  <% if (!deletedPosts) { %>
+  <td class="alignleft">
+    by <%= l.author.name %> <br>
+    <nobr>
+    at <%= l.ts %>
+    </nobr>
+  </td>
+  <% } %>
+
+ <%
+  if (actions.length > 0){ 
+     for(var i in actions){ %>
+        <td><%= actions[i].func(t) %></td>
+        <% 
+      }
+  } 
+  if(t.editorPick) { %>
+     <td>Editor's pick</td>
+  <% }
+%>
+</tr>-->
 
 
 

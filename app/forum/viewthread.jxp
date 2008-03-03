@@ -22,13 +22,13 @@ canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
 
 postoptions = {replyable: false};
-if(canDelete || canModerate){
+/*if(canDelete || canModerate){
 postoptions.actions = [
     function(u){
-        return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
+        return "<div class='selectThread'><input name='select' value=\""+u.getID()+"\" type=\"checkbox\"></div>";
     }
 ];
-}
+}*/
 postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 if(canPost){
     // see if we got a post
@@ -92,11 +92,12 @@ core.user.html.topCorner();
 </table>
 
 <%
-thread.decoratorsRender("threaded.replies", postoptions);
-
-
+        thread.decoratorsRender("threaded.replies", postoptions);
  %>
+
 </form>
+<div class="threadFooter">
+<div class="opt">
 <%
     if(canPost){
         // provide links or forms to post
@@ -104,17 +105,22 @@ thread.decoratorsRender("threaded.replies", postoptions);
         thread.decoratorsRender("threaded.replyform");
     }
     %>
+</div>
+<div class="opt">
 <% if(request.show == "deleted"){ %>
 <a href="<%=uri.removeArg("show")%>">Hide deleted</a>
 <% } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
 <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a>
 <% } %>
-
+</div>
+<div class="opt">
 <% if(request.show == "moderated"){ %>
 <a href="<%=uri.removeArg("show")%>">Hide moderated</a>
 <% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
 <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a>
 <% } %>
+</div>
+</div>
         <a href="viewtopic?name=<%= escape(thread.topic.name) %>">Back to thread list</a>
 
 <% htmlfooter(); %>
