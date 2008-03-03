@@ -5,9 +5,10 @@ var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
 var filter = (options.filter == null)? function(){return true;} : options.filter;
 if(! filter(t)) return;
+var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
 log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
  %>
-<ul class="post">
+<ul class="post <%= htmlclass %>">
   <li>
   <div class="postbox">
     <a name="<%= t.getID() %>"/>

@@ -12,6 +12,10 @@
     border-color: #000;
 }
 
+.deleted .postbox {
+    border-color: #f00;
+}
+
 table {
     width: 100%;
 }
