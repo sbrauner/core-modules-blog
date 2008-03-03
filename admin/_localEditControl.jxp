@@ -1,0 +1,48 @@
+<%
+
+core.content.html();
+
+if ( request.action == "ls" ){
+    var root = request.root || "/";
+    var rootFile = openFile( root );
+    var raw = rootFile.listFiles().sort();
+    
+    var nice = [];
+    for ( var i=0; i!=raw.length; i++ ){
+        var s = raw[i].toString();
+
+        if ( s == ".git" )
+            continue;
+        if ( s.endsWith( "~" ) )
+            continue;
+        
+        nice.push( { name : s , 
+                     isDirectory : raw[i].isDirectory() } );
+        
+    }
+    
+    print( tojson( { root : root.replace( /\/+/g , "/" ) , ls : nice } ) );
+    return;
+}
+
+if ( request.action == "load" ){
+    var f = openFile( request.file );
+    print( f.asString() );
+    return;
+}
+
+if ( request.action == "save" ){
+    var file = request.file;
+    if ( ! file )
+        return print( "no file" );
+
+    var content = request.content;
+    var newFile = javaCreate( "ed.js.JSInputFile" , null , null , content );
+    newFile.writeToLocalFile( file );
+    
+    print( "OK" );
+    return;
+}
+
+print( "what?" );
+%>

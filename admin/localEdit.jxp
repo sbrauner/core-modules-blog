@@ -1,0 +1,21 @@
+<% head.addScript( "/@@/vi/vi.js" ); %>
+<% head.addCSS( "/@@/vi/vi.css" ); %>
+<% head.addScript( "/@@/prototype/current/prototype.js" ); %>
+<% head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta.js" ); %>
+<% head.addScript( "NOCDN/~~/admin/assets/localEdit.js" ); %>
+
+<hr>
+<table width="99%" cellpadding="0"  >
+  <tr>
+    <td id="files" width="150px" align="left" valign="top" >
+    </td>
+    <td valign="top" align="left" >
+      <div id="notify"></div>
+      <div id="preview" align="left" valign="top" >
+    </td>
+  </tr>
+</table>
+<textarea style="display:none;" id="content"></textarea>
+<script>
+  LocalEdit.openDirectory( "/" );
+</script>
