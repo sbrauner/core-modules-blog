@@ -37,8 +37,21 @@ function togglePick(threadId) {
 
 <%
 if(subs.length > 0){ %>
-   <h1>Available sub-topics</h1>
-   <% subs.forEach(app.Forum.renderer.topic);
+   <table id="style1">
+     <tr>
+       <th>
+         Subtopic
+       </th>
+       <th>
+         Threads
+       </th>
+       <th>
+         Posts
+       </th>
+     </tr>
+   <% subs.forEach(app.Forum.renderer.topic); %>
+   </table>
+<%
 }
 if (threads){
 %>
