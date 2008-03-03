@@ -1,10 +1,13 @@
 
 LocalEdit = {};
 
-LocalEdit.needsSaving = false;
 LocalEdit.curFile = null;
-LocalEdit.editing = false;
+LocalEdit.curDir = "/";
 LocalEdit.lastValue = null;
+
+LocalEdit.needsSaving = false;
+LocalEdit.editing = false;
+
 
 LocalEdit.fixNotify = function(){
     if ( ! LocalEdit.curFile ){
@@ -129,8 +132,10 @@ LocalEdit.openDirectoryHandler = function( txt ){
     var res = null;
     eval( "res = " + txt );
     var root = res.root;
-    var all = res.ls;
+    LocalEdit.curDir = root;
 
+    var all = res.ls;
+    
     var html = "";
     var sofar = "";
     root.replace( /\/(\w+)/g , function( a , b ){
@@ -162,7 +167,27 @@ LocalEdit.openDirectoryHandler = function( txt ){
         html += "<a href=\"" + link + "\">" + name + "</a><br>";
     }
 
+    html += "<hr>";
+    
+    html += "<a href='javascript:LocalEdit.newFile()'>New File</a>";
+
     $( "files" ).innerHTML = html;
+};
+
+LocalEdit.newFile = function(){
+    var name = prompt( "file name?" );
+    var fullName = LocalEdit.curDir + "/" + name;
+    var res = confirm( "Create : " + fullName + "?" )
+    if ( res ){
+	LocalEdit.needsSaving = true;
+	LocalEdit.curFile = fullName;
+	$( "content" ).value = "new file";
+	LocalEdit.save();
+	
+	openDirectory( LocalEdit.curDir );
+	openFile( fullName );
+    }
+
 };
 
 var clientLoader = new YAHOO.util.YUILoader();
