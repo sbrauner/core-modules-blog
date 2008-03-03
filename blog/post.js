@@ -188,7 +188,6 @@ function fixComments() {
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
-    db.blog.posts.ensureIndex( { views : 1 } );
 
     db.blog.posts.setConstructor( Post );
 
