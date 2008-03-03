@@ -1,17 +1,27 @@
 <%
 
 var sentFile = false;
+var file = null;
 
-if ( request.id ){
-    var f = db._files.findOne( { _id : CrID( request.id ) } );
-    
-    if ( f ){
-	response.sendFile( f );
-	sentFile = true;
-    }
+if ( request.id )
+    file = db._files.findOne( { _id : CrID( request.id ) } );
+
+if ( ! file ){
+    response.setResponseCode( 404 );
+    return;
 }
 
-if ( ! sentFile )
-    response.setResponseCode( 404 );
+if ( file.contentType.match( /image/ ) ){
+    
+    if ( request.maxX || request.maxY ){
+	core.media.image();
+	var img = new Media.Image( file );
+	file = img.scaleToSize( request.maxX , request.maxY );
+    }
+
+}
+response.setHeader( "X-A1" , file.getClass() );
+response.sendFile( file );
+
 
 %>
