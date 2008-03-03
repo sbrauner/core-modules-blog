@@ -34,6 +34,9 @@ var modifyPostCount = function(thread, num){
     thread.topic = topic;
 };
 
+// This is the old code which moves deleted/moderated posts into a separate
+// deletion-list structure, and moves them back.
+// It's preserved here in case I ever need it again..
 var subtPost = function(attr){
     // Remove all the posts in selected from thread.
     // attr is "deleted" or "moderated", and this function marks all deletions
@@ -83,12 +86,34 @@ var addPost = function(attr){
                 specialID = app.Forum.Controller.specialDeletedID;
             else
                 specialID = app.Forum.Controller.specialModeratedID;
-                back = "viewtopic?id="+specialID;
+            back = "viewtopic?id="+specialID;
         }
         else {
             db.forum.deleted.save(dlist);
         }
         modifyPostCount(thread, 1);
+    }
+};
+
+var subtPost = function(attr){
+    for(var i in selected){
+        var p = thread.getDescendant(selected[i]);
+        p.deleted = attr;
+        modifyPostCount(thread, -1);
+        thread.save();
+        thread.saveDescendant(p);
+    }
+};
+
+var addPost = function(attr){
+    for(var i in selected){
+        var p = thread.getDescendant(selected[i]);
+        if(p.deleted == attr){
+            p.deleted = false;
+        }
+        modifyPostCount(thread, 1);
+        thread.save();
+        thread.saveDescendant(p);
     }
 };
 

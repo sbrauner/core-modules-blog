@@ -17,8 +17,11 @@ app.Forum.Controller.memberPermissions = function(){
 };
 
 app.Forum.Controller.moderatorPermissions = function(){
-    var p = {viewSpecialTopic_Moderated: true,
-        moderatePost: true};
+    var p = {
+        moderatePost: true,
+        viewModerated: true,
+        viewSpecialTopic_Moderated: true
+    };
 
     // add memberPermissions
     return Object.extend(p, app.Forum.Controller.memberPermissions());
@@ -44,7 +47,8 @@ app.Forum.Controller.adminPermissions = function(){
         stickyThread: true,
         edPickThread: true,
 
-        // who the hell knows?
+        // restore deleted posts
+        viewDeleted: true,
         viewSpecialTopic_Deleted: true
     };
     // add moderator permissions

@@ -83,41 +83,16 @@ core.user.html.topCorner();
 </table>
 
 <%
-    options = {replyable: false};
-if(canDelete || canModerate){
-options.actions = [
-    function(u){
-        return "<input name='select' value=\""+u.getID()+"\" type=\"checkbox\">";
-    }
-];
 
-if(canPost){
-    // see if we got a post
-    var p = thread.decoratorsHandle();
-    if( p ){
-        thread.count ++;
-        // FIXME: why doesn't just using thread.topic work here?
-        topic = db.forum.topics.findOne({_id: thread.topic._id});
-        topic.changeCounts(0, 1);
-        thread.latestPost = p.getID();
-        thread.lastPostTime = new Date();
-        db.forum.topics.save(topic);
-        thread.save();
-    }
-}
-
-
-if(request.deleted) {
-    var dlist = db.forum.deleted.findOne({thread: thread});
-    dlist.deletions.forEach(function(deletion){
-        deletion.post.render(options);
-    });
+if(request.show) {
+    options.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
 }
 else {
-    thread.decoratorsRender("threaded.replies", options);
+    options.filter = function(p) { if (p.deleted) return false; return true; };
 }
+thread.decoratorsRender("threaded.replies", options);
 
-   }
+
  %>
 </form>
 <%
@@ -127,7 +102,18 @@ else {
         thread.decoratorsRender("threaded.replyform");
     }
     %>
+<% if(request.show == "deleted"){ %>
+<a href="<%=uri.removeArg("show")%>">Hide deleted</a>
+<% } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
+<a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a>
+<% } %>
 
+<% if(request.show == "moderated"){ %>
+<a href="<%=uri.removeArg("show")%>">Hide moderated</a>
+<% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
+<a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a>
+<% } %>
         <a href="viewtopic?name=<%=thread.topic.name%>">Back to thread list</a>
 
 <% htmlfooter(); %>
+
