@@ -1,6 +1,7 @@
 
 core.content.search();
 core.text.text();
+core.media.image();
 
 function Post(name, title) {
     this.name = name;
@@ -20,7 +21,9 @@ Post.prototype.getTeaserContent = function(){
 };
 
 Post.prototype.getFullContent = function(){
-    return this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    html = Media.Image.giveIMGTagsURLMaxes( html );
+    return html;
 };
 
 Post.prototype.getContent = function( full ){
@@ -126,14 +129,27 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
-Post.prototype.getFirstImageSrc = function(){
+Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
         return null;
-    return r[1];
+    
+    var url = r[1];
+
+    if ( ( maxX || maxY ) && url.match( /f?id=/ ) ){
+	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
+
+	if ( maxX )
+	    url += "&maxX=" + maxX;
+
+	if ( maxY )
+	    url += "&maxY=" + maxY;
+    }
+    
+    return url;
 };
 
 
