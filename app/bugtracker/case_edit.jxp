@@ -75,7 +75,7 @@ if(request.fstatus){
             var subj = "[cases] Case \"" + feature.title + "\"";
             if(! feature_new) subj += " changed";
             else subj += " added";
-            var link = new URI(request.getURL()).addArg("id", feature._id)
+            var link = new URI(request.getURL()).replaceArg("id", feature._id)
             link.hostname = request.getHost();
             link.port = request.getPort();
             link = link.toString();
@@ -85,7 +85,11 @@ if(request.fstatus){
                 + "Status: " + feature.status + "\n"
                 +"To see it, follow this link:\n\n"+link;
             m = new Mail.Message( subj, body );
-            m.addRecipient(  "dev@10gen.com" ); m.send( mail );
+            m.addRecipient(  feature.reporter.email  );
+            if(feature.owner)
+                m.addRecipient(  feature.owner.email , "cc" );
+            m.addRecipient(  feature.project.owner.email , "cc" );
+            m.send( mail );
             append = "";
         }
         else {
