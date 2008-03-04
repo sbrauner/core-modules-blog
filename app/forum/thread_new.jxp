@@ -13,7 +13,7 @@ core.app.forum.data.thread();
 core.content.forms();
 var topic = db.forum.topics.findOne({_id: request.top_id});
 if(request.getMethod() == "POST"){
-    var thread = new Forum.data.Thread();
+    var thread = new app.Forum.data.Thread();
     thread.save();
     var rep = thread.decoratorsHandle();
 

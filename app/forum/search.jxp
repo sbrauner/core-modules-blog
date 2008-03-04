@@ -6,24 +6,26 @@ head.addCSS( "/~~/app/forum/css/forum.css" );
 core.user.html.topCorner();
 
 var query = request.query;
-//query = /.*/g;
 query = new RegExp(".*"+query+".*");
 
-print("<h2>Topics</h2>");
-cursor = db.forum.topics.find( { name : query } ).toArray();
-for(var i=0; i<cursor.length; i++) {
-    print(cursor[i].name+"<br />");
+print("<div>Search results for \""+request.query+"\":</div>");
+
+cursor = db.forum.topics.find( { name : query } );
+core.app.forum.html.topictable("Matching Topics:", null, cursor.toArray(), null, [], {createThread: false, thisid: null});
+
+query = new RegExp(".*");
+cursor = db.forum.threads.find( { content : query } );
+if(cursor.length() > 0) {
+        core.app.forum.html.topictable("Matching Threads:", null, cursor.toArray(), null, [], {createThread: false, thisid: null});
+}
+else {
+        %>
+        <h1>Matching Threads:</h1>
+        No matching threads.
+        <%
 }
 
-print("<h2>Threads</h2>");
-cursor = db.forum.threads.find( { content : query } ).toArray();
-for(var i=0; i<cursor.length; i++) {
-    print(cursor[i].name+"<br />");
-}
 
-
-core.app.forum.html.topictable("Forums", null, cursor.toArray(), null, [],
-                               {createThread: false, thisid: null});
 
 htmlfooter();
 %>

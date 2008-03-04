@@ -126,7 +126,7 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
 </table>
 
 <%
-search();
+app.Forum.html.search();
 core.net.uri();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
 %>
