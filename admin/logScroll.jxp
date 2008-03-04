@@ -1,0 +1,71 @@
+<%
+    
+var ma = MemoryAppender.find( log );
+var all = ma.all;
+if ( ! all )
+    throw "no all";
+
+%>
+<hr>
+<b>Last Update</b> : <span id="last_update"></span>  <b>Last Message</b> : <span id="last_msg" ></span>
+<hr>
+<div id="mylog"></div>
+<hr>
+<div id="debug"></div>
+<script>
+
+var mostRecent = null;
+var all = [];
+
+function debug( s ){
+  var e = document.getElementById( "debug" );
+  if ( ! e ) return;
+  e.innerHTML = s + "<BR>" + e.innerHTML;
+}
+
+function updateLog(){
+   var url = "/admin/_logScroll?";
+   if ( mostRecent ) url += "since=" + mostRecent.getTime();
+   loadDocAsync( url , updateLogHandler );
+}
+
+function updateLogHandler( raw ){
+   var data = null;
+   eval( "data = " + raw );
+   
+   all = data.concat( all );
+   while ( all.length > 100 ){
+     all.pop( 0 );
+   }
+   var html = "";
+   
+   all.forEach( function( z) {
+     if ( ! mostRecent || mostRecent < z.date )
+       mostRecent = z.date;
+       
+     if ( ! z.seen ) z.seen = 1;
+     else z.seen += .5;
+     if ( z.seen >= 15 ) z.seen = 15;
+
+     var foo = Math.floor( z.seen ).toString( 16 );
+     var clr = "#ff" + foo + foo + foo + foo;
+     html += "<span style='background-color:" + clr +  ";'>&nbsp;&nbsp;</span>"
+
+     html += "<span style='font-size:.6em;'>";
+     html += "[" + z.date + "] ";
+     html += "</span>";
+     html += z.logger + " &nbsp; <b>" + z.level + "</b> &nbsp; " + z.msg;
+     if ( z.throwable )
+	html += z.throwable;
+     html += "<br>";
+   } );
+
+   document.getElementById( "mylog" ).innerHTML = html;
+   
+   document.getElementById( "last_update" ).innerHTML = Date();
+   document.getElementById( "last_msg" ).innerHTML = mostRecent;
+
+   setTimeout( updateLog , 1000 );
+}
+updateLog();
+</script>
