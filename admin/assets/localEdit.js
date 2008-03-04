@@ -104,6 +104,7 @@ LocalEdit.doneEditing = function(){
 }
 
 LocalEdit.openFile = function( f ){
+    f = f.replace( /\/+/g , "/" );
     LocalEdit.curFile = f;
     var url = "/~~/admin/_localEditControl?action=load&file=" + escape( f );
     loadDocAsync( url , LocalEdit.openFileHandler );
@@ -146,7 +147,7 @@ LocalEdit.openDirectoryHandler = function( txt ){
     var sofar = "";
     root.replace( /\/(\w+)/g , function( a , b ){
         sofar += "/";
-        html += "<a href=\"javascript:LocalEdit.openDirectory('" + sofar + "')\">" + "/" + "</a>";
+        html += "<a href=\"javascript:LocalEdit.openDirectory('" + sofar + "')\">" + "/" + "</a>&nbsp;&nbsp;";
         sofar += b;
         html += "<a href=\"javascript:LocalEdit.openDirectory('" + sofar + "')\">" + b + "</a>";
     } );
