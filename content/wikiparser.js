@@ -31,8 +31,8 @@ content.WikiParser = function() {
         ];
 
     this.basics = [
-        { r: /'''([^']+)'''/g , s: "<strong>$1</strong>" }, // '''bold'''
-        { r: /''([^']+)''/g , s: "<em>$1</em>" } // ''italics''
+        { r: /'''(.+?)'''/g , s: "<strong>$1</strong>" }, // '''bold'''
+        { r: /''(.+?)''/g , s: "<em>$1</em>" } // ''italics''
     ];
 };
 
