@@ -19,28 +19,22 @@ function hideElement( e ){
     e.style.display = "none";
 }
 
-function loadDocSync( url ){
-    if ( ! window.XMLHttpRequest && ! window.ActiveXObject ){
-        return "";
-    }
+function getXMLRequestObject(){
 
-    var req = null;
-    // branch for native XMLHttpRequest object
-    if (window.XMLHttpRequest) {
-        req = new XMLHttpRequest();
-        req.open("GET", url, false);
-        req.send(null);
-    }
-    else if (window.ActiveXObject) {// branch for IE/Windows ActiveX version
-        req = new ActiveXObject("Microsoft.XMLHTTP");
-        if (req) {
-            req.open("GET", url, false);
-            req.send();
-        }
-    }
+    if ( window.XMLHttpRequest )
+        return new XMLHttpRequest();
+    
+    if (window.ActiveXObject) // branch for IE/Windows ActiveX version
+        return new ActiveXObject("Microsoft.XMLHTTP");
 
-    if ( ! req )
-        return "";
+    throw "no XMLHttpRequest support";
+}
+
+function loadDocSync( url , data ){
+
+    var req = getXMLRequestObject();
+    req.open( data ? "POST" : "GET", url, false);
+    req.send( data );
 
     var d = req.responseText;
     if ( ! d )
@@ -49,34 +43,26 @@ function loadDocSync( url ){
     return d;
 }
 
+function loadDocAsync( url , handler , data , passFullRequest ){
+
+    var req = getXMLRequestObject();
+    req.open( data ? "POST" : "GET", url, true );
+    
+    req.onreadystatechange = function() {
+        if ( req.readyState == 4 && handler ){
+            handler( passFullRequest ? req : req.responseText );
+        }
+    }
+            
+    req.send( data );
+}
+
 function ajax(passData, to, responder, method) {
-    if(!method) {
-        var method = "POST";
-    }
-    var xmlhttp = null;
-    try {
-        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-    } catch (e) {
-        try {
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        } catch (E) {
-            xmlhttp = false;
-        }
-    }
-    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-        try {
-            xmlhttp = new XMLHttpRequest();
-        } catch (e) {
-            xmlhttp=false;
-        }
-    }
-    if (!xmlhttp && window.createRequest) {
-        try {
-            xmlhttp = window.createRequest();
-        } catch (e) {
-            xmlhttp=false;
-        }
-    }
+
+    if ( ! method)
+        method = "POST";
+
+    var xmlhttp = getXMLRequestObject();
 
     xmlhttp.open(method, to, true);
     xmlhttp.onreadystatechange=function() {

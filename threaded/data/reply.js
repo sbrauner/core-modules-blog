@@ -27,7 +27,7 @@ threaded.data.Reply.prototype.decoratorsRender = function(part, options){
         }
     }
     if(part == "threaded.replylink"){
-        if(! request.reply || options.force){
+        if(! request.reply || request.reply_target){
             u = new URI(request.getURL()).addArg("reply", "true").toString();
             print("<a href=\""+u+"\">Reply</a>");
         }

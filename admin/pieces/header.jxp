@@ -3,6 +3,8 @@
 core.content.forms(); 
 core.ui.elements.menu(); 
 
+head.addCSS( "NOCDN/~~/admin/assets/css.jxp" ); 
+
 var menu = [ 
     { name : "Home" , link : "/admin/" } ,
     { name : "Site" , link : "#" , 
@@ -16,6 +18,9 @@ var menu = [
     } ,
     { name : "Local" , link : "#" , 
       submenu : [
+          { name : "Local Edit" , link : "/admin/localEdit.jxp" } ,
+          { name : "Logs in Memory" , link : "/admin/logMemory.jxp" } ,
+          { name : "Scrolling Logs" , link : "/admin/logScroll.jxp" } ,
           { name : "Git" , link : "/admin/gitLocal.jxp" } ,
           { name : "Shell" , link : "/admin/shell.jxp" } ,
           { name : "Docs" , link : "/admin/doc.jxp" } ,

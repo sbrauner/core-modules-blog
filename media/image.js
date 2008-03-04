@@ -22,6 +22,31 @@ Media.Image.prototype._getImage = function(){
     return this._img;
 };
 
+Media.Image.prototype.scaleToMaxSize = function( maxWidth , maxHeight ){
+    var img = this._getImage();
+    var w = img.getWidth();
+    var h = img.getHeight();
+
+    var newWidth = w;
+    var newHeight = h;
+
+    if ( maxWidth && maxWidth < newWidth ){
+	newHeight = ( maxWidth / newWidth ) * newHeight;
+	newWidth = maxWidth;
+    }
+
+    if ( maxHeight && maxHeight < newHeight ){
+	newWidth = ( maxHeight / newHeight ) * newWidth;
+	newHeight = maxHeight;
+    }
+
+    if ( newWidth == w && newHeight == h )
+	return this._file;
+
+    return this.scaleToSize( newWidth , newHeight );
+};
+
+
 /**
  * have to specify one or the other
  * @param x - desired x
@@ -31,15 +56,15 @@ Media.Image.prototype._getImage = function(){
 Media.Image.prototype.scaleToSize = function( x , y , grow ){
     if ( ! ( x || y ) )
         throw "need x or y";
-    
+
     var img = this._getImage();
     var h = img.getHeight();
     var w = img.getWidth();
 
     if ( x && x > w )
-        return this;
+        return this._file;
     if ( y && y > h )
-        return this;
+        return this._file;
     
     var xRatio = null;
     if ( x )
@@ -51,9 +76,8 @@ Media.Image.prototype.scaleToSize = function( x , y , grow ){
     
     if ( ! x )
         xRatio = yRatio;
-    
-    print( "xRatio : " + xRatio + " yRatio : " + yRatio );
-    //    return scaleRatio( xRatio , yRatio );
+       
+    return this.scaleRatio( xRatio , yRatio );
 };
 
 /**
@@ -68,21 +92,8 @@ Media.Image.prototype.scaleRatio = function( xOrBoth , y ){
     var img = this._getImage();
     
     if ( xOrBoth == 1 && ( ! y || y == 1 ) )
-        return this;
-
-    var at = javaStatic( "java.awt.geom.AffineTransform" , "getScaleInstance" , xOrBoth , y || xOrBoth );
-    var op = javaCreate( "java.awt.image.AffineTransformOp" , at , null );
+        return this.file;
     
-    img = op.filter( img , null );
-
-    var bao = javaCreate( "java.io.ByteArrayOutputStream" );
-    var res = javaStatic( "javax.imageio.ImageIO" , "write" , img , "JPEG" , bao );
-    if ( ! res )
-        throw "i couldn't write";
-    
-    var bytes = bao.toByteArray();
-    print( bytes.getClass() );
-    img = javaCreate( "ed.js.JSInputFile" , this._file.filename.replace( /\.\w+$/ , ".jpg" ) , "image/jpeg" , bytes );
-
-    return img;
+    img = javaStatic( "ed.util.ImageUtil" , "getScaledInstance" , img , xOrBoth * img.getWidth() , ( y || xOrBoth ) * img.getHeight() );
+    return javaStatic( "ed.util.ImageUtil" , "imgToJpg" , img , 0 , this._file.filename.replace( /\.\w+$/ , ".jpg" ) );
 };

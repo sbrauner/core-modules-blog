@@ -9,6 +9,7 @@ function Post(name, title) {
     this.ts = new Date();
     this.cls = "entry";
     this.content = "";
+    this.views = 0;
     this.categories = new Array();
 };
 
@@ -165,30 +166,27 @@ function fixComments() {
     cursor = db.blog.posts.find();
     // iterate through each post
     cursor.forEach(function(post) {
-            // see what kind of object comments is
-            if ( ! post.comments){
-                SYSOUT('Post ID (' + post._id + ') has no comments');
-                return;
-            }
+        // see what kind of object comments is
 
-            if ( isArray( post.comments ) ){
-                SYSOUT('Post ID (' + post._id + ') already converted');
-                return;
-            }
-            
+        if ( post.comments && ! isArray( post.comments ) ){
             SYSOUT('Converting Post ID (' + post._id + ')');
             post.comments = post.getComments();
-            db.blog.posts.save(post);
+	}
+	
+	if ( ! post.views )
+	    post.views = 1;
 
-            SYSOUT('\tSaving Post ID (' + post._id + ')');
-        });
+        db.blog.posts.save(post);
+        SYSOUT('\tSaving Post ID (' + post._id + ')');
+    });
 }
 
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+
     db.blog.posts.setConstructor( Post );
-    
+
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
 
     //fixComments();

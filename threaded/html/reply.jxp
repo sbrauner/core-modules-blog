@@ -5,15 +5,26 @@ var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
 var filter = (options.filter == null)? function(){return true;} : options.filter;
 if(! filter(t)) return;
+var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
 log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
- %>
-<ul class="post">
-  <li>
-  <div class="postbox">
-    <a name="<%= t.getID() %>"/>
+
+var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+var selectBox;
+if(canDelete || canModerate)
+        selectBox = "<div class='selectThread'><input name='select' value=\""+t.getID()+"\" type=\"checkbox\"></div>";
+else
+        selectBox = "";
+
+var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</span>'");
+%>
+
+
+  <div class="postbox <%= htmlclass %>">
     <span class="titlebar">
-      <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
-      (<a href="#<%= t.getID() %>"/>#</a>)
+      <div class="title"><%= selectBox %><%= t.title %></div>
+      <div class="author"><%= t.threaded_users == "auth"? t.author.name : t.author %></div><div class="ts"><%= prettyDate %>
+      (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
     </span>
     <div class="actions">
     <% for(var i in actions){ print(actions[i](t)); } %>
@@ -32,5 +43,4 @@ log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
   <%
     t.getReplies().forEach(function(r){ t.threaded_pieces.reply(r, options); });
   %>
-  </li>
-</ul>
+</div>

@@ -1,0 +1,33 @@
+<%
+var ma = MemoryAppender.find( log );
+var all = ma.all;
+if ( ! all )
+    throw "no all";
+
+var n = [];
+n.addAll( all );
+n.reverse();
+
+var since = null;
+if ( request.since ){
+    since = new Date( parseFloat( request.since ) );
+}
+
+if ( since ){
+    n = n.filter( function( z ){
+	return z.date > since;
+    } );
+}
+
+response.setHeader( "Content-Type" , "text/json" );
+
+n.forEach( function(z){
+    z.thread = null;
+    z.level = z.level.toString();
+    if ( z.throwable )
+	z.throwable = z.throwable.toString();
+} );
+
+print( tojson( n ) );
+
+%>

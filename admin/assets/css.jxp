@@ -108,6 +108,15 @@ ul#admin_menu li {
     margin-top: 32px;
 }
 
+#module_header li {
+    float: left;
+    padding: 5px 5px;
+    font-size: 11px;
+    text-align: center;
+    font-weight: bold;
+    list-style: none;
+}
+
 div#admin_logo {
     float: left;
     background: #fff;
