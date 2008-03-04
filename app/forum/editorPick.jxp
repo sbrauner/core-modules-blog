@@ -1,7 +1,8 @@
 <%
 // FIXME: permissions, ban check?
 
-core.forum.data.thread();
+core.app.forum.data.thread();
+core.app.forum.data.thread();
 
 thread = db.forum.threads.findOne( { _id : request.thread } );
 

@@ -92,7 +92,24 @@ else if (request.action == 'delete') {
 
 if ( request.content ) thePost.content = request.content;
 
-var categories = db.blog.categories.find().sort( { name : 1 } );
+var categories = db.blog.categories.find().sort( { name : 1 } ).toArray( 100000 );
+categories.sort( function( a , b ){
+    
+    var hasA = thePost.categories.contains( a.name );
+    var hasB = thePost.categories.contains( b.name );
+
+    if ( hasA && ! hasB )
+	return -1;
+
+    if ( hasB && ! hasA )
+	return 1;
+
+    var aL = a.getLabel();
+    var bL = b.getLabel();
+    return aL.toLowerCase().compareTo( bL.toLowerCase() );
+} );
+
+
 
 %>
 
@@ -212,7 +229,7 @@ tinyMCE.init({
                 <%
                     categories.forEach( function(category) {
                 %>
-                    <input type="checkbox" name="categories" value="<%= category %>" 
+                    <input type="checkbox" name="categories" value="<%= category.name %>" 
 		        <%= thePost.categories.contains(category.name) ? 'checked' : '' %> > 
 			<%= category.getLabel() %>
 		    <br/>

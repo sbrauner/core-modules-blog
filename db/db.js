@@ -39,6 +39,7 @@ function deleteIndexes( collection ) {
     var res = _dbCommand( { deleteIndexes: collection } );
     if( res && res.ok && res.ok == 1 ) {
         db.system.indexes.remove( { ns: ""+db+"."+collection } );
+	db.system.namespaces.remove( { name: RegExp(""+db+"."+collection+"[.][$].*") } );
     }
     return res;
 }
@@ -49,6 +50,16 @@ function validate( collection ) {
     return _dbCommand( { validate: collection } );
 }
 
+/* Set profiling level for your db.  Profiling gathers stats on query performance.
+   Default is off, and resets to off on a database restart -- so if you want it on, 
+   turn it on periodically.
+     0=off
+     1=on
+*/
+function setDbProfilingLevel(p) { 
+    return _dbCommand( { profile: p } );
+}
+
 /* drops all rows.  alpha: space not reclaimed.
  */
 function drop( collection )
@@ -56,6 +67,8 @@ function drop( collection )
     var res = _dbCommand( { drop: collection } );
     if( res && res.ok && res.ok == 1 ) {
         db.system.indexes.remove( { ns: ""+db+"."+collection } );
+	db.system.namespaces.remove( { name: ""+db+"."+collection } );
+	db.system.namespaces.remove( { name: RegExp(""+db+"."+collection+"[.][$].*") } );
     }
     return res;
 }

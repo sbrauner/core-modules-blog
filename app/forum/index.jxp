@@ -34,6 +34,10 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
 
 core.app.forum.html.topictable("Forums", null, topics, null, [],
                                {createThread: false, thisid: null});
+
+edPicks = db.forum.threads.find( { editorPick : true } );
+core.app.forum.html.topictable("Editor's Picks", "", null, edPicks, [], {createThread: false, thisid: null});
+
 %>
 
 <% htmlfooter(); %>
