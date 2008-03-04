@@ -42,6 +42,7 @@ app.Forum.data.Thread.prototype.getLatestPost = function() {
     // Start by seeing if we have a descendant with the ID of
     // this.latestPost. This'll probably work,
     // unless that post was deleted, in which case we'll get a null.
+    if(! this.latestPost) return null;
     var p = this.getDescendant(this.latestPost);
     if(p) return p;
 

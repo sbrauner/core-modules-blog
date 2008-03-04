@@ -8,6 +8,12 @@ URI = function(s){
 
     // Parse scheme and hostname. Sometimes this is absent
     // (the URI starts with a slash).
+    this.scheme = "";
+    this.hostname = "";
+    this.args = [];
+    this.path = "";
+    this.anchor = "";
+
     if(s.indexOf('://') == -1){
         this.scheme = 'http';
     } else {
@@ -124,6 +130,29 @@ URI.prototype._removeArg = function(key){
     if(start)
         this.args.pop();
     return this;
+};
+
+URI.prototype.clearArgs = function(){
+    c = this.clone();
+    c._clearArgs();
+    return c;
+};
+
+URI.prototype._clearArgs = function(){
+    this.args = [];
+};
+
+URI.prototype.replaceLastPath = function(s){
+    c = this.clone();
+    c._replaceLastPath(s);
+    return c;
+};
+
+URI.prototype._replaceLastPath = function(s){
+    var components = this.path.split('/');
+    components.pop();
+    components.push(s);
+    this.path = components.join('/');
 };
 
 URI.escape_queryargs = function(s){

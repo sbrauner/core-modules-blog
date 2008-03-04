@@ -7,7 +7,6 @@ core.net.uri();
 
 core.app.forum.data.topic();
 core.app.forum.controller();
-core.app.forum.html.topictable();
 
 var topics = app.Forum.data.Topic.list().toArray();
 
@@ -27,8 +26,8 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
                               threadCount: modthreads, postCount: 0});
    }
 
-app.Forum.html.topicTable("Forums", null, topics, null, [],
-                          {createThread: false, thisid: null});
+core.app.forum.html.topictable("Forums", null, topics, null, [],
+                               {createThread: false, thisid: null});
 %>
 
 <% htmlfooter(); %>
