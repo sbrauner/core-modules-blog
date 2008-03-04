@@ -1,0 +1,71 @@
+<%
+core.app.bugtracker.data.project();
+core.app.bugtracker.data.helper();
+core.user.user();
+core.user.auth();
+core.net.uri();
+core.content.forms();
+if (! user ){
+    user = Auth.getUser(request);
+}
+if (! user ){
+    return Auth.reject(request, response);
+}
+var project = null;
+if ( request.projectid ){
+    project = db.bugtracker.projects.findOne( { _id : request.projectid } );
+}
+
+if( request.powner ){
+    if(request.powner == "null"){
+        project.owner = null;
+    }
+    else {
+        project.owner = db.users.findOne({ _id : request.powner });
+    }
+    db.bugtracker.projects.save(project);
+}
+
+if(! project){
+    htmlheader("Select a project");
+ %>
+<form>
+<div class="field">
+  <div class="field_name">Project</div>
+  <div class="field_value">
+    <select name="projectid">
+      <% db.bugtracker.projects.find({}).forEach(function(u){ %>
+      <option value="<%= u._id%>"><%= u.name %></option>
+      <% }); %>
+    </select>
+  </div>
+</div>
+<input type="submit" value="Select">
+</form>
+     <% } else {
+    htmlheader("Editing " + project.name);
+ %>
+<form method="POST">
+<input type="hidden" name="projectid" value="<%= project._id %>"/>
+<div class="field">
+  <div class="field_name">Project</div>
+  <div class="field_value"><%= project.name %></div>
+</div>
+        <div class="field">
+          <div class="field_name">Owner</div>
+          <div class="field_value">
+            <% // This doesn't set the None user if project.owner
+    // is null; that happens implicitly since None is first. %>
+    <%= app.bugtracker.data.helper.select(project, "owner", "p",
+                                          [false].concat(db.users.find({}).toArray()),
+                                          {view: function(u){return u?u.name:"None";},
+                                           value: function(u){return u?u._id:"null"; },
+                                          }) %> </div>
+        </div>
+<div class="field">
+  <div class="field_name">&nbsp;</div>
+  <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+</form>
+        <% } %>
+            <% htmlfooter() %>
