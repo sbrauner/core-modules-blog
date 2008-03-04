@@ -62,6 +62,8 @@ app.Forum.Controller.adminPermissions = function(){
 };
 
 app.Forum.Controller.hasPermission = function(user, perm){
+    // FIXME: throw an exception if we find a banned user? We should be
+    // handling all of these at the page level.
     if(user == null || app.Forum.Controller.bannedUser(user, request)){
         // treat user as anonymous
         return (perm in app.Forum.Controller.anonymousPermissions());
