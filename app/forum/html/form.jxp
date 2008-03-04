@@ -16,17 +16,11 @@ function editorPick(thread) {
          <% }
 }
 
-function search() {
+app.Forum.html.search = function() {
          %>
          <form action="search.jxp" method="post">
-                Search for: <input type="text" name="query"> in 
-                <select name="range">
-                        <option value="0">All</option>
-                        <option value="1">Topics</option>
-                        <option value="2">Thread titles</option>
-                        <option value="3">Threads</option>
-                </select>
-                <input type="submit" class="button" value="go">
+                Search for: <input type="text" class="text" name="query">
+                <input type="submit" class="submit" value="go">
          </form>
          <%
 }

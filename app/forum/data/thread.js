@@ -16,6 +16,15 @@ app.Forum.data.Thread = function(){
     this.topic = null;
 };
 
+app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
+    title: 1,
+    content: .2
+};
+
+app.Forum.data.Thread.prototype.presave = function() {    
+    Search.index( this , this.SEARCH_OPTIONS );
+}
+
 app.Forum.data.Thread.prototype.findFirstPost = function(){
     return this.getReplies()[0];
 };

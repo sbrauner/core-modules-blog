@@ -7,6 +7,9 @@ core.net.uri();
 
 core.app.forum.data.topic();
 core.app.forum.controller();
+core.app.forum.html.form();
+
+app.Forum.html.search();
 
 var topics = app.Forum.data.Topic.list().toArray();
 
