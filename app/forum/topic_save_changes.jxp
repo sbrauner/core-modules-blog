@@ -1,5 +1,7 @@
 <%
 core.net.uri();
+core.app.forum.html.check_ban();
+// FIXME: permissions?
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
 topic.name = request.name;

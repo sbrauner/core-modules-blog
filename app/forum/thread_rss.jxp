@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rss version="2.0">
 <% 
-
+      // FIXME: Permissions, check_ban?
 core.app.forum.data.thread();
 core.content.html();
 

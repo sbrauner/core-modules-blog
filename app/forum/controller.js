@@ -1,7 +1,9 @@
 app.Forum.Controller = {};
 
-app.Forum.Controller.bannedUsers = function(){
-    return {};
+app.Forum.Controller.bannedUser = function(user, request){
+    if(db.forum.banned_users.findOne({user: user})) return true;
+    if(db.forum.banned_ips.findOne({ip: request.getRemoteIP()})) return true;
+    return false;
 };
 
 app.Forum.Controller.anonymousPermissions = function(){
@@ -60,7 +62,7 @@ app.Forum.Controller.adminPermissions = function(){
 };
 
 app.Forum.Controller.hasPermission = function(user, perm){
-    if(user == null || user in app.Forum.Controller.bannedUsers()){
+    if(user == null || app.Forum.Controller.bannedUser(user, request)){
         // treat user as anonymous
         return (perm in app.Forum.Controller.anonymousPermissions());
     }
