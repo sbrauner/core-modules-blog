@@ -1,8 +1,12 @@
 <%
+core.app.forum.controller();
+
+if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
+    return Auth.cookie.reject(request, response);
+
     core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-core.app.forum.controller();
 head.addCSS( "/~~/app/forum/css/forum.css" );
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});

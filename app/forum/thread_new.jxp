@@ -1,4 +1,9 @@
 <%
+core.app.forum.controller();
+
+if(! app.Forum.Controller.hasPermission(user, "createThread"))
+    return Auth.cookie.reject(request, response);
+
 htmlheader("Forums | New Thread");
 core.user.html.topCorner();
 

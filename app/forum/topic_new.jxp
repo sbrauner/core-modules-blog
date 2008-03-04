@@ -1,4 +1,10 @@
 <%
+core.app.forum.controller();
+
+if(! app.Forum.Controller.hasPermission(user, "createTopic"))
+    return Auth.cookie.reject(request, response);
+
+
 htmlheader("Forums");
 core.user.html.topCorner();
 
