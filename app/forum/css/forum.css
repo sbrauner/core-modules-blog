@@ -186,3 +186,36 @@ div.threadFooter {
 #style1 td div.lp_author {
    padding-bottom: 3px;
 }
+
+.field {
+       display: block;
+}
+
+label {
+       display: block;
+       float: left;
+       width: 50px;
+       text-align: right;
+       margin-right: 5px;
+}
+
+textarea {
+           border: 1px solid #9ac0cc;
+             margin-bottom: 10px;
+}
+input.text {
+           border: 1px solid #9ac0cc;
+           margin-top: -3px;
+}
+
+input.submit {
+             background-color: #369fbf;
+             color: #ffffff;
+             border: 1px solid white;
+}
+
+div.button {
+           margin-left: 55px;
+           border: 1px solid #9ac0cc;
+           float: left;
+}
