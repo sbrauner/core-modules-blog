@@ -44,6 +44,8 @@ app.Forum.Controller.adminPermissions = function(){
 
         // thread stuff
         moveThread: true,
+        deleteThread: true,
+        moderateThread: true,
         stickyThread: true,
         edPickThread: true,
 
