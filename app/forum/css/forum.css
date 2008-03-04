@@ -189,6 +189,7 @@ div.threadFooter {
 
 .field {
        display: block;
+   padding-bottom: 5px;
 }
 
 label {
@@ -209,6 +210,7 @@ input.text {
 }
 
 input.submit {
+             margin: 0px;
              background-color: #369fbf;
              color: #ffffff;
              border: 1px solid white;

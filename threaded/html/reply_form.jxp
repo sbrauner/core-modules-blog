@@ -3,15 +3,14 @@
      <div class="field">
        <label>Author: </label>
      <% if (this.threaded_users == "free") { %>
-       <input type="text" name="nauthor"></div>
+       <input type="text" name="nauthor">
      <% } else { %>
-       <%= user.name %>
-       <input type="hidden" class="text" name="nauthor" value="<%= user._id %>"/></div>
+       <%= user.name %><input type="hidden" name="nauthor" value="<%= user._id %>"/>
      <% } %>
      </div>
      <div class="field">
        <label>Topic:</label>
-       <input type="text" class="text" name="ntitle"></div>
+       <input type="text" class="text" name="ntitle">
      </div>
      <div class="field">
        <label>Content: </label>
