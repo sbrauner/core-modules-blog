@@ -15,4 +15,19 @@ function editorPick(thread) {
                 <input type="checkbox" class="edPick" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')">
          <% }
 }
+
+function search() {
+         %>
+         <form action="search.jxp" method="post">
+                Search for: <input type="text" name="query"> in 
+                <select name="range">
+                        <option value="0">All</option>
+                        <option value="1">Topics</option>
+                        <option value="2">Thread titles</option>
+                        <option value="3">Threads</option>
+                </select>
+                <input type="submit" class="button" value="go">
+         </form>
+         <%
+}
 %>
