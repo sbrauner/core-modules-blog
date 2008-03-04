@@ -102,9 +102,15 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
 
 
 search();
-app.Forum.html.topicTable(name, description, subs, threadList, actions, tableOptions);
+core.net.uri();
+head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
 %>
 
+<a href="topic_rss.jxp?id=<%= t._id %>">Subscribe to <%= t.name %>'s RSS feed</a>
 
+<%
+core.app.forum.html.topictable(name, description, subs, threadList, actions, tableOptions);
 
-<% htmlfooter(); %>
+htmlfooter(); 
+
+%>

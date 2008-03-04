@@ -23,13 +23,6 @@ var canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 
 postoptions = {replyable: false};
-/*if(canDelete || canModerate){
-postoptions.actions = [
-    function(u){
-        return "<div class='selectThread'><input name='select' value=\""+u.getID()+"\" type=\"checkbox\"></div>";
-    }
-];
-}*/
 postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 if(canPost){
     // see if we got a post
@@ -60,8 +53,11 @@ var uri = new URI(request.getURL());
 
 htmlheader("Viewing thread: "+thread.findFirstPost().title);
 core.user.html.topCorner();
+head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getFirstPost().title+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
 %>
+
+<a href="thread_rss.jxp?id=<%= thread._id %>">Subscribe to <%= thread.getFirstPost().title %>'s RSS feed</a>
 
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
