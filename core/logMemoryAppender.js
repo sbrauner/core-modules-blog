@@ -7,6 +7,7 @@ MemoryAppender.create = function(){
     
     var cache = {};
     var options = { max : 100 };
+    var all = [];
 
     var append = function( loggerName , date , level , msg , throwable , thread ){
         
@@ -16,19 +17,28 @@ MemoryAppender.create = function(){
             cache[ loggerName ] = lst;
         }
 
-        lst.push( { msg : msg , 
-                    level : level ,  
-                    date : date ,
-                    throwable : throwable , 
-                    thread : thread
-            } );
+	var obj = { 
+	    msg : msg , 
+            level : level ,  
+            date : date ,
+            throwable : throwable , 
+            thread : thread ,
+	    logger : loggerName 
+	};
+	
+        lst.push( obj );
         if ( lst.length > options.max  )
             lst.shift();
 
+	all.push( obj );
+        if ( lst.length > options.max * 5 )
+            lst.shift();
+	
     };
 
     append.cache = cache;
     append.options = options;
+    append.all = all;
 
     append.isMemoryAppender = true;
     
