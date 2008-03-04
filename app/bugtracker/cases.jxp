@@ -50,8 +50,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
     <a href="case_edit">New case</a><br/>
 
-<% if(user){ %>
-<a href="http://localhost:8080/bugs/?number=&title=&owner=<%=user.name%>&status=new&severity=&type=&project=&area=&creationDate=&lastModified=">My new bugs</a>
+<% if(user){
+    // FIXME: use URI class
+%>
+<a href="http://localhost:8080/bugs/?number=&title=&owner=<%=user.name%>&status=new&severity=&type=&project=&area=&creationDate=&lastModified=">My new bugs</a><br/>
 <% } %>
+
+<a href="project_edit">Edit a project</a>
+
 
 </body>

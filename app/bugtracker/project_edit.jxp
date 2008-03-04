@@ -68,4 +68,5 @@ if(! project){
 </div>
 </form>
         <% } %>
+        <a href="./">Back to cases list</a>
             <% htmlfooter() %>
