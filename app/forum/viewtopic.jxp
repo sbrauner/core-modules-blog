@@ -1,4 +1,9 @@
 <%
+core.app.forum.controller();
+
+if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
+    return Auth.cookie.reject(request, response);
+
 htmlheader("Forum");
 head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
@@ -6,7 +11,6 @@ head.addCSS( "/~~/app/forum/css/forum.css" );
 core.user.html.topCorner();
 core.content.table();
 core.net.uri();
-core.app.forum.controller();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();

@@ -32,6 +32,7 @@ app.Forum.Controller.adminPermissions = function(){
         // user stuff
         banUser: true,
         banIP: true,
+        editUser: true,
 
         // post stuff
         editPost: true,

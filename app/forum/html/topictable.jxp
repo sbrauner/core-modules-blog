@@ -58,6 +58,9 @@ function togglePick(threadId) {
       } 
     }
     %>
+        <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
+        <a href="user_edit">Edit user</a> | 
+        <% } %>
   <% if(opts.parent){ %>
   <a href="viewtopic?name=<%= URI.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
   <% }
