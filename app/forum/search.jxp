@@ -11,13 +11,17 @@ print("<div>Search results for \""+request.query+"\":</div>");
 
 cursor = Search.search(db.forum.topics, query );
 log(tojson(cursor));
+
+threads = Search.search(db.forum.threads, query);
+log(tojson(threads));
+
 if(cursor.length > 0) {
-        core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, thisid: null});
+        core.app.forum.html.topictable("Matching topics:", null, cursor, threads, [], {createThread: false, thisid: null});
 }
 else {
         %>
-        <h1>Matching Threads:</h1>
-        No matching threads.
+        <h1>Matching topics:</h1>
+        No matching topics.
         <%
 }
 

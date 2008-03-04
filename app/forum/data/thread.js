@@ -1,4 +1,5 @@
 core.db.db();
+core.content.search();
 app.Forum.data.Thread = function(){
     this.commentsEnabled = true;
     // Whether a thread is "sticky", "pinned", or otherwise. Such threads
@@ -18,10 +19,16 @@ app.Forum.data.Thread = function(){
 
 app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     title: 1,
-    content: .2
+    threaded_children: {
+        // THREADED: this would have to change, of course, if we changed
+        // reply styles
+        title: 1,
+        content: .2
+    }
+
 };
 
-app.Forum.data.Thread.prototype.presave = function() {    
+app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_OPTIONS );
 }
 
