@@ -4,7 +4,7 @@
     core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-core.app.forum.data.deletion();
+//core.app.forum.data.deletion();
 core.user.auth();
 var uri = new URI(request.getURL());
 if(request.threadId)
