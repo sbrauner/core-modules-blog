@@ -2,6 +2,7 @@
 
 var sentFile = false;
 var file = null;
+var cacheScaled = false;
 
 log.f.level = log.LEVEL.ERROR;
 
@@ -23,22 +24,26 @@ if ( file.contentType.match( /image/ ) ){
         var newFile = null;
         
         if ( file.options ){
-            newFile = db._files.findOne( file.options );
 
-            log.f.scale.debug( "using cached for " + options );
+            if ( cacheScaled )
+		newFile = db._files.findOne( file.options );
+
+	    if ( newFile )
+		log.f.scale.debug( "using cached for " + options );
         }
         
         if ( ! newFile ){
             core.media.image();
             var img = new Media.Image( file );
             
-            newFile = img.scaleToSize( request.maxX , request.maxY );
-            db._files.save( newFile );
+            newFile = img.scaleToMaxSize( request.maxX , request.maxY );
+	    if ( cacheScaled ){
+		db._files.save( newFile );
+		file.options = newFile._id;
+		db._files.save( file );
+	    }
             
-            file.options = newFile._id;
-            db._files.save( file );
-            
-            log.f.scale.debug( "doing auto scale for + options" );
+            log.f.scale.debug( "doing auto scale for " + options );
         }
 
         if ( newFile )
