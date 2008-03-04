@@ -39,10 +39,14 @@ if(deletedPosts) link += "&deleted=true";
 
   <% if (!deletedPosts) { %>
   <td class="alignleft lastpost">
+    <% if(l) { %>
     <div class="lp_author">by <%= l.author.name %> (go)</div>
     <nobr>
     at <%= l.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %>
     </nobr>
+    <% } else { %>
+    &nbsp;
+    <% } %>
   </td>
   <% } %>
 
