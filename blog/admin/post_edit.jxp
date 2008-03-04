@@ -92,15 +92,8 @@ else if (request.action == 'delete') {
 
 if ( request.content ) thePost.content = request.content;
 
-// Build a list of all available categories (this is a kludge!)
+var categories = db.blog.categories.find().sort( { name : 1 } );
 
-var cursor = db.blog.posts.find({}, { categories:true });
-var categories = new Array();
-cursor.forEach( function( postFragment ) { 
-		    categories = categories.concat( postFragment.categories); 
-		} 
-		);
-categories = categories.unique().sort();
 %>
 
 <script type="text/javascript" src="NOCDN/~~/tinymce/3.0/tiny_mce.js"></script>
@@ -219,7 +212,10 @@ tinyMCE.init({
                 <%
                     categories.forEach( function(category) {
                 %>
-                    <input type="checkbox" name="categories" value="<%= category %>" <%= thePost.categories.contains(category) ? 'checked' : '' %>/> <%= Category.getLabel(category) %><br/>
+                    <input type="checkbox" name="categories" value="<%= category %>" 
+		        <%= thePost.categories.contains(category.name) ? 'checked' : '' %> > 
+			<%= category.getLabel() %>
+		    <br/>
                 <% }); %>
                 </div>
             </div>
