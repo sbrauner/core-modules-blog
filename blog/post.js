@@ -167,20 +167,16 @@ function fixComments() {
     // iterate through each post
     cursor.forEach(function(post) {
         // see what kind of object comments is
-        if ( ! post.comments){
-            SYSOUT('Post ID (' + post._id + ') has no comments');
-            return;
-        }
+
+        if ( post.comments && ! isArray( post.comments ) ){
+            SYSOUT('Converting Post ID (' + post._id + ')');
+            post.comments = post.getComments();
+	}
 	
-        if ( isArray( post.comments ) ){
-            SYSOUT('Post ID (' + post._id + ') already converted');
-            return;
-        }
-        
-        SYSOUT('Converting Post ID (' + post._id + ')');
-        post.comments = post.getComments();
+	if ( ! post.views )
+	    post.views = 1;
+
         db.blog.posts.save(post);
-	
         SYSOUT('\tSaving Post ID (' + post._id + ')');
     });
 }
