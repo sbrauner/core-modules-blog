@@ -82,6 +82,16 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getF
 <table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
+      <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
+      <%
+      var topicStack = "";
+      var tempTopic = thread.topic;
+      while(tempTopic.parent != null) {
+           tempTopic = tempTopic.parent;
+           topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
+      }
+      print(topicStack);
+      %>
       <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
       <div class="second_level">
       <%= thread.findFirstPost().title %>
