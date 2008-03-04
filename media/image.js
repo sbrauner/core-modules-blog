@@ -103,8 +103,6 @@ Media.Image.giveIMGTagsURLMaxes = function( html ){
     html = html.replace( /<img ([^>]+)\/?>/ , 
 			 function( tag ){
 			     
-			     log.media.image.giveIMGTagsURLMaxes( "tag : " + tag );
-
 			     if ( ! tag.match( /f?id/ )){
 				 return tag;
 			     }
