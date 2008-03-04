@@ -2,7 +2,7 @@
 app.Forum.Controller.checkBan = function(user, request){
     if(app.Forum.Controller.bannedUser(user, request)){
         core.app.forum.html.error("You have been banned!");
-        raise new Exception("banned");
+        throw new Exception("banned");
     }
 };
 %>
