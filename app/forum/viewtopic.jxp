@@ -24,6 +24,7 @@ var description;
 var tableOptions = null;
 var subs = [];
 var t;
+
 if(request.id){
     if(request.id == app.Forum.Controller.specialDeletedID){
         threadList = app.Forum.data.Thread.list(app.Forum.Controller.specialDeletedID);
@@ -84,7 +85,7 @@ if(movetargets.length > 1){
                               retStr+="<option value=\""+movetargets[i]._id+"\">"+movetargets[i].name+"</option>";
                               var subtopics = db.forum.topics.find( { parent : movetargets[i] }).toArray();
                               for(var j=0; j<subtopics.length; j++) {
-                                  retStr+="<option value=\""+subtopics[j]._id+"\">---"+subtopics[j].name+"</option>";
+                                  retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
                               }
                           }
                       }
@@ -100,9 +101,8 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
-// ---------------
-search();
 
+search();
 app.Forum.html.topicTable(name, description, subs, threadList, actions,
                          tableOptions);
 

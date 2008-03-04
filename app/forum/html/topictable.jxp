@@ -46,14 +46,17 @@ function togglePick(threadId) {
   <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> | 
   <%
     }
-    if(createTopic &&
-       app.Forum.Controller.hasPermission(user, "createTopic")){ %>
-  <% if(opts.thisid){ %>
-  <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a> |
-  <% } else { %>
-  <a href="topic_new">New Topic</a> |
-  <% } %>
-  <% 
+    if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
+      if(opts.thisid){ %>
+        <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a> | 
+        <a href="topic_edit?id=<%= opts.thisid %>">Edit Topic</a> |
+        <% 
+      } 
+      else { 
+        %>
+        <a href="topic_new">New Topic</a> |
+        <% 
+      } 
     }
     %>
   <% if(opts.parent){ %>
