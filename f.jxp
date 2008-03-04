@@ -3,6 +3,10 @@
 var sentFile = false;
 var file = null;
 
+log.f.level = log.LEVEL.ERROR;
+
+log.f.debug( request.id );
+
 if ( request.id )
     file = db._files.findOne( { _id : CrID( request.id ) } );
 
@@ -14,13 +18,36 @@ if ( ! file ){
 if ( file.contentType.match( /image/ ) ){
     
     if ( request.maxX || request.maxY ){
-	core.media.image();
-	var img = new Media.Image( file );
-	file = img.scaleToSize( request.maxX , request.maxY );
+        
+        var options = "scale-" + request.maxX + "x" + request.maxY;
+        var newFile = null;
+        
+        if ( file.options ){
+            newFile = db._files.findOne( file.options );
+
+            log.f.scale.debug( "using cached for " + options );
+        }
+        
+        if ( ! newFile ){
+            core.media.image();
+            var img = new Media.Image( file );
+            
+            newFile = img.scaleToSize( request.maxX , request.maxY );
+            db._files.save( newFile );
+            
+            file.options = newFile._id;
+            db._files.save( file );
+            
+            log.f.scale.debug( "doing auto scale for + options" );
+        }
+
+        if ( newFile )
+            file = newFile;
+        
     }
 
 }
-response.setHeader( "X-A1" , file.getClass() );
+
 response.sendFile( file );
 
 
