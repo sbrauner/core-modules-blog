@@ -1,0 +1,29 @@
+<%
+htmlheader("Forum");
+head.addScript( "/~~/ui/js/common.js" );
+head.addCSS( "/~~/app/forum/css/forum.css" );
+
+core.user.html.topCorner();
+
+var query = request.query;
+//query = /.*/g;
+query = new RegExp(".*"+query+".*");
+
+print("<h2>Topics</h2>");
+cursor = db.forum.topics.find( { name : query } ).toArray();
+for(var i=0; i<cursor.length; i++) {
+    print(cursor[i].name+"<br />");
+}
+
+print("<h2>Threads</h2>");
+cursor = db.forum.threads.find( { content : query } ).toArray();
+for(var i=0; i<cursor.length; i++) {
+    print(cursor[i].name+"<br />");
+}
+
+
+//app.Forum.html.topicTable("Forums", null, cursor.toArray(), null, [],
+  //                        {createThread: false, thisid: null});
+
+htmlfooter();
+%>

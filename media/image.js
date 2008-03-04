@@ -22,6 +22,31 @@ Media.Image.prototype._getImage = function(){
     return this._img;
 };
 
+Media.Image.prototype.scaleToMaxSize = function( maxWidth , maxHeight ){
+    var img = this._getImage();
+    var w = img.getWidth();
+    var h = img.getHeight();
+
+    var newWidth = w;
+    var newHeight = h;
+
+    if ( maxWidth && maxWidth < newWidth ){
+	newHeight = ( maxWidth / newWidth ) * newHeight;
+	newWidth = maxWidth;
+    }
+
+    if ( maxHeight && maxHeight < newHeight ){
+	newWidth = ( maxHeight / newHeight ) * newWidth;
+	newHeight = maxHeight;
+    }
+
+    if ( newWidth == w && newHeight == h )
+	return this._file;
+
+    return this.scaleToSize( newWidth , newHeight );
+};
+
+
 /**
  * have to specify one or the other
  * @param x - desired x
