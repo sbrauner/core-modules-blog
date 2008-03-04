@@ -22,8 +22,8 @@ for(var i=0; i<cursor.length; i++) {
 }
 
 
-//core.app.forum.html.topictable("Forums", null, cursor.toArray(), null, [],
-//                               {createThread: false, thisid: null});
+core.app.forum.html.topictable("Forums", null, cursor.toArray(), null, [],
+                               {createThread: false, thisid: null});
 
 htmlfooter();
 %>
