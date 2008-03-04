@@ -6,17 +6,13 @@ head.addCSS( "/~~/app/forum/css/forum.css" );
 core.user.html.topCorner();
 
 var query = request.query;
-query = new RegExp(".*"+query+".*");
 
 print("<div>Search results for \""+request.query+"\":</div>");
 
-cursor = db.forum.topics.find( { name : query } );
-core.app.forum.html.topictable("Matching Topics:", null, cursor.toArray(), null, [], {createThread: false, thisid: null});
-
-query = new RegExp(".*");
-cursor = db.forum.threads.find( { content : query } );
-if(cursor.length() > 0) {
-        core.app.forum.html.topictable("Matching Threads:", null, cursor.toArray(), null, [], {createThread: false, thisid: null});
+cursor = Search.search(db.forum.topics, query );
+log(tojson(cursor));
+if(cursor.length > 0) {
+        core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, thisid: null});
 }
 else {
         %>

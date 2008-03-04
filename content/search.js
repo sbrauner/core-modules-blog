@@ -33,6 +33,7 @@ Search = {
         return idx;
     } ,
 
+    // make sure that all indexes are on the right fields of the table
     fixTable : function( table , weights ){
         if ( Search.DEBUG ) Search.log( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );

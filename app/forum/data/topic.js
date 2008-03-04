@@ -1,3 +1,5 @@
+core.content.search();
+
 app.Forum.data.Topic = function(){
     this.name = "";
     this.description = "";
@@ -12,10 +14,18 @@ app.Forum.data.Topic = function(){
     this.threadCount = 0;
 };
 
+app.Forum.data.Topic.prototype.SEARCH_OPTIONS = {
+    name: 1,
+    description: 1
+};
+
 app.Forum.data.Topic.prototype.presave = function(){
     if ( ! this.description ||
          "null" == this.description )
         this.description = "";
+
+    log(this.SEARCH_OPTIONS);
+    Search.index(this, this.SEARCH_OPTIONS);
 };
 
 app.Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
