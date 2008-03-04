@@ -44,11 +44,11 @@ function updateLogHandler( raw ){
        mostRecent = z.date;
        
      if ( ! z.seen ) z.seen = 1;
-     else z.seen += .5;
-     if ( z.seen >= 15 ) z.seen = 15;
+     else z.seen += 0.1;
+     var foo = (255-Math.floor(1/z.seen*255)).toString(16);
+     if( foo.length == 1 ) foo = "0" + foo;
+     var clr = "#ff" + foo + foo;
 
-     var foo = Math.floor( z.seen ).toString( 16 );
-     var clr = "#ff" + foo + foo + foo + foo;
      html += "<span style='background-color:" + clr +  ";'>&nbsp;&nbsp;</span>"
 
      html += "<span style='font-size:.6em;'>";
