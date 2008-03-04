@@ -1,5 +1,6 @@
 <%
 
+core.db.db();
 core.ui.chart.datetime();
 
 function doRound( date , t ){
@@ -24,7 +25,7 @@ function getTotalByteArray(cursor, t) {
     var last = null;
 
     cursor.forEach( function( z ){ 
-	    assert( lastTS == null || lastTS <= z.ts );
+	    //assert( lastTS == null || lastTS <= z.ts );
 	    lastTS = z.ts;
 	
             var n = doRound( z.ts , t );
@@ -100,7 +101,7 @@ function go( type , limit , t , header ){
     var coll = db._system.usage[type];
     coll.ensureIndex( { ts : 1 } );
 
-    data = mungeData( coll.find().limit( limit ) , t , start );
+    data = mungeData( coll.find( { ts : gte(start) } ) , t , start );
     data.forEach( function( z ){
 		      dt.add( z.time , z.num  );
 		  } );
@@ -210,7 +211,7 @@ function threeMonthSummary(limit, t) {
     </td>
     <td>
       <h1>Last 60 days</h1>
-      	<% doAllTypes(12*24*60, "d"); %>
+      	<% doAllTypes(12*24*60, "h"); %>
     </td>
   </tr>
   <tr>
