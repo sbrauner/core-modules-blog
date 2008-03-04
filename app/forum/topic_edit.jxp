@@ -1,0 +1,28 @@
+<%
+htmlheader("Forum");
+head.addScript( "/~~/ui/js/common.js" );
+head.addCSS( "/~~/app/forum/css/forum.css" );
+
+core.user.html.topCorner();
+core.net.uri();
+
+var topic = db.forum.topics.findOne( { _id : request.id } );
+%>
+
+<script type="text/javascript">
+function cancel() {
+         location = "viewtopic?name=<%= URI.escape_queryargs(topic.name) %>";
+}
+</script>
+
+<h2>Edit topic</h2>
+<form method="POST" action="topic_save_changes.jxp">
+<input type="hidden" name="id" value="<%= topic._id %>">
+<div id="field">Topic name: <input type="text" name="name" value="<%= topic.name %>"></div>
+<div id="field">Topic description: <input type="text" name="desc" value="<%= topic.description %>"></div>
+<div id="field"><input type="button" value="Cancel" onclick="cancel()"><input type="submit" value="Change"></div>
+</form>
+
+<%
+htmlfooter();
+%>

@@ -21,8 +21,10 @@ response.setHeader( "Content-Type" , "text/xml"); %>
    <% 
    children = thread.getReplies();
    for(var i=0; i < children.length; i++) {
+     if(children[i].topic == app.Forum.Controller.specialDeletedID) 
+        continue;
      %>
-
+  
      <item>
        <guid><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id + "#" + children[i].getID() %></guid>
        <title><%= children[i].title %></title>

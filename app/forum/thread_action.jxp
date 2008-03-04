@@ -163,6 +163,32 @@ if(request.action == "unsticky"){
     });
 }
 
+if(request.action == "split"){
+    if(! app.Forum.Controller.hasPermission(user, "movePost")){
+        return Auth.cookie.reject(request, response);
+    }
+    if(! request.target)
+        return core.app.forum.post_split(thread, selected);
+    else {
+        var newthread = new app.Forum.data.Thread();
+        var postid = "";
+        newthread.topic = thread.topic;
+        selected.forEach(function(sel1){
+            var post = thread.getDescendant(sel1);
+            thread.removeDescendant(sel1);
+            newthread.addReply(post);
+            postid = post.getID();
+        });
+        log(tojson(newthread));
+        newthread.findFirstPost().title = request.target;
+        newthread.latestPost = postid;
+        newthread.save();
+        thread.save();
+        back = uri.clearArgs().replaceLastPath("viewtopic").addQuery("name", thread.topic.name).toString();
+
+    }
+}
+
 response.setResponseCode(301);
 response.setHeader("Location", back);
 %>

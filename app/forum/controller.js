@@ -36,6 +36,7 @@ app.Forum.Controller.adminPermissions = function(){
         // post stuff
         editPost: true,
         deletePost: true,
+        movePost: true, splitPost: true,
 
         // topic stuff
         createTopic: true, renameTopic: true,

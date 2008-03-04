@@ -13,12 +13,14 @@ if(thread == null){
 }
 print("<!-- " + thread._id + "-->");
 
-canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
-canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
+var canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
+
+var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 
 postoptions = {replyable: false};
 /*if(canDelete || canModerate){
@@ -87,6 +89,9 @@ core.user.html.topCorner();
     </th>
     <th class="alignright">
 
+      <% if(canSplit){ %>
+      <input type="submit" name="action" value="split">
+      <% } %>
        <% if(request.show == "deleted" && canDelete){ %>
        <input type="submit" name="action" value="undelete">
        <% } %>
@@ -106,6 +111,7 @@ core.user.html.topCorner();
 <%
         thread.decoratorsRender("threaded.replies", postoptions);
  %>
+</form>
 <div class="threadFooter">
 <div class="opt">
 <%
@@ -118,7 +124,6 @@ core.user.html.topCorner();
 </div>
 </div>
 
-</form>
 
 <% htmlfooter(); %>
 
