@@ -72,17 +72,24 @@ if(request.fstatus){
         db.bugtracker.cases.save(feature);
 
         if(mail){
-            var subj = "[cases] Case number " + feature.number;
+            var subj = "[cases] Case "+ feature.number +" \"" + feature.title + "\"";
             if(! feature_new) subj += " changed";
             else subj += " added";
-            var link = new URI(request.getURL()).addArg("id", feature._id)
+            var link = new URI(request.getURL()).replaceArg("id", feature._id)
             link.hostname = request.getHost();
             link.port = request.getPort();
             link = link.toString();
 
-            body = "The bug report titled \""+feature.title+"\" changed. To see it, follow this link:\n\n"+link;
+            body = "The bug report titled \""+feature.title+"\" was changed by "+ user.name+".\n"
+                + "Assigned to: " + feature.owner.name + "\n"
+                + "Status: " + feature.status + "\n"
+                +"To see it, follow this link:\n\n"+link;
             m = new Mail.Message( subj, body );
-            m.addRecipient(  "dev@10gen.com" ); m.send( mail );
+            m.addRecipient(  feature.reporter.email  );
+            if(feature.owner)
+                m.addRecipient(  feature.owner.email , "cc" );
+            m.addRecipient(  feature.project.owner.email , "cc" );
+            m.send( mail );
             append = "";
         }
         else {
