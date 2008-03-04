@@ -3,6 +3,8 @@
 core.content.forms(); 
 core.ui.elements.menu(); 
 
+head.addCSS( "NOCDN/~~/admin/assets/css.jxp" ); 
+
 var menu = [ 
     { name : "Home" , link : "/admin/" } ,
     { name : "Site" , link : "#" , 
