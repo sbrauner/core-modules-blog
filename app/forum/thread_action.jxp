@@ -1,7 +1,8 @@
 <%
 // Form handler to deal with actions on posts in threads, or sometimes
 // the thread themselves.
-    core.net.uri();
+core.app.forum.html.check_ban();
+core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 //core.app.forum.data.deletion();

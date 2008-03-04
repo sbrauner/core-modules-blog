@@ -6,7 +6,7 @@ if ( Search && Search._doneInit )
     return;
 
 Search = {
-    
+
     log : log.search ,
     DEBUG : true ,
 
@@ -16,7 +16,7 @@ Search = {
     wordRegex : /[,\. ]*\b[,\. ]*/ ,
 
     cleanString : function( s ){
-        
+
         if ( ! s.match( /\w/ ) )
             return "";
 

@@ -1,4 +1,5 @@
 <%
+// FIXME: permission check, ban check?
 
 var thread = app.Forum.data.Thread.findOne({_id : request.thread});
 var topic = null;

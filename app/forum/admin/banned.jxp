@@ -1,0 +1,103 @@
+<% if (sectionHeader) sectionHeader(); %>
+
+<%
+core.content.table();
+core.net.ipaddr();
+
+if(request.banip){
+    var ip = request.banip.trim();
+    if(net.isIPAddr(request.banip)){
+        if(db.forum.banned_ips.findOne({ip: ip})){
+            print("Already banned: " + ip);
+        }
+        else {
+            db.forum.banned_ips.save({ip: ip});
+            print("Banning IP: " + ip);
+        }
+    }
+    else {
+        print("Not an IP: " + ip);
+    }
+}
+
+if(request.banuser){
+    var user = db.users.findOne({_id: request.banuser});
+    if(db.forum.banned_users.findOne({user: user})){
+        print("Already banned: " + user.name);
+    }
+    else {
+        db.forum.banned_users.save({user: user});
+        print("Ban user: " + user.name);
+    }
+}
+
+if(request.action == "unban" && request._id){
+    if(banuser = db.forum.banned_users.findOne({_id: request._id})){
+        print("Unbanning user " + banuser.user.name);
+        db.forum.banned_users.remove(banuser);
+    }
+    else if(banip = db.forum.banned_ips.findOne({_id: request._id})){
+        print("Unbanning IP " + banip.ip);
+        db.forum.banned_ips.remove(banip);
+    }
+}
+
+//---------
+
+
+
+var tab = new htmltable({
+    ns: db.forum.banned_users,
+    cols: [
+        {name: "user", heading: "User", cssClassName: 'field', view: function(u) { return u.name; },
+         queryForm: function(name) {
+             // Search insensitively on the username. If we don't find one,
+             // just return some value that should never occur.
+             var user = db.users.findOne({name: new RegExp(name, 'i')});
+             if(user) return user;
+             return -1;
+         }
+        }
+    ],
+
+    actions: [
+        { name: "unban" }
+    ],
+    searchable: true
+});
+
+tab.dbview(tab.find());
+
+var tab = new htmltable({
+    ns: db.forum.banned_ips,
+    cols: [
+        {name: "ip", heading: "IPs", cssClassName: 'field'}
+    ],
+    actions: [
+        { name: "unban" }
+    ],
+    searchable: true
+});
+
+tab.dbview(tab.find());
+
+%>
+
+<form method="POST">
+  Ban an IP address
+  <input type="text" name="banip"/>
+  <input type="submit" value="Ban"/>
+</form>
+
+<form method="POST">
+  Ban a user
+  <select name="banuser">
+    <% db.users.find({}).forEach(function(u){ %>
+    <option value="<%= u._id%>"><%= u.name %></option>
+    <% }); %>
+  </select>
+
+  <input type="submit" value="Ban">
+</form>
+
+<% if (sectionFooter) sectionFooter(); %>

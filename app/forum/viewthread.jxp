@@ -1,6 +1,8 @@
 <%
 core.app.forum.controller();
 
+core.app.forum.html.check_ban();
+
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
 
