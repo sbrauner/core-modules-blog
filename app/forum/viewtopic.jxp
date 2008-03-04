@@ -10,7 +10,6 @@ core.app.forum.controller();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
-core.app.forum.html.topictable();
 
 var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
 var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
@@ -103,9 +102,7 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
 // ---------------
 search();
 
-app.Forum.html.topicTable(name, description, subs, threadList, actions,
-                         tableOptions);
-
+core.app.forum.html.topictable(name, description, subs, threadList, actions, tableOptions);
 %>
 
 
