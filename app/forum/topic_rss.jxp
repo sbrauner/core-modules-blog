@@ -8,8 +8,8 @@ core.content.html();
 core.app.forum.data.topic();
 core.app.forum.controller();
 
-var topic = db.forum.topics.findOne( { _id: request.id } );
-var threads = Forum.data.Thread.find( { topic : topic } ).sort( { created : -1 } );
+var topic = db.forum.topics.findOne( { _id : request.id } );
+var threads = db.forum.threads.find( { topic : topic } ).sort( { created : -1 } );
 var now = new Date();
 
 response.setHeader( "Content-Type" , "text/xml"); %>

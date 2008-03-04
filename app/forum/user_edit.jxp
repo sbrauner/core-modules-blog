@@ -1,7 +1,11 @@
 <%
-htmlheader("Forums | Edit User");
 core.app.forum.controller();
+
+if(! app.Forum.Controller.hasPermission(user, "editUser"))
+    return Auth.cookie.reject(request, response);
+
 core.user.user();
+htmlheader("Forums | Edit User");
 
 var user = null;
 

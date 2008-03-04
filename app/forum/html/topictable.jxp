@@ -28,7 +28,7 @@ function reload() {
 
 function togglePick(threadId) {
          var passData = "thread="+threadId;
-         ajax(passData, "editorPick.jxp");
+         ajax(passData, "editorPick.jxp", reload);
 }
 
 
@@ -58,6 +58,9 @@ function togglePick(threadId) {
       } 
     }
     %>
+        <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
+        <a href="user_edit">Edit user</a> | 
+        <% } %>
   <% if(opts.parent){ %>
   <a href="viewtopic?name=<%= URI.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
   <% }
@@ -68,7 +71,7 @@ function togglePick(threadId) {
 
 
 <%
-if(subs.length > 0){ %>
+if(subs && subs.length > 0){ %>
    <table id="style1">
      <tr>
        <th>
@@ -112,7 +115,7 @@ var even = false;
             even = !even;
         });
     else
-        print ("<tr><td>No threads right now!</td></tr>");
+        print ("<tr><td colspan=\""+3+actions.length+"\">No threads right now!</td></tr>");
 }
 %>
 </table>

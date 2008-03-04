@@ -1,5 +1,5 @@
 <%
-core.forum.data.thread();
+core.app.forum.data.thread();
 
 thread = db.forum.threads.findOne( { _id : request.thread } );
 
