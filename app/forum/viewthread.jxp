@@ -125,7 +125,7 @@ postoptions.actions.push(function(post) {
      <input type="hidden" name="threadId" value="<%= thread._id %>">
      <input type="hidden" name="select" value="<%= post.getID() %>">
      <%
-     if(canSplit){ %>
+     if(canSplit && post.getID() > 0){ %>
            <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><% 
      }  
      if(post.deleted == "deleted" && canDelete) { %>

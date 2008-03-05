@@ -83,12 +83,12 @@ if(request.action == "split"){
     if(! app.Forum.Controller.hasPermission(user, "movePost")){
         return Auth.cookie.reject(request, response);
     }
-    if(! request.target)
+    if(! request.topic)
         return core.app.forum.post_split(thread, selected);
     else {
         var newthread = new app.Forum.data.Thread();
         var postid = "";
-        newthread.topic = thread.topic;
+        newthread.topic = db.forum.topics.findOne( { _id : request.topic });
         var first = selected[0];
         var replies = thread.getReplies();
         var i = replies.indexOf(thread.getDescendant(first));
@@ -100,7 +100,7 @@ if(request.action == "split"){
         }
 
         log(tojson(newthread));
-        newthread.getFirstPost().title = request.target;
+        newthread.getFirstPost().title = request.subj;
         newthread.latestPost = postid;
         var newthreadcount = newthread.getReplies().length;
         var threadcount = thread.getReplies().length;
@@ -116,7 +116,7 @@ if(request.action == "split"){
         newthread.topic.changeCounts(1, 1);
         newthread.modifyPostCount(newup);
 
-        back = uri.clearArgs().replaceLastPath("viewtopic").addQuery("name", thread.topic.name).toString();
+        back = uri.clearArgs().replaceLastPath("viewthread").addQuery("id", newthread._id).toString();
     }
 }
 
