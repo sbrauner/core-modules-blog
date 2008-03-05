@@ -13,6 +13,7 @@ core.user.html.topCorner();
 core.net.uri();
 
 core.app.forum.data.topic();
+core.app.forum.data.thread();
 core.app.forum.html.form();
 
 app.Forum.html.search();
