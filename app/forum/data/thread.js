@@ -22,7 +22,6 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
         // reply styles
-        title: 1,
         content: .2
     }
 
