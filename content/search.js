@@ -209,7 +209,7 @@ Search = {
         }
     },
 
-    snippet: function(obj, query){
+    snippet: function(obj, query, weights){
         // snippet: given an object and a search term, find the relevant parts
         // of the object.
         //
@@ -223,36 +223,33 @@ Search = {
         // just search through the object structure to find the text at all
 
         var ary = [];
-        Search.snippetSub(obj, obj, query, ary);
+        Search.snippetSub(obj, obj, query, weights, ary);
         return ary;
     },
 
-    snippetSub: function(obj, parent, query, results){
+    snippetSub: function(obj, parent, query, weights, results){
         // snippetSub
         var ret = false;
-        if(typeof obj == "string"){
+
+        if(obj instanceof Array){
+            for(var i = 0; i < obj.length; i++){
+                Search.snippetSub(obj[i], parent, query, weights, results);
+            }
+        }
+        else if(typeof weights == "number"){
+            // base case
             Search.log.debug("checking string : " + obj);
             if(Search.match(obj, query))
                 results.push({object: parent, text: obj});
         }
-        else if(obj instanceof Array){
-            // array
-            Search.log.debug("recursing on array");
-            for(var i = 0; i < obj.length; i++){
-                Search.log.debug("number : " + i);
-                Search.log.debug("value : " + obj[i]);
-                Search.snippetSub(obj[i], parent, query, results);
+        else for ( var field in weights ){
+            Search.log.debug("recursive on : " + field);
+            var w = weights[field];
+            if(obj[field] == null){
+                Search.log.debug("recursing onto a null object! broken weights spec??");
             }
-        }
-        else {
-            // object
-            Search.log.debug("recursing on object");
-            for(var field in obj){
-                Search.log.debug("field : " + field);
-                var val = obj[field];
-                Search.log.debug("value : " + val);
-                Search.snippetSub(val, obj, query, results);
-            }
+            else
+                Search.snippetSub(obj[field], obj, query, w, results);
         }
         return ret;
     }
