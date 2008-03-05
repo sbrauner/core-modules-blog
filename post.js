@@ -163,6 +163,7 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
+	http404Page.commentsEnabled = false;
         db.blog.posts.save(http404Page);
     }
     return http404Page;
