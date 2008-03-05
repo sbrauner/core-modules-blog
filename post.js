@@ -132,14 +132,18 @@ Post.prototype.getUrl = function( r ){
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
+
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
         return null;
     
     var url = r[1];
+    
+    if ( ! url.match( /f?id=/ ) )
+	return null;
 
-    if ( ( maxX || maxY ) && url.match( /f?id=/ ) ){
+    if ( ( maxX || maxY ) ){
 	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
 
 	if ( maxX )
