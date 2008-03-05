@@ -1,7 +1,7 @@
 <%
 
-/* 
- * "highlight" takes an array of search results and an array of search terms.  
+/*
+ * "highlight" takes an array of search results and an array of search terms.
  * For each search term, it strips the term to its stem and then it uses a regular expression to search
  * for all matching similar words in each result and put them in a highlighted <span> element.
  *
@@ -30,6 +30,7 @@ head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
 
 core.user.html.topCorner();
+core.app.forum.data.thread();
 
 var query = request.query;
 
@@ -39,16 +40,18 @@ cursor = Search.search(db.forum.topics, query );
 log(tojson(cursor));
 
 threads = Search.search(db.forum.threads, query);
+log("found threads" + tojson(threads));
 
 var array = {};
 array.title = [];
 array.content = [];
 var count = 0;
-var thread_ar = threads.toArray();
-for(var i=0; i<thread_ar.length; i++) {
-    for(var j=0; j<thread_ar[i].threaded_children.length; j++) {
-        array.title[count] = thread_ar[i].threaded_children[j].title;
-        array.content[count++] = thread_ar[i].threaded_children[j].content;
+/*
+for(var i=0; i<threads.length; i++) {
+    for(var j=0; j<threads[i].threaded_children.length; j++) {
+        log(tojson(threads[i].threaded_children[j]));
+        array.title[count] = threads[i].threaded_children[j].title;
+        array.content[count++] = threads[i].threaded_children[j].content;
    }
 }
 
@@ -58,18 +61,44 @@ array.content = highlight(array.content, Search.queryToArray(query));
 for(i=0; i<array.title.length; i++) {
     print(array.title[i]+"<br />"+array.content[i]+"<br />");
 }
-
+*/
 
 if(cursor.length > 0) {
-        core.app.forum.html.topictable("Matching topics:", null, cursor, threads, [], {createThread: false, thisid: null});
+    core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, thisid: null});
 }
 else {
-        %>
-        <h1>Matching topics:</h1>
-        No matching topics.
-        <%
+    %>
+    <h1>Matching topics:</h1>
+    No matching topics.
+    <%
 }
 
+if(threads.length > 0){
+    %>
+    <h1>Matching threads:</h1>
+    <%
+    for(var i = 0; i < threads.length; i++){
+        %>
+       <div class="thread">
+         <div class="title">
+           <a href="viewthread?id=<%= threads[i]._id %>"><%= threads[i].getTitle() %></a>
+         </div>
+         <div class="content">
+           <%
+            var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
+            for(var j = 0; j < snippets.length; j++){
+                snippets[j] = snippets[j].text;
+            }
+            snippets = highlight(snippets, Search.queryToArray(query));
+            for(var j = 0; j < snippets.length; j++){
+              %>
+                               <%= snippets[j] %>
+              <% } %>
+         </div>
+       </div>
+        <%
+    }
+}
 
 
 htmlfooter();
