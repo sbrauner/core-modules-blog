@@ -132,14 +132,18 @@ Post.prototype.getUrl = function( r ){
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
+
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
         return null;
     
     var url = r[1];
+    
+    if ( ! url.match( /f?id=/ ) )
+	return null;
 
-    if ( ( maxX || maxY ) && url.match( /f?id=/ ) ){
+    if ( ( maxX || maxY ) ){
 	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
 
 	if ( maxX )
@@ -159,6 +163,7 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
+	http404Page.commentsEnabled = false;
         db.blog.posts.save(http404Page);
     }
     return http404Page;
