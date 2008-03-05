@@ -76,6 +76,14 @@ if(deleteThread)
 if(moderateThread)
     movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
 
+if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
+      editorPick(thread);
+      return "";
+   }});
+}
+
 if(movetargets.length > 1){
     actions.push({title : "Move Thread",
                   func : function(t) {
@@ -94,13 +102,6 @@ if(movetargets.length > 1){
                   }});
 }
 
-if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
-   actions.push({ title : "Editor's Pick",
-                  func : function(thread) {
-      editorPick(thread);
-      return "";
-   }});
-}
 // --------------------
 core.app.forum.html.forumheader("Forum | " + name);
 
