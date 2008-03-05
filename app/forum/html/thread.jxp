@@ -18,7 +18,7 @@ var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted
 // actions is a list of functions which will be called on the thread and the
 // results put in a fourth cell
 var actions = (opts == null || opts.actions == null) ? [] : opts.actions;
-var f = t.findFirstPost();
+var f = t.getFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 var l = t.getLatestPost();
 

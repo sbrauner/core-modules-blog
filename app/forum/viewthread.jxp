@@ -57,7 +57,7 @@ var uri = new URI(request.getURL());
 
 // ------------
 
-htmlheader("Viewing thread: "+thread.findFirstPost().title);
+htmlheader("Viewing thread: "+thread.getFirstPost().title);
 core.user.html.topCorner();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getFirstPost().title+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
