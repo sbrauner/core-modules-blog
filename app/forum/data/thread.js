@@ -76,6 +76,10 @@ app.Forum.data.Thread.prototype.modifyPostCount = function(num){
     this.save();
 };
 
+// Posts have a deleted field; this field is either false, meaning
+// this post isn't deleted, or it is one of:
+// the string "deleted"
+// the string "moderated"
 app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     p.deleted = reason;
