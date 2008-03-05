@@ -1,14 +1,10 @@
 <%
 core.app.forum.controller();
 
-core.app.forum.html.check_ban();
-
 if(! app.Forum.Controller.hasPermission(user, "createThread"))
     return Auth.cookie.reject(request, response);
 
-head.addCSS( "/~~/app/forum/css/forum.css" );
-htmlheader("Forums | New Thread");
-core.user.html.topCorner();
+core.app.forum.html.forumheader("Forums | New Thread");
 
 core.app.forum.data.thread();
 core.content.forms();
@@ -38,11 +34,6 @@ if(request.getMethod() == "POST"){
 }
 var backurl = "viewtopic?name="+topic.name;
 %>
-<html>
-  <head>
-    <title>New thread</title>
-  </head>
-  <body>
     <h3>New thread</h3>
     <%
     opts = {};
@@ -55,7 +46,5 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
 } %>
     <% app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
-  </body>
-</html>
 
 <% htmlfooter(); %>

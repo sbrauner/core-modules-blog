@@ -6,11 +6,6 @@ core.app.forum.html.check_ban();
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
 
-htmlheader("Forum");
-head.addScript( "/~~/ui/js/common.js" );
-head.addCSS( "/~~/app/forum/css/forum.css" );
-
-core.user.html.topCorner();
 core.content.table();
 core.net.uri();
 core.app.forum.data.thread();
@@ -105,6 +100,9 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
       return "";
    }});
 }
+// --------------------
+core.app.forum.html.forumheader("Forum | " + t.name);
+
 %>
 
 <table id="style1" cellspacing="0" >
@@ -136,6 +134,6 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" h
 <%
 core.app.forum.html.topictable(name, description, subs, threadList, actions, tableOptions);
 
-htmlfooter(); 
+htmlfooter();
 
 %>

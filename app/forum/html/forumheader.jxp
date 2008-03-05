@@ -1,0 +1,9 @@
+<%
+    processArgs("title");
+core.app.forum.html.check_ban();
+
+head.addScript( "/~~/ui/js/common.js" );
+head.addCSS( "/~~/app/forum/css/forum.css" );
+htmlheader("Forums | New Thread");
+core.user.html.topCorner();
+%>

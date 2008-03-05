@@ -5,8 +5,7 @@ if(! app.Forum.Controller.hasPermission(user, "createTopic"))
     return Auth.cookie.reject(request, response);
 
 
-htmlheader("Forums");
-core.user.html.topCorner();
+core.app.forum.html.forumheader("Forums");
 
 core.app.forum.data.topic();
 core.content.forms();
