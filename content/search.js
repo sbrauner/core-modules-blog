@@ -243,7 +243,11 @@ Search = {
         // Don't recurse into nulls.
         var ret = false;
 
-        if(obj instanceof Array){
+        if(obj == null){
+            Search.log.debug("recursing onto a null object! broken weights spec??");
+        }
+
+        else if(obj instanceof Array){
             for(var i = 0; i < obj.length; i++){
                 Search.snippetSub(obj[i], parent, query, weights, results);
             }
@@ -257,11 +261,7 @@ Search = {
         else for ( var field in weights ){
             Search.log.debug("recursive on : " + field);
             var w = weights[field];
-            if(obj[field] == null){
-                Search.log.debug("recursing onto a null object! broken weights spec??");
-            }
-            else
-                Search.snippetSub(obj[field], obj, query, w, results);
+            Search.snippetSub(obj[field], obj, query, w, results);
         }
         return ret;
     }
