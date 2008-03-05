@@ -102,9 +102,20 @@ if(request.action == "split"){
         log(tojson(newthread));
         newthread.getFirstPost().title = request.target;
         newthread.latestPost = postid;
+        var newthreadcount = newthread.getReplies().length;
+        var threadcount = thread.getReplies().length;
+        var threaddown = thread.count - threadcount;
+        var newup = newthreadcount - 1; // thread.count starts at 1
+
         newthread.save();
+
         thread.threaded_reorderChildren();
         thread.save();
+
+        thread.modifyPostCount(-threaddown);
+        newthread.topic.changeCounts(1, 1);
+        newthread.modifyPostCount(newup);
+
         back = uri.clearArgs().replaceLastPath("viewtopic").addQuery("name", thread.topic.name).toString();
     }
 }
