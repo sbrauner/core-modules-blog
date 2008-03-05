@@ -22,39 +22,15 @@ var back = request.getHeader("Referer");
 if(back == "")
     back = "./";
 
-var modifyPostCount = function(thread, num){
-    // Modifies the post count of a thread, the topic the thread is in,
-    // the topic that topic is in, etc.,
-    // by num (probably 1 or -1).
-    thread.count += num;
-    thread.save();
-
-    // FIXME: another cross-reference thing
-    topic = db.forum.topics.findOne({_id: thread.topic._id});
-    topic.changeCounts(0, num);
-    thread.topic = topic;
-};
-
 var subtPost = function(attr){
     for(var i in selected){
-        var p = thread.getDescendant(selected[i]);
-        p.deleted = attr;
-        modifyPostCount(thread, -1);
-        thread.save();
-        thread.saveDescendant(p);
+        thread.removePost(attr, i);
     }
 };
 
 var addPost = function(attr){
     for(var i in selected){
-        var p = thread.getDescendant(selected[i]);
-        if(p.deleted == attr){
-            p.deleted = false;
-            modifyPostCount(thread, 1);
-            thread.save();
-            thread.saveDescendant(p);
-        }
-
+        thread.addPost(attr, i);
     }
 };
 

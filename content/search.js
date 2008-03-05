@@ -77,7 +77,8 @@ Search = {
 
         if( obj instanceof Array ){
             for(var i = 0; i < obj.length; i++){
-                Search.indexSub(top, obj[i], weights);
+                if(obj[i])
+                    Search.indexSub(top, obj[i], weights);
             }
         }
 

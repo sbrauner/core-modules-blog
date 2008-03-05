@@ -74,6 +74,30 @@ app.Forum.data.Thread.prototype.getLatestPost = function() {
     return null;
 }
 
+app.Forum.data.Thread.prototype.modifyPostCount = function(num){
+    this.count += num;
+    this.topic.changeCounts(0, num);
+    this.save();
+};
+
+app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
+    var p = this.getDescendant(desc_id);
+    p.deleted = reason;
+    this.save();
+    this.saveDescendant(p);
+    this.modifyPostCount(-1);
+};
+
+app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
+    var p = this.getDescendant(desc_id);
+    if(p.deleted == attr){
+        p.deleted = false;
+        this.modifyPostCount(1);
+        this.save();
+        this.saveDescendant(p);
+    }
+};
+
 // This adds children and the rendering thereof to the Thread class.
 // For more on this, check corejs/threaded/_init.js.
 // A bunch of functions are added to the Thread class -- getReplies(),

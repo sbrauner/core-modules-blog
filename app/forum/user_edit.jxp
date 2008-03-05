@@ -15,7 +15,21 @@ if(request.userid){
     user = db.users.findOne({_id: request.userid});
 }
 
-if(request.permission){
+core.app.forum.data.thread();
+if(request.action == "Moderate"){
+    app.Forum.data.Thread.find().forEach(function(t){
+        t.getReplies().forEach(function(p){
+            if(p.author._id == user._id){
+                log.debug("moderating " + p.content);
+                t.removePost("moderated", p.getID());
+            }
+            else {
+            }
+        });
+        t.save();
+    });
+}
+else if(request.permission){
     // validate the permission we want to set
     var allowed = Object.values(app.Forum.Controller.permissions);
     if(allowed.indexOf(request.permission) == -1) throw new Error("I don't want to add that permission");
@@ -60,6 +74,10 @@ if(! user){ %>
 <div class="field">
   <div class="field_name">&nbsp;</div>
   <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+<div class="field">
+  <div class="field_name">Moderate all posts by this user</div>
+  <div class="field_value"><input type="submit" name="action" value="Moderate"></div>
 </div>
 </form>
         <% } %>
