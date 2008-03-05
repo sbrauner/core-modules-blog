@@ -35,12 +35,10 @@ if(canPost){
     var p = thread.decoratorsHandle();
     if( p ){
         thread.count ++;
-        // FIXME: why doesn't just using thread.topic work here?
-        topic = db.forum.topics.findOne({_id: thread.topic._id});
-        topic.changeCounts(0, 1);
+        thread.topic.changeCounts(0, 1);
         thread.latestPost = p.getID();
         thread.lastPostTime = new Date();
-        db.forum.topics.save(topic);
+        db.forum.topics.save(thread.topic);
         thread.save();
     }
 }
@@ -75,21 +73,21 @@ function cancelSplit(i) {
 
 <div class="caption">
 
-<% 
+<%
 if(request.show == "deleted"){ %>
      <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
-     <% 
+     <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
      <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
-     <% 
+     <%
 }
 if(request.show == "moderated"){ %>
      <a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
-     <% 
+     <%
 } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
      <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
-     <% 
-} 
+     <%
+}
 %>
 
 </div>
@@ -122,17 +120,17 @@ app.Forum.html.search();
 
 postoptions.actions = [];
 postoptions.actions.push(function(post) {
-     %>                         
+     %>
      <form action="thread_action">
      <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="hidden" name="select" value="<%= post.getID() %>">      
+     <input type="hidden" name="select" value="<%= post.getID() %>">
      <%
      if(canSplit){ %>
            <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><% 
      }  
      if(post.deleted == "deleted" && canDelete) { %>
            <input type="submit" class="submit" name="action" value="undelete">
-           <% 
+           <%
      }
      if(post.deleted == "moderated" && canModerate){ %>
            <input type="submit" class="submit" name="action" value="unmoderate">
@@ -141,11 +139,11 @@ postoptions.actions.push(function(post) {
      if (!post.deleted && canDelete){ %>
            <input type="submit" class="submit" name="action" value="delete">
      <%
-     } 
+     }
      if(!post.deleted && canModerate){ %>
            <input type="submit" class="submit" name="action" value="moderate">
-     <% 
-     } 
+     <%
+     }
      %>
      <div class="split" id="splitpop<%= post.getID() %>">
           <div class="stitle">Split Thread at Post</div>

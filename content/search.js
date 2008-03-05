@@ -57,9 +57,9 @@ Search = {
             num = num.unique().sort().reverse();
             var a = [];
             num.forEach( function(z){
-                    a.push( { idx : Search.getIndexName( z ) ,
-                                w : z } );
-                } );
+                a.push( { idx : Search.getIndexName( z ) ,
+                          w : z } );
+            } );
             Search._weights[ table.getName() ] = a;
 
         }
@@ -120,11 +120,11 @@ Search = {
 
         var words = [];
         queryString.split( Search.wordRegex ).forEach( function( z ){
-                z = Search.cleanString( z );
-                if ( z.length == 0 )
-                    return;
-                words.push( z );
-            } );
+            z = Search.cleanString( z );
+            if ( z.length == 0 )
+                return;
+            words.push( z );
+        } );
         words = words.unique();
         return words;
     },
@@ -156,28 +156,28 @@ Search = {
             if ( Search.DEBUG ) Search.log( "\t using index " + idx );
 
             words.forEach( function(z){
-                    if ( Search.DEBUG ) Search.log( "\t\t searching on word [" + z + "]" );
-                    var s = {}; s[idx] = z;
-                    var res = table.find( s );
+                if ( Search.DEBUG ) Search.log( "\t\t searching on word [" + z + "]" );
+                var s = {}; s[idx] = z;
+                var res = table.find( s );
 
-                    while ( res.hasNext() ){
-                        var tempObject = res.next();
-                        var temp = tempObject._id.toString();
+                while ( res.hasNext() ){
+                    var tempObject = res.next();
+                    var temp = tempObject._id.toString();
 
-                        if ( matchCounts[temp] )
-                            matchCounts[temp] += w;
-                        else
-                            matchCounts[temp] = w;
+                    if ( matchCounts[temp] )
+                        matchCounts[temp] += w;
+                    else
+                        matchCounts[temp] = w;
 
-                        max = Math.max( max , matchCounts[temp] );
+                    max = Math.max( max , matchCounts[temp] );
 
-                        if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title );
+                    if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title );
 
-                        fullObjects[temp] = tempObject;
-                        if ( ! all.contains( temp ) )
-                            all.add( temp );
-                    }
-                } );
+                    fullObjects[temp] = tempObject;
+                    if ( ! all.contains( temp ) )
+                        all.add( temp );
+                }
+            } );
 
             if ( matchCounts.keySet().size() >= min )
                 break;
@@ -186,16 +186,16 @@ Search = {
         if ( Search.DEBUG ) Search.log( "matchCounts: " + tojson( matchCounts ) );
 
         all.sort( function( l , r ){
-                return matchCounts[r] - matchCounts[l];
-            } );
+            return matchCounts[r] - matchCounts[l];
+        } );
 
         var good = Array();
         all.forEach( function( z ){
-                if ( matchCounts[z] == max || good.length < min ){
-                    good.add( fullObjects[z] );
-                    return;
-                }
-            } );
+            if ( matchCounts[z] == max || good.length < min ){
+                good.add( fullObjects[z] );
+                return;
+            }
+        } );
 
         return good;
     },

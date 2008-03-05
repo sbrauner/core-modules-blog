@@ -142,6 +142,12 @@ URI.prototype._clearArgs = function(){
     this.args = [];
 };
 
+// I can never remember the right name for these!
+URI.prototype.addQuery = URI.prototype.addArg;
+URI.prototype.replaceQuery = URI.prototype.replaceArg;
+URI.prototype.removeQuery = URI.prototype.removeArg;
+URI.prototype.clearQueries = URI.prototype.clearArgs;
+
 URI.prototype.replaceLastPath = function(s){
     c = this.clone();
     c._replaceLastPath(s);

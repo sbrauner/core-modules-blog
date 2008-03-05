@@ -67,11 +67,11 @@ Blog.handleRequest = function( request , arg ){
         // find any paging instructions in the url
         page = uri.match(/\/page\/([0-9]*)$/);
         if (page) {
-            pageNumber = parseInt(page.match(/[0-9]*$/));
+            pageNumber = parseInt( page[1] );
             pageNumber = Math.min(Math.max(1, pageNumber), 20); // make sure we can't go below 1
 
             // don't forget to strip out the page from the processed uri
-            uri = uri.replace(page, '');
+            uri = uri.replace( /\/page\/[0-9]*/ , '');
         }
 
         if (request.q) {
