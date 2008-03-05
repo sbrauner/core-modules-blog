@@ -228,7 +228,19 @@ Search = {
     },
 
     snippetSub: function(obj, parent, query, weights, results){
-        // snippetSub
+        // snippetSub: explore a structure recursively, as directed by
+        // the weights variable.
+        // The base case we're working towards is to end up with a weight
+        // of a number, versus a single string.
+        // In this case we just test the string.
+        //
+        // If we are exploring an array, we just explore each element without
+        // changing the parent. This comes before the base case, because
+        // we can explore arrays in either the base case or other cases.
+        //
+        // If we're not at an array and weights is not a number,
+        // we explore recursively.
+        // Don't recurse into nulls.
         var ret = false;
 
         if(obj instanceof Array){
