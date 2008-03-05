@@ -71,7 +71,6 @@ query = "hi";
 opts = {a: 1};
 
 results = Search.snippet(o1, query, opts);
-print(tojson(results));
 assert(results.length == 1);
 assert(results[0].object == o1);
 
@@ -81,7 +80,6 @@ o1 = { a : ["hi", "there"]};
 query = "hi";
 opts = {a: 1};
 results = Search.snippet(o1, query, opts);
-print(tojson(results));
 assert(results.length == 1);
 assert(results[0].object == o1);
 
@@ -89,7 +87,6 @@ o1 = { a : { content: ["hi", "yo"] } };
 query = "yo";
 opts = {a: {content: 1}};
 results = Search.snippet(o1, query, opts);
-print(tojson(results));
 assert(results.length == 1);
 assert(results[0].object == o1.a);
 
@@ -97,7 +94,6 @@ o1 = { a : [{ content: "hi"} , {content: "yo"}] };
 query = "yo";
 opts = {a: {content: 1}};
 results = Search.snippet(o1, query, opts);
-print(tojson(results));
 assert(results.length == 1);
 assert(results[0].object == o1.a[1]);
 
@@ -108,7 +104,6 @@ opts = {a: {
     content: 1
 }};
 results = Search.snippet(o1, query, opts);
-print(tojson(results));
 assert(results.length == 1);
 assert(results[0].object == o1.a[2]);
 
@@ -123,3 +118,18 @@ assert(results[1].object == o1);
 assert(results[1].text == o1.a[1]);
 assert(results[2].object == o1);
 assert(results[2].text == o1.a[2]);
+
+o1 = { a : ["hi", null, "hey"]};
+query = "hi";
+opts = {a: 1};
+results = Search.snippet(o1, query, opts);
+assert(results.length == 1);
+assert(results[0].object == o1);
+
+o1 = {a: [{content: null}, {content: "hi"}]};
+query = "hi";
+opts = {a: {content: 1}};
+results = Search.snippet(o1, query, opts);
+assert(results.length == 1);
+assert(results[0].object == o1.a[1]);
+
