@@ -35,67 +35,6 @@ var modifyPostCount = function(thread, num){
     thread.topic = topic;
 };
 
-// This is the old code which moves deleted/moderated posts into a separate
-// deletion-list structure, and moves them back.
-// It's preserved here in case I ever need it again..
-var subtPost = function(attr){
-    // Remove all the posts in selected from thread.
-    // attr is "deleted" or "moderated", and this function marks all deletions
-    // as that.
-    for(var i in selected){
-        var p = thread.getDescendant(selected[i]);
-
-        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
-        if(! dlist) dlist = new app.Forum.data.DeletionList(thread, attr);
-        dlist.deletions.push(new app.Forum.data.Deletion(p, p.getID(), attr, user));
-        db.forum.deleted.save(dlist);
-
-        if(p == thread.findFirstPost()){
-            // create new "fake" post with the same title, author, etc.
-            p.content = "(post deleted)";
-            thread.saveDescendant(p);
-        }
-        else {
-            thread.removeDescendant(selected[i]);
-            modifyPostCount(thread, -1);
-        }
-        thread.save();
-    }
-};
-
-var addPost = function(attr){
-    // Add all the posts in selected back into thread.
-    // attr is "deleted" or "moderated"; only modify posts to which that
-    // was done.
-    for(var i in selected){
-        var dlist = db.forum.deleted.findOne({thread: thread, reason: attr});
-        for(var deletionIndex = 0; deletionIndex < dlist.deletions.length; deletionIndex++){
-            var deletion = dlist.deletions[deletionIndex];
-            if(deletion.location == selected[i]){
-                thread.placeDescendant(deletion.post, deletion.location);
-                dlist.deletions.splice(deletionIndex, 1);
-                thread.saveDescendant(thread.getDescendant(selected[i]));
-                thread.save();
-                break;
-            }
-        }
-
-        if(dlist.deletions.length == 0){
-            db.forum.deleted.remove({_id: dlist._id});
-            var specialID;
-            if(attr == "deleted")
-                specialID = app.Forum.Controller.specialDeletedID;
-            else
-                specialID = app.Forum.Controller.specialModeratedID;
-            back = "viewtopic?id="+specialID;
-        }
-        else {
-            db.forum.deleted.save(dlist);
-        }
-        modifyPostCount(thread, 1);
-    }
-};
-
 var subtPost = function(attr){
     for(var i in selected){
         var p = thread.getDescendant(selected[i]);
