@@ -200,13 +200,11 @@ Search = {
     },
 
     match: function(obj, query){
-        var words = Search.queryToArray(query);
-        if(typeof obj == "string"){
-            for(var i = 0; i < words.length; i++){
-                if(obj.match(new RegExp("(^|\\W)"+words[i]+"($|\\W)")))
-                    return true;
-            }
-            return false;
+        var qwords = Search.queryToArray(query);
+        var owords = Search.queryToArray(obj);
+        for(var i = 0; i < qwords.length; i++){
+            if(owords.contains(qwords[i]))
+                return true;
         }
     },
 
