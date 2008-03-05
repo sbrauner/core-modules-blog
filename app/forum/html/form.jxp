@@ -24,4 +24,32 @@ app.Forum.html.search = function() {
          </form>
          <%
 }
+
+app.Forum.html.generateTopicSelect = function(t) {
+    var topics = db.forum.topics.find();
+    topics = topics.toArray();
+
+    var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+    var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+    if(deleteThread)
+          topics.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+    if(moderateThread)
+          topics.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+     var retStr = "<select class=\"select\" name=\"topic\">";
+     retStr+="<option value=\"\">&nbsp;</option>";
+     for(i=0; i<topics.length; i++) {
+          if(topics[i].parent == null) {
+               retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
+               var subtopics = db.forum.topics.find( { parent : topics[i] }).toArray();
+               for(var j=0; j<subtopics.length; j++) {
+                    retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
+               }
+          }
+      }
+      return retStr +"</select>";
+}
+
 %>

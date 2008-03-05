@@ -30,7 +30,7 @@ core.app.forum.html.forumheader("Forums | Search results");
 core.app.forum.data.thread();
 
 var query = request.query;
-
+core.app.forum.data.thread();
 print("<div>Search results for \""+request.query+"\":</div>");
 
 cursor = Search.search(db.forum.topics, query );
@@ -43,7 +43,19 @@ var array = {};
 array.title = [];
 array.content = [];
 var count = 0;
-/*
+<<<<<<< HEAD:app/forum/search.jxp
+var thread_ar = threads.toArray();
+
+log(tojson(Search.snippet(thread_ar[0], query, thread_ar[0].SEARCH_OPTIONS)));
+
+
+/*for(var i=0; i<thread_ar.length; i++) {
+    for(var j=0; j<thread_ar[i].threaded_children.length; j++) {
+        log(tojson(thread_ar[i].threaded_children[j]));
+        array.title[count] = thread_ar[i].threaded_children[j].title;
+        array.content[count++] = thread_ar[i].threaded_children[j].content;
+
+
 for(var i=0; i<threads.length; i++) {
     for(var j=0; j<threads[i].threaded_children.length; j++) {
         log(tojson(threads[i].threaded_children[j]));
