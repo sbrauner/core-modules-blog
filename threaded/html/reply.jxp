@@ -8,10 +8,6 @@ if(! filter(t)) return;
 var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
 log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
 
-var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
-var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
-var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
-
 var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</span>'");
 %>
 
@@ -35,9 +31,9 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
       }
       else{ %>
         <a href="<%=new URI(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
-        <% } 
+        <% }
       }
- 
+
     t.getReplies().forEach(function(r){ t.threaded_pieces.reply(r, options); });
   %>
 </div>
