@@ -34,6 +34,7 @@ if(request.id){
         threadList = app.Forum.data.Thread.list(app.Forum.Controller.specialModeratedID);
         name = "Moderated threads";
     }
+    t = {name: name, parent: null};
 }
 else {
     name = request.name;
@@ -101,7 +102,7 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 // --------------------
-core.app.forum.html.forumheader("Forum | " + t.name);
+core.app.forum.html.forumheader("Forum | " + name);
 
 %>
 
