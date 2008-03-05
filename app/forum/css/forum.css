@@ -11,12 +11,13 @@ h2 {
 }
 
 .postbox {
-    padding: 9px 0px;
+    padding: 9px 6px;
+    border: 1px solid black;
+    margin-bottom: 10px;
 }
 
 div.deleted {
     background: #FFDDDD;
-    padding: 5px;
 }
 
 table {
@@ -96,7 +97,9 @@ table#style1 {
 	background-image: url(th_arrow.gif?v=2);
 	background-repeat: no-repeat;	
 }
-
+#style1 th.article div.second_level a {
+        display: inline;
+}
 #style1 .alignleft {
 	text-align: left;	
 }
@@ -221,4 +224,8 @@ div.button {
 }
 span.highlight {
            background: yellow;
+}
+
+div.actions {
+float: right;
 }

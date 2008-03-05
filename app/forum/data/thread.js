@@ -30,14 +30,14 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
 
 app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_OPTIONS );
-}
-
-app.Forum.data.Thread.prototype.findFirstPost = function(){
-    return this.getReplies()[0];
 };
 
-app.Forum.data.Thread.prototype.getFirstPost = function() {
-    return this.findFirstPost();
+app.Forum.data.Thread.prototype.getTitle = function() {
+    return this.getFirstPost().title;
+};
+
+app.Forum.data.Thread.prototype.getFirstPost = function(){
+    return this.getReplies()[0];
 };
 
 app.Forum.data.Thread.prototype.setTopic = function(newTopic) {
@@ -80,6 +80,10 @@ app.Forum.data.Thread.prototype.modifyPostCount = function(num){
     this.save();
 };
 
+// Posts have a deleted field; this field is either false, meaning
+// this post isn't deleted, or it is one of:
+// the string "deleted"
+// the string "moderated"
 app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     p.deleted = reason;
@@ -90,7 +94,7 @@ app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
 
 app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
-    if(p.deleted == attr){
+    if(p.deleted == reason){
         p.deleted = false;
         this.modifyPostCount(1);
         this.save();
@@ -103,7 +107,11 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
 // A bunch of functions are added to the Thread class -- getReplies(),
 // decoratorsRender(), decoratorsHandle().
 core.threaded.data.reply_children();
-threaded.repliesEnabled(app.Forum.data, "Thread", {style: "children", users: "auth", tablename: "forum.posts", replyable: false});
+threaded.repliesEnabled(app.Forum.data, "Thread",
+                        {style: "children", users: "auth",
+                         tablename: "forum.posts", replyable: false,
+                         pieces: core.app.forum.html
+                                                  });
 
 app.Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1, lastPostTime: -1});
