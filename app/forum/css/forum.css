@@ -262,3 +262,8 @@ div.split input.submit {
 div.split input.button {
           margin-right: 10px;
 }
+
+table.search div {
+             display: block;
+          text-align: left;
+}
