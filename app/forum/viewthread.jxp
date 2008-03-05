@@ -1,7 +1,7 @@
 <%
 core.app.forum.controller();
-
 core.app.forum.html.check_ban();
+core.app.forum.html.form();
 
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
@@ -19,14 +19,14 @@ if(thread == null){
 }
 print("<!-- " + thread._id + "-->");
 
-var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
-var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
-
+// PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
 var canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
-
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+
 
 postoptions = {replyable: false};
 postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
@@ -85,6 +85,7 @@ if(request.show == "moderated"){ %>
 
 </div>
 
+// BREADCRUMB TRAIL
 <table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
@@ -105,6 +106,9 @@ if(request.show == "moderated"){ %>
     </th>
   </tr>
 </table>
+
+
+app.Forum.html.search();
 
 <%
 postoptions.actions = [];
