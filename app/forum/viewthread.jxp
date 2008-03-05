@@ -62,6 +62,16 @@ core.user.html.topCorner();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getTitle()+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
 %>
+<script type="text/javascript">
+
+function splitPopup(i) {
+        document.getElementById("splitpop"+i).style.display = "block";
+}
+function cancelSplit(i) {
+        document.getElementById("splitpop"+i).style.display = "none";
+}
+
+</script>
 
 <div class="caption">
 
@@ -84,7 +94,7 @@ if(request.show == "moderated"){ %>
 
 </div>
 
-// BREADCRUMB TRAIL
+<!-- BREADCRUMB TRAIL -->
 <table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
@@ -107,9 +117,9 @@ if(request.show == "moderated"){ %>
 </table>
 
 
+<%
 app.Forum.html.search();
 
-<%
 postoptions.actions = [];
 postoptions.actions.push(function(post) {
      %>                         
@@ -118,7 +128,7 @@ postoptions.actions.push(function(post) {
      <input type="hidden" name="select" value="<%= post.getID() %>">      
      <%
      if(canSplit){ %>
-           <input type="submit" class="submit" name="action" value="split"><% 
+           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><% 
      }  
      if(post.deleted == "deleted" && canDelete) { %>
            <input type="submit" class="submit" name="action" value="undelete">
@@ -137,6 +147,12 @@ postoptions.actions.push(function(post) {
      <% 
      } 
      %>
+     <div class="split" id="splitpop<%= post.getID() %>">
+          <div class="stitle">Split Thread at Post</div>
+          <div class="field"><label>New Subject:</label><input type="text" name="subj" value="new thread subject"></div>
+          <div class="field"><label>Topic</label><%= app.Forum.html.generateTopicSelect(thread) %></div>
+          <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
+     </div>
      </form>
 <%
 });

@@ -210,7 +210,7 @@ input.text {
            margin-top: -3px;
 }
 
-input.submit {
+input.submit, input.button {
              margin: 0px;
              background-color: #369fbf;
              color: #ffffff;
@@ -227,5 +227,38 @@ span.highlight {
 }
 
 div.actions {
-float: right;
+            width: 100%;
+            text-align: right;
+            float: right;
+}
+
+div.split {
+          display: none;
+          position: absolute;       
+          border: 1px solid black;
+          background-color: #cce5ec;
+          color: #000000;      
+          margin-left: auto;
+          margin-right: auto;
+          padding: 5px;
+          width: 350px;
+          text-align: center;
+}
+
+div.split label {
+          display: block;
+          width: 120px;
+          text-align: left;
+}
+
+div.split div.stitle {
+          text-align: center;
+          margin-bottom: 10px;
+}
+
+div.split input.submit {
+          text-align: right;
+}
+div.split input.button {
+          margin-right: 10px;
 }
