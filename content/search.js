@@ -38,8 +38,7 @@ Search = {
         if ( Search.DEBUG ) Search.log( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );
 
-        if ( weights && weights.length > 0 ){
-
+        if ( weights ){
             var num = [];
 
             for ( var field in weights ){
