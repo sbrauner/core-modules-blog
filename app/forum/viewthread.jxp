@@ -63,24 +63,28 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getF
 
 %>
 
-<a href="thread_rss.jxp?id=<%= thread._id %>">Subscribe to <%= thread.getFirstPost().title %>'s RSS feed</a>
-
-<form action="thread_action">
-  <input type="hidden" name="threadId" value="<%= thread._id %>">
 
 <div class="caption">
-<% if(request.show == "deleted"){ %>
-<a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
-<% } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-<a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
-<% } %>
-<% if(request.show == "moderated"){ %>
-<a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
-<% } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
-<a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
-<% } %>
-<a href="viewtopic?name=<%= escape(thread.topic.name) %>">Back to thread list</a>
+
+<% 
+if(request.show == "deleted"){ %>
+     <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
+     <% 
+} else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
+     <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
+     <% 
+}
+if(request.show == "moderated"){ %>
+     <a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
+     <% 
+} else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
+     <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
+     <% 
+} 
+%>
+
 </div>
+
 <table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
@@ -96,34 +100,48 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getF
       %>
       <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
       <div class="second_level">
-      <%= thread.findFirstPost().title %>
+      <%= thread.findFirstPost().title %> <a href="thread_rss.jxp?id=<%= thread._id %>">(RSS)</a>
       </div>
-    </th>
-    <th class="alignright">
-
-      <% if(canSplit){ %>
-      <input type="submit" name="action" value="split">
-      <% } %>
-       <% if(request.show == "deleted" && canDelete){ %>
-       <input type="submit" name="action" value="undelete">
-       <% } %>
-       <% if(request.show == "moderated" && canModerate){ %>
-       <input type="submit" name="action" value="unmoderate">
-       <% } %>
-       <% if (app.Forum.Controller.hasPermission(user, "deletePost")){ %>
-       <input type="submit" name="action" value="delete">
-       <% } %>
-       <% if(app.Forum.Controller.hasPermission(user, "moderatePost")){ %>
-       <input type="submit" name="action" value="moderate">
-       <% } %>
     </th>
   </tr>
 </table>
 
 <%
-        thread.decoratorsRender("threaded.replies", postoptions);
- %>
-</form>
+postoptions.actions = [];
+postoptions.actions.push(function(post) {
+     %>                         
+     <form action="thread_action">
+     <input type="hidden" name="threadId" value="<%= thread._id %>">
+     <input type="hidden" name="select" value="<%= post.getID() %>">      
+     <%
+     if(canSplit){ %>
+           <input type="submit" class="submit" name="action" value="split"><% 
+     }  
+     if(post.deleted == "deleted" && canDelete) { %>
+           <input type="submit" class="submit" name="action" value="undelete">
+           <% 
+     }
+     if(post.deleted == "moderated" && canModerate){ %>
+           <input type="submit" class="submit" name="action" value="unmoderate">
+     <%
+     }
+     if (!post.deleted && canDelete){ %>
+           <input type="submit" class="submit" name="action" value="delete">
+     <%
+     } 
+     if(!post.deleted && canModerate){ %>
+           <input type="submit" class="submit" name="action" value="moderate">
+     <% 
+     } 
+     %>
+     </form>
+<%
+});
+
+thread.decoratorsRender("threaded.replies", postoptions);
+
+%>
+
 <div class="threadFooter">
 <div class="opt">
 <%

@@ -90,7 +90,7 @@ app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
 
 app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
-    if(p.deleted == attr){
+    if(p.deleted == reason){
         p.deleted = false;
         this.modifyPostCount(1);
         this.save();

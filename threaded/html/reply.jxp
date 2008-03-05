@@ -10,24 +10,22 @@ log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
 
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
-var selectBox;
-if(canDelete || canModerate)
-        selectBox = "<div class='selectThread'><input name='select' value=\""+t.getID()+"\" type=\"checkbox\"></div>";
-else
-        selectBox = "";
+var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 
 var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</span>'");
 %>
 
 
-  <div class="postbox <%= htmlclass %>">
+<div class="postbox <%= htmlclass %>">
     <span class="titlebar">
-      <div class="title"><%= selectBox %><%= t.title %></div>
+      <div class="actions">
+           <% for(var i in actions){ actions[i](t); } %>
+      </div>
+      <div class="title"><%= t.title %></div>
       <div class="author"><%= t.threaded_users == "auth"? t.author.name : t.author %></div><div class="ts"><%= prettyDate %>
       (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
     </span>
-    <div class="actions">
-    <% for(var i in actions){ print(actions[i](t)); } %>
+
     <div class="content">
       <%= t.content %>
     </div>
@@ -37,10 +35,9 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
       }
       else{ %>
         <a href="<%=new URI(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
-        <% } %>
-    <% } %>
-  </div>
-  <%
+        <% } 
+      }
+ 
     t.getReplies().forEach(function(r){ t.threaded_pieces.reply(r, options); });
   %>
 </div>
