@@ -96,7 +96,7 @@ if(request.action == "split"){
             postid = post.getID();
         });
         log(tojson(newthread));
-        newthread.findFirstPost().title = request.target;
+        newthread.getFirstPost().title = request.target;
         newthread.latestPost = postid;
         newthread.save();
         thread.save();

@@ -30,14 +30,10 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
 
 app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_OPTIONS );
-}
-
-app.Forum.data.Thread.prototype.findFirstPost = function(){
-    return this.getReplies()[0];
 };
 
-app.Forum.data.Thread.prototype.getFirstPost = function() {
-    return this.findFirstPost();
+app.Forum.data.Thread.prototype.getFirstPost = function(){
+    return this.getReplies()[0];
 };
 
 app.Forum.data.Thread.prototype.setTopic = function(newTopic) {

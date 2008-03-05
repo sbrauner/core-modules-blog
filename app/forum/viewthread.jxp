@@ -57,7 +57,7 @@ var uri = new URI(request.getURL());
 
 // ------------
 
-htmlheader("Viewing thread: "+thread.findFirstPost().title);
+htmlheader("Viewing thread: "+thread.getFirstPost().title);
 core.user.html.topCorner();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getFirstPost().title+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
@@ -96,7 +96,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getF
       %>
       <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
       <div class="second_level">
-      <%= thread.findFirstPost().title %>
+      <%= thread.getFirstPost().title %>
       </div>
     </th>
     <th class="alignright">
