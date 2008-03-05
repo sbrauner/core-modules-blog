@@ -95,9 +95,16 @@ app.Forum.Controller.permissions = {
 
 app.Forum.Controller.userPermissionType = function(user){
     if(! user) return null;
-    if(user.isAdmin() || user.hasPermission(app.Forum.Controller.permissions.ADMIN))
+
+    if(user.hasPermission(app.Forum.Controller.permissions.ADMIN))
         return "ADMIN";
     if(user.hasPermission(app.Forum.Controller.permissions.MODERATOR))
         return "MODERATOR";
+    if(user.hasPermission(app.Forum.Controller.permissions.MEMBER))
+        return "MEMBER";
+
+    // OK, we better guess
+    if(user.isAdmin())
+        return "ADMIN";
     return "MEMBER";
 };
