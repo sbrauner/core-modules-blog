@@ -1,6 +1,7 @@
 <%
 core.net.uri();
-core.app.forum.html.check_ban();
+
+core.app.forum.html.forumheader("Forums");
 core.app.forum.data.topic();
 // FIXME: permissions?
 

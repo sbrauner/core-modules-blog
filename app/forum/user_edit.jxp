@@ -1,13 +1,12 @@
 <%
 core.app.forum.controller();
 
-core.app.forum.html.check_ban();
 
 if(! app.Forum.Controller.hasPermission(user, "editUser"))
     return Auth.cookie.reject(request, response);
 
 core.user.user();
-htmlheader("Forums | Edit User");
+core.app.forum.html.forumheader("Forums | Edit User");
 
 var user = null;
 

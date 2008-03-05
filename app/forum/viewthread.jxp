@@ -1,15 +1,13 @@
 <%
 core.app.forum.controller();
-core.app.forum.html.check_ban();
-core.app.forum.html.form();
 
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
 
     core.net.uri();
+core.app.forum.html.form();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-head.addCSS( "/~~/app/forum/css/forum.css" );
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
@@ -17,6 +15,9 @@ if(thread == null){
     print("thread not found");
     return;
 }
+
+core.app.forum.html.forumheader("Viewing thread: "+thread.getTitle());
+
 print("<!-- " + thread._id + "-->");
 
 // PERMISSIONS
@@ -54,9 +55,6 @@ else {
 var uri = new URI(request.getURL());
 
 // ------------
-
-htmlheader("Viewing thread: "+thread.getTitle());
-core.user.html.topCorner();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getTitle()+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
 %>
@@ -114,7 +112,7 @@ if(request.show == "moderated"){ %>
   </tr>
 </table>
 
-
+<h1><%= thread.getTitle() %></h1>
 <%
 app.Forum.html.search();
 

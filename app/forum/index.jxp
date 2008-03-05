@@ -1,15 +1,11 @@
 <%
 core.app.forum.controller();
 
-core.app.forum.html.check_ban();
+core.app.forum.html.forumheader("Forums");
 
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
 
-htmlheader("Forums");
-head.addScript( "/~~/ui/js/common.js" );
-head.addCSS( "/~~/app/forum/css/forum.css" );
-core.user.html.topCorner();
 core.net.uri();
 
 core.app.forum.data.topic();

@@ -3,11 +3,7 @@ core.app.forum.html.check_ban();
 core.app.forum.data.topic();
 
 // FIXME: permissions?
-htmlheader("Forum");
-head.addScript( "/~~/ui/js/common.js" );
-head.addCSS( "/~~/app/forum/css/forum.css" );
-
-core.user.html.topCorner();
+core.app.forum.html.forumheader("Forum");
 core.net.uri();
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
