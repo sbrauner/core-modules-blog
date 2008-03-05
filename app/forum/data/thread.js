@@ -107,7 +107,11 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
 // A bunch of functions are added to the Thread class -- getReplies(),
 // decoratorsRender(), decoratorsHandle().
 core.threaded.data.reply_children();
-threaded.repliesEnabled(app.Forum.data, "Thread", {style: "children", users: "auth", tablename: "forum.posts", replyable: false});
+threaded.repliesEnabled(app.Forum.data, "Thread",
+                        {style: "children", users: "auth",
+                         tablename: "forum.posts", replyable: false,
+                         pieces: core.app.forum.html
+                                                  });
 
 app.Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1, lastPostTime: -1});

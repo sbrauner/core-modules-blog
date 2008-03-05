@@ -21,6 +21,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     var tablename = args.tablename || clsname.toLowerCase()+"_replies";
     var style = args.style || "parent";
     var users = args.users || "auth";
+    var pieces = args.pieces || core.threaded.html;
     var replyable = args.replyable == null ? true : false;
     if(style == "parent"){
         var rcls = threaded.data.ReplyParent;
@@ -39,7 +40,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     // This kind of sucks: ReplyChildren doesn't need tablename.
     // Maybe come up with a better approach here.
     cls.prototype.Reply.prototype.threaded_tablename = tablename;
-    cls.prototype.Reply.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.Reply.prototype.threaded_pieces = pieces;
     cls.prototype.Reply.prototype.threaded_users = users;
     cls.prototype.Reply.prototype.threaded_replyable = replyable;
 
@@ -52,7 +53,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.placeDescendant = rcls.placeDescendant;
     cls.prototype.threaded_tablename = tablename;
     cls.prototype.threaded_replyable = replyable;
-    cls.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.threaded_pieces = pieces;
     cls.prototype.threaded_users = users;
     cls.prototype.decoratorsRender = rcls.decoratorsRender;
     cls.prototype.decoratorsLinks = rcls.decoratorsLinks;

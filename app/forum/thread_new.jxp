@@ -6,6 +6,7 @@ core.app.forum.html.check_ban();
 if(! app.Forum.Controller.hasPermission(user, "createThread"))
     return Auth.cookie.reject(request, response);
 
+head.addCSS( "/~~/app/forum/css/forum.css" );
 htmlheader("Forums | New Thread");
 core.user.html.topCorner();
 
@@ -45,6 +46,7 @@ var backurl = "viewtopic?name="+topic.name;
     <h3>New thread</h3>
     <%
     opts = {};
+opts.newThread = true;
 if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     opts.actions = [
         function(){
