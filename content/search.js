@@ -197,7 +197,67 @@ Search = {
             } );
 
         return good;
+    },
+
+    match: function(obj, query){
+        var words = Search.queryToArray(query);
+        if(typeof obj == "string"){
+            for(var i = 0; i < words.length; i++){
+                if(obj.match(new RegExp("(^|\\W)"+words[i]+"($|\\W)")))
+                    return true;
+            }
+            return false;
+        }
+    },
+
+    snippet: function(obj, query){
+        // snippet: given an object and a search term, find the relevant parts
+        // of the object.
+        //
+        // FIXME: Which parts are relevant? For right now, I only return
+        // JS objects.
+        // So, if given: {a : ["hi", "yo", "hey"]} and the query "hi", return
+        // the whole object -- not the array, not either of the strings.
+        // Search.snippet should return an array of {object: o1, text: "hi"}
+        // objects.
+        // Other text processing can happen after that. snippet should
+        // just search through the object structure to find the text at all
+
+        var ary = [];
+        Search.snippetSub(obj, obj, query, ary);
+        return ary;
+    },
+
+    snippetSub: function(obj, parent, query, results){
+        // snippetSub
+        var ret = false;
+        if(typeof obj == "string"){
+            Search.log.debug("checking string : " + obj);
+            if(Search.match(obj, query))
+                results.push({object: parent, text: obj});
+        }
+        else if(obj instanceof Array){
+            // array
+            Search.log.debug("recursing on array");
+            for(var i = 0; i < obj.length; i++){
+                Search.log.debug("number : " + i);
+                Search.log.debug("value : " + obj[i]);
+                Search.snippetSub(obj[i], parent, query, results);
+            }
+        }
+        else {
+            // object
+            Search.log.debug("recursing on object");
+            for(var field in obj){
+                Search.log.debug("field : " + field);
+                var val = obj[field];
+                Search.log.debug("value : " + val);
+                Search.snippetSub(val, obj, query, results);
+            }
+        }
+        return ret;
     }
+
 };
 
 Search._doneInit = true;
