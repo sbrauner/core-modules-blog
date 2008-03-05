@@ -57,13 +57,13 @@ var uri = new URI(request.getURL());
 
 // ------------
 
-htmlheader("Viewing thread: "+thread.getFirstPost().title);
+htmlheader("Viewing thread: "+thread.getTitle());
 core.user.html.topCorner();
-head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getFirstPost().title+'" href="thread_rss.jxp?id='+thread._id+'" />');
+head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getTitle()+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
 %>
 
-<a href="thread_rss.jxp?id=<%= thread._id %>">Subscribe to <%= thread.getFirstPost().title %>'s RSS feed</a>
+<a href="thread_rss.jxp?id=<%= thread._id %>">Subscribe to <%= thread.getTitle() %>'s RSS feed</a>
 
 <form action="thread_action">
   <input type="hidden" name="threadId" value="<%= thread._id %>">
@@ -96,7 +96,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getF
       %>
       <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
       <div class="second_level">
-      <%= thread.getFirstPost().title %>
+      <%= thread.getTitle() %>
       </div>
     </th>
     <th class="alignright">

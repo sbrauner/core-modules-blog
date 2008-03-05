@@ -32,6 +32,10 @@ app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_OPTIONS );
 };
 
+app.Forum.data.Thread.prototype.getTitle = function() {
+    return this.getFirstPost().title;
+};
+
 app.Forum.data.Thread.prototype.getFirstPost = function(){
     return this.getReplies()[0];
 };

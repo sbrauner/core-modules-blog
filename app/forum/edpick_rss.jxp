@@ -1,7 +1,7 @@
 <% // FIXME: Permission check, ban check? %>
 <?xml version="1.0"?>
 <rss version="2.0">
-<% 
+<%
 
 
 var picks = db.forum.threads.find( { editorPick : true } );
@@ -23,7 +23,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
         %>
 
         <item>
-          <title><%= post.title %></title>
+          <title><%= thread.getTitle() %></title>
           <link><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></link>
           <pubDate><%= thread.created.webFormat() %></pubDate>
           <author><%= post.author.name %></author>
