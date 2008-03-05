@@ -115,6 +115,19 @@ Search = {
         return top;
     } ,
 
+    queryToArray : function(queryString){
+
+        var words = [];
+        queryString.split( Search.wordRegex ).forEach( function( z ){
+                z = Search.cleanString( z );
+                if ( z.length == 0 )
+                    return;
+                words.push( z );
+            } );
+        words = words.unique();
+        return words;
+    },
+
     search : function( table , queryString , options ){
 
         if ( Search.DEBUG ) Search.log( table.getName() + "\t" + queryString );
@@ -129,20 +142,11 @@ Search = {
             weights.push( { idx : "_searchIndex" , w : 1 } );
         if ( Search.DEBUG ) Search.log( "\t weights.length : " + weights.length );
 
-
         var fullObjects = Object();
         var matchCounts = Object(); // _id -> num
         var all = Array();
         var max = 0;
-
-        var words = [];
-        queryString.split( Search.wordRegex ).forEach( function( z ){
-                z = Search.cleanString( z );
-                if ( z.length == 0 )
-                    return;
-                words.push( z );
-            } );
-        words = words.unique();
+        var words = Search.queryToArray(queryString);
 
         for ( var i=0; i<weights.length; i++){
             var idx = weights[i].idx;
