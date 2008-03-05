@@ -60,6 +60,7 @@ threaded.repliesEnabled = function(ns, clsname, args){
     cls.prototype.decoratorsHandle = rcls.decoratorsHandle;
     cls.prototype.encodeContent = rcls.encodeContent;
     cls.prototype.validateReply = rcls.validateReply;
+    cls.prototype.threaded_reorderChildren = rcls.threaded_reorderChildren;
 
     // Wrap the class itself so that we can let the reply class add its own
     // fields.

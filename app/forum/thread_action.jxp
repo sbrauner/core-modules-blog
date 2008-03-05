@@ -89,19 +89,23 @@ if(request.action == "split"){
         var newthread = new app.Forum.data.Thread();
         var postid = "";
         newthread.topic = thread.topic;
-        selected.forEach(function(sel1){
-            var post = thread.getDescendant(sel1);
-            thread.removeDescendant(sel1);
+        var first = selected[0];
+        var replies = thread.getReplies();
+        var i = replies.indexOf(thread.getDescendant(first));
+        for(; i < replies.length; i++){
+            var post = replies[i];
+            thread.removeDescendant(post.getID());
             newthread.addReply(post);
             postid = post.getID();
-        });
+        }
+
         log(tojson(newthread));
         newthread.getFirstPost().title = request.target;
         newthread.latestPost = postid;
         newthread.save();
+        thread.threaded_reorderChildren();
         thread.save();
         back = uri.clearArgs().replaceLastPath("viewtopic").addQuery("name", thread.topic.name).toString();
-
     }
 }
 
