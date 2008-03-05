@@ -1,5 +1,6 @@
 <%
 core.app.forum.html.check_ban();
+core.app.forum.data.topic();
 
 // FIXME: permissions?
 htmlheader("Forum");

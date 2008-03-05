@@ -33,6 +33,7 @@ Search = {
         return idx;
     } ,
 
+    // make sure that all indexes are on the right fields of the table
     fixTable : function( table , weights ){
         if ( Search.DEBUG ) Search.log( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );
@@ -66,36 +67,53 @@ Search = {
 
     } ,
 
-    index : function( obj , weights ){
+    index : function( obj, weights ){
+        return Search.indexSub(obj, obj, weights);
+    },
+
+    indexSub : function( top , obj , weights ){
 
         if ( weights == null )
             throw "weights can't be null";
 
+        if( obj instanceof Array ){
+            for(var i = 0; i < obj.length; i++){
+                Search.indexSub(top, obj[i], weights);
+            }
+        }
+
         for ( var field in weights ){
 
-            var s = obj[field];
-            if ( ! s )
-                continue;
+            var w = weights[field];
 
-            var idx = Search.getIndexName( weights[field] );
+            if ( typeof w == "number" ){
+                var idx = Search.getIndexName( weights[field] );
 
-            var words = obj[idx];
-            if ( ! words ){
-                words = [];
-                obj[idx] = words;
-            }
+                var words = top[idx];
+                if ( ! words ){
+                    words = [];
+                    top[idx] = words;
+                }
 
-            s.split( Search.wordRegex ).forEach( function( z ){
+                var s = obj[field];
+                if ( ! s )
+                    continue;
+
+                s.split( Search.wordRegex ).forEach( function( z ){
                     z = Search.cleanString( z );
                     if ( z.length == 0 )
                         return;
                     if ( ! words.contains( z ) )
                         words.add( z );
-                } );
+                });
+            }
+            else {
+                Search.indexSub(top, obj[field], w);
+            }
 
         }
 
-        return obj;
+        return top;
     } ,
 
     search : function( table , queryString , options ){
