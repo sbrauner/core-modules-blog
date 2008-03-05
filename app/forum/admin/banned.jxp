@@ -43,45 +43,16 @@ if(request.action == "unban" && request._id){
 }
 
 //---------
-
-
-
-var tab = new htmltable({
-    ns: db.forum.banned_users,
-    cols: [
-        {name: "user", heading: "User", cssClassName: 'field', view: function(u) { return u.name; },
-         queryForm: function(name) {
-             // Search insensitively on the username. If we don't find one,
-             // just return some value that should never occur.
-             var user = db.users.findOne({name: new RegExp(name, 'i')});
-             if(user) return user;
-             return -1;
-         }
-        }
-    ],
-
-    actions: [
-        { name: "unban" }
-    ],
-    searchable: true
-});
-
-tab.dbview(tab.find());
-
-var tab = new htmltable({
-    ns: db.forum.banned_ips,
-    cols: [
-        {name: "ip", heading: "IPs", cssClassName: 'field'}
-    ],
-    actions: [
-        { name: "unban" }
-    ],
-    searchable: true
-});
-
-tab.dbview(tab.find());
-
 %>
+<form method="post">
+<select size="10" name="_id">
+<% db.forum.banned_ips.find().forEach(function(u){ %>
+    <option value="<%= u._id %>"><%= u.ip%></option>
+<% }); %>
+</select>
+<input type="hidden" name="action" value="unban">
+<input type="submit" value="Unban">
+</form>
 
 <form method="POST">
   Ban an IP address
