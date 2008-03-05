@@ -63,21 +63,21 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getT
 
 <div class="caption">
 
-<% 
+<%
 if(request.show == "deleted"){ %>
      <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
-     <% 
+     <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
      <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
-     <% 
+     <%
 }
 if(request.show == "moderated"){ %>
      <a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
-     <% 
+     <%
 } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
      <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
-     <% 
-} 
+     <%
+}
 %>
 
 </div>
@@ -106,17 +106,17 @@ if(request.show == "moderated"){ %>
 <%
 postoptions.actions = [];
 postoptions.actions.push(function(post) {
-     %>                         
+     %>
      <form action="thread_action">
      <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="hidden" name="select" value="<%= post.getID() %>">      
+     <input type="hidden" name="select" value="<%= post.getID() %>">
      <%
      if(canSplit){ %>
-           <input type="submit" class="submit" name="action" value="split"><% 
-     }  
+           <input type="submit" class="submit" name="action" value="split"><%
+     }
      if(post.deleted == "deleted" && canDelete) { %>
            <input type="submit" class="submit" name="action" value="undelete">
-           <% 
+           <%
      }
      if(post.deleted == "moderated" && canModerate){ %>
            <input type="submit" class="submit" name="action" value="unmoderate">
@@ -125,11 +125,11 @@ postoptions.actions.push(function(post) {
      if (!post.deleted && canDelete){ %>
            <input type="submit" class="submit" name="action" value="delete">
      <%
-     } 
+     }
      if(!post.deleted && canModerate){ %>
            <input type="submit" class="submit" name="action" value="moderate">
-     <% 
-     } 
+     <%
+     }
      %>
      </form>
 <%
