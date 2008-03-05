@@ -1,10 +1,5 @@
 <%
 core.app.forum.controller();
-<<<<<<< HEAD:app/forum/viewthread.jxp
-=======
-core.app.forum.html.check_ban();
-core.app.forum.html.form();
->>>>>>> 0979c1bf597c34e77f13cef1423b18f4f62c46e5:app/forum/viewthread.jxp
 
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
