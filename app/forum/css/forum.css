@@ -219,3 +219,6 @@ div.button {
            border: 1px solid #9ac0cc;
            float: left;
 }
+span.highlight {
+           background: yellow;
+}

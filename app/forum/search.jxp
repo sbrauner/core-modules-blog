@@ -1,4 +1,30 @@
 <%
+
+/* 
+ * "highlight" takes an array of search results and an array of search terms.  
+ * For each search term, it strips the term to its stem and then it uses a regular expression to search
+ * for all matching similar words in each result and put them in a highlighted <span> element.
+ *
+ * An alternative way of doing this would be to take each word of the result and "stem" it, then compare it
+ * to each search term, but this was rejected because it is a) uglier than this and b) would take forever.
+ *
+ */
+
+var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
+var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
+
+core.text.stem();
+function highlight(array, searchterm) {
+    for(var i=0; i<searchterm.length; i++) {
+        var stem = Stem.stem(searchterm[i]);
+        var reg = new RegExp("(\\b)(("+prefix+")?"+stem+"("+suffix+")?)(\\b)", "gi");
+        for(var j=0; j<array.length; j++) {
+            array[j] = array[j].replace(reg, "$1<span class=\"highlight\">$2</span>$5");
+        }
+    }
+    return array;
+}
+
 htmlheader("Forum");
 head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
@@ -13,7 +39,26 @@ cursor = Search.search(db.forum.topics, query );
 log(tojson(cursor));
 
 threads = Search.search(db.forum.threads, query);
-log(tojson(threads));
+
+var array = {};
+array.title = [];
+array.content = [];
+var count = 0;
+var thread_ar = threads.toArray();
+for(var i=0; i<thread_ar.length; i++) {
+    for(var j=0; j<thread_ar[i].threaded_children.length; j++) {
+        array.title[count] = thread_ar[i].threaded_children[j].title;
+        array.content[count++] = thread_ar[i].threaded_children[j].content;
+   }
+}
+
+array.title = highlight(array.title, Search.queryToArray(query));
+array.content = highlight(array.content, Search.queryToArray(query));
+
+for(i=0; i<array.title.length; i++) {
+    print(array.title[i]+"<br />"+array.content[i]+"<br />");
+}
+
 
 if(cursor.length > 0) {
         core.app.forum.html.topictable("Matching topics:", null, cursor, threads, [], {createThread: false, thisid: null});
