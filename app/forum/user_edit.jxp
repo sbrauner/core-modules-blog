@@ -59,7 +59,7 @@ if(! user){ %>
 <div class="field">
   <div class="field_name">User</div>
   <div class="field_value">
-    <select name="userid">
+    <select name="userid" size="12">
       <% db.users.find({}).forEach(function(u){ %>
       <option value="<%= u._id%>"><%= u.name %></option>
       <% }); %>
