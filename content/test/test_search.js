@@ -30,6 +30,25 @@ t.save( o );
 assert( Search.search( t , "content" , { min : 1 } ).length == 1 );
 assert( Search.search( t , "content" , { min : 10 } ).length == 2 );
 
+t.remove(o);
+
+// nested indexing
+var OPTIONS = { title: 1, posts: {text: 1}};
+o = {
+    title: 'the title',
+    posts: [
+        {text: "some text"},
+        {text: "more text"}
+    ]
+};
+
+Search.index(o, OPTIONS);
+t.save(o);
+Search.fixTable(t, OPTIONS);
+
+assert( Search.search( t, "text", {min: 1}). length == 1);
+assert( Search.search( t, "go", {min: 1}). length == 0);
+
 //exit();
 
 
