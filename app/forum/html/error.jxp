@@ -1,0 +1,4 @@
+<% htmlheader("Forums | Error"); 
+processArgs("errmsg"); %>
+<div class="error">Error: <%=errmsg%></div>
+<% htmlfooter(); %>

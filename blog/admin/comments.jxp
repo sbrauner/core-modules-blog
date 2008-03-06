@@ -1,0 +1,56 @@
+<h4>Comment Management</h4>
+<%
+
+function mungeCursor( cursor ){
+    var a = [];
+    cursor.forEach( function(z){
+	z.getComments().forEach( function(c){
+	    a.add( { comment : c , post : z } );
+	} );
+    } );
+    return a;
+}
+
+var action = request.action || "recent";
+
+var all = null;
+var sortFunction = null;
+if ( action == "recent" ){
+    var cursor = db.blog.posts.find( null , { name : true , title : true , ts : 1 , comments : true } );
+    cursor.sort( { ts : -1 } ).limit( 100 );
+    all = mungeCursor( cursor );
+    sortFunction = function(a,b){
+	return b.comment.ts.getTime() - a.comment.ts.getTime();
+    }
+    print( "<h4>Most Recent Comments</h4>" );
+}
+else {
+    throw "what is " + action;
+}
+
+if ( sortFunction )
+    all = all.sort( sortFunction );
+
+%>
+<table>
+  <tr>
+    <th>Post</th>
+    <th>Commenter</th>
+    <th>Date</th>
+    <th>Comment</th>
+  </tr>
+
+<% var lastId = null; all.forEach( function(z){ %>
+  <tr>
+    <td>
+      <nobr><a ? ( lastId != z.post._id ) href="/<%= z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
+    </td>
+    <td><%= z.comment.author %></td>
+    <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
+    <td>
+    <%= z.comment.text %>
+    </td>
+  </tr>
+<% lastId = z.post._id; } ); %>
+
+</table>

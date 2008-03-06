@@ -1,7 +1,9 @@
 app.Forum.Controller = {};
 
-app.Forum.Controller.bannedUsers = function(){
-    return {};
+app.Forum.Controller.bannedUser = function(user, request){
+    if(db.forum.banned_users.findOne({user: user})) return true;
+    if(db.forum.banned_ips.findOne({ip: request.getRemoteIP()})) return true;
+    return false;
 };
 
 app.Forum.Controller.anonymousPermissions = function(){
@@ -43,8 +45,10 @@ app.Forum.Controller.adminPermissions = function(){
         createTopic: true, renameTopic: true,
         moveTopic: true, deleteTopic: true,
         hideTopic: true,
+        viewTopicHidden: true,
 
         // thread stuff
+        editThread: true,
         moveThread: true,
         deleteThread: true,
         moderateThread: true,
@@ -60,7 +64,9 @@ app.Forum.Controller.adminPermissions = function(){
 };
 
 app.Forum.Controller.hasPermission = function(user, perm){
-    if(user == null || user in app.Forum.Controller.bannedUsers()){
+    // FIXME: throw an exception if we find a banned user? We should be
+    // handling all of these at the page level.
+    if(user == null || app.Forum.Controller.bannedUser(user, request)){
         // treat user as anonymous
         return (perm in app.Forum.Controller.anonymousPermissions());
     }
@@ -91,9 +97,16 @@ app.Forum.Controller.permissions = {
 
 app.Forum.Controller.userPermissionType = function(user){
     if(! user) return null;
-    if(user.isAdmin() || user.hasPermission(app.Forum.Controller.permissions.ADMIN))
+
+    if(user.hasPermission(app.Forum.Controller.permissions.ADMIN))
         return "ADMIN";
     if(user.hasPermission(app.Forum.Controller.permissions.MODERATOR))
         return "MODERATOR";
+    if(user.hasPermission(app.Forum.Controller.permissions.MEMBER))
+        return "MEMBER";
+
+    // OK, we better guess
+    if(user.isAdmin())
+        return "ADMIN";
     return "MEMBER";
 };

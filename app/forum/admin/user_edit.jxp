@@ -1,0 +1,5 @@
+<% if (sectionHeader) sectionHeader(); %>
+
+    <% core.app.forum.user_edit(); %>
+
+<% if (sectionFooter) sectionFooter(); %>

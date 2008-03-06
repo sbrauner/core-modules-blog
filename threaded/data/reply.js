@@ -34,7 +34,7 @@ threaded.data.Reply.prototype.decoratorsRender = function(part, options){
     }
     if(part == "threaded.replyform"){
         if(request.reply == "true" && ! request.reply_target){
-            this.threaded_pieces.reply_form.call(this, true, args);
+            this.threaded_pieces.reply_form.call(this, true, options);
         }
     }
 

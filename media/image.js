@@ -97,3 +97,40 @@ Media.Image.prototype.scaleRatio = function( xOrBoth , y ){
     img = javaStatic( "ed.util.ImageUtil" , "getScaledInstance" , img , xOrBoth * img.getWidth() , ( y || xOrBoth ) * img.getHeight() );
     return javaStatic( "ed.util.ImageUtil" , "imgToJpg" , img , 0 , this._file.filename.replace( /\.\w+$/ , ".jpg" ) );
 };
+
+
+Media.Image.giveIMGTagsURLMaxes = function( html ){
+    html = html.replace( /<img ([^>]+)\/?>/ , 
+			 function( tag ){
+			     
+			     if ( ! tag.match( /f?id/ )){
+				 return tag;
+			     }
+			     
+			     var maxX = null;
+			     var maxY = null;
+
+			     var p = /width="?(\d+)"? /;
+			     var r = p.exec( tag );
+			     if ( r )
+				 maxX = r[1];
+
+			     p = /height="?(\d+)"? /;
+			     r = p.exec( tag );
+			     if ( r )
+				 maxY = r[1];
+			     
+			     if ( ! ( maxX || maxY ) )
+				 return tag;
+
+			     var options = "";
+			     if ( maxX ) options += "&maxX=" + maxX;
+			     if ( maxY ) options += "&maxY=" + maxY;
+
+			     tag = tag.replace( /src="[^"]*(f\?id[^"]+)/ , "src=\"/~~/$1" + options );
+
+			     return tag;
+			 } );
+    
+    return html;
+};

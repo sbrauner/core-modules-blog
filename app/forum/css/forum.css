@@ -11,12 +11,13 @@ h2 {
 }
 
 .postbox {
-    padding: 9px 0px;
+    padding: 9px 6px;
+    border: 1px solid black;
+    margin-bottom: 10px;
 }
 
 div.deleted {
     background: #FFDDDD;
-    padding: 5px;
 }
 
 table {
@@ -96,7 +97,9 @@ table#style1 {
 	background-image: url(th_arrow.gif?v=2);
 	background-repeat: no-repeat;	
 }
-
+#style1 th.article div.second_level a {
+        display: inline;
+}
 #style1 .alignleft {
 	text-align: left;	
 }
@@ -154,9 +157,7 @@ div.threadFooter {
 }
 
 #login_status {
-        text-align: right;
         font-size: 12px;
-        margin-top: -10;
         padding-bottom: 15px;
 }
 
@@ -209,15 +210,101 @@ input.text {
            margin-top: -3px;
 }
 
-input.submit {
+input.submit, input.button {
              margin: 0px;
              background-color: #369fbf;
              color: #ffffff;
              border: 1px solid white;
 }
 
+
 div.button {
            margin-left: 55px;
            border: 1px solid #9ac0cc;
-           float: left;
+}
+div.caption input.submit {
+            cursor: pointer;
+            border: 1px solid #369fbf;
+}
+div.caption div.button {
+           margin: 0px 1px 10px 3px;
+           display: inline;
+           padding: 2px 5px 1px;
+           background: #369fbf;
+           border: 1px solid #369fbf;
+           color: white;
+           font-size: 13px;
+}
+
+span.highlight {
+           background: yellow;
+}
+
+div.actions {
+            width: 100%;
+            text-align: right;
+            float: right;
+}
+
+div.popup {
+          display: none;
+          position: absolute;       
+          border: 1px solid black;
+          background-color: #cce5ec;
+          color: #000000;      
+          margin-left: auto;
+          margin-right: auto;
+          padding: 5px;
+          width: 350px;
+          text-align: center;
+}
+
+div.popup label {
+          display: block;
+          width: 120px;
+          text-align: left;
+}
+
+div.popup div.title {
+          text-align: center;
+          margin-bottom: 10px;
+}
+
+div.popup input.submit {
+          text-align: right;
+}
+div.popup input.button {
+          margin-right: 10px;
+}
+
+form.onebutton {
+	  display: inline;
+}
+
+table.search div {
+             display: block;
+          text-align: left;
+}
+
+
+/* Search results page */
+
+div.threadbox {
+      background: grey;
+      border: 1px solid black;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+}
+
+div.threadbox div.title {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 5px;
+}
+
+div.threadbox div.content {
+      background: white;
+      border: 1px solid black;
+      margin: 5px 5px 5px 20px;
+      padding: 5px;
 }

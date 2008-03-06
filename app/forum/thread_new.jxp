@@ -4,14 +4,13 @@ core.app.forum.controller();
 if(! app.Forum.Controller.hasPermission(user, "createThread"))
     return Auth.cookie.reject(request, response);
 
-htmlheader("Forums | New Thread");
-core.user.html.topCorner();
+core.app.forum.html.forumheader("Forums | New Thread");
 
 core.app.forum.data.thread();
 core.content.forms();
 var topic = db.forum.topics.findOne({_id: request.top_id});
 if(request.getMethod() == "POST"){
-    var thread = new Forum.data.Thread();
+    var thread = new app.Forum.data.Thread();
     thread.save();
     var rep = thread.decoratorsHandle();
 
@@ -35,14 +34,10 @@ if(request.getMethod() == "POST"){
 }
 var backurl = "viewtopic?name="+topic.name;
 %>
-<html>
-  <head>
-    <title>New thread</title>
-  </head>
-  <body>
     <h3>New thread</h3>
     <%
     opts = {};
+opts.newThread = true;
 if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     opts.actions = [
         function(){
@@ -51,7 +46,5 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
 } %>
     <% app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); %>
 <a href="<%= backurl %>">Back to forum</a>
-  </body>
-</html>
 
 <% htmlfooter(); %>

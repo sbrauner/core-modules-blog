@@ -88,7 +88,8 @@ if(request.fstatus){
             m.addRecipient(  feature.reporter.email  );
             if(feature.owner)
                 m.addRecipient(  feature.owner.email , "cc" );
-            m.addRecipient(  feature.project.owner.email , "cc" );
+            if(feature && feature.project && feature.project.owner && feature.project.owner.email)
+                m.addRecipient(  feature.project.owner.email , "cc" );
             m.send( mail );
             append = "";
         }

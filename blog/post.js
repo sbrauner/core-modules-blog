@@ -1,6 +1,7 @@
 
 core.content.search();
 core.text.text();
+core.media.image();
 
 function Post(name, title) {
     this.name = name;
@@ -20,7 +21,9 @@ Post.prototype.getTeaserContent = function(){
 };
 
 Post.prototype.getFullContent = function(){
-    return this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    html = Media.Image.giveIMGTagsURLMaxes( html );
+    return html;
 };
 
 Post.prototype.getContent = function( full ){
@@ -57,17 +60,26 @@ Post.prototype.getNumComments = function(){
 };
 
 Post.prototype.deleteComment = function(cid){
+    var l = log.blog.post.deleteComment;
+    l.debug( cid );
 
-    if ( ! this.comments )
+    if ( ! this.comments ){
+	l.debug( "no comments" );
         return;
+    }
     
+    if ( ! isArray( this.comments ) )
+	this.getComments();
+
     if ( isArray( this.comments ) ){
+	l.debug( "array version" );
         this.comments = this.comments.filter( function(z){
                 return z.cid.toString() != cid.toString();
             } );
         return;
     }
-    
+
+    l.debug( "old object thing" );
     delete this.comments[cid];
 };
 
@@ -98,7 +110,10 @@ Post.prototype.getComments = function() {
     }
 
     // sort them by date
-    return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    commentsArray = commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    this.comments = commentsArray;
+
+    return this.comments;
 };
 
 Post.prototype.presave = function(){
@@ -126,14 +141,34 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
-Post.prototype.getFirstImageSrc = function(){
+Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
+
+    if ( this.suppressImage )
+	return null;
+
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
         return null;
-    return r[1];
+    
+    var url = r[1];
+    
+    if ( ! url.match( /f?id=/ ) )
+	return null;
+
+    if ( ( maxX || maxY ) ){
+	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
+
+	if ( maxX )
+	    url += "&maxX=" + maxX;
+
+	if ( maxY )
+	    url += "&maxY=" + maxY;
+    }
+    
+    return url;
 };
 
 
@@ -143,6 +178,7 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
+	http404Page.commentsEnabled = false;
         db.blog.posts.save(http404Page);
     }
     return http404Page;
