@@ -68,7 +68,7 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
 var movetargets = [];
 
 if(moveThread) {
-    var topics = db.forum.topics.find();
+    var topics = db.forum.topics.find({parent: null});
     topics = topics.toArray();
     movetargets = movetargets.concat(topics);
 }
@@ -86,19 +86,28 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
+exploreTopic = function(topic, indent){
+    retStr = "";
+    indent = indent || 0;
+    istr = "";
+    for(var i = 0; i < indent; i++){
+        istr += "&nbsp;";
+    }
+    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
+    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
+    for(var j=0; j<subtopics.length; j++) {
+        retStr += exploreTopic(subtopics[j], indent + 2);
+    }
+    return retStr;
+};
+
 selectify = function(options, attrfunc){
     attrfunc = attrfunc || function (){ return {}; };
     return function(t){
         var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<options.length; i++) {
-            if(options[i].parent == null) {
-                retStr+="<option value=\""+options[i]._id+"\">"+options[i].name+"</option>";
-                var subtopics = db.forum.topics.find( { parent : options[i] }).toArray();
-                for(var j=0; j<subtopics.length; j++) {
-                    retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
-                }
-            }
+            retStr += exploreTopic(options[i]);
         }
         return retStr +"</select>";
     }
@@ -114,7 +123,8 @@ topicActions = [];
 
 if(app.Forum.Controller.hasPermission(user, "moveTopic")){
     topicActions.push({title : "Move Topic",
-                       func : selectify(topics, function(t){ return {onChange: "moveTopic('"+t._id+"')"}; })
+                       func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
+                                        function(t){ return {onChange: "moveTopic('"+t._id+"')"}; })
                       });
 }
 

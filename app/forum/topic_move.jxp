@@ -6,7 +6,8 @@ core.app.forum.data.topic();
 var topic = db.forum.topics.findOne({_id : request.topic});
 var target = null;
 var o = request.to;
-target = db.forum.topics.findOne({_id : request.to});
+if(request.to != "null")
+    target = db.forum.topics.findOne({_id : request.to});
 
 topic.setParent( target );
 
