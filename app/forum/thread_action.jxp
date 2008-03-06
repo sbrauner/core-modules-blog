@@ -128,7 +128,7 @@ if(request.action == "edit") {
     if(request.ttl != "") {
         thread.setTitle(request.ttl);
     }
-    closed = (request.closed == 1) ? true : false;
+    closed = (request.closed == "closed") ? true : false;
     thread.setClosed(closed);
 
     thread.save();

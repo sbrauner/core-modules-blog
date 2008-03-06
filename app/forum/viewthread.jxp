@@ -78,8 +78,8 @@ if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
      <div class="popup" id="editpop">
           <div class="stitle">Edit Thread</div>
-          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="enter text"></div>
-          <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed"></div>
+          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= thread.getTitle() %>"></div>
+          <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" value="closed" <%= thread.getClosed() ? "CHECKED" : "" %>></div>
           <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
                <input type="submit" class="submit" name="action" value="edit"></div>
      </div>

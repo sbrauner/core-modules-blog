@@ -40,7 +40,11 @@ app.Forum.data.Thread.prototype.setTitle = function(title){
 };
 
 app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
-    this.commentsEnabled = ! isClosed;
+    this.commentsEnabled = !isClosed;
+};
+
+app.Forum.data.Thread.prototype.getClosed =  function(isClosed){
+    return !this.commentsEnabled;
 };
 
 app.Forum.data.Thread.prototype.getFirstPost = function(){
