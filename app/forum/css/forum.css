@@ -286,3 +286,25 @@ table.search div {
           text-align: left;
 }
 
+
+/* Search results page */
+
+div.threadbox {
+      background: grey;
+      border: 1px solid black;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+}
+
+div.threadbox div.title {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 5px;
+}
+
+div.threadbox div.content {
+      background: white;
+      border: 1px solid black;
+      margin: 5px 5px 5px 20px;
+      padding: 5px;
+}
