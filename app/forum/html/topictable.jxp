@@ -57,7 +57,7 @@ function cancelPopup(id) {
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
         <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a>
-        <form action="topic_edit" onSubmit="return showPopup('editpop')">
+        <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
           <input type="hidden" name="id" value="<%= opts.thisid %>">
           <input type="submit" class="button" name="action" value="Edit topic">
         </form>

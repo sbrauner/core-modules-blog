@@ -262,3 +262,7 @@ div.popup input.submit {
 div.popup input.button {
           margin-right: 10px;
 }
+
+form.onebutton {
+	  display: inline;
+}
