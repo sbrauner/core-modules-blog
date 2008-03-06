@@ -19,7 +19,8 @@ function editorPick(thread) {
 app.Forum.html.search = function(location) {
          %>
          <form action="search.jxp" method="post">
-                <input type="text" class="text" name="query" value="search posts in <%= location %>">
+                <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
+                <input type="text" class="text" name="query" value="search posts in <%= location %>" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="go">
          </form>
          <%
