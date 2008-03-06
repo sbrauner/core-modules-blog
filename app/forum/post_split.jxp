@@ -14,7 +14,7 @@ htmlheader("Move to?");
           New thread name:
         </div>
         <div class="field_value">
-          <input type="text" name="target" value="<%= thread.getTitle() %>"
+          <input type="text" name="subject" value="<%= thread.getTitle() %>"
         </div>
       </div>
       <input type="submit" name="action" value="split"/>
