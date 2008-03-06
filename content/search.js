@@ -34,26 +34,12 @@ Search = {
     } ,
 
     // make sure that all indexes are on the right fields of the table
-    fixTable : function( table , weights ){
+    fixTable : function(table, weights){
         if ( Search.DEBUG ) Search.log( "fixTable : " + table.getName() );
         table.ensureIndex( { _searchIndex : 1 } );
-
-        if ( weights ){
+        if(weights){
             var num = [];
-
-            for ( var field in weights ){
-
-                var w = weights[ field ];
-                num.push( w );
-
-                var idx = Search.getIndexName( w );
-                var o = {}
-                o[idx] = 1;
-
-                if ( Search.DEBUG ) Search.log( "\t putting index on " + tojson( o ) );
-                table.ensureIndex( o );
-            }
-
+            Search.fixTableSub(table, weights, num);
             num = num.unique().sort().reverse();
             var a = [];
             num.forEach( function(z){
@@ -61,6 +47,29 @@ Search = {
                           w : z } );
             } );
             Search._weights[ table.getName() ] = a;
+        }
+    },
+
+    fixTableSub : function( table , weights , num){
+        if ( weights ){
+            for ( var field in weights ){
+
+                var w = weights[ field ];
+                if(typeof w == "number"){
+                    num.push( w );
+
+                    var idx = Search.getIndexName( w );
+                    var o = {}
+                    o[idx] = 1;
+
+                    if ( Search.DEBUG ) Search.log( "\t putting index on " + tojson( o ) );
+                    table.ensureIndex( o );
+                }
+                else {
+                    Search.fixTableSub(table, w, num);
+                }
+            }
+
 
         }
 
