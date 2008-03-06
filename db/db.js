@@ -32,14 +32,50 @@ function _dbCommand( cmdObj ) {
     return db.$cmd.findOne(cmdObj);
 }
 
+/* Create a new collection in the database.  Normally, collection creation is automatic.  You would
+   use this function if you wish to specify special options on creation.
+
+   If the collection already exists, no action occurs.
+
+   Options:
+     size: desired initial extent size for the collection.  Must be <= 1000000000.
+     capped: if true, this is a capped collection (where old data rolls out).
+
+   Example:
+     createCollection("movies", { size: 10 * 1024 * 1024 } );
+*/
+function createCollection(name, options) { 
+    if( !options ) options = {};
+    options.create = name;
+    var res = _dbCommand(options);
+    return res;
+}
+
 /* Delete all indexes on the specified collection.
    alpha: space is not reclaimed
  */
 function deleteIndexes( collection ) {
-    var res = _dbCommand( { deleteIndexes: collection } );
+    var res = _dbCommand( { deleteIndexes: collection, index: "*" } );
     if( res && res.ok && res.ok == 1 ) {
         db.system.indexes.remove( { ns: ""+db+"."+collection } );
 	db.system.namespaces.remove( { name: RegExp(""+db+"."+collection+"[.][$].*") } );
+    }
+    return res;
+}
+
+/* Delete one index.  
+
+   Name is the name of the index in the system.indexes name field. (Run db.system.indexes.find() to 
+   see example data.)
+
+   alpha: space is not reclaimed
+ */
+function deleteIndex( collection, index ) {
+    assert(index);
+    var res = _dbCommand( { deleteIndexes: collection, index: index } );
+    if( res && res.ok && res.ok == 1 ) {
+        db.system.indexes.remove( { ns: ""+db+"."+collection, name: index } );
+	db.system.namespaces.remove( { name: ""+db+"."+collection+".$"+index } );
     }
     return res;
 }
