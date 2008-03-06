@@ -47,6 +47,7 @@ app.Forum.Controller.adminPermissions = function(){
         hideTopic: true,
 
         // thread stuff
+        editThread: true,
         moveThread: true,
         deleteThread: true,
         moderateThread: true,

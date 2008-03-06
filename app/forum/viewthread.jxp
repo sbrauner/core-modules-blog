@@ -71,13 +71,26 @@ function cancelSplit(i) {
 </script>
 
 <div class="caption">
-
 <%
+if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
+     <form action="thread_action">
+     <input type="hidden" name="threadId" value="<%= thread._id %>"> 
+     <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
+     <div class="popup" id="editpop">
+          <div class="stitle">Edit Thread</div>
+          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= thread.getTitle() %>"></div>
+          <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" value="closed" <%= thread.getClosed() ? "CHECKED" : "" %>></div>
+          <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
+               <input type="submit" class="submit" name="action" value="edit"></div>
+     </div>
+     </form>
+     <%
+}
 if(request.show == "deleted"){ %>
      <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-     <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
+     <a href="<%=uri.replaceArg("show", "deleted")%>" class="button">Show deleted</a> |
      <%
 }
 if(request.show == "moderated"){ %>
