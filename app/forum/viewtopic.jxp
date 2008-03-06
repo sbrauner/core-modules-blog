@@ -14,12 +14,6 @@ core.app.forum.html.form();
 
 core.util.format();
 
-var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
-var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
-var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-
 var threadList = null;
 var name;
 var description;

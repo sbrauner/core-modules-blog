@@ -17,6 +17,13 @@ var createThread = (opts.createThread == null) ? true : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 
+// We implement some actions here because we use them in both index and
+// viewtopic.
+var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
+var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
+var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
 var movetargets = [];
 
 if(moveThread) {
@@ -31,22 +38,35 @@ if(moderateThread)
     movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
 
 
-exploreTopic = function(topic, indent){
+exploreTopic = function(topic, indent, filter){
     retStr = "";
     indent = indent || 0;
     istr = "";
+    if(! filter(topic)) return;
     for(var i = 0; i < indent; i++){
         istr += "&nbsp;";
     }
     retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
     var subtopics = db.forum.topics.find( { parent : topic }).toArray();
     for(var j=0; j<subtopics.length; j++) {
-        retStr += exploreTopic(subtopics[j], indent + 2);
+            retStr += exploreTopic(subtopics[j], indent + 2, filter);
     }
     return retStr;
 };
 
 selectify = function(choices, attrfunc, options){
+    // Create an action which, given an object, generates an HTML select
+    // for all topics it could move to, recursively.
+    //
+    // choices is the array of topics, including possible special topics
+    // for "Deleted" and "Moderated".
+    //
+    // attrfunc is a function which takes the object and returns a mapping
+    // which is converted to attributes for the select object.
+    //
+    // options.filter is a function which takes the object we're generating
+    // the select for and the choice we're putting in the select and returns
+    // false to prune or true to not-prune that choice.
     attrfunc = attrfunc || function (){ return {}; };
     options = options || {};
     filter = (options.filter == null) ? function(){return true;} : options.filter;
@@ -54,8 +74,7 @@ selectify = function(choices, attrfunc, options){
         var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
-            if(filter(t, choices[i]))
-                retStr += exploreTopic(choices[i]);
+            retStr += exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); });
         }
         return retStr +"</select>";
     }
@@ -73,7 +92,7 @@ if(app.Forum.Controller.hasPermission(user, "moveTopic")){
     topicActions.push({title : "Move Topic",
                        func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
                                         function(t){ return {onChange: "moveTopic('"+t._id+"')"}; },
-                                        {filter: function(t, option) { return t != option; } } )
+                                        {filter: function(t, option) { log(t._id); return t._id != option._id; } } )
                       });
 }
 
@@ -162,6 +181,7 @@ function cancelPopup(id) {
   <% } %>
 
 <%
+    log("subtopicating-----------");
 if(subs && subs.length > 0){ %>
    <table id="style1">
      <tr>
