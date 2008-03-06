@@ -83,25 +83,30 @@ if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
           <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
                <input type="submit" class="submit" name="action" value="edit"></div>
      </div>
-     </form>
      <%
 }
 if(request.show == "deleted"){ %>
-     <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
+     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide deleted</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-     <a href="<%=uri.replaceArg("show", "deleted")%>" class="button">Show deleted</a> |
+     <a href="<%=uri.replaceArg("show", "deleted")%>"><div class="button">Show deleted</div></a>
      <%
 }
 if(request.show == "moderated"){ %>
-     <a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
+     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide moderated</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
-     <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
+     <a href="<%=uri.replaceArg("show", "moderated")%>"><div class="button">Show moderated</div></a>
      <%
 }
+if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
+     <a href="user_edit.jxp"><div class="button">Edit Users</div></a>
+     <%
+}
+
 %>
 
+     </form>
 </div>
 
 <% app.Forum.html.breadcrumb(thread); %>
