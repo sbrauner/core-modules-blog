@@ -12,6 +12,8 @@ core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
 
+core.util.format();
+
 var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
 var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
 var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
@@ -84,27 +86,43 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
+selectify = function(options, attrfunc){
+    attrfunc = attrfunc || function (){ return {}; };
+    return function(t){
+        var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
+        retStr+="<option value=\"\">&nbsp;</option>";
+        for(i=0; i<options.length; i++) {
+            if(options[i].parent == null) {
+                retStr+="<option value=\""+options[i]._id+"\">"+options[i].name+"</option>";
+                var subtopics = db.forum.topics.find( { parent : options[i] }).toArray();
+                for(var j=0; j<subtopics.length; j++) {
+                    retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
+                }
+            }
+        }
+        return retStr +"</select>";
+    }
+};
+
 if(movetargets.length > 1){
     actions.push({title : "Move Thread",
-                  func : function(t) {
-                      var retStr = "<select id=\""+t._id+"\" onchange=\"move(\'"+t._id+"\')\">";
-                      retStr+="<option value=\"\">&nbsp;</option>";
-                      for(i=0; i<movetargets.length; i++) {
-                          if(movetargets[i].parent == null) {
-                              retStr+="<option value=\""+movetargets[i]._id+"\">"+movetargets[i].name+"</option>";
-                              var subtopics = db.forum.topics.find( { parent : movetargets[i] }).toArray();
-                              for(var j=0; j<subtopics.length; j++) {
-                                  retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
-                              }
-                          }
-                      }
-                      return retStr +"</select>";
-                  }});
+                  func : selectify(movetargets, function(t){ return {onChange: "move('"+t._id+"')"}; } )
+                 });
 }
+
+topicActions = [];
+
+if(app.Forum.Controller.hasPermission(user, "moveTopic")){
+    topicActions.push({title : "Move Topic",
+                       func : selectify(topics, function(t){ return {onChange: "moveTopic('"+t._id+"')"}; })
+                      });
+}
+
+tableOptions.topicActions = topicActions;
 
 // --------------------
 core.app.forum.html.forumheader("Forum | " + name);
-log("stack: "+app.Forum.html.topicStack(t));                                       
+log("stack: "+app.Forum.html.topicStack(t));
 %>
 
 

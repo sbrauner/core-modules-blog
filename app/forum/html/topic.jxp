@@ -1,21 +1,32 @@
 <%
-    var f = arguments[0];
-var link = "viewtopic?name="+URI.escape_queryargs(f.name);
-if(f._id == app.Forum.Controller.specialDeletedID || 
-   f._id == app.Forum.Controller.specialModeratedID)
-    link = "viewtopic?id="+f._id;
+    processArgs("topic", "options");
+
+var link = "viewtopic?name="+URI.escape_queryargs(topic.name);
+if(topic._id == app.Forum.Controller.specialDeletedID || 
+   topic._id == app.Forum.Controller.specialModeratedID)
+    link = "viewtopic?id="+topic._id;
+var actions = (options.actions == null) ? [] : options.actions;
 %>
 <tr>
   <td class="alignleft">
-    <a href="<%= link %>"><%= f.name%></a>
-    <nobr><%= f.description %></nobr>
+    <a href="<%= link %>"><%= topic.name%></a>
+    <nobr><%= topic.description %></nobr>
   </td>
   <td>
-    <%= f.threadCount.toFixed(0) %>
+    <%= topic.threadCount.toFixed(0) %>
   </td>
   <td>
-    <%= f.postCount.toFixed(0) %>
+    <%= topic.postCount.toFixed(0) %>
   </td>
+ <%
+  if (actions.length > 0){ 
+     for(var i in actions){ %>
+        <td><%= actions[i].func(topic) %></td>
+        <% 
+      }
+  } 
+%>
+
 </tr>
 
 </div>

@@ -1,0 +1,15 @@
+<%
+// FIXME: permission check, ban check?
+    log("moving thing");
+
+core.app.forum.data.topic();
+var topic = db.forum.topics.findOne({_id : request.topic});
+var target = null;
+var o = request.to;
+target = db.forum.topics.findOne({_id : request.to});
+
+topic.setParent( target );
+
+db.forum.topics.save(topic);
+
+%>

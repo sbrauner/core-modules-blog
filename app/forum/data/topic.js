@@ -38,6 +38,14 @@ app.Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
     }
 };
 
+app.Forum.data.Topic.prototype.setParent = function(topic){
+    if(this.parent)
+        this.parent.changeCounts(-this.threadCount, -this.postCount);
+    if(topic)
+        topic.changeCounts(this.threadCount, this.postCount);
+    this.parent = topic;
+};
+
 app.Forum.data.Topic.prototype.subtThread = function(postCount){
     this.changeCounts(-1, -postCount);
 };

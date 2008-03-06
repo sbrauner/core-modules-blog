@@ -15,6 +15,7 @@ if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
 // Whether to try to create links for all these functions.
 var createThread = (opts.createThread == null) ? true : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 %>
 <script type="text/javascript">
 
@@ -22,6 +23,12 @@ function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
          ajax(passData, "moveThread.jxp", reload, "POST");
+}
+
+function moveTopic(topicId) {
+         targetId = document.getElementById(topicId).value;
+         var passData = "topic="+topicId+"&to="+targetId;
+         ajax(passData, "topic_move.jxp", reload, "POST");
 }
 
 function reload() {
@@ -105,8 +112,11 @@ if(subs && subs.length > 0){ %>
        <th>
          Posts
        </th>
+    <% for(i=0; i < topicActions.length; i++) { %>
+       <th><%= topicActions[i].title %></th>
+       <% } %>
      </tr>
-   <% subs.forEach(app.Forum.renderer.topic); %>
+                             <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
    </table>
 <%
 }
