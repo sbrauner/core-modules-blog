@@ -191,7 +191,7 @@ Stem.stem = function(w) {
 
 // takes the root of a word and a word to be matched and checks if the 
 // root is a stripped version of the match word
-Stem.destem = function(word, match) {
+Stem.destem = function(word, m) {
 
     var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
     var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
@@ -199,9 +199,8 @@ Stem.destem = function(word, match) {
     if(!word)
         return;
 
-    var stem = Stem.stem(searchterm[i]);
-    var reg = new RegExp("(\\b)(("+prefix+")?"+stem+"("+suffix+")?)(\\b)", "gi");
-    return word.match(reg);
+    var reg = new RegExp("(\\b)(("+prefix+")?"+word+"("+suffix+")?)(\\b)", "gi");
+    return m.match(reg);
 
 };
 
