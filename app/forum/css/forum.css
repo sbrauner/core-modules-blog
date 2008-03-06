@@ -266,3 +266,9 @@ div.popup input.button {
 form.onebutton {
 	  display: inline;
 }
+
+table.search div {
+             display: block;
+          text-align: left;
+}
+

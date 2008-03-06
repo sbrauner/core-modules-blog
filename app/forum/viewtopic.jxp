@@ -126,7 +126,7 @@ core.app.forum.html.forumheader("Forum | " + name);
 </table>
 
 <%
-app.Forum.html.search();
+app.Forum.html.search(t.name);
 core.net.uri();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
 %>
