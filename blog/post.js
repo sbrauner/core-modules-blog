@@ -60,17 +60,26 @@ Post.prototype.getNumComments = function(){
 };
 
 Post.prototype.deleteComment = function(cid){
+    var l = log.blog.post.deleteComment;
+    l.debug( cid );
 
-    if ( ! this.comments )
+    if ( ! this.comments ){
+	l.debug( "no comments" );
         return;
+    }
     
+    if ( ! isArray( this.comments ) )
+	this.getComments();
+
     if ( isArray( this.comments ) ){
+	l.debug( "array version" );
         this.comments = this.comments.filter( function(z){
                 return z.cid.toString() != cid.toString();
             } );
         return;
     }
-    
+
+    l.debug( "old object thing" );
     delete this.comments[cid];
 };
 
@@ -101,7 +110,10 @@ Post.prototype.getComments = function() {
     }
 
     // sort them by date
-    return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    commentsArray = commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    this.comments = commentsArray;
+
+    return this.comments;
 };
 
 Post.prototype.presave = function(){
