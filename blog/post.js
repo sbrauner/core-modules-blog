@@ -133,6 +133,9 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
 
+    if ( this.suppressImage )
+	return null;
+
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
