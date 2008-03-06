@@ -37,7 +37,9 @@ else {
     t = db.forum.topics.findOne({name: name});
     name = t.name;
     description = t.description;
-    subs = app.Forum.data.Topic.list(t).toArray();
+    var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
+
+    subs = app.Forum.data.Topic.list(t, showHidden).toArray();
     threadList = app.Forum.data.Thread.list(t);
     tableOptions = {parent: t.parent, thisid: t._id};
 }

@@ -21,6 +21,7 @@ var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 // viewtopic.
 var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
 var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
+var hideTopic = app.Forum.Controller.hasPermission(user, "hideTopic");
 var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
 var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
 
@@ -88,12 +89,20 @@ if(movetargets.length > 1){
 
 topicActions = [];
 
-if(app.Forum.Controller.hasPermission(user, "moveTopic")){
+if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
                                         function(t){ return {onChange: "moveTopic('"+t._id+"')"}; },
                                         {filter: function(t, option) { return t._id != option._id; } } )
                       });
+}
+
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
 }
 
 
@@ -119,6 +128,11 @@ function reload() {
 function togglePick(threadId) {
          var passData = "thread="+threadId;
          ajax(passData, "editorPick.jxp", reload);
+}
+
+function toggleHide(topicId) {
+    var passData = "topic="+topicId;
+    ajax(passData, "topic_hide.jxp", reload);
 }
 
 function showPopup(id) {

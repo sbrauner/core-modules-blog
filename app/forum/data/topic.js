@@ -54,8 +54,10 @@ app.Forum.data.Topic.prototype.addThread = function(postCount){
     this.changeCounts(1, postCount);
 };
 
-app.Forum.data.Topic.list = function(parent){
-    return db.forum.topics.find({parent: parent}).sort({order: 1});
+app.Forum.data.Topic.list = function(parent, showHidden){
+    var q = {parent: parent};
+    if(! showHidden) q.hidden = false;
+    return db.forum.topics.find(q).sort({order: 1});
 };
 
 db.forum.topics.setConstructor(app.Forum.data.Topic);

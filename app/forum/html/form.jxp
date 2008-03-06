@@ -1,4 +1,6 @@
-<% function stickyForm(id, action, text) { %>
+<% 
+app.Forum.html.form = {};
+function stickyForm(id, action, text) { %>
 
 <form action="thread_action">
       <input type="hidden" name="select" value="<%= id %>">
@@ -14,6 +16,15 @@ function editorPick(thread) {
          <% } else { %>
                 <input type="checkbox" class="edPick" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')">
          <% }
+}
+
+app.Forum.html.form.hidden = function(topic){
+         if(topic.hidden) { %>
+                <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" checked>
+         <% } else { %>
+                <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')">
+         <% }
+
 }
 
 app.Forum.html.search = function(location) {
