@@ -16,6 +16,64 @@ if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
 var createThread = (opts.createThread == null) ? true : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+
+var movetargets = [];
+
+if(moveThread) {
+    var topics = db.forum.topics.find({parent: null});
+    topics = topics.toArray();
+    movetargets = movetargets.concat(topics);
+}
+if(deleteThread)
+    movetargets.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+if(moderateThread)
+    movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+
+exploreTopic = function(topic, indent){
+    retStr = "";
+    indent = indent || 0;
+    istr = "";
+    for(var i = 0; i < indent; i++){
+        istr += "&nbsp;";
+    }
+    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
+    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
+    for(var j=0; j<subtopics.length; j++) {
+        retStr += exploreTopic(subtopics[j], indent + 2);
+    }
+    return retStr;
+};
+
+selectify = function(options, attrfunc){
+    attrfunc = attrfunc || function (){ return {}; };
+    return function(t){
+        var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
+        retStr+="<option value=\"\">&nbsp;</option>";
+        for(i=0; i<options.length; i++) {
+            retStr += exploreTopic(options[i]);
+        }
+        return retStr +"</select>";
+    }
+};
+
+if(movetargets.length > 1){
+    actions.push({title : "Move Thread",
+                  func : selectify(movetargets, function(t){ return {onChange: "move('"+t._id+"')"}; } )
+                 });
+}
+
+topicActions = [];
+
+if(app.Forum.Controller.hasPermission(user, "moveTopic")){
+    topicActions.push({title : "Move Topic",
+                       func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
+                                        function(t){ return {onChange: "moveTopic('"+t._id+"')"}; })
+                      });
+}
+
+
 %>
 <script type="text/javascript">
 
