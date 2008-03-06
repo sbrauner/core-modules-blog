@@ -23,7 +23,8 @@ print("<!-- " + thread._id + "-->");
 // PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-var canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
+var canPost = app.Forum.Controller.hasPermission(user, "makePost")
+    && ! request.deleted && thread.commentsEnabled;
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
@@ -118,8 +119,8 @@ postoptions.actions.push(function(post) {
      <input type="hidden" name="select" value="<%= post.getID() %>">
      <%
      if(canSplit && post.getID() > 0){ %>
-           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><% 
-     }  
+           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
+     }
      if(post.deleted == "deleted" && canDelete) { %>
            <input type="submit" class="submit" name="action" value="undelete">
            <%

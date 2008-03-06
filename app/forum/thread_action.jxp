@@ -101,7 +101,7 @@ if(request.action == "split"){
         }
 
         log(tojson(newthread));
-        newthread.getFirstPost().title = request.subj;
+        newthread.setTitle(request.subj);
         newthread.latestPost = postid;
         var newthreadcount = newthread.getReplies().length;
         var threadcount = thread.getReplies().length;

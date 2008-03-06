@@ -35,6 +35,14 @@ app.Forum.data.Thread.prototype.getTitle = function() {
     return this.getFirstPost().title;
 };
 
+app.Forum.data.Thread.prototype.setTitle = function(title){
+    this.getFirstPost().title = title;
+};
+
+app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
+    this.commentsEnabled = ! isClosed;
+};
+
 app.Forum.data.Thread.prototype.getFirstPost = function(){
     return this.getReplies()[0];
 };
