@@ -114,7 +114,7 @@ if(request.show == "moderated"){ %>
 
 <h1><%= thread.getTitle() %></h1>
 <%
-app.Forum.html.search();
+app.Forum.html.search(thread.topic.name);
 
 postoptions.actions = [];
 postoptions.actions.push(function(post) {

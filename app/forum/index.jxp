@@ -12,7 +12,7 @@ core.app.forum.data.topic();
 core.app.forum.data.thread();
 core.app.forum.html.form();
 
-app.Forum.html.search();
+app.Forum.html.search("all forums");
 
 head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Picks" href="edpick_rss.jxp" />');
 

@@ -16,10 +16,10 @@ function editorPick(thread) {
          <% }
 }
 
-app.Forum.html.search = function() {
+app.Forum.html.search = function(location) {
          %>
          <form action="search.jxp" method="post">
-                Search for: <input type="text" class="text" name="query">
+                <input type="text" class="text" name="query" value="search posts in <%= location %>">
                 <input type="submit" class="submit" value="go">
          </form>
          <%
