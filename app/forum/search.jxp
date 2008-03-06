@@ -26,15 +26,20 @@ function highlight(result, searchterm) {
     return result;
 }
 
+core.app.forum.controller();
 core.app.forum.html.forumheader("Forums | Search results");
 
 core.app.forum.data.thread();
 
 var query = request.query;
 core.app.forum.data.thread();
+
+log("Weights: " + tojson(Search._weights));
+
 print("<div>Search results for \""+request.query+"\":</div>");
 
 cursor = Search.search(db.forum.topics, query );
+
 threads = Search.search(db.forum.threads, query);
 
 if(cursor.length > 0) {
@@ -48,7 +53,7 @@ else {
 }
 %>
 
-<h1>Matching threads:</h1> 
+<h1>Matching threads:</h1>
 
 <%
 if(threads.length > 0){
@@ -77,7 +82,7 @@ if(threads.length > 0){
             </div>
        </td>
        </tr>
-       <%    
+       <%
     }
     %>
     </table>
