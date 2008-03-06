@@ -1,5 +1,9 @@
 <%
-// FIXME: permission check, ban check?
+    core.app.forum.html.check_ban();
+if(! app.Forum.Controller.hasPermission(user, "moveThread")){
+    // FIXME: Just fail; this is an AJAX callback
+    return null;
+}
 
 var thread = app.Forum.data.Thread.findOne({_id : request.thread});
 var topic = null;
