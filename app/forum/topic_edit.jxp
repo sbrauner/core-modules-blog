@@ -7,6 +7,15 @@ core.app.forum.html.forumheader("Forum");
 core.net.uri();
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
+
+if(request.name){
+    topic.name = request.name;
+    topic.description = request.description;
+    db.forum.topics.save(topic);
+    response.sendRedirectTemporary("viewtopic?name="+URI.escape_queryargs(topic.name));
+    return;
+}
+
 %>
 
 <script type="text/javascript">
@@ -16,10 +25,10 @@ function cancel() {
 </script>
 
 <h2>Edit topic</h2>
-<form method="POST" action="topic_save_changes.jxp">
+<form method="POST">
 <input type="hidden" name="id" value="<%= topic._id %>">
 <div id="field">Topic name: <input type="text" name="name" value="<%= topic.name %>"></div>
-<div id="field">Topic description: <input type="text" name="desc" value="<%= topic.description %>"></div>
+<div id="field">Topic description: <input type="text" name="description" value="<%= topic.description %>"></div>
 <div id="field"><input type="button" value="Cancel" onclick="cancel()"><input type="submit" value="Change"></div>
 </form>
 
