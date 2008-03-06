@@ -92,7 +92,7 @@ if(app.Forum.Controller.hasPermission(user, "moveTopic")){
     topicActions.push({title : "Move Topic",
                        func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
                                         function(t){ return {onChange: "moveTopic('"+t._id+"')"}; },
-                                        {filter: function(t, option) { log(t._id); return t._id != option._id; } } )
+                                        {filter: function(t, option) { return t._id != option._id; } } )
                       });
 }
 
@@ -181,7 +181,6 @@ function cancelPopup(id) {
   <% } %>
 
 <%
-    log("subtopicating-----------");
 if(subs && subs.length > 0){ %>
    <table id="style1">
      <tr>
