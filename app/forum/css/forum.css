@@ -232,7 +232,7 @@ div.actions {
             float: right;
 }
 
-div.split {
+div.popup {
           display: none;
           position: absolute;       
           border: 1px solid black;
@@ -245,20 +245,20 @@ div.split {
           text-align: center;
 }
 
-div.split label {
+div.popup label {
           display: block;
           width: 120px;
           text-align: left;
 }
 
-div.split div.stitle {
+div.popup div.title {
           text-align: center;
           margin-bottom: 10px;
 }
 
-div.split input.submit {
+div.popup input.submit {
           text-align: right;
 }
-div.split input.button {
+div.popup input.button {
           margin-right: 10px;
 }
