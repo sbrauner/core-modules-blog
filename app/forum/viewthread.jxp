@@ -127,7 +127,7 @@ postoptions.actions.push(function(post) {
      %>
      <div class="popup" id="splitpop<%= post.getID() %>">
           <div class="stitle">Split Thread at Post</div>
-          <div class="field"><label>New Subject:</label><input type="text" name="subj" value="new thread subject"></div>
+          <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= thread.getTitle() %>"></div>
           <div class="field"><label>Topic</label><%= app.Forum.html.generateTopicSelect(thread) %></div>
           <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
      </div>
