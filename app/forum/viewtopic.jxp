@@ -104,10 +104,11 @@ if(movetargets.length > 1){
 
 // --------------------
 core.app.forum.html.forumheader("Forum | " + name);
-
+log("stack: "+app.Forum.html.topicStack(t));                                       
 %>
 
-<table id="style1" cellspacing="0" >
+
+<!--<table id="style1" cellspacing="0" >
   <tr>
     <th scope="col" class="article">
       <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
@@ -124,8 +125,10 @@ core.app.forum.html.forumheader("Forum | " + name);
     </th>
 </tr>
 </table>
+-->
 
 <%
+app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
 core.net.uri();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');

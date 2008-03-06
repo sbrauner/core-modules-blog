@@ -26,6 +26,49 @@ app.Forum.html.search = function(location) {
          <%
 }
 
+app.Forum.html.topicStack = function(tempTopic) {
+     var topicStack = "";
+     while(tempTopic.parent) {
+          tempTopic = tempTopic.parent;
+          topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
+     }
+     print(topicStack);
+}
+
+app.Forum.html.startBreadcrumbTable = function() {
+    %>
+    <table id="style1" cellspacing="0" >
+    <tr>
+    <th scope="col" class="article">
+    <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
+    <%
+}
+
+app.Forum.html.endBreadcrumbTable = function() {
+     %>
+     </th>
+     </tr>
+     </table>
+     <%
+}
+
+app.Forum.html.topicBreadcrumb = function(topic) {
+    app.Forum.html.startBreadcrumbTable();
+    app.Forum.html.topicStack(topic); %>
+    <div class="second_level"><a href="viewtopic?name=<%= escape( topic.name )%>"><%= topic.name %></a></div><%
+    app.Forum.html.endBreadcrumbTable();
+}
+
+app.Forum.html.breadcrumb = function(thread) {
+    app.Forum.html.startBreadcrumbTable();
+    app.Forum.html.topicStack(thread.topic); %>
+    <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
+    <div class="second_level">
+    <%= thread.getTitle() %> <a href="thread_rss.jxp?id=<%= thread._id %>">(RSS)</a>
+    </div><%
+    app.Forum.html.endBreadcrumbTable();
+}
+
 app.Forum.html.generateTopicSelect = function(t) {
     var topics = db.forum.topics.find();
     topics = topics.toArray();

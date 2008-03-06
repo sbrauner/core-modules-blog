@@ -90,29 +90,10 @@ if(request.show == "moderated"){ %>
 
 </div>
 
-<!-- BREADCRUMB TRAIL -->
-<table id="style1" cellspacing="0" >
-  <tr>
-    <th scope="col" class="article">
-      <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
-      <%
-      var topicStack = "";
-      var tempTopic = thread.topic;
-      while(tempTopic.parent != null) {
-           tempTopic = tempTopic.parent;
-           topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
-      }
-      print(topicStack);
-      %>
-      <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
-      <div class="second_level">
-      <%= thread.getTitle() %> <a href="thread_rss.jxp?id=<%= thread._id %>">(RSS)</a>
-      </div>
-    </th>
-  </tr>
-</table>
+<% app.Forum.html.breadcrumb(thread); %>
 
 <h1><%= thread.getTitle() %></h1>
+
 <%
 app.Forum.html.search(thread.topic.name);
 
