@@ -45,8 +45,8 @@ if ( request.action == "save" ) {
     } 
     else {
         
-        if ( ! thePost.name ) {
-            // Move this code out so it can be used by the interactive name generator below
+        if ( ! thePost.name || ( request.name && ! thePost.live ) ) {
+
 	    if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
 		thePost.name = request.name;
     	    else
@@ -206,7 +206,9 @@ tinyMCE.init({
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Slug</div>
-            <div class="post_meta_field_value"><input id="name" size="39" name="name" value="<%= thePost.name || "" %>"></div>
+            <div class="post_meta_field_value">
+	      <input id="name" size="39" name="name" value="<%= thePost.name || "" %>"   <%= thePost.live ? "disabled" : "" %> >
+	    </div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Author</div>
