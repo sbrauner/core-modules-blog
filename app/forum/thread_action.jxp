@@ -121,6 +121,19 @@ if(request.action == "split"){
     }
 }
 
+if(request.action == "edit") {
+    if(! app.Forum.Controller.hasPermission(user, "editThread")){
+        return Auth.cookie.reject(request, response);
+    }
+    if(request.ttl != "") {
+        thread.setTitle(request.ttl);
+    }
+    closed = (request.closed == 1) ? true : false;
+    thread.setClosed(closed);
+
+    thread.save();
+}
+
 response.setResponseCode(301);
 response.setHeader("Location", back);
 %>
