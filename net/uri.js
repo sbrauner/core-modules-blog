@@ -78,6 +78,9 @@ URI.prototype.clone = function(){
 
 URI.prototype.addArg = function(key, value){
     // Add a query arg to this URI.
+    // Be careful! If you create a new URI from the current URL,
+    // and add the same argument, you'll end up with a long list of
+    // query arguments. Please consider replaceArg instead.
     // @return a new URI, with the additional query argument added.
     c = this.clone();
     return c._addArg(key, value);

@@ -76,7 +76,7 @@ Search = {
     } ,
 
     index : function( obj, weights ){
-        return Search.indexSub(obj, obj, weights);
+         return Search.indexSub(obj, obj, weights);
     },
 
     indexSub : function( top , obj , weights ){
@@ -99,7 +99,7 @@ Search = {
                 var idx = Search.getIndexName( weights[field] );
 
                 var words = top[idx];
-                if ( ! words ){
+                if ( !words ){
                     words = [];
                     top[idx] = words;
                 }
@@ -126,14 +126,14 @@ Search = {
     } ,
 
     queryToArray : function(queryString){
-
         var words = [];
+        
         queryString.split( Search.wordRegex ).forEach( function( z ){
-            z = Search.cleanString( z );
-            if ( z.length == 0 )
-                return;
-            words.push( z );
-        } );
+                z = Search.cleanString( z );
+                if ( z.length == 0 )
+                    return;
+                words.push( z );
+            } );
         words = words.unique();
         return words;
     },

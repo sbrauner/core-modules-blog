@@ -24,7 +24,6 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
         // reply styles
         content: .2
     }
-
 };
 
 app.Forum.data.Thread.prototype.presave = function() {
@@ -33,6 +32,18 @@ app.Forum.data.Thread.prototype.presave = function() {
 
 app.Forum.data.Thread.prototype.getTitle = function() {
     return this.getFirstPost().title;
+};
+
+app.Forum.data.Thread.prototype.setTitle = function(title){
+    this.getFirstPost().title = title;
+};
+
+app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
+    this.commentsEnabled = !isClosed;
+};
+
+app.Forum.data.Thread.prototype.getClosed =  function(isClosed){
+    return !this.commentsEnabled;
 };
 
 app.Forum.data.Thread.prototype.getFirstPost = function(){

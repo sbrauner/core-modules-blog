@@ -23,7 +23,8 @@ print("<!-- " + thread._id + "-->");
 // PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-var canPost = app.Forum.Controller.hasPermission(user, "makePost") && ! request.deleted;
+var canPost = app.Forum.Controller.hasPermission(user, "makePost")
+    && ! request.deleted && thread.commentsEnabled;
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
@@ -67,34 +68,71 @@ function cancelSplit(i) {
         document.getElementById("splitpop"+i).style.display = "none";
 }
 
+var color = "white";
+function toggleHighlight() {
+       var all = document.all ? document.all :
+           document.getElementsByTagName('span');
+       for (var e = 0; e < all.length; e++) {
+           if(all[e].className == "highlight")
+                all[e].style.background = color;
+       }
+
+       color = color == "white" ? "yellow" : "white";
+}
+
 </script>
 
 <div class="caption">
-
 <%
+if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
+     <form action="thread_action">
+     <input type="hidden" name="threadId" value="<%= thread._id %>">
+     <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
+     <div class="popup" id="editpop">
+          <div class="stitle">Edit Thread</div>
+          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= thread.getTitle() %>"></div>
+          <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" value="closed" <%= thread.getClosed() ? "CHECKED" : "" %>></div>
+          <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
+               <input type="submit" class="submit" name="action" value="edit"></div>
+     </div>
+     <%
+}
 if(request.show == "deleted"){ %>
-     <a href="<%=uri.removeArg("show")%>">Hide deleted</a> |
+     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide deleted</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-     <a href="<%=uri.replaceArg("show", "deleted")%>">Show deleted</a> |
+     <a href="<%=uri.replaceArg("show", "deleted")%>"><div class="button">Show deleted</div></a>
      <%
 }
 if(request.show == "moderated"){ %>
-     <a href="<%=uri.removeArg("show")%>">Hide moderated</a> |
+     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide moderated</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
-     <a href="<%=uri.replaceArg("show", "moderated")%>">Show moderated</a> |
+     <a href="<%=uri.replaceArg("show", "moderated")%>"><div class="button">Show moderated</div></a>
      <%
 }
+if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
+     <a href="user_edit.jxp"><div class="button">Edit Users</div></a>
+     <%
+}
+
 %>
 
+     </form>
 </div>
 
 <% app.Forum.html.breadcrumb(thread); %>
 
-<h1><%= thread.getTitle() %></h1>
-
 <%
+if(request.highlight) {
+     print("<h1>"+app.Forum.html.highlight(thread.getTitle(), request.highlight)+"</h1>");
+     print('<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>');
+     postoptions.highlight = request.highlight;
+}
+else {
+     print("<h1>"+ thread.getTitle() +"</h1>");
+}
+
 app.Forum.html.search(thread.topic.name);
 
 postoptions.actions = [];
@@ -105,8 +143,8 @@ postoptions.actions.push(function(post) {
      <input type="hidden" name="select" value="<%= post.getID() %>">
      <%
      if(canSplit && post.getID() > 0){ %>
-           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><% 
-     }  
+           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
+     }
      if(post.deleted == "deleted" && canDelete) { %>
            <input type="submit" class="submit" name="action" value="undelete">
            <%
@@ -126,7 +164,7 @@ postoptions.actions.push(function(post) {
      %>
      <div class="popup" id="splitpop<%= post.getID() %>">
           <div class="stitle">Split Thread at Post</div>
-          <div class="field"><label>New Subject:</label><input type="text" name="subj" value="new thread subject"></div>
+          <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= thread.getTitle() %>"></div>
           <div class="field"><label>Topic</label><%= app.Forum.html.generateTopicSelect(thread) %></div>
           <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
      </div>
@@ -134,7 +172,14 @@ postoptions.actions.push(function(post) {
 <%
 });
 
-thread.decoratorsRender("threaded.replies", postoptions);
+replies = thread.getReplies();
+core.app.forum.data.paging();
+paging = new app.Forum.data.Paging(replies, {pageSize: 5}, request);
+postoptions.replyable = false;
+replies = paging.slice();
+replies.forEach(function(reply){
+    reply.render(postoptions, thread.threaded_pieces);
+});
 
 %>
 
@@ -149,6 +194,8 @@ thread.decoratorsRender("threaded.replies", postoptions);
     %>
 </div>
 </div>
+
+<%= paging.display() %>
 
 
 <% htmlfooter(); %>
