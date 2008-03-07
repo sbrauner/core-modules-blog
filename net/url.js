@@ -45,7 +45,7 @@ URL = function(s){
         var ary = s.split('&');
         for(var i in ary){
             var pair = ary[i].split('=');
-            this.args.push({key: pair[0], value: pair[1]});
+            this.args.push({key: pair[0], value: URL.unescape_queryargs(pair[1])});
         }
     }
 };
@@ -185,6 +185,24 @@ URL.escape_queryargs = function(s){
         }
         t = t+rep;
         s = s.substring(i+1, s.length);
+    }
+    t = t + s;
+    return t;
+};
+
+URL.unescape_queryargs = function(s){
+    s = s.replace(/\+/g, ' ');
+    var re = /%([0123456789abcdef]{2})/;
+    var t = '';
+    while(true){
+        var exec = re.exec(s);
+        if(exec == null) break;
+        var i = exec.index;
+        t = t + s.substring(0, i);
+        var rep = exec[1];
+        var rep = String.fromCharCode(parseInt(rep, 16));
+        t = t + rep;
+        s = s.substring(i+3, s.length);
     }
     t = t + s;
     return t;

@@ -195,11 +195,11 @@ postoptions.actions.push(function(post) {
 replies = thread.getReplies();
 core.app.forum.data.paging();
 paging = new app.Forum.data.Paging(replies, {pageSize: 20}, request);
-postoptions.replyable = false;
 replies = paging.slice();
 
 core.app.forum.html.paging(paging);
 
+postoptions.replyable = false;
 replies.forEach(function(reply){
     reply.render(postoptions, thread.threaded_pieces);
 });

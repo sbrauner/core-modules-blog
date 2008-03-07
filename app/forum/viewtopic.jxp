@@ -83,7 +83,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" h
 <a href="topic_rss.jxp?id=<%= t._id %>">Subscribe to <%= t.name %>'s RSS feed</a>
 
 <%
-core.app.forum.html.topictable(name, description, subs, threadList, actions, tableOptions);
+core.app.forum.html.topictable(name, description, subs, threadList.toArray(), actions, tableOptions);
 
 htmlfooter();
 
