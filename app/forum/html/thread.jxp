@@ -35,7 +35,7 @@ if(deletedPosts) link += "&deleted=true";
     <div class="author">started by <%= f.author.name %></div>
     <div class="ts">at <%= f.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %></div>
   </td>
-  <td><%= t.count.toFixed() %></td>
+  <td><%= t.count %></td>
 
   <% if (!deletedPosts) { %>
   <td class="alignleft lastpost">
