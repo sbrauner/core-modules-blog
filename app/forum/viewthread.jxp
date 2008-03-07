@@ -19,7 +19,7 @@ if(thread == null){
 
 var titleStr = "";
 var a = thread.topic.getAncestors();
-for(var i=0; i<a.length; i++) 
+for(var i=0; i<a.length; i++)
         titleStr += " > " + a[i];
 core.app.forum.html.forumheader("Forum | "+thread.getTitle()+titleStr);
 
@@ -204,7 +204,10 @@ replies.forEach(function(reply){
     reply.render(postoptions, thread.threaded_pieces);
 });
 
+core.app.forum.html.paging(paging);
+
 %>
+
 
 <div class="threadFooter">
 <div class="opt">
@@ -217,8 +220,6 @@ replies.forEach(function(reply){
     %>
 </div>
 </div>
-
-<% core.app.forum.html.paging(paging); %>
 
 
 <% htmlfooter(); %>
