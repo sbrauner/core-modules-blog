@@ -1,13 +1,13 @@
-URI = function(s){
-    // This class is a representation of a URI. Right now it is mostly
+URL = function(s){
+    // This class is a representation of a URL. Right now it is mostly
     // intended to support adding/replacement/removal of query args, but it could
-    // presumably be used for other URI-related things too.
+    // presumably be used for other URL-related things too.
     // Query args are stored in an array, since there can be more than one of the
-    // same arg in a URI.
+    // same arg in a URL.
     // (If we ever write a multidict or anything, it should be used here.)
 
     // Parse scheme and hostname. Sometimes this is absent
-    // (the URI starts with a slash).
+    // (the URL starts with a slash).
     this.scheme = "";
     this.hostname = "";
     this.args = [];
@@ -50,8 +50,8 @@ URI = function(s){
     }
 };
 
-URI.prototype.toString = function(){
-    // Generate the string for this URI object.
+URL.prototype.toString = function(){
+    // Generate the string for this URL object.
     if(this.hostname){
         var str = this.scheme + "://" + this.hostname;
         if(this.port)
@@ -60,7 +60,7 @@ URI.prototype.toString = function(){
     }
     else
         var str = this.path;
-    var encodeURIComponent = URI.escape_queryargs;
+    var encodeURIComponent = URL.escape_queryargs;
     if(this.args.length > 0){
         str += '?';
 
@@ -70,38 +70,38 @@ URI.prototype.toString = function(){
     return str;
 };
 
-URI.prototype.clone = function(){
-    // Clone a URI object. FIXME: when we get Prototype working, use their
+URL.prototype.clone = function(){
+    // Clone a URL object. FIXME: when we get Prototype working, use their
     // Object.clone method.
-    return new URI(this.toString());
+    return new URL(this.toString());
 };
 
-URI.prototype.addArg = function(key, value){
-    // Add a query arg to this URI.
-    // Be careful! If you create a new URI from the current URL,
+URL.prototype.addArg = function(key, value){
+    // Add a query arg to this URL.
+    // Be careful! If you create a new URL from the current URL,
     // and add the same argument, you'll end up with a long list of
     // query arguments. Please consider replaceArg instead.
-    // @return a new URI, with the additional query argument added.
+    // @return a new URL, with the additional query argument added.
     c = this.clone();
     return c._addArg(key, value);
 };
 
-URI.prototype._addArg = function(key, value){
+URL.prototype._addArg = function(key, value){
     this.args.push({key: key, value: value});
     return this;
 };
 
-URI.prototype.replaceArg = function(key, value){
+URL.prototype.replaceArg = function(key, value){
     // Replace the first query arg with the key "key" with the value "value".
     // If there is no query arg with key "key", then just add a key:arg pair at the
     // end.
-    // @return a new URI, with the old query argument (if any) removed and a new
+    // @return a new URL, with the old query argument (if any) removed and a new
     //    one added.
     c = this.clone();
     return c._replaceArg(key, value);
 };
 
-URI.prototype._replaceArg = function(key, value){
+URL.prototype._replaceArg = function(key, value){
     for(var i in this.args){
         if(this.args[i].key == key){
             this.args[i].value = value;
@@ -111,16 +111,16 @@ URI.prototype._replaceArg = function(key, value){
     return this._addArg(key, value);
 };
 
-URI.prototype.removeArg = function(key){
-    // Remove the first arg with the key "key" from a URI.
-    // @return a new URI with either the same args (if none had the right key) or
+URL.prototype.removeArg = function(key){
+    // Remove the first arg with the key "key" from a URL.
+    // @return a new URL with either the same args (if none had the right key) or
     //         one less arg (if that arg had the same key).
     c = this.clone();
     c._removeArg(key);
     return c;
 };
 
-URI.prototype._removeArg = function(key){
+URL.prototype._removeArg = function(key){
     var start = false;
     for(var i in this.args){
         if(!start && this.args[i].key == key){
@@ -135,36 +135,36 @@ URI.prototype._removeArg = function(key){
     return this;
 };
 
-URI.prototype.clearArgs = function(){
+URL.prototype.clearArgs = function(){
     c = this.clone();
     c._clearArgs();
     return c;
 };
 
-URI.prototype._clearArgs = function(){
+URL.prototype._clearArgs = function(){
     this.args = [];
 };
 
 // I can never remember the right name for these!
-URI.prototype.addQuery = URI.prototype.addArg;
-URI.prototype.replaceQuery = URI.prototype.replaceArg;
-URI.prototype.removeQuery = URI.prototype.removeArg;
-URI.prototype.clearQueries = URI.prototype.clearArgs;
+URL.prototype.addQuery = URL.prototype.addArg;
+URL.prototype.replaceQuery = URL.prototype.replaceArg;
+URL.prototype.removeQuery = URL.prototype.removeArg;
+URL.prototype.clearQueries = URL.prototype.clearArgs;
 
-URI.prototype.replaceLastPath = function(s){
+URL.prototype.replaceLastPath = function(s){
     c = this.clone();
     c._replaceLastPath(s);
     return c;
 };
 
-URI.prototype._replaceLastPath = function(s){
+URL.prototype._replaceLastPath = function(s){
     var components = this.path.split('/');
     components.pop();
     components.push(s);
     this.path = components.join('/');
 };
 
-URI.escape_queryargs = function(s){
+URL.escape_queryargs = function(s){
     // This temporary function is meant to be roughly equivalent to the JS
     // encodeURIComponent function, which isn't implemented yet in the appserver.
     var re = /[^A-Za-z0-9\._~-]/;
