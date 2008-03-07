@@ -146,7 +146,7 @@ app.Forum.html.endBreadcrumbTable = function() {
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(topic); %>
-    <div class="second_level"><a href="viewtopic?name=<%= escape( topic.name )%>"><%= topic.name %></a></div><%
+    <div class="second_level"><%= topic.name %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
