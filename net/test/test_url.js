@@ -3,7 +3,8 @@ core.net.url();
 s = 'http://localhost:8080/a/b/c/?hi=there&you=funny';
 u = new URL(s);
 assert(u.scheme == 'http');
-assert(u.hostname == 'localhost:8080');
+assert(u.hostname == 'localhost');
+assert(u.port == "8080");
 assert(u.path == '/a/b/c/');
 assert(u.toString() == s);
 
@@ -17,14 +18,16 @@ s = 'localhost:8080/bugs/';
 u = new URL(s);
 
 assert(u.scheme == 'http');
-assert(u.hostname == 'localhost:8080');
+assert(u.hostname == 'localhost');
+assert(u.port == "8080");
 assert(u.path == '/bugs/');
 
 s = "http://localhost:8080/bugs/?number=&title=&owner=Ethan&status=&severity=&type=&project=&area=&creationDate=&lastModified=";
 u = new URL(s);
 
 assert(u.scheme = 'http');
-assert(u.hostname == 'localhost:8080');
+assert(u.hostname == 'localhost');
+assert(u.port == "8080");
 assert(u.path == '/bugs/');
 
 s = "/bugs/?number=&title=";
@@ -51,7 +54,8 @@ s = "localhost:8080/bugs/?number=1#anchor";
 u = new URL(s);
 assert(u.toString() == "http://"+s);
 assert(u.anchor == "anchor");
-assert(u.hostname == "localhost:8080");
+assert(u.hostname == "localhost");
+assert(u.port == "8080");
 assert(u.path == "/bugs/");
 
 s = "/bugs/#anchor1";
