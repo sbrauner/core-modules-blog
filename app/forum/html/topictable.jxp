@@ -25,74 +25,17 @@ var hideTopic = app.Forum.Controller.hasPermission(user, "hideTopic");
 var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
 var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
 
-var movetargets = [];
 
-if(moveThread) {
-    var topics = db.forum.topics.find({parent: null});
-    topics = topics.toArray();
-    movetargets = movetargets.concat(topics);
-}
-if(deleteThread)
-    movetargets.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-
-if(moderateThread)
-    movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
-
-
-exploreTopic = function(topic, indent, filter){
-    retStr = "";
-    indent = indent || 0;
-    istr = "";
-    if(! filter(topic)) return;
-    for(var i = 0; i < indent; i++){
-        istr += "&nbsp;";
-    }
-    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
-    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
-    for(var j=0; j<subtopics.length; j++) {
-            retStr += exploreTopic(subtopics[j], indent + 2, filter);
-    }
-    return retStr;
-};
-
-selectify = function(choices, attrfunc, options){
-    // Create an action which, given an object, generates an HTML select
-    // for all topics it could move to, recursively.
-    //
-    // choices is the array of topics, including possible special topics
-    // for "Deleted" and "Moderated".
-    //
-    // attrfunc is a function which takes the object and returns a mapping
-    // which is converted to attributes for the select object.
-    //
-    // options.filter is a function which takes the object we're generating
-    // the select for and the choice we're putting in the select and returns
-    // false to prune or true to not-prune that choice.
-    attrfunc = attrfunc || function (){ return {}; };
-    options = options || {};
-    filter = (options.filter == null) ? function(){return true;} : options.filter;
-    return function(t){
-        var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
-        retStr+="<option value=\"\">&nbsp;</option>";
-        for(i=0; i<choices.length; i++) {
-            retStr += exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); });
-        }
-        return retStr +"</select>";
-    }
-};
-
-if(movetargets.length > 1){
-    actions.push({title : "Move Thread",
-                  func : selectify(movetargets, function(t){ return {onChange: "move('"+t._id+"')"}; } )
-                 });
-}
-
+var topics = db.forum.topics.find({parent: null}).toArray();
 topicActions = [];
+topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
+
+t = topic || topics[0];
 
 if(moveTopic){
     topicActions.push({title : "Move Topic",
-                       func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
-                                        function(t){ return {onChange: "moveTopic('"+t._id+"')"}; },
+                       func : app.Forum.html.selectify(topics,
+                                        function(t){ return {onChange: "moveTopic('"+t._id+"')", id: t._id.toString()}; },
                                         {filter: function(t, option) { return t._id != option._id; } } )
                       });
 }
@@ -103,6 +46,30 @@ if(hideTopic){
                            app.Forum.html.form.hidden(topic);
                            return "";
                        }});
+}
+
+var movetargets = [];
+
+if(app.Forum.Controller.hasPermission(user, "moveThread")){
+    var topics = db.forum.topics.find({parent: null});
+    topics = topics.toArray();
+    movetargets = movetargets.concat(topics);
+}
+
+
+deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+if(deleteThread)
+    movetargets.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+if(moderateThread)
+    movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+if(movetargets.length > 0) {
+    actions.push({title : "Move Thread",
+                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "move('"+topic._id+"')", id: topic._id.toString() }; } )
+                 });
 }
 
 
