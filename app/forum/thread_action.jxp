@@ -3,18 +3,18 @@
 // the thread themselves.
 // Doesn't actually render; just redirect.
 core.app.forum.html.check_ban();
-core.net.uri();
+core.net.url();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 //core.app.forum.data.deletion();
 core.user.auth();
-var uri = new URI(request.getURL());
+var url = new URL(request.getURL());
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
 var selected = [];
-for(var i in uri.args){
-    if(uri.args[i].key == "select"){
-        selected.push(uri.args[i].value);
+for(var i in url.args){
+    if(url.args[i].key == "select"){
+        selected.push(url.args[i].value);
     }
 }
 
@@ -122,7 +122,7 @@ if(request.action == "split"){
         newthread.topic.changeCounts(1, 1);
         newthread.modifyPostCount(newup);
 
-        back = uri.clearArgs().replaceLastPath("viewthread").addQuery("id", newthread._id).toString();
+        back = url.clearArgs().replaceLastPath("viewthread").addQuery("id", newthread._id).toString();
     }
 }
 

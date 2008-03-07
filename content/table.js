@@ -39,7 +39,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 */
 
 core.content.html2();
-core.net.uri();
+core.net.url();
 core.util.db();
 
 function htmltable(specs) {
@@ -117,7 +117,7 @@ function htmltable(specs) {
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
         var sort = this._sort();
-        var u = new URI(request.getURL());
+        var u = new URL(request.getURL());
         for(var i in sort){
             u = u.removeArg("sort"+i);
         }

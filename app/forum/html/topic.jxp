@@ -3,7 +3,7 @@ app.Forum.data.Topic();
 
 processArgs("topic", "options");
 
-var link = "viewtopic?name="+URI.escape_queryargs(topic.name);
+var link = "viewtopic?name="+URL.escape_queryargs(topic.name);
 if(topic._id == app.Forum.Controller.specialDeletedID || 
    topic._id == app.Forum.Controller.specialModeratedID)
     link = "viewtopic?id="+topic._id;

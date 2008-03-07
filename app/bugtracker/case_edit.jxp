@@ -4,7 +4,7 @@ core.app.bugtracker.data.project();
 core.app.bugtracker.data.helper();
 core.user.user();
 core.user.auth();
-core.net.uri();
+core.net.url();
 core.content.forms();
 if (! user ){
     user = Auth.getUser(request);
@@ -75,7 +75,7 @@ if(request.fstatus){
             var subj = "[cases] Case " + feature.number + " \"" + feature.title + "\"";
             if(! feature_new) subj += " changed";
             else subj += " added";
-            var link = new URI(request.getURL()).replaceArg("id", feature._id)
+            var link = new URL(request.getURL()).replaceArg("id", feature._id)
             link.hostname = request.getHost();
             link.port = request.getPort();
             link = link.toString();

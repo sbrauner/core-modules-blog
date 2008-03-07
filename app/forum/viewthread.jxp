@@ -4,7 +4,7 @@ core.app.forum.controller();
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
 
-    core.net.uri();
+    core.net.url();
 core.app.forum.html.form();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
@@ -53,7 +53,7 @@ else {
     postoptions.filter = function(p) { if (p.deleted) return false; return true; };
 }
 
-var uri = new URI(request.getURL());
+var url = new URL(request.getURL());
 
 // ------------
 head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getTitle()+'" href="thread_rss.jxp?id='+thread._id+'" />');
@@ -98,17 +98,17 @@ if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <%
 }
 if(request.show == "deleted"){ %>
-     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide deleted</div></a>
+     <a href="<%=url.removeArg("show")%>"><div class="button">Hide deleted</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){ %>
-     <a href="<%=uri.replaceArg("show", "deleted")%>"><div class="button">Show deleted</div></a>
+     <a href="<%=url.replaceArg("show", "deleted")%>"><div class="button">Show deleted</div></a>
      <%
 }
 if(request.show == "moderated"){ %>
-     <a href="<%=uri.removeArg("show")%>"><div class="button">Hide moderated</div></a>
+     <a href="<%=url.removeArg("show")%>"><div class="button">Hide moderated</div></a>
      <%
 } else if(app.Forum.Controller.hasPermission(user, "viewModerated")){ %>
-     <a href="<%=uri.replaceArg("show", "moderated")%>"><div class="button">Show moderated</div></a>
+     <a href="<%=url.replaceArg("show", "moderated")%>"><div class="button">Show moderated</div></a>
      <%
 }
 if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
@@ -174,7 +174,7 @@ postoptions.actions.push(function(post) {
 
 replies = thread.getReplies();
 core.app.forum.data.paging();
-paging = new app.Forum.data.Paging(replies, {pageSize: 5}, request);
+paging = new app.Forum.data.Paging(replies, {pageSize: 20}, request);
 postoptions.replyable = false;
 replies = paging.slice();
 replies.forEach(function(reply){

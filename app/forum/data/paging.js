@@ -47,11 +47,11 @@ app.Forum.data.Paging.prototype.slice = function(){
     return ary;
 };
 
-app.Forum.data.Paging.prototype.display = function(uri, paramName, cssClass){
-    uri = uri || new URI(request.getURL());
+app.Forum.data.Paging.prototype.display = function(url, paramName, cssClass){
+    url = url || new URL(request.getURL());
     paramName = paramName || "page";
     cssClass = cssClass || "";
-    return app.Forum.data.Paging.display(this._numPages, this.page, uri, paramName, cssClass);
+    return app.Forum.data.Paging.display(this._numPages, this.page, url, paramName, cssClass);
 };
 
 /**
@@ -60,11 +60,11 @@ app.Forum.data.Paging.prototype.display = function(uri, paramName, cssClass){
 *
 * @return /foo?page=5
 */
-app.Forum.data.Paging.display = function( numPages , curPage , uri , paramName , cssClass ){
+app.Forum.data.Paging.display = function( numPages , curPage , url , paramName , cssClass ){
     var s = "";
     for(var i = 0; i < numPages; i++){
         if(i != curPage){
-            s += "<a class=\""+cssClass+"\" href=\""+uri.replaceArg(paramName, i).toString()+"\">"+(i+1)+"</a> ";
+            s += "<a class=\""+cssClass+"\" href=\""+url.replaceArg(paramName, i).toString()+"\">"+(i+1)+"</a> ";
         } else {
             s += (i+1) + " ";
         }
