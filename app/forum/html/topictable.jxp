@@ -39,7 +39,13 @@ if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
                                         function(t){ return {onChange: "moveTopic('"+t._id+"')", id: t._id.toString()}; },
-                                        {filter: function(t, option) { return t._id != option._id; } } )
+                                        {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
+                                            // We wrap the function so that when we get the Special Topics,
+                                            // we don't generate a <select> for you to move them.
+                                            if(parseInt(t._id.toString()) < 10)
+                                                return "&nbsp;";
+                                            return proceed(t);
+                                        })
                       });
 }
 
