@@ -74,7 +74,7 @@ function cancelSplit(i) {
 <%
 if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <form action="thread_action">
-     <input type="hidden" name="threadId" value="<%= thread._id %>"> 
+     <input type="hidden" name="threadId" value="<%= thread._id %>">
      <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
      <div class="popup" id="editpop">
           <div class="stitle">Edit Thread</div>
@@ -153,7 +153,14 @@ postoptions.actions.push(function(post) {
 <%
 });
 
-thread.decoratorsRender("threaded.replies", postoptions);
+replies = thread.getReplies();
+core.app.forum.data.paging();
+paging = new app.Forum.data.Paging(replies, {pageSize: 5});
+postoptions.replyable = false;
+replies = paging.slice();
+replies.forEach(function(reply){
+    reply.render(postoptions, thread.threaded_pieces);
+});
 
 %>
 
