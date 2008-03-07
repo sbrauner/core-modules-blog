@@ -1,5 +1,7 @@
 <%
-    processArgs("topic", "options");
+app.Forum.data.Topic();
+
+processArgs("topic", "options");
 
 var link = "viewtopic?name="+URI.escape_queryargs(topic.name);
 if(topic._id == app.Forum.Controller.specialDeletedID || 
@@ -10,10 +12,11 @@ var actions = (options.actions == null) ? [] : options.actions;
 <tr>
   <td class="alignleft">
     <a href="<%= link %>"><%= topic.name%></a>
-    <nobr><%= topic.description %></nobr>
+    <%= topic.description %>
   </td>
   <td>
     <%= topic.threadCount.toFixed(0) %>
+    <% /*topic.getThreadCount()*/ %>
   </td>
   <td>
     <%= topic.postCount.toFixed(0) %>

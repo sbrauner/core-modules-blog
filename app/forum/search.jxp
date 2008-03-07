@@ -73,8 +73,9 @@ core.app.forum.controller();
 core.app.forum.html.forumheader("Forums | Search results");
 core.app.forum.data.thread();
 
-var query = request.query;
 
+
+var query = request.query;
 
 print("<div>Search results for \""+request.query+"\":</div>");
 
@@ -118,7 +119,6 @@ else {
      No matches in threads.
      <%
 }
-
 
 htmlfooter();
 %>
