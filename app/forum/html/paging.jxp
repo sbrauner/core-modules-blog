@@ -1,4 +1,16 @@
 <%
+/**
+ * @param cssClass the class to make each link (defaults to absent)
+ * @param url the url which shows a given page (defaults to current page)
+ * @param paramName the argument name to use in the URL (defaults to "page") (FIXME: use routes)
+ * @param first      display a link that goes to the first page?
+ * @param prev       display a link that goes to the previous page?
+ *                   If the "prev" link goes to page 1, it will say "first".
+ * @param next       display a link that goes to the next page?
+ *                   If the "next" link goes to page the last page, it will say "last".
+ * @param last       display a link that goes to the last page?
+ * 
+ */
 processArgs("pager");
 core.ext.getdefault();
 var w = pager.getWindow();

@@ -19,7 +19,7 @@ if(thread == null){
 
 var titleStr = "";
 var a = thread.topic.getAncestors();
-for(var i=0; i<a.length; i++) 
+for(var i=0; i<a.length; i++)
         titleStr += " > " + a[i];
 core.app.forum.html.forumheader("Forum | "+thread.getTitle()+titleStr);
 
@@ -182,10 +182,9 @@ postoptions.actions.push(function(post) {
 
           <div class="stitle">Split Thread at Post</div>
           <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= thread.getTitle() %>"></div>
-          <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; })(thread) %></div>
-          <script type="text/javascript">
-          document.getElementById("<%= thread.topic._id %>").defaultSelected = true;
-          </script>
+        <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+                                                                            {select: function(thread, o){ return o._id == thread.topic._id }}
+                                                                           )(thread) %></div>
           <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
      </div>
      </form>
@@ -204,7 +203,10 @@ replies.forEach(function(reply){
     reply.render(postoptions, thread.threaded_pieces);
 });
 
+core.app.forum.html.paging(paging);
+
 %>
+
 
 <div class="threadFooter">
 <div class="opt">
@@ -217,8 +219,6 @@ replies.forEach(function(reply){
     %>
 </div>
 </div>
-
-<% core.app.forum.html.paging(paging); %>
 
 
 <% htmlfooter(); %>

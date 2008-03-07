@@ -1,4 +1,4 @@
-<% 
+<%
 app.Forum.html.form = {};
 function stickyForm(id, action, text) { %>
 
@@ -8,7 +8,7 @@ function stickyForm(id, action, text) { %>
       <input type="submit" value="<%= text %>">
 </form>
 
-<% } 
+<% }
 
 function editorPick(thread) {
          if(thread.editorPick) { %>
@@ -19,7 +19,7 @@ function editorPick(thread) {
 }
 
 
-app.Forum.html.exploreTopic = function(topic, indent, filter){
+app.Forum.html.exploreTopic = function(topic, indent, filter, select){
     retStr = "";
     indent = indent || 0;
     istr = "";
@@ -27,10 +27,11 @@ app.Forum.html.exploreTopic = function(topic, indent, filter){
     for(var i = 0; i < indent; i++){
         istr += "&nbsp;";
     }
-    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
+    var selected = (select(topic))? " selected=\"1\"" : "";
+    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+topic.name+"</option>";
     var subtopics = db.forum.topics.find( { parent : topic }).toArray();
     for(var j=0; j<subtopics.length; j++) {
-            retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter);
+        retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter, select);
     }
     return retStr;
 };
@@ -58,6 +59,7 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     attrfunc = attrfunc || function (){ return {}; };
     options = options || {};
     filter = (options.filter == null) ? function(){return true;} : options.filter;
+    select = (options.select == null) ? function(){return false;} : options.select;
     return function(t){
 
         if(parseInt(t._id.toString()) < 10)
@@ -66,7 +68,8 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
-            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); });
+            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); },
+                                                  function(choice){ return select(t, choice); });
         }
         return retStr +"</select>";
     }

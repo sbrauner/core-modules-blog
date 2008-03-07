@@ -20,6 +20,15 @@ core.ext.getdefault();
 
 // Where should page numbers be zero-based, when one-based?
 
+/**
+* @param ary                     the array to be paginated.
+* @param config.pageSize         how many results on each page (defaults to request.pageSize or 20)
+* @param config.page             which page to display (defaults to request.page or 1)
+* @param config.displayOpts      what options to use in displaying the pager (see paging.jxp)
+* @param config.padding          how many page links to show when rendering the pager (defaults to 2)
+* @param config.nextlinkInterval how many pages the "next" link should advance (defaults to twice padding plus 1)
+*/
+
 app.Forum.data.Paging = function(ary, config, request){
     config = config || {};
     request = request || {};
@@ -32,7 +41,7 @@ app.Forum.data.Paging = function(ary, config, request){
     this.padding = Ext.getdefault(config, 'padding', 2);
     this.nextlinkInterval = Ext.getdefault(config, 'nextlinkInterval', 2*this.padding+1);
 
-    this.displayOpts = config.displayOpts;
+    this.displayOpts = Ext.getdefault(config, 'displayOpts', {});
 };
 
 app.Forum.data.Paging.prototype.numPages = function(){
@@ -55,36 +64,17 @@ app.Forum.data.Paging.prototype.slice = function(){
     return ary;
 };
 
-app.Forum.data.Paging.prototype.display = function(url, paramName, cssClass){
-    url = url || new URL(request.getURL());
-    paramName = paramName || "page";
-    cssClass = cssClass || "";
-    return app.Forum.data.Paging.display(this._numPages, this.page, url, paramName, cssClass);
-};
-
-/**
-* @link /foo?
-* @param paramName = "page"
-*
-* @return /foo?page=5
-*/
-app.Forum.data.Paging.display = function( numPages , curPage , url , paramName , cssClass ){
-    var s = "";
-    for(var i = 1; i <= numPages; i++){
-        if(i != curPage){
-            s += "<a class=\""+cssClass+"\" href=\""+url.replaceArg(paramName, i).toString()+"\">"+(i)+"</a> ";
-        } else {
-            s += (i) + " ";
-        }
-    }
-    return s;
-};
-
 app.Forum.data.Paging.prototype.getWindow = function(){
     return new app.Forum.data.Paging.Window(this, this.page, this.padding);
 };
 
+// A Window is just a range of pages.
 // In this class, everything is one-based?
+
+/**
+* @param page is the page number you're currently on.
+* @param padding is the amount to extend the window in either direction.
+*/
 app.Forum.data.Paging.Window = function(pager, page, padding){
     padding = padding || 0;
     this.first = page-padding;
