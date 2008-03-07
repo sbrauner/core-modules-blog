@@ -62,3 +62,4 @@ s = "/bugs/#anchor1";
 u = new URL(s).addArg("number", "40").addArg("truth", "").addArg("you", "honey");
 assert(u.toString() == "/bugs/?number=40&truth=&you=honey#anchor1");
 
+assert(URL.unescape_queryargs('%41+%45') == "A E");
