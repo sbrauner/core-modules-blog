@@ -27,9 +27,10 @@ app.bugtracker.data.Feature = function() {
 };
 
 app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',
-                                  REVIEWED: 'reviewed',
-                                  FIXED: 'fixed',
-                                  CLOSED: 'closed' };
+						 REVIEWED: 'reviewed',
+						 NOT_REPRODUCABLE : 'not reproducable' ,
+						 FIXED: 'fixed',
+						 CLOSED: 'closed' };
 
 app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
