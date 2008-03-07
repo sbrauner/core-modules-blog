@@ -281,4 +281,4 @@ Search._doneInit = true;
 Search._default.lock();
 Search._default[0].setReadOnly( true );
 
-Search.log.level = Search.log.LEVEL.INFO;
+Search.log.level = Search.log.LEVEL.ERROR;

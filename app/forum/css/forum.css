@@ -176,6 +176,10 @@ div.threadFooter {
    background-color: #EEEEEE !important;
 }
 
+#style1 tr.hidden td {
+   background-color: #EEEEEE;
+}
+
 #style1 tr.edPick td {
    font-weight: bold;
 }

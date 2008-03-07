@@ -9,27 +9,20 @@ if(topic._id == app.Forum.Controller.specialDeletedID ||
     link = "viewtopic?id="+topic._id;
 var actions = (options.actions == null) ? [] : options.actions;
 %>
-<tr>
-  <td class="alignleft">
-    <a href="<%= link %>"><%= topic.name%></a>
-    <%= topic.description %>
-  </td>
-  <td>
-    <%= topic.threadCount.toFixed(0) %>
-    <% /*topic.getThreadCount()*/ %>
-  </td>
-  <td>
-    <%= topic.postCount.toFixed(0) %>
-  </td>
- <%
-  if (actions.length > 0){ 
-     for(var i in actions){ %>
-        <td><%= actions[i].func(topic) %></td>
-        <% 
-      }
-  } 
-%>
 
+
+<tr <%= topic.hidden ? 'class="hidden"' : '' %>>
+  <td class="alignleft"><a href="<%= link %>"><%= topic.name%></a><%= topic.description %></td>
+  <td><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
+  <td><%= topic.postCount.toFixed(0) %></td>
+
+  <%
+  if (actions.length > 0){ 
+       for(var i in actions){ %>
+            <td><%= actions[i].func(topic) %></td>
+            <% 
+       }
+  }%>
 </tr>
 
-</div>
+
