@@ -76,8 +76,7 @@ Search = {
     } ,
 
     index : function( obj, weights ){
-        log(tojson(Search.indexSub(obj, obj, weights)));
-        return Search.indexSub(obj, obj, weights);
+         return Search.indexSub(obj, obj, weights);
     },
 
     indexSub : function( top , obj , weights ){
@@ -100,7 +99,7 @@ Search = {
                 var idx = Search.getIndexName( weights[field] );
 
                 var words = top[idx];
-                if ( !words || words == ""){
+                if ( !words ){
                     words = [];
                     top[idx] = words;
                 }
