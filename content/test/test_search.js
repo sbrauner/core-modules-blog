@@ -49,6 +49,7 @@ Search.fixTable(t, OPTIONS);
 assert( Search.search( t, "text", {min: 1}). length == 1);
 assert( Search.search( t, "go", {min: 1}). length == 0);
 
+t.remove(o);
 
 // nested indexing with funny weights
 var OPTIONS = { title: 1, posts: {text: 0.2}};
@@ -67,6 +68,7 @@ Search.fixTable(t, OPTIONS);
 assert( Search.search( t, "text", {min: 1}). length == 1);
 assert( Search.search( t, "go", {min: 1}). length == 0);
 
+t.remove(o);
 
 //exit();
 

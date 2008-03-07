@@ -16,7 +16,9 @@ app.Forum.html.search("forums");
 
 head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Picks" href="edpick_rss.jxp" />');
 
-var topics = app.Forum.data.Topic.list().toArray();
+var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
+
+var topics = app.Forum.data.Topic.list(null, showHidden).toArray();
 
 // Deal with the "virtual" topics for Deleted and Moderated posts by adding
 // "fake" topics to the topics array.

@@ -2,8 +2,8 @@
 
 core.text.stem();
 
-if ( Search && Search._doneInit )
-    return;
+//if ( Search && Search._doneInit )
+//    return;
 
 Search = {
 
@@ -126,14 +126,14 @@ Search = {
     } ,
 
     queryToArray : function(queryString){
-
         var words = [];
+        
         queryString.split( Search.wordRegex ).forEach( function( z ){
-            z = Search.cleanString( z );
-            if ( z.length == 0 )
-                return;
-            words.push( z );
-        } );
+                z = Search.cleanString( z );
+                if ( z.length == 0 )
+                    return;
+                words.push( z );
+            } );
         words = words.unique();
         return words;
     },

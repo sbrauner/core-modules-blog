@@ -15,6 +15,97 @@ if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
 // Whether to try to create links for all these functions.
 var createThread = (opts.createThread == null) ? true : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+
+// We implement some actions here because we use them in both index and
+// viewtopic.
+var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
+var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
+var hideTopic = app.Forum.Controller.hasPermission(user, "hideTopic");
+var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+var movetargets = [];
+
+if(moveThread) {
+    var topics = db.forum.topics.find({parent: null});
+    topics = topics.toArray();
+    movetargets = movetargets.concat(topics);
+}
+if(deleteThread)
+    movetargets.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+if(moderateThread)
+    movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+
+exploreTopic = function(topic, indent, filter){
+    retStr = "";
+    indent = indent || 0;
+    istr = "";
+    if(! filter(topic)) return;
+    for(var i = 0; i < indent; i++){
+        istr += "&nbsp;";
+    }
+    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
+    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
+    for(var j=0; j<subtopics.length; j++) {
+            retStr += exploreTopic(subtopics[j], indent + 2, filter);
+    }
+    return retStr;
+};
+
+selectify = function(choices, attrfunc, options){
+    // Create an action which, given an object, generates an HTML select
+    // for all topics it could move to, recursively.
+    //
+    // choices is the array of topics, including possible special topics
+    // for "Deleted" and "Moderated".
+    //
+    // attrfunc is a function which takes the object and returns a mapping
+    // which is converted to attributes for the select object.
+    //
+    // options.filter is a function which takes the object we're generating
+    // the select for and the choice we're putting in the select and returns
+    // false to prune or true to not-prune that choice.
+    attrfunc = attrfunc || function (){ return {}; };
+    options = options || {};
+    filter = (options.filter == null) ? function(){return true;} : options.filter;
+    return function(t){
+        var retStr = "<select id=\""+t._id+"\" " +Util.format_htmlattr(attrfunc(t)) + ">";
+        retStr+="<option value=\"\">&nbsp;</option>";
+        for(i=0; i<choices.length; i++) {
+            retStr += exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); });
+        }
+        return retStr +"</select>";
+    }
+};
+
+if(movetargets.length > 1){
+    actions.push({title : "Move Thread",
+                  func : selectify(movetargets, function(t){ return {onChange: "move('"+t._id+"')"}; } )
+                 });
+}
+
+topicActions = [];
+
+if(moveTopic){
+    topicActions.push({title : "Move Topic",
+                       func : selectify([{_id: null, name: "(:Top Level:)"}].concat(topics),
+                                        function(t){ return {onChange: "moveTopic('"+t._id+"')"}; },
+                                        {filter: function(t, option) { return t._id != option._id; } } )
+                      });
+}
+
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
+}
+
+
 %>
 <script type="text/javascript">
 
@@ -24,6 +115,12 @@ function move(threadId) {
          ajax(passData, "moveThread.jxp", reload, "POST");
 }
 
+function moveTopic(topicId) {
+         targetId = document.getElementById(topicId).value;
+         var passData = "topic="+topicId+"&to="+targetId;
+         ajax(passData, "topic_move.jxp", reload, "POST");
+}
+
 function reload() {
          location.reload();
 }
@@ -31,6 +128,11 @@ function reload() {
 function togglePick(threadId) {
          var passData = "thread="+threadId;
          ajax(passData, "editorPick.jxp", reload);
+}
+
+function toggleHide(topicId) {
+    var passData = "topic="+topicId;
+    ajax(passData, "topic_hide.jxp", reload);
 }
 
 function showPopup(id) {
@@ -105,8 +207,11 @@ if(subs && subs.length > 0){ %>
        <th>
          Posts
        </th>
+    <% for(i=0; i < topicActions.length; i++) { %>
+       <th><%= topicActions[i].title %></th>
+       <% } %>
      </tr>
-   <% subs.forEach(app.Forum.renderer.topic); %>
+                             <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
    </table>
 <%
 }

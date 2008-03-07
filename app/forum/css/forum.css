@@ -217,11 +217,25 @@ input.submit, input.button {
              border: 1px solid white;
 }
 
+
 div.button {
            margin-left: 55px;
            border: 1px solid #9ac0cc;
-           float: left;
 }
+div.caption input.submit {
+            cursor: pointer;
+            border: 1px solid #369fbf;
+}
+div.caption div.button {
+           margin: 0px 1px 10px 3px;
+           display: inline;
+           padding: 2px 5px 1px;
+           background: #369fbf;
+           border: 1px solid #369fbf;
+           color: white;
+           font-size: 13px;
+}
+
 span.highlight {
            background: yellow;
 }
@@ -272,3 +286,25 @@ table.search div {
           text-align: left;
 }
 
+
+/* Search results page */
+
+div.threadbox {
+      background: grey;
+      border: 1px solid black;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+}
+
+div.threadbox div.title {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 5px;
+}
+
+div.threadbox div.content {
+      background: white;
+      border: 1px solid black;
+      margin: 5px 5px 5px 20px;
+      padding: 5px;
+}
