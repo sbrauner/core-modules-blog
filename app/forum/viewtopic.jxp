@@ -43,6 +43,13 @@ else {
     tableOptions = {parent: t.parent, thisid: t._id};
 }
 
+var titleStr = "";
+var a = t.getAncestors();
+for(var i=0; i<a.length; i++) 
+        titleStr += " > " + a[i];
+core.app.forum.html.forumheader("Forum |"+titleStr);
+
+
 var actions = [];
 if(app.Forum.Controller.hasPermission(user, "stickyThread")){
     actions.push({ title : "Toggle Sticky",
@@ -68,32 +75,6 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
-
-core.app.forum.html.forumheader("Forum | " + name);
-log("stack: "+app.Forum.html.topicStack(t));
-%>
-
-
-<!--<table id="style1" cellspacing="0" >
-  <tr>
-    <th scope="col" class="article">
-      <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
-      <%
-      var topicStack = "";
-      var tempTopic = t;
-      while(tempTopic.parent != null) {
-           tempTopic = tempTopic.parent;
-           topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
-      }
-      print(topicStack);
-      %>
-      <div class="second_level"><%= t.name %></div>
-    </th>
-</tr>
-</table>
--->
-
-<%
 app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');

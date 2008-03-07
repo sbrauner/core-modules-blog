@@ -3,6 +3,7 @@
 <%
 core.content.table();
 core.net.ipaddr();
+core.app.forum.html.forumheader("Forum | Banned IPs");
 
 if(request.banip){
     var ip = request.banip.trim();

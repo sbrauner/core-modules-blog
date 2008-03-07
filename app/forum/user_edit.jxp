@@ -6,7 +6,6 @@ if(! app.Forum.Controller.hasPermission(user, "editUser"))
     return Auth.cookie.reject(request, response);
 
 core.user.user();
-core.app.forum.html.forumheader("Forums | Edit User");
 
 var user = null;
 
@@ -53,6 +52,12 @@ else if(request.permission){
     allowed.forEach(function(p) { user.removePermission(p); });
     user.addPermission(request.permission);
 }
+
+if(user) 
+      core.app.forum.html.forumheader("Forum | Edit User "+user.name+" ("+user.nickname+")");
+else
+      core.app.forum.html.forumheader("Forum | Edit User");
+
 
 if(! user){ %>
 <form>
