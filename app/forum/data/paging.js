@@ -26,7 +26,7 @@ app.Forum.data.Paging = function(ary, config, request){
     this.pageSize = config.pageSize || request.pageSize || 20;
     this._numPages = Math.ceil(ary.length / this.pageSize);
 
-    this.page = config.page || request.page || 0;
+    this.page = config.page || request.page || 1;
 };
 
 app.Forum.data.Paging.prototype.numPages = function(){
@@ -34,15 +34,17 @@ app.Forum.data.Paging.prototype.numPages = function(){
 };
 
 app.Forum.data.Paging.prototype.pageNumber = function(){
-    // 0-based?
+    // 1-based?
     return this.page;
 };
 
 app.Forum.data.Paging.prototype.slice = function(){
     ary = [];
+    // zero-based
+    var pagez = this.page - 1;
     for(var i = 0; i < this.pageSize; i++){
-        if(i+this.page*this.pageSize >= this.ary.length) break;
-        ary[i] = this.ary[i+this.page*this.pageSize];
+        if(i+pagez*this.pageSize >= this.ary.length) break;
+        ary[i] = this.ary[i+pagez*this.pageSize];
     }
     return ary;
 };
@@ -62,11 +64,11 @@ app.Forum.data.Paging.prototype.display = function(url, paramName, cssClass){
 */
 app.Forum.data.Paging.display = function( numPages , curPage , url , paramName , cssClass ){
     var s = "";
-    for(var i = 0; i < numPages; i++){
+    for(var i = 1; i <= numPages; i++){
         if(i != curPage){
-            s += "<a class=\""+cssClass+"\" href=\""+url.replaceArg(paramName, i).toString()+"\">"+(i+1)+"</a> ";
+            s += "<a class=\""+cssClass+"\" href=\""+url.replaceArg(paramName, i).toString()+"\">"+(i)+"</a> ";
         } else {
-            s += (i+1) + " ";
+            s += (i) + " ";
         }
     }
     return s;
