@@ -33,7 +33,7 @@ function clean( s ){
 
 <% response.setHeader( "Content-Type" , "text/xml"); %>
     <channel>
-        <title><%= siteName %></title>
+        <title><%= siteName %> Wiki</title>
         <link>http://<%= request.getHeader( "Host") %></link>
         <language>en-us</language>
         <pubDate><%= now.webFormat() %></pubDate>
