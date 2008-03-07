@@ -21,7 +21,7 @@ linkTo = function(target, text){
 <%
 }
 
-if(first - skip > 1 && Ext.getdefault(pager.displayOpts, "first", true)){
+if(n - skip > 1 && Ext.getdefault(pager.displayOpts, "first", true)){
     // "first" link
     linkTo(1, "first");
 }
@@ -29,7 +29,10 @@ if(first - skip > 1 && Ext.getdefault(pager.displayOpts, "first", true)){
 
 if(first > 1 && Ext.getdefault(pager.displayOpts, "prev", true)){
     // "prev" link
-    linkTo(n - skip, "prev");
+    if(n - skip > 1)
+        linkTo(n - skip, "prev");
+    else
+        linkTo(1, "first");
 }
 
 for(var i = first; i < n; i++){
@@ -43,10 +46,13 @@ for(var i = n+1; i <= last; i++){
 }
 if(last < pager.numPages() && Ext.getdefault(pager.displayOpts, "next", true)){
     // "next" link
-    linkTo(n + skip, "next");
+    if(n + skip < pager.numPages())
+        linkTo(n + skip, "next");
+    else
+        linkTo(pager.numPages(), "last");
 }
 
-if(last + skip < pager.numPages() && Ext.getdefault(pager.displayOpts, "last", true)){
+if(n + skip < pager.numPages() && Ext.getdefault(pager.displayOpts, "last", true)){
     // "last" link
     linkTo(pager.numPages(), "last");
 
