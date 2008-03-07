@@ -16,9 +16,13 @@ if(thread == null){
     return;
 }
 
-core.app.forum.html.forumheader("Viewing thread: "+thread.getTitle());
 
-print("<!-- " + thread._id + "-->");
+var titleStr = "";
+var a = thread.topic.getAncestors();
+for(var i=0; i<a.length; i++) 
+        titleStr += " > " + a[i];
+core.app.forum.html.forumheader("Forum | "+thread.getTitle()+titleStr);
+
 
 // PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at

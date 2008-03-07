@@ -1,7 +1,7 @@
 <%
 core.app.forum.controller();
 
-core.app.forum.html.forumheader("Forums");
+core.app.forum.html.forumheader("Forum | Home");
 
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
