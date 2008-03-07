@@ -157,7 +157,7 @@ postoptions.actions.push(function(post) {
            <input type="submit" class="submit" name="action" value="delete">
      <%
      }
-     if(!post.deleted && canModerate){ %>
+     if(thread.count > 1 && !post.deleted && canModerate){ %>
            <input type="submit" class="submit" name="action" value="moderate">
      <%
      }
