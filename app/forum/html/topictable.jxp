@@ -217,9 +217,10 @@ if (threads){
 
     if(paging){
         core.app.forum.data.paging();
-        paging = new app.Forum.data.Paging(threads, {pageSize: 4}, request);
+        paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
         threads = paging.slice();
 
+        core.app.forum.html.paging(paging);
     }
  %>
      <table id="style1" >
