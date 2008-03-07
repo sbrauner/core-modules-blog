@@ -36,7 +36,7 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
           t.threaded_pieces.reply_form.call(t, t.getID());
       }
       else{ %>
-        <a href="<%=new URI(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
+        <a href="<%=new URL(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
         <% }
       }
 

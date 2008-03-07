@@ -6,8 +6,6 @@ core.app.forum.html.forumheader("Forums");
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
 
-core.net.uri();
-
 core.app.forum.data.topic();
 core.app.forum.data.thread();
 core.app.forum.html.form();

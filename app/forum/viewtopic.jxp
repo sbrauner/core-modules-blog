@@ -7,7 +7,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
 
 core.content.table();
-core.net.uri();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.app.forum.html.form();
@@ -97,7 +96,6 @@ log("stack: "+app.Forum.html.topicStack(t));
 <%
 app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
-core.net.uri();
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
 %>
 
