@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+<%
+
+core.app.wiki.wikipage();
+
+var cursor = db.wiki.find().sort( { lastEdit : -1 } ).limit( 50 );
+var now = new Date();
+
+function clean( s ){
+
+    s = s.replace( /&nbsp;/g , " " );
+    s = s.replace( /&rsquo;/g , "'" );
+    s = s.replace( /&[mn]dash;/g , "-" );
+    s = s.replace( /&ldquo;/g , "'" );
+    s = s.replace( /&rdquo;/g , "'" );
+
+    s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+
+    //s = s.replace( /<\/?embed[^>]*>/g , "" );
+    s = s.replace( /mt:asset.id=.*? /g , "" );
+
+    s = s.replace( /&(\w+);/g , function(z){
+                        return " ";
+                    } );
+
+    s = s.replace( /</g , "&lt;" );
+    s = s.replace( />/g , "&gt;" );
+
+    return s;
+}
+%>
+
+<% response.setHeader( "Content-Type" , "text/xml"); %>
+    <channel>
+        <title><%= siteName %></title>
+        <link>http://<%= request.getHeader( "Host") %></link>
+        <language>en-us</language>
+        <pubDate><%= now.webFormat() %></pubDate>
+        <lastBuildDate><%= now.webFormat() %></lastBuildDate>
+        <description><%= siteDescription %></description>
+
+        <%
+    while ( cursor.hasNext() ){
+	var page = cursor.next();
+	var lastEdit = page.getLastEdit();
+	
+        %>
+        <item>
+            <guid><%= md5( page.name + page.lastEdit ) %></guid>
+            <title><%= page.name %></title>
+            <link>http://<%= request.getHost() + request.getURI().replace( /\/rss.*/ , "/" ) + page.name %></link>
+            <pubDate><%= page.lastEdit.webFormat() %></pubDate>
+            <author><%= lastEdit && lastEdit.user ? lastEdit.user.name :  "none"  %></author>
+            <description><%= lastEdit ? lastEdit.diff : ""  %></description>
+        </item>
+        <% } %>
+
+    </channel>
+</rss>

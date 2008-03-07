@@ -1,12 +1,15 @@
 log("importing wikipage history, app="+app+" app.wiki="+app.wiki);
-app.wiki.WikiPageHistory = function(wikiPageId, textDiff) {
+app.wiki.WikiPageHistory = function(wikiPageId, textDiff , who ) {
     this.parent = wikiPageId;
     this.diff = textDiff;
+    this.user = who;
+	
     this.ts = new Date();
 };
 
 if (db) {
-    db.wiki_history.ensureIndex( { ts: 1} );
+    db.wiki_history.ensureIndex( { ts: 1 } );
+    db.wiki_history.ensureIndex( { parent : 1 } );
 
     db.wiki_history.setConstructor( app.wiki.WikiPageHistory );
 }
