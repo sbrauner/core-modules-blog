@@ -23,7 +23,13 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
     </span>
 
     <div class="content">
-      <%= t.content %>
+      <% if(options.highlight) {
+              print(app.Forum.html.highlight(t.content, options.highlight));
+          } 
+          else {
+              print(t.content);
+          }
+       %>
     </div>
     <% if(replyable){ %>
       <% if(request.reply == t.getID() && ! request.reply_target){

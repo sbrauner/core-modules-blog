@@ -18,6 +18,30 @@ function editorPick(thread) {
          <% }
 }
 
+var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
+var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
+
+core.text.stem();
+
+app.Forum.html.highlight = function(result, searchterm) {
+    if(result == null)
+        return;
+
+    searchterm = Search.queryToArray(searchterm);
+
+    for(var i=0; i<searchterm.length; i++) {
+        var stem = Stem.stem(searchterm[i]);
+
+        // go through result, replacing search terms with highlighted search terms
+        var reg = new RegExp("(\\b)(("+prefix+")?"+stem+"("+suffix+")?)(\\b)", "gi");
+        result = result.replace(reg, "$1<span class=\"highlight\">$2</span>$5");
+
+    }
+    return result;
+}
+
+
+
 app.Forum.html.form.hidden = function(topic){
          if(topic.hidden) { %>
                 <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" checked>
