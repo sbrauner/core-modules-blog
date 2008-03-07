@@ -2,8 +2,8 @@
 
 core.text.stem();
 
-//if ( Search && Search._doneInit )
-//    return;
+if ( Search && Search._doneInit )
+    return;
 
 Search = {
 
