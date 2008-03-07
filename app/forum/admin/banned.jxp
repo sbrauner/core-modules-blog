@@ -20,23 +20,8 @@ if(request.banip){
     }
 }
 
-if(request.banuser){
-    var user = db.users.findOne({_id: request.banuser});
-    if(db.forum.banned_users.findOne({user: user})){
-        print("Already banned: " + user.name);
-    }
-    else {
-        db.forum.banned_users.save({user: user});
-        print("Ban user: " + user.name);
-    }
-}
-
 if(request.action == "unban" && request._id){
-    if(banuser = db.forum.banned_users.findOne({_id: request._id})){
-        print("Unbanning user " + banuser.user.name);
-        db.forum.banned_users.remove(banuser);
-    }
-    else if(banip = db.forum.banned_ips.findOne({_id: request._id})){
+    if(banip = db.forum.banned_ips.findOne({_id: request._id})){
         print("Unbanning IP " + banip.ip);
         db.forum.banned_ips.remove(banip);
     }
@@ -58,17 +43,6 @@ if(request.action == "unban" && request._id){
   Ban an IP address
   <input type="text" name="banip"/>
   <input type="submit" value="Ban"/>
-</form>
-
-<form method="POST">
-  Ban a user
-  <select name="banuser">
-    <% db.users.find({}).forEach(function(u){ %>
-    <option value="<%= u._id%>"><%= u.name %></option>
-    <% }); %>
-  </select>
-
-  <input type="submit" value="Ban">
 </form>
 
 <% if (sectionFooter) sectionFooter(); %>
