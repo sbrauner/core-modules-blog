@@ -64,9 +64,9 @@ app.Forum.data.Paging.display = function( numPages , curPage , uri , paramName ,
     var s = "";
     for(var i = 0; i < numPages; i++){
         if(i != curPage){
-            s += "<a class=\""+cssClass+"\" href=\""+uri.addArg(paramName, i).toString()+"\">"+i+"</a> ";
+            s += "<a class=\""+cssClass+"\" href=\""+uri.replaceArg(paramName, i).toString()+"\">"+(i+1)+"</a> ";
         } else {
-            s += i + " ";
+            s += (i+1) + " ";
         }
     }
     return s;
