@@ -1,0 +1,8 @@
+div.parent {
+        cursor: pointer;
+}
+div.obj {
+        display: none;
+        position: absolute;
+        background: white;
+}

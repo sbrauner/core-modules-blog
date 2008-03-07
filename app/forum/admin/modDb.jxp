@@ -1,0 +1,16 @@
+<%
+log(request.action);
+if(request.action == "delete") {
+     log("id: "+request.id);
+     db.forum.threads.remove( { _id : request.id });
+}
+else if (request.action == "change") {
+     var delta = db.forum.threads.findOne({_id : request.id });
+     if(request.value == "true" || request.value == "false") 
+          delta[request.field] = request.value == "true" ? true : false;
+     else
+          delta[request.field] = request.value;
+     delta.save();
+}
+
+%>
