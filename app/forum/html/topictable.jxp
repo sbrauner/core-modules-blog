@@ -8,6 +8,7 @@
 // subs is expected to be a JavaScript array; threads is expected to be null or
 // a DBCursor.
 processArgs("name", "description", "subs", "threads", "actions", "opts");
+core.ext.getdefault();
 opts = opts || {};
 var topic;
 if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
@@ -16,6 +17,8 @@ if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
 var createThread = (opts.createThread == null) ? true : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+
+var paging = Ext.getdefault(opts, "paging", true);
 
 // We implement some actions here because we use them in both index and
 // viewtopic.
@@ -199,8 +202,8 @@ function cancelPopup(id) {
 if(subs && subs.length > 0){ %>
     <table id="style1">
        <tr><th>Subtopic</th><th>Threads</th><th>Posts</th>
-       <% 
-       for(i=0; i < topicActions.length; i++) { 
+       <%
+       for(i=0; i < topicActions.length; i++) {
             print("<th>"+ topicActions[i].title +"</th>");
        } %>
        </tr>
@@ -210,17 +213,25 @@ if(subs && subs.length > 0){ %>
 }
 
 // Show threads
-if (threads){ %>
+if (threads){
+
+    if(paging){
+        core.app.forum.data.paging();
+        paging = new app.Forum.data.Paging(threads, {pageSize: 4}, request);
+        threads = paging.slice();
+
+    }
+ %>
      <table id="style1" >
           <tr><th>Thread</th><th>Replies</th><th>Last post</th>
-          <% 
-          for(i=0; i < actions.length; i++) { 
+          <%
+          for(i=0; i < actions.length; i++) {
                 print("<th>"+ actions[i].title+"</th>");
           } %>
           </tr>
           <%
           var even = false;
-          if(threads.hasNext())
+          if(threads.length > 0)
                threads.forEach( function(t) {
                     app.Forum.renderer.thread(t, {actions: actions}, even);
                     even = !even;
@@ -228,5 +239,8 @@ if (threads){ %>
           else
                print ("<tr><td colspan=\""+3+actions.length+"\">No threads right now!</td></tr>");%>
      </table>
-     <%
+<%
+    if(paging){
+        core.app.forum.html.paging(paging);
+    }
 }%>
