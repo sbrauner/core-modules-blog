@@ -102,6 +102,8 @@ URL.prototype.replaceArg = function(key, value){
 };
 
 URL.prototype._replaceArg = function(key, value){
+    if(key == null) throw "key is null";
+    if(value == null) throw "value is null";
     for(var i in this.args){
         if(this.args[i].key == key){
             this.args[i].value = value;
