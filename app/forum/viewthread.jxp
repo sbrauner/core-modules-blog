@@ -163,9 +163,25 @@ postoptions.actions.push(function(post) {
      }
      %>
      <div class="popup" id="splitpop<%= post.getID() %>">
+           <%
+           var choices = db.forum.topics.find({parent: null}).toArray();
+           var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+           var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+           if(deleteThread)
+                choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+           if(moderateThread)
+                choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+           %>
+
           <div class="stitle">Split Thread at Post</div>
           <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= thread.getTitle() %>"></div>
-          <div class="field"><label>Topic</label><%= app.Forum.html.generateTopicSelect(thread) %></div>
+          <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; })(thread) %></div>
+          <script type="text/javascript">
+          document.getElementById("<%= thread.topic._id %>").defaultSelected = true;
+          </script>
           <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
      </div>
      </form>

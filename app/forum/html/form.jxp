@@ -18,6 +18,62 @@ function editorPick(thread) {
          <% }
 }
 
+
+app.Forum.html.exploreTopic = function(topic, indent, filter){
+    retStr = "";
+    indent = indent || 0;
+    istr = "";
+    if(! filter(topic)) return;
+    for(var i = 0; i < indent; i++){
+        istr += "&nbsp;";
+    }
+    retStr+="<option value=\""+topic._id+"\">"+istr+topic.name+"</option>";
+    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
+    for(var j=0; j<subtopics.length; j++) {
+            retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter);
+    }
+    return retStr;
+};
+
+
+app.Forum.html.selectify = function(choices, attrfunc, options){
+    // Create an action which, given an object, generates an HTML select
+    // for all topics it could move to, recursively.
+    //
+    // choices is the array of topics, including possible special topics
+    // for "Deleted" and "Moderated".
+    //
+    // attrfunc is a function which takes the object and returns a mapping
+    // which is converted to attributes for the select object.
+    //
+    // options.filter is a function which takes the object we're generating
+    // the select for and the choice we're putting in the select and returns
+    // false to prune or true to not-prune that choice.
+
+    //this is a psuedo topic and cannot be moved
+
+    var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+    var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+    attrfunc = attrfunc || function (){ return {}; };
+    options = options || {};
+    filter = (options.filter == null) ? function(){return true;} : options.filter;
+    return function(t){
+
+        if(parseInt(t._id.toString()) < 10)
+            return "&nbsp;";
+
+        var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
+        retStr+="<option value=\"\">&nbsp;</option>";
+        for(i=0; i<choices.length; i++) {
+            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); });
+        }
+        return retStr +"</select>";
+    }
+};
+
+
+
 var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
 var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
 
@@ -90,7 +146,7 @@ app.Forum.html.endBreadcrumbTable = function() {
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(topic); %>
-    <div class="second_level"><a href="viewtopic?name=<%= escape( topic.name )%>"><%= topic.name %></a></div><%
+    <div class="second_level"><%= topic.name %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 

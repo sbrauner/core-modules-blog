@@ -68,7 +68,7 @@ if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
    }});
 }
 
-// --------------------
+
 core.app.forum.html.forumheader("Forum | " + name);
 log("stack: "+app.Forum.html.topicStack(t));
 %>
