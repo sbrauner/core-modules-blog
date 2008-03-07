@@ -1,0 +1,55 @@
+<%
+processArgs("pager");
+core.ext.getdefault();
+var w = pager.getWindow();
+var first = w.getFirstPage();
+var last = w.getLastPage();
+var n = pager.pageNumber();
+var skip = pager.nextlinkInterval;
+
+var cssClass = Ext.getdefault(pager.displayOpts, "cssClass", "");
+var url = Ext.getdefault(pager.displayOpts, "url", null);
+if (url == null) { // i.e. do this lazily
+    url = new URL(request.getURL());
+}
+var paramName = Ext.getdefault(pager.displayOpts, "paramName", "page");
+
+linkTo = function(target, text){
+    text = text || target;
+%>
+<a class="<%= cssClass %>" href="<%= url.replaceArg(paramName, target) %>"><%= text %></a>
+<%
+}
+
+if(first - skip > 1 && Ext.getdefault(pager.displayOpts, "first", true)){
+    // "first" link
+    linkTo(1, "first");
+}
+
+
+if(first > 1 && Ext.getdefault(pager.displayOpts, "prev", true)){
+    // "prev" link
+    linkTo(n - skip, "prev");
+}
+
+for(var i = first; i < n; i++){
+    linkTo(i);
+}
+%>
+<b><%= n %></b>
+<%
+for(var i = n+1; i <= last; i++){
+    linkTo(i);
+}
+if(last < pager.numPages() && Ext.getdefault(pager.displayOpts, "next", true)){
+    // "next" link
+    linkTo(n + skip, "next");
+}
+
+if(last + skip < pager.numPages() && Ext.getdefault(pager.displayOpts, "last", true)){
+    // "last" link
+    linkTo(pager.numPages(), "last");
+
+}
+
+%>

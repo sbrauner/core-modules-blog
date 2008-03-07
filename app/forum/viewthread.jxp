@@ -195,7 +195,7 @@ replies.forEach(function(reply){
 </div>
 </div>
 
-<%= paging.display() %>
+<% core.app.forum.html.paging(paging); %>
 
 
 <% htmlfooter(); %>
