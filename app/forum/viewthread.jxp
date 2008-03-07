@@ -177,6 +177,9 @@ core.app.forum.data.paging();
 paging = new app.Forum.data.Paging(replies, {pageSize: 20}, request);
 postoptions.replyable = false;
 replies = paging.slice();
+
+core.app.forum.html.paging(paging);
+
 replies.forEach(function(reply){
     reply.render(postoptions, thread.threaded_pieces);
 });
