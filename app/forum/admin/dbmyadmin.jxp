@@ -1,0 +1,99 @@
+<%
+function printCheck(cursor, field) {
+     print(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
+}
+
+var count = 0;
+function printText(cursor, field) {
+     print("<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+count+"')\">");
+     count++;
+}
+
+function printObj(cursor, field) {
+     if(typeof val == "boolean") 
+          printCheck(cursor, field);
+     else if(typeof val == "string" || typeof val == "number")
+          printText(cursor, field); 
+     else if(typeof val == "object") {
+          print("<div class=\"parent\" onclick=\"showObj('"+cursor._id+"')\">Object</div><div class=\"obj\" id=\""+cursor._id+"\"");
+          for(var name in cursor[field]) {
+               printObj(cursor[field], name);
+          }
+          print("</div>");
+     }
+     else {
+          print(typeof cursor[field]);
+     }
+}
+
+htmlheader();
+%>
+<link rel="stylesheet" href="./dbmyadmin.css">
+
+<script type="text/javascript">
+function showObj(i) {
+         document.getElementById(i).style.display = "block";
+}
+
+function defaultResponder(r) {
+         if(r!= "")
+         log(r);
+}
+function reloader() {
+         location.reload();
+}
+function rewrite(i, f, txt) {
+         val = document.getElementById("txt"+txt).value;
+         passData="id="+i+"&field="+f+"&value="+val+"&action=change";
+         ajax(passData, "modDb.jxp", reloader);
+}
+
+function toggle(i, f, val) {
+         passData = "id="+i+"&field="+f+"&value="+val+"&action=change";
+         ajax(passData, "modDb.jxp", defaultResponder);
+}
+
+function deleteRow(i) {
+         passData = "id="+i+"&action=delete";
+         ajax(passData, "modDb.jxp", reloader);
+}
+
+</script>
+
+<table>
+<%
+
+cursor = db.forum.threads.find().toArray();
+print("<th>Remove</th>");
+for(var field in cursor[0]) {
+     print("<th>"+field+"</th>");
+}
+
+for(var i=0; i<cursor.length; i++) {
+     print("<tr>");
+     print("<td><input type=\"button\" value=\"x\" onclick=\"deleteRow('"+cursor[i]._id+"')\"></td>");
+     for(var field in cursor[i]) {
+          print("<td>");
+          if(typeof cursor[i][field] == "boolean") {
+              printCheck(cursor[i], field);
+          }
+          else if(typeof cursor[i][field] == "string" || typeof cursor[i][field] == "number") {
+              printText(cursor[i], field); 
+          }
+          else if(typeof cursor[i][field] == "object") {
+              printObj(cursor[i], field);
+          }
+          else {
+              print(cursor[i][field]);
+          }
+          print("</td>");
+     }
+     print("</tr>");
+}
+
+%>
+</table>
+
+<%
+htmlfooter();
+%>

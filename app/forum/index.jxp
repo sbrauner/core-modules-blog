@@ -14,10 +14,14 @@ core.app.forum.html.form();
 
 app.Forum.html.search("forums");
 
+/* Editor's picks */
 head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Picks" href="edpick_rss.jxp" />');
+edPicks = db.forum.threads.find( { editorPick : true } );
+core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\">(RSS)</a>", "", null, edPicks, [], {createThread: false, thisid: null});
 
+
+/* Main topic table */
 var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
-
 var topics = app.Forum.data.Topic.list(null, showHidden).toArray();
 
 // Deal with the "virtual" topics for Deleted and Moderated posts by adding
@@ -36,8 +40,6 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
                               threadCount: modthreads, postCount: 0});
    }
 
-edPicks = db.forum.threads.find( { editorPick : true } );
-core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\">(RSS)</a>", "", null, edPicks, [], {createThread: false, thisid: null});
 
 core.app.forum.html.topictable("Forums", null, topics, null, [],
                                {createThread: false, thisid: null});

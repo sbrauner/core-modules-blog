@@ -24,7 +24,6 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
         // reply styles
         content: .2
     }
-
 };
 
 app.Forum.data.Thread.prototype.presave = function() {

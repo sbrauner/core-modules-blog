@@ -68,6 +68,18 @@ function cancelSplit(i) {
         document.getElementById("splitpop"+i).style.display = "none";
 }
 
+var color = "white";
+function toggleHighlight() {
+       var all = document.all ? document.all :
+           document.getElementsByTagName('span');
+       for (var e = 0; e < all.length; e++) {
+           if(all[e].className == "highlight")
+                all[e].style.background = color;
+       }
+
+       color = color == "white" ? "yellow" : "white";
+}
+
 </script>
 
 <div class="caption">
@@ -111,9 +123,16 @@ if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
 
 <% app.Forum.html.breadcrumb(thread); %>
 
-<h1><%= thread.getTitle() %></h1>
-
 <%
+if(request.highlight) {
+     print("<h1>"+app.Forum.html.highlight(thread.getTitle(), request.highlight)+"</h1>");
+     print('<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>');
+     postoptions.highlight = request.highlight;
+}
+else {
+     print("<h1>"+ thread.getTitle() +"</h1>");
+}
+
 app.Forum.html.search(thread.topic.name);
 
 postoptions.actions = [];

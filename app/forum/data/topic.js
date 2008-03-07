@@ -12,6 +12,17 @@ app.Forum.data.Topic = function(){
     this.parent = null;
     this.postCount = 0;
     this.threadCount = 0;
+    this.clean = false;
+
+};
+
+app.Forum.data.Topic.prototype.getThreadCount = function() {
+    count = db.forum.threads.find( { topic : this } ).toArray.length;
+    subtopics = db.forum.topic.find( { parent : this } );
+    for(var i=0; i < subtopics.length; i++) {
+        count += subtopics[i].getThreadCount();
+    }
+    return count;
 };
 
 app.Forum.data.Topic.prototype.SEARCH_OPTIONS = {
@@ -59,6 +70,7 @@ app.Forum.data.Topic.list = function(parent, showHidden){
     if(! showHidden) q.hidden = false;
     return db.forum.topics.find(q).sort({order: 1});
 };
+
 
 db.forum.topics.setConstructor(app.Forum.data.Topic);
 db.forum.topics.ensureIndex({order: 1});

@@ -14,24 +14,6 @@ var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|
 var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
 
 core.text.stem();
-function highlight(result, searchterm) {
-    if(result == null)
-        return;
-
-    searchterm = Search.queryToArray(searchterm);
-
-    for(var i=0; i<searchterm.length; i++) {
-        var stem = Stem.stem(searchterm[i]);
-
-        // go through result, replacing search terms with highlighted search terms
-        var reg = new RegExp("(\\b)(("+prefix+")?"+stem+"("+suffix+")?)(\\b)", "gi");
-        result = result.replace(reg, "$1<span class=\"highlight\">$2</span>$5");
-
-    }
-    return result;
-}
-
-
 // extract up to m words before the search term and n words after for context
 function summarize(result, searchterm) {
         var m = 15, n = 20;
@@ -72,11 +54,27 @@ function summarize(result, searchterm) {
 core.app.forum.controller();
 core.app.forum.html.forumheader("Forums | Search results");
 core.app.forum.data.thread();
+core.app.forum.html.form();
+%>
+
+<script type="text/javascript">
+var color = "white";
+function toggleHighlight() {
+       var all = document.all ? document.all :
+           document.getElementsByTagName('span');
+       for (var e = 0; e < all.length; e++)
+           all[e].style.background = color;
+
+       color = color == "white" ? "yellow" : "white";
+}
+</script>
+
+<%
 
 var query = request.query;
 
-
 print("<div>Search results for \""+request.query+"\":</div>");
+print('<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>');
 
 cursor = Search.search(db.forum.topics, query );
 if(cursor.length > 0) {
@@ -99,13 +97,13 @@ if(threads.length > 0){
     for(var i = 0; i < threads.length; i++){
        %>
        <div class="threadbox">
-       <div class="title"><a href="viewthread?id=<%= threads[i]._id %>"><%= highlight(threads[i].getTitle(), query) %></a></div>
+       <div class="title"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(threads[i].getTitle(), query) %></a></div>
        <%
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
             for(var j=0; snippets != null && j < snippets.length; j++) {
                 %>
                 <div class="content">
-                <%= highlight(summarize(snippets[j].text, query), query) %>
+                <%= app.Forum.html.highlight(summarize(snippets[j].text, query), query) %>
                 </div>
                 <%
             }%>
@@ -118,7 +116,6 @@ else {
      No matches in threads.
      <%
 }
-
 
 htmlfooter();
 %>
