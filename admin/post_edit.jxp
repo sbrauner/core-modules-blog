@@ -1,5 +1,4 @@
 <% 
-// * Fix author assignment bug
 
 core.blog.ping();
 
