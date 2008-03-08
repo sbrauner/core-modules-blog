@@ -60,17 +60,26 @@ Post.prototype.getNumComments = function(){
 };
 
 Post.prototype.deleteComment = function(cid){
+    var l = log.blog.post.deleteComment;
+    l.debug( cid );
 
-    if ( ! this.comments )
+    if ( ! this.comments ){
+	l.debug( "no comments" );
         return;
+    }
     
+    if ( ! isArray( this.comments ) )
+	this.getComments();
+
     if ( isArray( this.comments ) ){
+	l.debug( "array version" );
         this.comments = this.comments.filter( function(z){
                 return z.cid.toString() != cid.toString();
             } );
         return;
     }
-    
+
+    l.debug( "old object thing" );
     delete this.comments[cid];
 };
 
@@ -101,7 +110,10 @@ Post.prototype.getComments = function() {
     }
 
     // sort them by date
-    return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    commentsArray = commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    this.comments = commentsArray;
+
+    return this.comments;
 };
 
 Post.prototype.presave = function(){
@@ -132,14 +144,21 @@ Post.prototype.getUrl = function( r ){
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
+
+    if ( this.suppressImage )
+	return null;
+
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
     if ( ! r )
         return null;
     
     var url = r[1];
+    
+    if ( ! url.match( /f?id=/ ) )
+	return null;
 
-    if ( ( maxX || maxY ) && url.match( /f?id=/ ) ){
+    if ( ( maxX || maxY ) ){
 	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
 
 	if ( maxX )
@@ -159,6 +178,7 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
+	http404Page.commentsEnabled = false;
         db.blog.posts.save(http404Page);
     }
     return http404Page;
