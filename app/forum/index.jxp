@@ -1,23 +1,26 @@
 <%
 core.app.forum.controller();
 
-core.app.forum.html.check_ban();
+core.app.forum.html.forumheader("Forum | Home");
 
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
     return Auth.cookie.reject(request, response);
 
-htmlheader("Forums");
-head.addScript( "/~~/ui/js/common.js" );
-head.addCSS( "/~~/app/forum/css/forum.css" );
-core.user.html.topCorner();
-core.net.uri();
-
 core.app.forum.data.topic();
+core.app.forum.data.thread();
 core.app.forum.html.form();
 
-app.Forum.html.search();
+app.Forum.html.search("forums");
 
-var topics = app.Forum.data.Topic.list().toArray();
+/* Editor's picks */
+head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Picks" href="edpick_rss.jxp" />');
+edPicks = db.forum.threads.find( { editorPick : true } ).toArray();
+core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\">(RSS)</a>", "", null, edPicks, [], {createThread: false, thisid: null, paging: false});
+
+
+/* Main topic table */
+var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
+var topics = app.Forum.data.Topic.list(null, showHidden).toArray();
 
 // Deal with the "virtual" topics for Deleted and Moderated posts by adding
 // "fake" topics to the topics array.
@@ -35,11 +38,9 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
                               threadCount: modthreads, postCount: 0});
    }
 
+
 core.app.forum.html.topictable("Forums", null, topics, null, [],
                                {createThread: false, thisid: null});
-
-edPicks = db.forum.threads.find( { editorPick : true } );
-core.app.forum.html.topictable("Editor's Picks", "", null, edPicks, [], {createThread: false, thisid: null});
 
 %>
 

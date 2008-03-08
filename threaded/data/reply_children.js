@@ -55,7 +55,11 @@ threaded.data.ReplyChildren.prototype.placeDescendant = function(r, desc_id){
     child.threaded_children[last] = r;
 };
 
-threaded.data.ReplyChildren.saveDescendant = function(desc_id){
+threaded.data.ReplyChildren.prototype.threaded_reorderChildren = function(){
+    this.threaded_children = threaded.data.Reply.sort(this.threaded_children);
+};
+
+threaded.data.ReplyChildren.prototype.saveDescendant = function(desc_id){
     // Be sure to save your object too!
 };
 

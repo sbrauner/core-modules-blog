@@ -18,7 +18,7 @@ var deletedPosts = (opts == null || opts.deleted == null) ? false : opts.deleted
 // actions is a list of functions which will be called on the thread and the
 // results put in a fourth cell
 var actions = (opts == null || opts.actions == null) ? [] : opts.actions;
-var f = t.findFirstPost();
+var f = t.getFirstPost();
 if(f == null) f = {title: "(unknown)", author: "(unknown)" };
 var l = t.getLatestPost();
 
@@ -40,7 +40,7 @@ if(deletedPosts) link += "&deleted=true";
   <% if (!deletedPosts) { %>
   <td class="alignleft lastpost">
     <% if(l) { %>
-    <div class="lp_author">by <%= l.author.name %> (go)</div>
+    <div class="lp_author">by <%= l.author.name %> <a href="<%= link %>#<%= l.getID() %>">(go)</a></div>
     <nobr>
     at <%= l.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %>
     </nobr>

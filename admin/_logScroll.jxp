@@ -5,7 +5,11 @@ if ( ! all )
     throw "no all";
 
 var n = [];
-n.addAll( all );
+all.forEach( function( z ){
+    if ( z == null ) 
+	return;
+    n.add( z );
+} );
 n.reverse();
 
 var since = null;
@@ -22,8 +26,11 @@ if ( since ){
 response.setHeader( "Content-Type" , "text/json" );
 
 n.forEach( function(z){
+    if ( z == null )
+	throw "why is z null";
     z.thread = null;
     z.level = z.level.toString();
+    z.msg = z.msg.replace( /[\r\n]+/ , "<br>" );
     if ( z.throwable )
 	z.throwable = z.throwable.toString();
 } );

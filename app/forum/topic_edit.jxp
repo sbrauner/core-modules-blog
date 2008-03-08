@@ -3,27 +3,32 @@ core.app.forum.html.check_ban();
 core.app.forum.data.topic();
 
 // FIXME: permissions?
-htmlheader("Forum");
-head.addScript( "/~~/ui/js/common.js" );
-head.addCSS( "/~~/app/forum/css/forum.css" );
-
-core.user.html.topCorner();
-core.net.uri();
+core.app.forum.html.forumheader("Forum");
+core.net.url();
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
+
+if(request.name){
+    topic.name = request.name;
+    topic.description = request.description;
+    db.forum.topics.save(topic);
+    response.sendRedirectTemporary("viewtopic?name="+URL.escape_queryargs(topic.name));
+    return;
+}
+
 %>
 
 <script type="text/javascript">
 function cancel() {
-         location = "viewtopic?name=<%= URI.escape_queryargs(topic.name) %>";
+         location = "viewtopic?name=<%= URL.escape_queryargs(topic.name) %>";
 }
 </script>
 
 <h2>Edit topic</h2>
-<form method="POST" action="topic_save_changes.jxp">
+<form method="POST">
 <input type="hidden" name="id" value="<%= topic._id %>">
 <div id="field">Topic name: <input type="text" name="name" value="<%= topic.name %>"></div>
-<div id="field">Topic description: <input type="text" name="desc" value="<%= topic.description %>"></div>
+<div id="field">Topic description: <input type="text" name="description" value="<%= topic.description %>"></div>
 <div id="field"><input type="button" value="Cancel" onclick="cancel()"><input type="submit" value="Change"></div>
 </form>
 

@@ -4,6 +4,7 @@ core.content.html();
 core.user.user();
 core.user.auth();
 core.app.bugtracker.data.feature();
+core.net.url();
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
 
@@ -51,7 +52,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <a href="case_edit">New case</a><br/>
 
 <% if(user){ %>
-<a href="<%= new URI(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a><br/>
+<a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a><br/>
 <% } %>
 
 <a href="project_edit">Edit a project</a>

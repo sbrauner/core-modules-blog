@@ -3,7 +3,6 @@ core.app.bugtracker.data.project();
 core.app.bugtracker.data.helper();
 core.user.user();
 core.user.auth();
-core.net.uri();
 core.content.forms();
 if (! user ){
     user = Auth.getUser(request);

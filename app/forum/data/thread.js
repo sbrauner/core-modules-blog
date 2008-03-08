@@ -22,22 +22,32 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
         // reply styles
-        title: 1,
         content: .2
     }
-
 };
 
 app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_OPTIONS );
-}
-
-app.Forum.data.Thread.prototype.findFirstPost = function(){
-    return this.getReplies()[0];
 };
 
-app.Forum.data.Thread.prototype.getFirstPost = function() {
-    return this.findFirstPost();
+app.Forum.data.Thread.prototype.getTitle = function() {
+    return this.getFirstPost().title;
+};
+
+app.Forum.data.Thread.prototype.setTitle = function(title){
+    this.getFirstPost().title = title;
+};
+
+app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
+    this.commentsEnabled = !isClosed;
+};
+
+app.Forum.data.Thread.prototype.getClosed =  function(isClosed){
+    return !this.commentsEnabled;
+};
+
+app.Forum.data.Thread.prototype.getFirstPost = function(){
+    return this.getReplies()[0];
 };
 
 app.Forum.data.Thread.prototype.setTopic = function(newTopic) {
@@ -74,12 +84,44 @@ app.Forum.data.Thread.prototype.getLatestPost = function() {
     return null;
 }
 
+app.Forum.data.Thread.prototype.modifyPostCount = function(num){
+    this.count += num;
+    this.topic.changeCounts(0, num);
+    this.save();
+};
+
+// Posts have a deleted field; this field is either false, meaning
+// this post isn't deleted, or it is one of:
+// the string "deleted"
+// the string "moderated"
+app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
+    var p = this.getDescendant(desc_id);
+    p.deleted = reason;
+    this.save();
+    this.saveDescendant(p);
+    this.modifyPostCount(-1);
+};
+
+app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
+    var p = this.getDescendant(desc_id);
+    if(p.deleted == reason){
+        p.deleted = false;
+        this.modifyPostCount(1);
+        this.save();
+        this.saveDescendant(p);
+    }
+};
+
 // This adds children and the rendering thereof to the Thread class.
 // For more on this, check corejs/threaded/_init.js.
 // A bunch of functions are added to the Thread class -- getReplies(),
 // decoratorsRender(), decoratorsHandle().
 core.threaded.data.reply_children();
-threaded.repliesEnabled(app.Forum.data, "Thread", {style: "children", users: "auth", tablename: "forum.posts", replyable: false});
+threaded.repliesEnabled(app.Forum.data, "Thread",
+                        {style: "children", users: "auth",
+                         tablename: "forum.posts", replyable: false,
+                         pieces: core.app.forum.html
+                                                  });
 
 app.Forum.data.Thread.list = function(topic){
     return db.forum.threads.find({topic: topic}).sort({pinned: -1, lastPostTime: -1});
@@ -93,3 +135,4 @@ db.forum.threads.ensureIndex({pinned: 1});
 db.forum.threads.ensureIndex({pinned: 1, lastPostTime: 1});
 core.db.db();
 dbutil.associate(app.Forum.data.Thread, db.forum.threads);
+Search.fixTable(db.forum.threads, app.Forum.data.Thread.prototype.SEARCH_OPTIONS);

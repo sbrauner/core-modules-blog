@@ -36,16 +36,20 @@ if ( sortFunction )
   <tr>
     <th>Post</th>
     <th>Commenter</th>
-    <th>Comment Date</th>
+    <th>Date</th>
+    <th>Comment</th>
   </tr>
 
 <% var lastId = null; all.forEach( function(z){ %>
   <tr>
     <td>
-      <a ? ( lastId != z.post._id ) href="/<%= z.post.name  %>"><%= z.post.title %></a>
+      <nobr><a ? ( lastId != z.post._id ) href="/<%= z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
     </td>
     <td><%= z.comment.author %></td>
-    <td><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
+    <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
+    <td>
+    <%= z.comment.text %>
+    </td>
   </tr>
 <% lastId = z.post._id; } ); %>
 

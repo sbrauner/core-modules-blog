@@ -1,6 +1,6 @@
 log.threaded.data.reply.debug("Running replyfile. threaded="+threaded + " data="+threaded.data);
 core.content.html();
-core.net.uri();
+core.net.url();
 
 threaded.data.Reply = function(){
     this.ts = new Date();
@@ -28,13 +28,13 @@ threaded.data.Reply.prototype.decoratorsRender = function(part, options){
     }
     if(part == "threaded.replylink"){
         if(! request.reply || request.reply_target){
-            u = new URI(request.getURL()).addArg("reply", "true").toString();
+            u = new URL(request.getURL()).replaceArg("reply", "true").toString();
             print("<a href=\""+u+"\">Reply</a>");
         }
     }
     if(part == "threaded.replyform"){
         if(request.reply == "true" && ! request.reply_target){
-            this.threaded_pieces.reply_form.call(this, true, args);
+            this.threaded_pieces.reply_form.call(this, true, options);
         }
     }
 

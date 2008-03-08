@@ -1,21 +1,28 @@
 <%
-    var f = arguments[0];
-var link = "viewtopic?name="+URI.escape_queryargs(f.name);
-if(f._id == app.Forum.Controller.specialDeletedID || 
-   f._id == app.Forum.Controller.specialModeratedID)
-    link = "viewtopic?id="+f._id;
+app.Forum.data.Topic();
+
+processArgs("topic", "options");
+
+var link = "viewtopic?name="+URL.escape_queryargs(topic.name);
+if(topic._id == app.Forum.Controller.specialDeletedID || 
+   topic._id == app.Forum.Controller.specialModeratedID)
+    link = "viewtopic?id="+topic._id;
+var actions = (options.actions == null) ? [] : options.actions;
 %>
-<tr>
-  <td class="alignleft">
-    <a href="<%= link %>"><%= f.name%></a>
-    <nobr><%= f.description %></nobr>
-  </td>
-  <td>
-    <%= f.threadCount.toFixed(0) %>
-  </td>
-  <td>
-    <%= f.postCount.toFixed(0) %>
-  </td>
+
+
+<tr <%= topic.hidden ? 'class="hidden"' : '' %>>
+  <td class="alignleft"><a href="<%= link %>"><%= topic.name%></a><%= topic.description %></td>
+  <td><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
+  <td><%= topic.postCount.toFixed(0) %></td>
+
+  <%
+  if (actions.length > 0){ 
+       for(var i in actions){ %>
+            <td><%= actions[i].func(topic) %></td>
+            <% 
+       }
+  }%>
 </tr>
 
-</div>
+

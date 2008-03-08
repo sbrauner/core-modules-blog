@@ -28,7 +28,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
         %>
 
         <item>
-          <title><%= post.title %></title>
+          <title><%= thread.getTitle() %></title>
           <link><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></link>
           <pubDate><%= thread.created.webFormat() %></pubDate>
           <author><%= post.author.name %></author>
