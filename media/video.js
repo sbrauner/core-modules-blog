@@ -50,12 +50,25 @@ Media.Video.prototype.getFLV = function(){
     
     var flv = openFile( tempFlv );
     db._files.save( flv );
+    this._file.flvID = flv._id;    
+
     
-    this._file.flvID = flv._id;
+    var imgBase = tempFlv.replace( /.flv$/ , "%d.jpg" );
+    cmd = "ffmpeg -i " + tempFlv + " -an -r 1 -y -s 320x240 -vframes 10 " + imgBase;
+    
+    sysexec( cmd );
+    
+    var img = openFile( imgBase.replace( /%d/ , "10" ) );
+    mylog.debug( "img.length : " + img.length );
+    db._files.save( img );
+    this._file.imgID = img._id;
+
     db._file.save( this._file );
     
     sysexec( "rm " + tempFlv );
     sysexec( "rm " + tempRaw );
+    for ( var i=1; i<=10; i++ )
+        sysexec( "rm " + imgBase.replace( /%d/ , "" + i ) );
     
     return db._files.findOne( flv._id );
 };
