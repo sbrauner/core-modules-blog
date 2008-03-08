@@ -52,7 +52,7 @@ function summarize(result, searchterm) {
 }
 
 core.app.forum.controller();
-core.app.forum.html.forumheader("Forums | Search results");
+core.app.forum.html.forumheader("Forum | Search Results for \""+request.query+"\"");
 core.app.forum.data.thread();
 core.app.forum.html.form();
 %>

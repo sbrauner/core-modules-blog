@@ -16,6 +16,17 @@ app.Forum.data.Topic = function(){
 
 };
 
+app.Forum.data.Topic.prototype.getAncestors = function() {
+    var i = 0;
+    var topicStack = [];
+    tempTopic = this;
+    do {
+        topicStack[i++] = tempTopic.name;
+        tempTopic = tempTopic.parent;
+    } while(tempTopic != null);
+    return topicStack.reverse();
+};
+
 app.Forum.data.Topic.prototype.getThreadCount = function() {
     count = db.forum.threads.find( { topic : this } ).toArray.length;
     subtopics = db.forum.topic.find( { parent : this } );
