@@ -19,6 +19,10 @@ function clean( s ){
 
     //s = s.replace( /<\/?embed[^>]*>/g , "" );
     s = s.replace( /mt:asset.id=.*? /g , "" );
+    
+    s = s.replace( /&(\w+);/g , function(z){
+			return " ";
+		    } );
 
     s = s.replace( /&(\w+);/g , function(z){
                         return " ";
