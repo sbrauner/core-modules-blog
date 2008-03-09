@@ -220,6 +220,7 @@ function fixComments() {
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+    db.blog.posts.ensureIndex( { name : 1 } );
 
     db.blog.posts.setConstructor( Post );
 
