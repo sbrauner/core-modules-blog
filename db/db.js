@@ -45,7 +45,7 @@ function _dbCommand( cmdObj ) {
      createCollection("movies", { size: 10 * 1024 * 1024, capped:true } );
 */
 function createCollection(name, options) { 
-    var cmd = { create: name, capped: options.capped, size: options.size };
+    var cmd = { create: name, capped: options.capped, size: options.size, max: options.max };
     var res = _dbCommand(cmd);
     return res;
 }
