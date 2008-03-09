@@ -1,72 +1,156 @@
 
-<div style="text-align:center;">
+<div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
-    <textarea id="transcript" disabled rows=20 cols=80></textarea><br>
-    <form onSubmit="return doRun();">
-       Command:<input id="command" size=70><input type="submit" value="run">
+     <div id="console" class="transcript"></div>
+     <script type="text/javascript" src="/@@/yui/2.4.1/yuiloader/yuiloader-beta.js"></script>
+     <script type="text/javascript">
+       var loader = new YAHOO.util.YUILoader();
+       loader.insert({
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete'],
+           base: '/@@/yui/2.4.1/',
+           onSuccess: function(loader) {
+               this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
+               var sources = this.myLogReader.getSources();
+               this.myLogReader.hideSource("global");
+               this.myLogReader.hideSource("LogReader");
+               this.myLogReader.formatMsg = function(msg){
+                   if(msg.category == "user"){
+                       return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                   }
+                   if(msg.category == "response"){
+                       return "<span class=\"response\">" + msg.msg + "</span><br/>";
+                   }
+               };
+
+
+               pastCommands = new Array();
+               historyAry = new Array();
+
+               // Install this handler before the autocompleter because it will
+               // grab up/down key events
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+
+               // YUI autocomplete tries to autocomplete even if there's been
+               // an intervening "Enter" and the input field has been cleared.
+               // We block this by keeping a "lastSent"
+               // variable with the last complete command we've sent and
+               // if we get a query for that exact command, we replace it
+               // with a gibberish !!!!!! query.
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",function(e){
+                   if(e.keyCode == 13){
+                       window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
+                   }
+               });
+
+
+               // Set up autocompletion stuff
+               YAHOO.ACJSArray = new function(){ // Object construction
+                   this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
+                   this.oAutoComp = new YAHOO.widget.AutoComplete("commandac", "commandcontainer", this.oACDS);
+                   this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
+                   this.oAutoComp.typeAhead = true;
+                   this.oAutoComp.useShadow = true;
+                   this.oAutoComp.minQueryLength = 1;
+                   //this.oAutoComp.queryDelay = 0;
+                   this.oAutoComp.doBeforeSendQuery = function(q){
+                       if(q == window.lastSent){
+                           // We only want to throw this away once.
+                           // Otherwise the user might type in the exact query
+                           // to try to complete a longer query..
+                           window.lastSent = "";
+                           return "!!!!!!";
+                       }
+                       return q;
+                   };
+               };
+           }
+       });
+
+var histfunc = function( e ) {
+
+    if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
+    var key = e.keyCode || e.which;
+    if(e.shiftKey){
+        // In Konqueror and Safari, the keys for lparen and up-arrow generate
+        // the same keycode. Because of this, YUI blocks lparen.
+        // This is no good, so we block YUI's block by sabotaging the event's
+        // preventDefault method.
+        e.preventDefault = function(){};
+        return;
+    }
+    var cmd = document.getElementById("commandac");
+    var setcmd = function () {
+        if ( arguments.length ) {
+            cmd.value = arguments[0];
+        }
+        else {
+            cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
+        }
+    }
+    if( key == 38 ) { // up arrow
+        historyLocation -= 1;
+        if (historyLocation < -historyAry.length){
+            historyLocation = -historyAry.length;
+        }
+        else {
+            setcmd();
+        }
+    }
+    else if( key == 40 ) { // down arrow
+        historyLocation += 1;
+        if (historyLocation >= 0){
+            historyLocation = 0;
+            setcmd("");
+        }
+        else {
+            setcmd();
+        }
+    }
+};
+     </script>
+     <form onSubmit="return doRun('commandac');">
+       Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
     </form>
 </div>
 
 <script>
+    indexOf = function(ary, v){
+        for(var i=0; i<ary.length; ++i){
+            if(ary[i] == v)
+                return i;
+        }
+        return -1;
+    };
+lastIndexOf = function(ary, v){
+    for(var i=ary.length-1; i>=0; --i){
+        if(ary[i] == v)
+            return i;
+    }
+    return -1;
+};
     shellId = "shell-" + Math.random();
-    commandTranscript = document.getElementById( "transcript" );
-    command = document.getElementById( "command" );
-    var pastCommands = new Array();
     var historyLocation = 0;
-    function doRun(){
-        commandTranscript.value += "\n> " + command.value;
-        if (historyLocation != -1) {
-            pastCommands[pastCommands.length] = command.value;
+    function doRun(el){
+        var command = document.getElementById( el );
+        var usr = command.value;
+        command.value = "";
+        if(indexOf(pastCommands, usr) == -1){
+            pastCommands.push(usr);
+        }
+        if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
+            historyAry.push(indexOf(pastCommands,usr));
         }
         historyLocation = 0;
 
-        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( command.value ).replace( /\+/ , "%2B" );
-        //commandTranscript.value += "\t" + url;
+        YAHOO.log(usr, "user", "shell");
+        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
 
         var res = loadDocSync( url );
         res = res.replace( /(^\s+|\s+$)/g , "" );
-        if ( res.length != 0 )
-            commandTranscript.value += "\n" + res;
-
-        command.value = "";
+        YAHOO.log(res, "response", "shell");
 
         return false;
     }
 
-    window.onkeydown = function( e ) {
-        var cmd = document.getElementById("command");
-        var setcmd = function () {
-            if ( arguments.length ) {
-                cmd.value = arguments[0];
-            }
-            else {
-                cmd.value = pastCommands[pastCommands.length + historyLocation];
-            }
-        }
-        var key = e.keyCode || e.which;
-        var key = e.which;
-        if(e.shiftKey){
-            // cheap hack to make this work in konqueror
-            key = key + 17;
-        }
-        if( key == 38 ) { // up arrow
-            historyLocation -= 1;
-            if (historyLocation < -pastCommands.length){
-                historyLocation = -pastCommands.length;
-            }
-            else {
-                setcmd();
-            }
-        }
-        else if( key == 40 ) { // down arrow
-            historyLocation += 1;
-            if (historyLocation >= 0){
-                historyLocation = 0;
-                setcmd("");
-            }
-            else {
-                setcmd();
-            }
-        }
-    }
+window.onkeydown = histfunc;
 </script>

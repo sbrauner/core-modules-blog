@@ -2,16 +2,9 @@
 SERVER_HOSTNAME = javaStatic( "java.net.InetAddress" , "getLocalHost" ).getHostName();
 
 function mapUrlToJxpFileCore( uri , request ){
-
-    if ( ( 
-	  uri.match( /^(\/|\/~~\/)admin\// ) 
-	  || uri.match( /^\/admin/ )
-	  )
-	 && ! uri.match(/assets/))
-        return "~~/admin/index.jxp";
     
+    // webdav
     var ua = request.getHeader( "User-Agent" );
-    
     if ( ua && 
          ( ua.match( /webdav/i )
            || ua.match( /BitKinex/ )
@@ -21,6 +14,20 @@ function mapUrlToJxpFileCore( uri , request ){
          ){
         return "/~~/webdav.jxp";
     }
+    
+    if ( 
+        uri.match( /.*~$/ ) 
+        || uri.match( /\/\.#/ )
+         )
+        return "~~/bad";
+
+    // admin
+    if ( ( 
+	  uri.match( /^(\/|\/~~\/)admin\// ) 
+	  || uri.match( /^\/admin/ )
+	  )
+	 && ! uri.match(/assets/))
+        return "~~/admin/index.jxp";
     
 };
 

@@ -1,30 +1,56 @@
+log.threaded.data.reply.debug("Running replyfile. threaded="+threaded + " data="+threaded.data);
+core.content.html();
+core.net.url();
+
 threaded.data.Reply = function(){
-    this.ts = Date();
+    this.ts = new Date();
     this.author = "";
     this.title = "";
     this.content = "";
+    this.deleted = false;
 };
 
 threaded.data.Reply.sort = function(ary){
+    ary = ary.filter(function(u){return u});
     return ary.sort( function (a, b) { return b.ts - a.ts; });
 };
 
-threaded.data.Reply.prototype.decoratorsRender = function(){
-    var reps = this.getReplies();
-    for (var i in reps){
-        this.threaded_pieces.reply(reps[i]);
+threaded.data.Reply.prototype.decoratorsRender = function(part, options){
+    part = part || "replies";
+    options = options || {};
+    if(part == "threaded.replies"){
+        if(options.replyable == null) options.replyable = this.threaded_replyable;
+        var reps = this.getReplies();
+        for (var i in reps){
+            if(i == "_dbCons") continue;
+            reps[i].render(options, this.threaded_pieces);
+        }
     }
+    if(part == "threaded.replylink"){
+        if(! request.reply || request.reply_target){
+            u = new URL(request.getURL()).replaceArg("reply", "true").toString();
+            print("<a href=\""+u+"\">Reply</a>");
+        }
+    }
+    if(part == "threaded.replyform"){
+        if(request.reply == "true" && ! request.reply_target){
+            this.threaded_pieces.reply_form.call(this, true, options);
+        }
+    }
+
+};
+
+threaded.data.Reply.prototype.validateReply = function(r){
+    return true;
+};
+
+threaded.data.Reply.prototype.encodeContent = function(txt){
+    return content.HTML.escape_html(txt);
 };
 
 threaded.data.Reply.prototype.decoratorsHandle = function(args){
     var ret = false;
     args = args || {};
-    var replylink = ! args.noreplylink;
-    if(request.reply == "true" && ! request.reply_target ){
-        this.threaded_pieces.reply_form.call(this, true);
-        return;
-    }
-    else
     if(request.reply_target){
         var desc = this.getDescendant(request.reply);
         r = new this.Reply();
@@ -35,15 +61,18 @@ threaded.data.Reply.prototype.decoratorsHandle = function(args){
             r.author = user;
         }
         r.title = request.ntitle;
-        r.content = request.ncontent;
-        desc.addReply(r);
-        ret = r;
-    }
-    if(replylink){
-        u = addQuery({reply: true});
-        print("<a href=\""+u+"\">Reply</a>");
+        r.content = this.encodeContent(request.ncontent);
+        if(this.validateReply(r)){
+            desc.addReply(r);
+            ret = r;
+        }
     }
     return ret;
+};
+
+threaded.data.Reply.prototype.render = function(options, pieces){
+    pieces = pieces || core.threaded.html;
+    pieces.reply(this, options);
 };
 
 threaded.data.Reply.initialize = function(obj){
@@ -51,19 +80,5 @@ threaded.data.Reply.initialize = function(obj){
 };
 
 core.util.format();
-addQuery = function(args){
-    var url = request.getURL();
-    var obj = {};
-    var qs = url.indexOf('?');
-    var opts = url.substring(qs+1, url.length);
-    var ary = opts.split(/&/);
-    for (var i in ary){
-        var pair = ary[i].split(/=/);
-        obj[pair[0]] = pair[1];
-    }
-    for (var i in args){
-        obj[i] = args[i];
-    }
-    var uri = request.getURI();
-    return uri+"?"+Util.format_queryargs(obj);
-};
+
+log.threaded.data.reply.level = log.LEVEL.ERROR;

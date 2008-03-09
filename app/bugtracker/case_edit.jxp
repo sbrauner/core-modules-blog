@@ -4,6 +4,7 @@ core.app.bugtracker.data.project();
 core.app.bugtracker.data.helper();
 core.user.user();
 core.user.auth();
+core.net.url();
 core.content.forms();
 if (! user ){
     user = Auth.getUser(request);
@@ -35,7 +36,7 @@ head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
-        feature.lastModified = Date();
+        feature.lastModified = new Date();
         if(feature.owner == "null") feature.owner = null;
         else
             feature.owner = db.users.findOne({_id: feature.owner});
@@ -66,10 +67,39 @@ if(request.fstatus){
         if(feature.number == 0)
             feature.number = app.bugtracker.data.Feature.nextNumber();
 
+        feature_new = feature._id == null;
+
         db.bugtracker.cases.save(feature);
+
+        if(mail){
+            var subj = "[cases] Case " + feature.number + " \"" + feature.title + "\"";
+            if(! feature_new) subj += " changed";
+            else subj += " added";
+            var link = new URL(request.getURL()).replaceArg("id", feature._id)
+            link.hostname = request.getHost();
+            link.port = request.getPort();
+            link = link.toString();
+
+            body = "The bug report titled \""+feature.title+"\" was changed by "+ user.name+".\n"
+                + "Assigned to: " + feature.owner.name + "\n"
+                + "Status: " + feature.status + "\n"
+                +"To see it, follow this link:\n\n"+link;
+            m = new Mail.Message( subj, body );
+            m.addRecipient(  feature.reporter.email  );
+            if(feature.owner)
+                m.addRecipient(  feature.owner.email , "cc" );
+            if(feature && feature.project && feature.project.owner && feature.project.owner.email)
+                m.addRecipient(  feature.project.owner.email , "cc" );
+            m.send( mail );
+            append = "";
+        }
+        else {
+            append = "?msg=No+mail+sent";
+        }
+
         // Redirect back to bugs/ or whatever
         response.setResponseCode(301);
-        response.setHeader("Location", "./");
+        response.setHeader("Location", "./"+append);
     }
     else{
         timestamp = feature.lastModified;
@@ -120,9 +150,14 @@ function ObjectId(){ return null; }
               //
           areatext.disabled = true;
       }
+<%if(request.id==null){%>
+function bodyLoad(){
+    document.getElementById( "ftitle" ).focus();
+}
+<%}%>
     </script>
   </head>
-  <body>
+<body onload="bodyLoad()" >
     <% if(feature.number != 0){ %>
     <h1>Editing case number <%= feature.number %></h1>
     <% } else { %>
@@ -155,7 +190,7 @@ function ObjectId(){ return null; }
       <div id="post_form">
         <div class="field">
           <div class="field_name">Title</div>
-          <div class="field_value"><input name="ftitle"/></div>
+          <div class="field_value"><input size="80" id="ftitle" name="ftitle"/></div>
         </div>
         <div class="field">
           <div class="field_name">Date reported</div>
@@ -260,15 +295,20 @@ if(project.areas.length > 0){
         <div class="field">
             <div class="field_name">&nbsp;</div>
             <div class="field_value"><input type="submit" value="Delete"
-                                            onclick="return confirm('Are you sure you want to delete this item?');"></div>
+                                            onclick="return confirm('Are you sure you want to delete this item?');" <%= request.id == null? "disabled=\"true\"" : ""%>></div>
       </div>
       </form>
 <div class="comments">
 <hr>
 Comments:
-        <div><% if(feature.decoratorsHandle()) db.bugtracker.cases.save(feature);%></div>
+<div><% if(feature.decoratorsHandle()){
+    feature.lastModified = new Date();
+    db.bugtracker.cases.save(feature);
+}%></div>
 <%
-feature.decoratorsRender();
+feature.decoratorsRender("threaded.replylink");
+feature.decoratorsRender("threaded.replyform");
+feature.decoratorsRender("threaded.replies");
  %>
 </div>
 

@@ -1,4 +1,5 @@
-<a href="/~~/admin/user.jxp">New User</a>
+<p>
+<div> &nbsp; <a href="/~~/admin/user.jxp">New User</a></div>
 <%
 
  var tab = new htmltable( 

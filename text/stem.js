@@ -189,3 +189,18 @@ Stem.stem = function(w) {
 
 };
 
+// takes the root of a word and a word to be matched and checks if the 
+// root is a stripped version of the match word
+Stem.destem = function(word, m) {
+
+    var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
+    var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
+
+    if(!word)
+        return;
+
+    var reg = new RegExp("(\\b)(("+prefix+")?"+word+"("+suffix+")?)(\\b)", "gi");
+    return m.match(reg);
+
+};
+

@@ -1,25 +1,34 @@
-<form method="POST">
+<form method="POST" class="newpost">
   <input type="hidden" name="reply_target" value="<%=arguments[0]%>"/>
      <div class="field">
-       <div class="field_name">Author</div>
+       <label>Author: </label>
      <% if (this.threaded_users == "free") { %>
-       <div class="field_value"><input type="text" name="nauthor"></div>
+       <input type="text" name="nauthor">
      <% } else { %>
-       <div class="field_value"><%= user.name %></div>
-       <input type="hidden" name="nauthor" value="<%= user._id %>"/>
+       <%= user.name %><input type="hidden" name="nauthor" value="<%= user._id %>"/>
      <% } %>
      </div>
      <div class="field">
-       <div class="field_name">Topic</div>
-       <div class="field_value"><input type="text" name="ntitle"></div>
+       <label>Topic:</label>
+       <input type="text" class="text" name="ntitle">
      </div>
      <div class="field">
-       <div class="field_name">Content</div>
-       <div class="field_value"><textarea rows=20 cols=80 name="ncontent"></textarea></div>
+       <label>Content: </label>
+       <textarea rows=20 cols=80 name="ncontent"></textarea>
      </div>
      <div class="field">
-       <div class="field_name">&nbsp;</div>
-       <div class="field_value"><input type="submit" value="Save"></div>
+       <div class="field_value button"><input type="submit" class="submit" value="Save"></div>
      </div>
 
+    <% var opts = arguments[1] || {};
+if(opts.actions){
+    opts.actions.forEach(function(action){
+        var field = action(arguments[0]);
+            %>
+    <div class="field">
+      <div class="field_name"><%= field.name %></div>
+      <div class="field_value"><%= field.value %></div>
+    </div>
+         <%});
+}%>
 </form>

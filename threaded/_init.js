@@ -21,6 +21,8 @@ threaded.repliesEnabled = function(ns, clsname, args){
     var tablename = args.tablename || clsname.toLowerCase()+"_replies";
     var style = args.style || "parent";
     var users = args.users || "auth";
+    var pieces = args.pieces || core.threaded.html;
+    var replyable = args.replyable == null ? true : false;
     if(style == "parent"){
         var rcls = threaded.data.ReplyParent;
     }
@@ -38,19 +40,27 @@ threaded.repliesEnabled = function(ns, clsname, args){
     // This kind of sucks: ReplyChildren doesn't need tablename.
     // Maybe come up with a better approach here.
     cls.prototype.Reply.prototype.threaded_tablename = tablename;
-    cls.prototype.Reply.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.Reply.prototype.threaded_pieces = pieces;
     cls.prototype.Reply.prototype.threaded_users = users;
+    cls.prototype.Reply.prototype.threaded_replyable = replyable;
 
     // Add to cls the functions to make it behave like a Reply.
     cls.prototype.getReplies = rcls.getReplies;
     cls.prototype.addReply = rcls.addReply;
     cls.prototype.getDescendant = rcls.getDescendant;
+    cls.prototype.saveDescendant = rcls.saveDescendant;
+    cls.prototype.removeDescendant = rcls.removeDescendant;
+    cls.prototype.placeDescendant = rcls.placeDescendant;
     cls.prototype.threaded_tablename = tablename;
-    cls.prototype.threaded_pieces = core.threaded.html;
+    cls.prototype.threaded_replyable = replyable;
+    cls.prototype.threaded_pieces = pieces;
     cls.prototype.threaded_users = users;
     cls.prototype.decoratorsRender = rcls.decoratorsRender;
     cls.prototype.decoratorsLinks = rcls.decoratorsLinks;
     cls.prototype.decoratorsHandle = rcls.decoratorsHandle;
+    cls.prototype.encodeContent = rcls.encodeContent;
+    cls.prototype.validateReply = rcls.validateReply;
+    cls.prototype.threaded_reorderChildren = rcls.threaded_reorderChildren;
 
     // Wrap the class itself so that we can let the reply class add its own
     // fields.
@@ -61,4 +71,5 @@ threaded.repliesEnabled = function(ns, clsname, args){
     ns[clsname].prototype = new cls();
     ns[clsname].prototype.constructor = ns[clsname];
     db[tablename].setConstructor(cls.prototype.Reply);
+    db[tablename].ensureIndex({ts: true});
 };

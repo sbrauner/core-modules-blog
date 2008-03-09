@@ -1,0 +1,58 @@
+
+<script src="/~~/ui/js/md5.js"></script>
+<script>
+  
+  var url = "/~~/user/doLogin?to=<%= escape( request.getURL() ) %>";
+  var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
+  var area = "<%= db.getName() %>";
+
+  function processLoginForm( frm ){
+
+    if ( ! frm ) frm = document.getElementById( "login_form" );
+
+    var u = url;
+    if ( u.indexOf( "?" ) < 0 ) u += "?";
+    u += "&prefix=" + prefix;
+    u += "&username=" + frm.login_user.value;
+    u += "&hash=" + hex_md5( prefix + ":" + hex_md5( frm.login_user.value + ":" + area + ":" + frm.login_pass  ) );
+
+    if ( frm.login_remember.value == "yes" ) u += "&remember=t";
+    
+
+    location.href = u;
+    return false;
+  }
+</script>
+
+<div ? user >
+  error you are already logged in
+  have to <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">logout</a>
+  <br>
+  Logged in as : <b><%= user.name %></b><br>
+</div>
+
+<div ? ( ! user ) id="login" >
+
+  <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" >
+
+    <div>
+      <label for="login_user">Username:</label>
+      <input name="login_user">
+    </div>
+
+    <div>
+      <label for="login_password">Password:</label>
+      <input type="password" name="login_pass">
+    </div>
+
+    <div>
+      <label for="login_remember">Remember Me:</label>
+      <input type="checkbox" name="login_remember" value="yes" >
+    </div>
+    
+    <input type="submit" name="action" value="Login">
+    <b ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</b>
+    
+  </form>
+
+</div>

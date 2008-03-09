@@ -9,7 +9,7 @@
 **/
 
 app.bugtracker.data.Feature = function() {
-     // member variables
+    // member variables
     this.status = this.STATUS.NEW;
     this.severity = this.SEVERITY.NORMAL;
     this.creationDate = new Date();
@@ -27,9 +27,10 @@ app.bugtracker.data.Feature = function() {
 };
 
 app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',
-                                  REVIEWED: 'reviewed',
-                                  FIXED: 'fixed',
-                                  CLOSED: 'closed' };
+						 REVIEWED: 'reviewed',
+						 NOT_REPRODUCABLE : 'not reproducable' ,
+						 FIXED: 'fixed',
+						 CLOSED: 'closed' };
 
 app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',

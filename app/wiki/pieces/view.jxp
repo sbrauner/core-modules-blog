@@ -1,5 +1,12 @@
 <% core.app.wiki.pieces.header_wikipage(); %>
 
-<div id="wiki_content" class="content" ><%= wikiPage.getParsedText() %></div>
+<div id="wiki_content" class="content" >
+  <% if (wikiPageHistoricalVersion) { %>
+      <pre><%= wikiPageHistoricalVersion.getHistoricalText() %></pre>
+  <% } else { %>
+      <%= wikiPage.getParsedText() %>
+  <% } %>
+             
+</div>
 
 <% core.app.wiki.pieces.footer_wikipage(); %>

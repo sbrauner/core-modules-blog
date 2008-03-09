@@ -1,26 +1,40 @@
 <%
 var t = arguments[0];
- %>
-<ul class="post">
-  <li>
-  <div class="postbox">
-    <a name="<%= t.getID() %>"/>
+var options = arguments[1] || {};
+var actions = (options.actions == null)? [] : options.actions;
+var replyable = (options.replyable == null)? true : options.replyable;
+var filter = (options.filter == null)? function(){return true;} : options.filter;
+if(! filter(t)) return;
+var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
+log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
+
+var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</span>'");
+%>
+
+
+<div class="postbox <%= htmlclass %>">
+  <a name="<%= t.getID() %>"></a>
     <span class="titlebar">
-      <%= t.title %> by <%= t.threaded_users == "auth"? t.author.name : t.author %> (<%= t.ts %>)
-      (<a href="#<%= t.getID() %>"/>#</a>)
+      <div class="actions">
+           <% for(var i in actions){ actions[i](t); } %>
+      </div>
+      <div class="title"><%= t.title %></div>
+      <div class="author"><%= t.threaded_users == "auth"? t.author.name : t.author %></div><div class="ts"><%= prettyDate %>
+      (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
     </span>
+
     <div class="content">
       <%= t.content %>
     </div>
-    <% if(request.reply == t.getID() && ! request.reply_target){
-        t.threaded_pieces.reply_form.call(t, t.getID());
-    }
-else{ %>
-      <a href="<%=addQuery({reply: t.getID()}) %>">Reply to this</a>
-        <% } %>
-  </div>
-  <%
-    t.getReplies().forEach(t.threaded_pieces.reply);
+    <% if(replyable){ %>
+      <% if(request.reply == t.getID() && ! request.reply_target){
+          t.threaded_pieces.reply_form.call(t, t.getID());
+      }
+      else{ %>
+        <a href="<%=new URL(request.getURL()).addArg("reply", t.getID()) %>">Reply to this</a>
+        <% }
+      }
+
+    t.getReplies().forEach(function(r){ t.threaded_pieces.reply(r, options); });
   %>
-  </li>
-</ul>
+</div>

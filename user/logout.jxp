@@ -1,0 +1,25 @@
+<%
+    core.user.auth();
+
+    u = Auth.getUser();
+var hash = request.getCookie( "userhash" );
+
+if ( u && hash && u.tokens ) {
+    var b = u.tokens.length;
+    log.user.auth.cookie.debug( "current hash : " + hash );
+    u.tokens = u.tokens.filter( function(z){
+            log.user.auth.cookie.debug( "\t old hash : " + z.hash );
+            return z.hash != hash;
+        } );
+
+    if ( u.tokens.length != b )
+        db.users.save( u );
+}
+
+response.removeCookie( "username" );
+response.removeCookie( "userhash" );
+
+response.setResponseCode( 301 );
+response.setHeader( "Location", request.to || "/" );
+
+%>

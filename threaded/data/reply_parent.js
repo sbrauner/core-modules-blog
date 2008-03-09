@@ -10,8 +10,9 @@ threaded.data.ReplyParent.prototype = new threaded.data.Reply();
 threaded.data.ReplyParent.prototype.constructor = threaded.data.ReplyParent;
 
 threaded.data.ReplyParent.prototype.getReplies = function(){
-    var ary = db[this.threaded_tablename].find({parent: this}).toArray();
-    return threaded.data.Reply.sort(ary);
+    var q = db[this.threaded_tablename].find({parent: this});
+    return q.sort({ts: 1}).toArray();
+    return threaded.data.Reply.sort(q.toArray());
 };
 
 threaded.data.ReplyParent.prototype.addReply = function(rep){
@@ -30,7 +31,15 @@ threaded.data.ReplyParent.prototype.getDescendant = function(desc_id){
     return db[this.threaded_tablename].findOne({_id: desc_id});
 };
 
+threaded.data.ReplyParent.saveDescendant = function(desc){
+    db[this.threaded_tablename].save(desc);
+};
+
 threaded.data.ReplyParent.initialize = function(obj){
     threaded.data.Reply.initialize(obj);
+};
+
+threaded.data.ReplyParent.find_Query = function(query){
+    return db[this.prototype.threaded_tablename].find(query);
 };
 

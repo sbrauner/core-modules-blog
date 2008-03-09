@@ -1,0 +1,32 @@
+<% var myID = arguments[1] || md5( Math.random() ); %>
+<script type="text/javascript">
+   YAHOO.util.Event.onContentReady( "<%= myID %>" , function (){
+     var oMenuBar = new YAHOO.widget.MenuBar( "<%= myID %>" , { 
+       autosubmenudisplay: true, 
+       hidedelay: 750, 
+       lazyload: true } );
+   
+     oMenuBar.render();
+   
+   } );
+</script>
+<div id="<%= myID %>" class="yuimenubar yuimenubarnav">
+  <div class="bd">
+    <ul class="first-of-type">
+
+      <% for ( var i=0; i != obj.length ; i++ ){ %>
+      <li class="yuimenubaritem first-of-type <%= obj[i].css || "" %>"><a class="yuimenubaritemlabel" href="<%= obj[i].link %>"><%= obj[i].name %></a>
+        
+        <div ? ( obj[i].submenu ) class="yuimenu">
+          <div class="bd">
+            <ul>
+              <% obj[i].submenu.forEach( core.ui.elements.html.menuSub ); %>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <% } %>
+      
+    </ul>
+  </div>
+</div>

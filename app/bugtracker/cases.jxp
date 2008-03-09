@@ -1,8 +1,10 @@
 <%
 core.content.table();
+core.content.html();
 core.user.user();
 core.user.auth();
 core.app.bugtracker.data.feature();
+core.net.url();
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
 
@@ -13,6 +15,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
   <body>
     <h1>Cases</h1>
 
+    <% if(request.msg){ %>
+    <div class="notice"><%= content.HTML.escape_html(request.msg) %>
+    <% } %>
+
 {
     var tab = new htmltable({
         ns: db.bugtracker.cases,
@@ -20,7 +26,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
             {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},
             {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
-             queryForm: function(u) { return db.users.findOne({name: new RegExp(u)}); }},
+             queryForm: function(name) {
+                 // Search insensitively on the username. If we don't find one,
+                 // just return some value that should never occur.
+                 var user = db.users.findOne({name: new RegExp(name, 'i')});
+                 if(user) return user;
+                 return -1;
+             }},
             {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
             {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
             {name: "type", searchWidth: 10, heading: "Type", cssClassName: 'field', view: function(x) { return x? x: "none"; }},
@@ -37,5 +49,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     tab.dbview(tab.find(null, {number: 1}));
 }
 
-    <a href="case_edit">New case</a>
+    <a href="case_edit">New case</a><br/>
+
+<% if(user){ %>
+<a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a><br/>
+<% } %>
+
+<a href="project_edit">Edit a project</a>
+
+
 </body>

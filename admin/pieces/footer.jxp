@@ -1,3 +1,4 @@
+<% head.addCSS( "NOCDN/~~/admin/assets/css.jxp" ); %>
 </div>
 <hr>
 <div style="text-align: center; font-size: .6em;">
@@ -6,3 +7,4 @@
 </body>
 </html>
 <!-- <%= SERVER_HOSTNAME %> -->
+

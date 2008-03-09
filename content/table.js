@@ -39,7 +39,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 */
 
 core.content.html2();
-core.net.uri();
+core.net.url();
 core.util.db();
 
 function htmltable(specs) {
@@ -61,8 +61,7 @@ function htmltable(specs) {
 
     // returns the query object to filter by
     this._query = function(baseQuery) {
-        if( !this.specs.searchable )
-            return {};
+        //if( !this.specs.searchable ) return {};
         var q = baseQuery;
         this.specs.cols.forEach( function(x) {
                 var s = request[x.name];
@@ -118,7 +117,7 @@ function htmltable(specs) {
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
         var sort = this._sort();
-        var u = new URI(request.getURL());
+        var u = new URL(request.getURL());
         for(var i in sort){
             u = u.removeArg("sort"+i);
         }
@@ -183,6 +182,7 @@ function htmltable(specs) {
                 var cssClassName = this.specs.cols[c].cssClassName;
 
                 print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
+                print("<nobr>");
                 {
                     var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
                     if( linkToDetails ) {
@@ -199,6 +199,7 @@ function htmltable(specs) {
                     print( fieldDisplay || ( linkToDetails ? "go to" : "" ) );
                     if( linkToDetails ) print("</a>");
                 }
+                print("</nobr>");
                 print("</td>");
             }
 

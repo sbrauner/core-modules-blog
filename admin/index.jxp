@@ -2,8 +2,8 @@
 /* everyone is allowed to read the source code in corejs and samples. */
     var _openAccess = false;
 
-_openAccess = 
-    request.getURI().match( /^.admin\/doc$/ ) && 
+_openAccess =
+    request.getURI().match( /^.admin\/doc$/ ) &&
     ( request.getHost() == "corejs.10gen.com" || request.getHost() == "samples.10gen.com");
 
 core.user.user();
@@ -14,9 +14,9 @@ if ( ! user ){
 }
 
 if ( !_openAccess && (! user || ! user.isAdmin()) ){
-    return Auth.reject( request , response );
+    return Auth.cookie.reject( request , response );
 }
-    
+
 var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
 if ( sectionName.match( /^index/ ) )
     sectionName = "";
@@ -26,21 +26,30 @@ var section = null;
 var sectionHeader = null;
 var sectionFooter = null;
 
-if ( sectionName.match( /^my\// ) )
+if ( sectionName.match( /^my\// ) && jxp.admin ){
     section = jxp.admin[ sectionName.substring( 3 )];
+    if ( section && jxp.admin.pieces ){
+        sectionHeader = jxp.admin.pieces.header;
+        sectionFooter = jxp.admin.pieces.footer;
+    }
+}
 
 if ( section == null && sectionName.match( /\// ) ){
     var idx = sectionName.indexOf( "/" );
-    var module = sectionName.substring( 0 , idx );
+    var moduleName = sectionName.substring( 0 , idx );
     var piece = sectionName.substring( idx + 1 );
 
-    var moduleThing = core[module];
-    if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] ){
-        section = moduleThing.admin[piece];
-	if ( section && moduleThing.admin.pieces ){
-	    sectionHeader = moduleThing.admin.pieces.header;
-	    sectionFooter = moduleThing.admin.pieces.footer;
-	}
+    var locations = [core[moduleName], core.app[moduleName]];
+    for(var i in locations){
+        var moduleThing = locations[i];
+        if ( moduleThing && moduleThing.admin && moduleThing.admin[ piece ] ){
+            section = moduleThing.admin[piece];
+            if ( section && moduleThing.admin.pieces ){
+                sectionHeader = moduleThing.admin.pieces.header;
+                sectionFooter = moduleThing.admin.pieces.footer;
+            }
+            break;
+        }
     }
 }
 
@@ -67,6 +76,6 @@ else {
 
 if ( isFunction( sectionFooter ) )
     sectionFooter();
-    
-core.admin.pieces.footer(); 
+
+core.admin.pieces.footer();
 %>

@@ -1,15 +1,16 @@
+core.ext.getlist();
 log("STARTING BUGTRACKER");
 app.App = function() {}
 app.App.prototype.config = function(key, opts){
     if(opts == null) opts = {merge: true};
     if(opts && opts.merge){
-        var merge = app.App.getlist(allowModule, this.name, key) || [];
+        var merge = Ext.getlist(allowModule, this.name, key) || [];
         var add = [];
         db._config.find({app: this.name, key: key}).forEach(function(u){add.push(u.value)});
         return merge.concat(add);
     }
     else if(opts && opts.priority == "_init") {
-        var val = app.getlist(allowModule, this.name, key);
+        var val = Ext.getlist(allowModule, this.name, key);
         if(! val)
             val = db._config.findOne({app: this.name, key: key});
         return val;
@@ -31,20 +32,9 @@ app.App.findArray = function(ary, tgt){
     return false;
 };
 
-app.App.getlist = function(){
-        //SYSOUT(getlist(app, "bugtracker", "data", "helper", "getlist") == app.bugtracker.data.helper.getlist);
-        var obj = arguments[0];
-        var i = 1;
-        while(obj && i < arguments.length){
-            obj = obj[arguments[i]];
-            ++i;
-        }
-        return obj;
-};
-
 app.bugtracker.BugTracker = function() {};
 app.bugtracker.BugTracker.prototype = new app.App();
-app.bugtracker.BugTracker.prototype.name = "bugs";
+app.bugtracker.BugTracker.prototype.name = "bugtracker";
 app.bugtracker.BugTracker.prototype.list_projects = function(){
     var cur = db.bugtracker.projects.find();
     return cur.toArray();

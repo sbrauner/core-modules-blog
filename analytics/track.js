@@ -67,7 +67,7 @@ function getCookie( name )  {
 // title
 var possTitles = document.getElementsByTagName( "title" );
 if ( possTitles && possTitles.length > 0 )
-    addPixelParam( "title" , possTitles[0].innerHTML );
+    addPixelParam( "title" , escape( possTitles[0].innerHTML ) );
         
 // search
 if ( window && window.searchTerm ){

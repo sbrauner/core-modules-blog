@@ -8,6 +8,8 @@
 %>
 <html>
   <body>
+    
+    Remote User <b><%= request.getRemoteIP() %></b>
 
     <h3>Headers</h3>
     <table border="1">

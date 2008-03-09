@@ -1,0 +1,220 @@
+<%
+// topicTable: draw a table for a topic.
+// This includes: a name, a description, any subtopics, threads,
+// and actions for those threads.
+//
+// If threads is null, don't draw any part of the thread table.
+//
+// subs is expected to be a JavaScript array; threads is expected to be null or
+// a DBCursor.
+processArgs("name", "description", "subs", "threads", "actions", "opts");
+core.ext.getdefault();
+opts = opts || {};
+var topic;
+if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
+
+// Whether to try to create links for all these functions.
+var createThread = (opts.createThread == null) ? true : opts.createThread;
+var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+
+var paging = Ext.getdefault(opts, "paging", true);
+
+// We implement some actions here because we use them in both index and
+// viewtopic.
+var moveThread = app.Forum.Controller.hasPermission(user, "moveThread");
+var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
+var hideTopic = app.Forum.Controller.hasPermission(user, "hideTopic");
+var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+
+var topics = db.forum.topics.find({parent: null}).toArray();
+topicActions = [];
+topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
+
+t = topic || topics[0];
+
+if(moveTopic){
+    topicActions.push({title : "Move Topic",
+                       func : app.Forum.html.selectify(topics,
+                                        function(t){ return {onChange: "moveTopic('"+t._id+"')", id: t._id.toString()}; },
+                                        {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
+                                            // We wrap the function so that when we get the Special Topics,
+                                            // we don't generate a <select> for you to move them.
+                                            if(parseInt(t._id.toString()) < 10)
+                                                return "&nbsp;";
+                                            return proceed(t);
+                                        })
+                      });
+}
+
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
+}
+
+var movetargets = [];
+
+if(app.Forum.Controller.hasPermission(user, "moveThread")){
+    var topics = db.forum.topics.find({parent: null});
+    topics = topics.toArray();
+    movetargets = movetargets.concat(topics);
+}
+
+
+deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+if(deleteThread)
+    movetargets.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+if(moderateThread)
+    movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+
+if(movetargets.length > 0) {
+    actions.push({title : "Move Thread",
+                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "move('"+topic._id+"')", id: topic._id.toString() }; } )
+                 });
+}
+
+
+%>
+<script type="text/javascript">
+
+function move(threadId) {
+         topicId = document.getElementById(threadId).value;
+         var passData = "thread="+threadId+"&to="+topicId;
+         ajax(passData, "moveThread.jxp", reload, "POST");
+}
+
+function moveTopic(topicId) {
+         targetId = document.getElementById(topicId).value;
+         var passData = "topic="+topicId+"&to="+targetId;
+         ajax(passData, "topic_move.jxp", reload, "POST");
+}
+
+function reload() {
+         location.reload();
+}
+
+function togglePick(threadId) {
+         var passData = "thread="+threadId;
+         ajax(passData, "editorPick.jxp", reload);
+}
+
+function toggleHide(topicId) {
+    var passData = "topic="+topicId;
+    ajax(passData, "topic_hide.jxp", reload);
+}
+
+function showPopup(id) {
+    document.getElementById(id).style.display = "block";
+    return false;
+}
+function cancelPopup(id) {
+        document.getElementById(id).style.display = "none";
+}
+
+</script>
+<h1><%= name %></h1>
+<% if ( description ){ %>
+<h2><%= description %></h2>
+<% } %>
+
+<div class="caption">
+  <%
+    if(createThread &&
+       app.Forum.Controller.hasPermission(user, "createThread")){ %>
+  <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> |
+  <%
+    }
+    if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
+      if(opts.thisid){ %>
+        <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a>
+        <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
+          <input type="hidden" name="id" value="<%= opts.thisid %>">
+          <input type="submit" class="button" name="action" value="Edit topic">
+        </form>
+        <%
+      }
+      else {
+        %>
+        <a href="topic_new">New Topic</a> |
+        <%
+      }
+    }
+    %>
+        <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
+        <a href="user_edit">Edit user</a> |
+        <% } %>
+  <% if(opts.parent){ %>
+  <a href="viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
+  <% }
+    else { %>
+  <a href="./">Back to Top Level</a>
+  <% } %>
+  </div>
+  <% if(topic){ %>
+  <form action="topic_edit">
+    <input type="hidden" name="id" value="<%= opts.thisid %>">
+    <div class="popup" id="editpop">
+      <div class="title">Edit Topic</div>
+      <div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= topic.name %>"></div>
+      <div class="field"><label>Description:</label><input type="text" name="description" value="<%= topic.description %>"></div>
+      <div class="field"><input type="button" class="button" value="cancel" onclick="cancelPopup('editpop')"><input type="submit" class="submit" value="Save"></div>
+    </div>
+  </form>
+  <% } %>
+
+<%
+// Show subtopics
+if(subs && subs.length > 0){ %>
+    <table id="style1">
+       <tr><th>Subtopic</th><th>Threads</th><th>Posts</th>
+       <%
+       for(i=0; i < topicActions.length; i++) {
+            print("<th>"+ topicActions[i].title +"</th>");
+       } %>
+       </tr>
+       <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
+    </table>
+    <%
+}
+
+// Show threads
+if (threads){
+
+    if(paging){
+        core.app.forum.data.paging();
+        paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+        threads = paging.slice();
+
+        core.app.forum.html.paging(paging);
+    }
+ %>
+     <table id="style1" >
+          <tr><th>Thread</th><th>Replies</th><th>Last post</th>
+          <%
+          for(i=0; i < actions.length; i++) {
+                print("<th>"+ actions[i].title+"</th>");
+          } %>
+          </tr>
+          <%
+          var even = false;
+          if(threads.length > 0)
+               threads.forEach( function(t) {
+                    app.Forum.renderer.thread(t, {actions: actions}, even);
+                    even = !even;
+               });
+          else
+               print ("<tr><td colspan=\""+3+actions.length+"\">No threads right now!</td></tr>");%>
+     </table>
+<%
+    if(paging){
+        core.app.forum.html.paging(paging);
+    }
+}%>

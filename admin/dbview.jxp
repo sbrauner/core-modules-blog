@@ -1,45 +1,55 @@
 {
-  function outp(x) { 
-    if( typeof x != 'string' ) { 
+  /* dbview.jxp - database content viewer utility */
+
+  core.content.html();
+  function outp(x) {
+    if( typeof x != 'string' ) {
       print(x); return;
     }
-    if( x.length<=20 ) 
-      print(x);
-    else print( x.substring(0,18)+"..." );
+    if( x.length<=20 )
+        print(content.HTML.escape_html(x));
+    else 
+	print( content.HTML.escape_html(x).substring(0,18)+"..." );
   }
 
+  // top == show all collections
   var top = request.ns == null;
-  
-  var ns=top ? "system.namespaces" :  "." + request.ns;
-  var collection = db[ns];
-  var hdr = top ? "All Collections" : "Collection: " + request.ns;
-  if( top )
+  var collection;
+  if( top ) collection = db["system.namespaces"];
+  else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+
+  var hdr = top ? "All Collections for database " + db.getName() : "Collection: " + request.ns;
+  if( top ) {
+    // we'll sort by collection name
     collection.ensureIndex( {name:true} );
-  var searchObject = {};
-  if ( "admin.10gen.com" != request.getHeader( "Host" ) ){
-	if ( top ){
-		searchObject.name = new RegExp( "^" + db.getName() + "\." );
-	}
-	else {
-		if ( ! request.ns.match( "^" + db.getName() + "\." ) ){
-			print( "you are evil" );
-			return;
-		}
-	}
   }
-  var rows = collection.find( searchObject ).sort( { name : 1 } ).toArray(100);
+
+  // ignore internal transient variables
+  var ignore= { _ns:1, _save:1, _update:1 };
+
+  var max = top?1000:100;
+  var rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
 
   var fields;
+  // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
   var thresh = rows.length < 4 ? 0 : rows.length / 2;
   if( top )
     fields = [ 'name' ];
   else {
+    fields = [];
     var f = {};
     for( var i=0; i < rows.length; i++ ) {
       for( var e in rows[i] ) {
-        if( f[e] != null ) f[e]++; else f[e] = 0; 
+	  //	  if( [1,2].contains(e) ) print("?");
+	  if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
+	  //	  print("e:" + e + " f[e]:" + f[e] + "<br>\n");
       }
     }
+    //print("<p>f:" + tojson(f));
+    for( var g in f ) { 
+	if( f[g] >= thresh ) fields.push(g);
+    }
+    //print("<p>fields:" + tojson(fields));
   }
 }
 <h3><%=hdr%></h3>
@@ -47,50 +57,53 @@
   if( !top ) {
     print('\n<table class="dbview">');
     print("<tr>");
-    for( h in f ) { 
-      if( f[h]>thresh ) { print("<th>");print(h);print("</th>"); } 
+    for( h in f ) {
+      if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
-    print("<th></th></tr>\n");
+    print("<th>(other)</th></tr>\n");
   }
 
   for( var i=0; i < rows.length; i++ ) {
     var obj=rows[i];
-    var idx=top ? obj.name.indexOf("$") : -1; 
+    var idx=top ? obj.name.indexOf("$") : -1;
     if( obj.name && idx>=0 ) {
-	print("&nbsp&nbsp&nbsp; old (from system.namespaces) index "); print(obj.name.substring(idx)); print("<br>");
+	var idxname = obj.name.substring(idx+1);
+        print("&nbsp&nbsp&nbsp; index "); print(idxname); print(' ');
+	var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
+	print(idxobj?tojson(idxobj.key):"null");
+	print("<br>");
     }
     else if( top ) {
 %>
 <a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
-<%
-	    db.system.indexes.find( { ns : obj.name } ).forEach( function( z ){
-								     print("&nbsp&nbsp&nbsp;index "); 
-								     print( z.name); 
-								     print("<br>");
-								     
-								 } );
- } else { 
+<% 
+ } else {
       print("<tr>");
-      for( h in f ) { 
-        if( f[h]>thresh ) { 
-          print("<td>");
-          outp(obj[h]);
-          print("</td>");
-        }
-      } 
+      for( h in f ) {
+	  if( f[h]>thresh && !ignore[h] ) {
+	      print("<td>");
+	      outp(obj[h]);
+	      print("</td>");
+	  }
+      }
+      print("<td>");
+      var first = true;
       for( x in obj ) {
         if( f[x]<= thresh ) {
-	          print(x); print(": "); outp(obj[x]); print(" ");
+	    if( !first )
+		print(", ");
+	    first = false;
+	    print(x); print(": "); outp(tojson(obj[x])); 
         }
       }
-      print("<td></td></tr>\n");
-    } 
-  } 
+      print("</td></tr>\n");
+    }
+  }
 
   if( !top ) print("</table>");
 
-  if( rows.length >= 100 )
-    print("<br>Only first 100 displayed");
+  if( rows.length >= max )
+    print("<br>Only first " + max + " displayed");
 
 //  if( !top )
 //    print('<p>&nbsp;<a href="/admin/dbview">all collections</a>');

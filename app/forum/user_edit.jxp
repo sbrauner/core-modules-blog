@@ -1,0 +1,108 @@
+<%
+core.app.forum.controller();
+
+
+if(! app.Forum.Controller.hasPermission(user, "editUser"))
+    return Auth.cookie.reject(request, response);
+
+core.user.user();
+
+var user = null;
+
+if(request.userid){
+    user = db.users.findOne({_id: request.userid});
+}
+
+core.app.forum.data.thread();
+
+var isBanned = db.forum.banned_users.findOne({user: user});
+
+if(request.action == "Moderate"){
+    app.Forum.data.Thread.find().forEach(function(t){
+        t.getReplies().forEach(function(p){
+            if(p.author._id == user._id){
+                log.debug("moderating " + p.content);
+                t.removePost("moderated", p.getID());
+            }
+            else {
+            }
+        });
+        t.save();
+    });
+}
+else if(request.permission){
+    // validate the permission we want to set
+    var allowed = Object.values(app.Forum.Controller.permissions);
+    if(allowed.indexOf(request.permission) == -1) throw new Error("I don't want to add that permission");
+
+    if(request.block){
+        if(! isBanned ){
+            db.forum.banned_users.save({user: user});
+            isBanned = true;
+        }
+    }
+    else {
+        if(isBanned){
+            db.forum.banned_users.remove({user: user});
+            isBanned = false;
+        }
+    }
+
+    // Remove all other forum permissions
+    allowed.forEach(function(p) { user.removePermission(p); });
+    user.addPermission(request.permission);
+}
+
+if(user) 
+      core.app.forum.html.forumheader("Forum | Edit User "+user.name+" ("+user.nickname+")");
+else
+      core.app.forum.html.forumheader("Forum | Edit User");
+
+
+if(! user){ %>
+<form>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value">
+    <select name="userid" size="12">
+      <% db.users.find({}).forEach(function(u){ %>
+      <option value="<%= u._id%>"><%= u.name %></option>
+      <% }); %>
+    </select>
+  </div>
+</div>
+<input type="submit" value="Select">
+</form>
+     <% } else { %>
+<form method="POST">
+<input type="hidden" name="userid" value="<%= user._id %>"/>
+<div class="field">
+  <div class="field_name">User</div>
+  <div class="field_value"><%= user.name %></div>
+</div>
+<div class="field">
+  <div class="field_name">Permissions</div>
+  <div class="field_value">
+    <select name="permission">
+        <% var type = app.Forum.Controller.userPermissionType(user);
+    for(var key in app.Forum.Controller.permissions){ %>
+      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= app.Forum.Controller.permissions[key]%>"><%= key %></option>
+            <% } %>
+    </select>
+  </div>
+</div>
+<div class="field">
+  <input type="checkbox" name="block" value="1" <%= isBanned? "checked" : "" %>/>
+  <label>Block user</label>
+</div>
+<div class="field">
+  <div class="field_name">&nbsp;</div>
+  <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+<div class="field">
+  <div class="field_name">Moderate all posts by this user</div>
+  <div class="field_value"><input type="submit" name="action" value="Moderate"></div>
+</div>
+</form>
+  <% } %>
+  <% htmlfooter() %>
