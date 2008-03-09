@@ -1,0 +1,5 @@
+<%
+   var name = arguments[0];
+   var id = "cal_" + name;
+%>
+<input id="<%= id %>" name="<%= name %>" value="<%= ( arguments[1] || new Date() ).format( "MM/dd/yyyy HH:mm " ) %>" >
