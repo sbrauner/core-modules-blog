@@ -1,25 +1,29 @@
 
 core.content.search();
 core.text.text();
+core.media.image();
 
 function Post(name, title) {
     this.name = name;
     this.title = title;
     this.commentsEnabled = true;
-    this.ts = Date();
+    this.ts = new Date();
     this.cls = "entry";
     this.content = "";
+    this.views = 0;
     this.categories = new Array();
 };
 
-Post.prototype.SEARCH_OPTIONS = { title : 1 , author : 1 , content : .2 };
+Post.prototype.SEARCH_OPTIONS = { title : 1 , author : 1 /* , content : .2 */ };
 
 Post.prototype.getTeaserContent = function(){
     return this.content.replace( /---JUMP---.*/m , "" );
 };
 
 Post.prototype.getFullContent = function(){
-    return this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
+    html = Media.Image.giveIMGTagsURLMaxes( html );
+    return html;
 };
 
 Post.prototype.getContent = function( full ){
@@ -31,11 +35,11 @@ Post.prototype.getContent = function( full ){
 Post.prototype.hasJump = function(){
 
     var idx = this.content.indexOf( "---JUMP---" );
-    
+
     if ( idx < 0 ) return false;
-    
+
     idx = idx + 10;
-    
+
     return ( idx + 10 ) < this.content.length;
 };
 
@@ -44,6 +48,9 @@ Post.prototype.getNumComments = function(){
     if ( !this.comments )
         return 0;
     
+    if ( isArray( this.comments ) )
+        return this.comments.length;
+
     var numComments = 0;
     for (var key in this.comments) {
         if (key == 'length') continue;
@@ -53,31 +60,60 @@ Post.prototype.getNumComments = function(){
 };
 
 Post.prototype.deleteComment = function(cid){
-    if ( this.comments ) {
-        delete this.comments[cid];
+    var l = log.blog.post.deleteComment;
+    l.debug( cid );
+
+    if ( ! this.comments ){
+	l.debug( "no comments" );
+        return;
     }
+    
+    if ( ! isArray( this.comments ) )
+	this.getComments();
+
+    if ( isArray( this.comments ) ){
+	l.debug( "array version" );
+        this.comments = this.comments.filter( function(z){
+                return z.cid.toString() != cid.toString();
+            } );
+        return;
+    }
+
+    l.debug( "old object thing" );
+    delete this.comments[cid];
 };
 
 Post.prototype.addComment = function( comment ){
-    if ( !this.comments ) {
-        this.comments = Object();
-    }
+
+    if ( ! this.comments )
+        this.comments = [];
+
     comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
     comment.cid = ObjectID();
-    this.comments[comment.cid.toString()] = comment;
+
+    if ( isArray( this.comments ) )
+        this.comments.push( comment );
+    else
+        this.comments[comment.cid.toString()] = comment;
 };
 
 Post.prototype.getComments = function() {
-    if (!this.comments) return Array();
-    
+    if ( ! this.comments )
+        return [];
+    if ( isArray( this.comments ) )
+        return this.comments;
+
     var commentsArray = Array();
     for (var key in this.comments) {
         if (key == 'length') continue;
         commentsArray.push(this.comments[key]);
     }
-    
+
     // sort them by date
-    return commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    commentsArray = commentsArray.sort( function (a, b) { return b.ts - a.ts; });
+    this.comments = commentsArray;
+
+    return this.comments;
 };
 
 Post.prototype.presave = function(){
@@ -91,19 +127,50 @@ Post.prototype.getExcerpt = function(){
     var foo = this.getTeaserContent();
     if ( foo == null )
         return null;
-    
+
     return Text.snippet( foo );
 };
 
 Post.prototype.getUrl = function( r ){
     if ( ! r && request )
         r = request;
-    
+
     var u = r ? "http://" + r.getHeader( "Host" ) : "";
     u += "/" + this.name;
-    
+
     return u;
 };
+
+Post.prototype.getFirstImageSrc = function( maxX , maxY ){
+    if ( ! this.content )
+        return null;
+
+    if ( this.suppressImage )
+	return null;
+
+    var p = /<img[^>]+src="(.*?)"/;
+    var r = p.exec( this.content );
+    if ( ! r )
+        return null;
+    
+    var url = r[1];
+    
+    if ( ! url.match( /f?id=/ ) )
+	return null;
+
+    if ( ( maxX || maxY ) ){
+	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
+
+	if ( maxX )
+	    url += "&maxX=" + maxX;
+
+	if ( maxY )
+	    url += "&maxY=" + maxY;
+    }
+    
+    return url;
+};
+
 
 Post.get404 = function() {
     http404Page = db.blog.posts.findOne({ name: '404' });
@@ -111,9 +178,10 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
+	http404Page.commentsEnabled = false;
         db.blog.posts.save(http404Page);
     }
-    return http404Page;    
+    return http404Page;
 };
 
 Post.getNoResults = function() {
@@ -124,45 +192,38 @@ Post.getNoResults = function() {
         noResultsPage.live = true;
         db.blog.posts.save(noResultsPage);
     }
-    return noResultsPage;    
+    return noResultsPage;
 };
 
+
 function fixComments() {
-SYSOUT('Fixing Comments!');
+    
+    SYSOUT('Fixing Comments!');
     cursor = db.blog.posts.find();
     // iterate through each post
     cursor.forEach(function(post) {
         // see what kind of object comments is
-        if (post.comments) {
-            if (isArray(post.comments)) {
-SYSOUT('Converting Post ID (' + post._id + ')');
-                // if its an array, change it to an object, and reassign all of the objects
-                var convertedComments = Object();
-                
-                post.comments.forEach(function(comment) {
-                    comment.cid = ObjectId();
-                    SYSOUT('\tMigrating Comment ID (' + comment.cid + ')');
-                    convertedComments[comment.cid.toString()] = comment;
-                });
-                
-                post.comments = convertedComments;
-                db.blog.posts.save(post);
-SYSOUT('\tSaving Post ID (' + post._id + ')');
-            } else {
-SYSOUT('Post ID (' + post._id + ') already converted');
-            }
-        } else {
-SYSOUT('Post ID (' + post._id + ') has no comments');
-        }
+
+        if ( post.comments && ! isArray( post.comments ) ){
+            SYSOUT('Converting Post ID (' + post._id + ')');
+            post.comments = post.getComments();
+	}
+	
+	if ( ! post.views )
+	    post.views = 1;
+
+        db.blog.posts.save(post);
+        SYSOUT('\tSaving Post ID (' + post._id + ')');
     });
 }
 
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+
     db.blog.posts.setConstructor( Post );
 
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
-    
-//    fixComments();
+
+    //fixComments();
 }
