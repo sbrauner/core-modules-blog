@@ -42,12 +42,11 @@ function _dbCommand( cmdObj ) {
      capped: if true, this is a capped collection (where old data rolls out).
 
    Example:
-     createCollection("movies", { size: 10 * 1024 * 1024 } );
+     createCollection("movies", { size: 10 * 1024 * 1024, capped:true } );
 */
 function createCollection(name, options) { 
-    if( !options ) options = {};
-    options.create = name;
-    var res = _dbCommand(options);
+    var cmd = { create: name, capped: options.capped, size: options.size };
+    var res = _dbCommand(cmd);
     return res;
 }
 
