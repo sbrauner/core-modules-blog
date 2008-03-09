@@ -40,6 +40,7 @@ function _dbCommand( cmdObj ) {
    Options:
      size: desired initial extent size for the collection.  Must be <= 1000000000.
      capped: if true, this is a capped collection (where old data rolls out).
+     max: maximum number of objects if capped (optional).
 
    Example:
      createCollection("movies", { size: 10 * 1024 * 1024, capped:true } );
