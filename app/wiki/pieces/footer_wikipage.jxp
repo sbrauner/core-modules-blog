@@ -1,4 +1,5 @@
 <div class="help">
+<hr />
     <% if (user) { %>
         <div class="user">hi <b><%= user.name %></b></div>
         e: <a href="?edit=true">edit</a> &nbsp; r: rename &nbsp; d: delete &nbsp;
@@ -9,15 +10,19 @@
         ctrl-enter: saves after editing &nbsp; <a href="help.markup">markup help</a> &nbsp; <a href="?history=true">history</a>
     <% } %>
 </div>
+<p />
 <div>
-    <hr />
+<%
+    var childPageNames = app.wiki.WikiController.getChildPageNames(wikiPage);
+    if( childPageNames.length ) {
+%>
     <b>Child Articles</b>
     <ul>
     <%
-        var childPageNames = app.wiki.WikiController.getChildPageNames(wikiPage);
         childPageNames.forEach(core.app.wiki.pieces.html.childpagelist);
     %>
     </ul>
+<%}%>
 </div>
 
 <% if (!app.wiki.config.readOnly) { %>
