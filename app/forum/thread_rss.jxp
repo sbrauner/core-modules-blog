@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <rss version="2.0">
-<% 
+<%
       // FIXME: Permissions, check_ban?
 core.app.forum.data.thread();
 core.content.html();
@@ -18,13 +18,13 @@ response.setHeader( "Content-Type" , "text/xml"); %>
    <lastBuildDate><%= now.webFormat() %></lastBuildDate>
    <description></description>
 
-   <% 
+   <%
    children = thread.getReplies();
    for(var i=0; i < children.length; i++) {
-     if(children[i].topic == app.Forum.Controller.specialDeletedID) 
-        continue;
+       if(children[i].deleted)
+           continue;
      %>
-  
+
      <item>
        <guid><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id + "#" + children[i].getID() %></guid>
        <link><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id+"#"+children[i].getID() %></link>
