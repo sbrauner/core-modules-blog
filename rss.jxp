@@ -14,8 +14,9 @@ function clean( s ){
     s = s.replace( /&[mn]dash;/g , "-" );
     s = s.replace( /&ldquo;/g , "'" );
     s = s.replace( /&rdquo;/g , "'" );
+    s = s.replace( /&amp;/g , "&" );
 
-    s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
+    //s = s.replace( /(\w)&(\w)/g , "$1&amp;$2" );
 
     //s = s.replace( /<\/?embed[^>]*>/g , "" );
     s = s.replace( /mt:asset.id=.*? /g , "" );
@@ -28,6 +29,10 @@ function clean( s ){
                         return " ";
                     } );
 
+    // final processing - order very important
+    
+    s = s.replace( /&/g , "&amp;" );
+    
     s = s.replace( /</g , "&lt;" );
     s = s.replace( />/g , "&gt;" );
 
