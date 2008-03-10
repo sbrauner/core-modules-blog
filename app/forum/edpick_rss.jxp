@@ -10,7 +10,7 @@ var now = new Date();
 response.setHeader( "Content-Type" , "text/xml"); %>
 
 <channel>
-   <title><%= "Editor's Picks"  %></title>
+   <title><%= Ext.getlist(allowModule, "forum", "forumTitle") || "" %> Forum <%= "Editor's Pick"  %></title>
    <link>http://<%= request.getHeader( "Host") %>/forum/</link>
    <language>en-us</language>
    <pubDate><%= now.webFormat() %></pubDate>
@@ -25,14 +25,14 @@ response.setHeader( "Content-Type" , "text/xml"); %>
         <item>
           <title><%= thread.getTitle() %></title>
           <link><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></link>
-          <pubDate><%= thread.created.webFormat() %></pubDate>
+          <pubDate><%= thread.lastPostTime.webFormat() %></pubDate>
           <author><%= post.author.name %></author>
           <source><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></source>
           <language>en-us</language>
           <date>2008-02-28T03:43:44-08:00</date>
           <description>
-            Number of posts: <%= thread.count %><br />
-            Most recent post: <%= thread.getLatestPost().content  %>
+            Posts: <%= thread.count %><br />
+             Most Recent Post on <%= thread.lastPostTime %> by <%= thread.getDescendant(thread.latestPost).author.name %>
           </description>
         </item>
         <%
