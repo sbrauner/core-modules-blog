@@ -112,6 +112,13 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
     }
 };
 
+app.Forum.data.Thread.prototype.recalculate = function() {
+    var reps = this.getReplies();
+    reps = reps.filter(function(r) { return ! r.deleted; });
+    this.count = reps.length;
+    this.save();
+};
+
 // This adds children and the rendering thereof to the Thread class.
 // For more on this, check corejs/threaded/_init.js.
 // A bunch of functions are added to the Thread class -- getReplies(),
