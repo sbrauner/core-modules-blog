@@ -28,7 +28,7 @@ core.app.forum.html.forumheader("Forum | "+thread.getTitle()+titleStr);
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
 var canPost = app.Forum.Controller.hasPermission(user, "makePost")
-    && ! request.deleted && thread.commentsEnabled;
+    && ! request.deleted && thread.commentsEnabled && ! thread.isExpired();
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
