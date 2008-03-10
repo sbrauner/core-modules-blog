@@ -47,7 +47,7 @@ if(hideTopic){
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
-                                        function(t){ return {onChange: "moveTopic('"+t._id+"')", id: t._id.toString()}; },
+                                                       function(t){ return {onChange: "moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
                                         {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
                                             // We wrap the function so that when we get the Special Topics,
                                             // we don't generate a <select> for you to move them.
@@ -87,13 +87,61 @@ if(moderateThread)
 
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
-                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "move('"+topic._id+"')", id: topic._id.toString() }; } )
+                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "moveDlg('thread', move, '"+topic._id+"')", id: topic._id.toString() }; } )
                  });
 }
 
 
 %>
 <script type="text/javascript">
+var clientLoader = new YAHOO.util.YUILoader();
+
+clientLoader.insert({
+    require: ['container'],
+    base: '/@@/yui/current/',
+
+    onSuccess: function(loader) {
+            YAHOO.util.Event.onDOMReady( function() {
+                moveConfDialog = new YAHOO.widget.SimpleDialog("dlg", {
+                    width: "20em",
+                    fixedcenter:true,
+                    modal:true,
+                    visible:false,
+                    draggable:false });
+                moveConfDialog.setHeader("Move?");
+                moveConfDialog.cfg.setProperty("icon",YAHOO.widget.SimpleDialog.ICON_WARN);
+
+                var handleYes = function() {
+                    //user confirms the deletion of this item;
+                    //this method would perform that deletion;
+                    //when ready, hide the SimpleDialog:
+                    this.hide();
+                    this.target(this.targetId);
+                }
+                var handleNo = function() {
+                    //user cancels item deletion; this method
+                    //would handle the cancellation of the
+                    //process.
+                    //when ready, hide the SimpleDialog:
+                    this.hide();
+                }
+                var myButtons = [ { text:"Yes",
+                    handler:handleYes },
+                    { text:"Cancel",
+                    handler:handleNo,
+                    isDefault:true } ];
+                moveConfDialog.cfg.queueProperty("buttons", myButtons);
+                moveConfDialog.render(document.body);
+            });
+        }
+});
+
+function moveDlg(label, target, targetId) {
+    moveConfDialog.setBody("Do you really want to move this "+label+"?");
+    moveConfDialog.target = target;
+    moveConfDialog.targetId = targetId;
+    moveConfDialog.show();
+}
 
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
