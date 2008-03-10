@@ -36,6 +36,14 @@ topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
 
 t = topic || topics[0];
 
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
+}
+
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
@@ -50,13 +58,6 @@ if(moveTopic){
                       });
 }
 
-if(hideTopic){
-    topicActions.push({title: "Hidden",
-                       func: function(topic){
-                           app.Forum.html.form.hidden(topic);
-                           return "";
-                       }});
-}
 
 var movetargets = [];
 

@@ -53,7 +53,6 @@ app.Forum.data.Topic.prototype.presave = function(){
          "null" == this.description )
         this.description = "";
 
-    log(this.SEARCH_OPTIONS);
     Search.index(this, this.SEARCH_OPTIONS);
 };
 
