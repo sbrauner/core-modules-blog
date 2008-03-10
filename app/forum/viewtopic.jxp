@@ -45,7 +45,7 @@ else {
 
 var titleStr = "";
 var a = t.getAncestors();
-for(var i=0; i<a.length; i++) 
+for(var i=0; i<a.length; i++)
         titleStr += " > " + a[i];
 core.app.forum.html.forumheader("Forum |"+titleStr);
 
@@ -65,14 +65,6 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
         stickyForm(thread._id, action, text);
         return "";
       }});
-}
-
-if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
-   actions.push({ title : "Editor's Pick",
-                  func : function(thread) {
-      editorPick(thread);
-      return "";
-   }});
 }
 
 app.Forum.html.topicBreadcrumb(t);
