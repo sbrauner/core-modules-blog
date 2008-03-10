@@ -9,6 +9,12 @@ core.app.forum.html.forumheader("Forum | New Thread");
 core.app.forum.data.thread();
 core.content.forms();
 var topic = db.forum.topics.findOne({_id: request.top_id});
+if(topic.allowPosts == false){
+%>
+Thread creation is disabled in this topic.
+<%
+}
+else {
 if(request.getMethod() == "POST"){
     var thread = new app.Forum.data.Thread();
     thread.save();
@@ -40,9 +46,10 @@ if(request.getMethod() == "POST"){
 <%
 opts = {};
 opts.newThread = true;
-app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); 
+app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts);
 
 var backurl = "viewtopic?name="+topic.name;
+}
 %>
 <div class="backbtn"><a href="<%= backurl %>">Back to forum</a></div>
 

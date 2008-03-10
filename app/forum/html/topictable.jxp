@@ -11,11 +11,15 @@ processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
 core.app.forum.js.yui();
 opts = opts || {};
+var createThread = true;
 var topic;
-if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
+if (opts.thisid){
+    topic = db.forum.topics.findOne({_id: opts.thisid});
+    createThread = topic.allowPosts;
+}
 
 // Whether to try to create links for all these functions.
-var createThread = (opts.createThread == null) ? true : opts.createThread;
+var createThread = (opts.createThread == null) ? createThread : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 
@@ -223,6 +227,8 @@ function cancelPopup(id) {
       <div class="title">Edit Topic</div>
       <div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= topic.name %>"></div>
       <div class="field"><label>Description:</label><input type="text" name="description" value="<%= topic.description %>"></div>
+      <div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= topic.allowPosts ? "" : "CHECKED" %>></div>
+
       <div class="field"><input type="button" class="button" value="cancel" onclick="cancelPopup('editpop')"><input type="submit" class="submit" value="Save"></div>
     </div>
   </form>
