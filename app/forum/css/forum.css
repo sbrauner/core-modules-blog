@@ -177,16 +177,17 @@ div.threadFooter {
    background-color: #EEEEEE;
 }
 
-#style1 tr.edPick td {
-   font-weight: bold;
-}
-
 #style1 td.lastpost {
    font-size: 13px;
 }
 
 #style1 td div.lp_author {
    padding-bottom: 3px;
+}
+
+div.icons {
+     float: left;
+     padding-right: 3px;
 }
 
 .field {
@@ -329,3 +330,4 @@ form.newpost div.button {
      text-align: left;
      padding-top: 15px;
 }
+

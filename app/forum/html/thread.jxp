@@ -31,6 +31,10 @@ if(deletedPosts) link += "&deleted=true";
 
 <tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %>">
   <td class="alignleft threadhead">
+    <div class="icons">
+    <%= t.editorPick ? '<img src="css/Thumbsup-icon.gif" class="edPick">' : '' %>
+    <%= t.pinned ? '<img src="css/sticky-icon.gif" class="sticky">' : '' %>
+    </div>
     <div class="title"><a href="<%= link %>"><%= title%></a></div>
     <div class="author">started by <%= f.author.name %></div>
     <div class="ts">at <%= f.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %></div>
@@ -40,7 +44,7 @@ if(deletedPosts) link += "&deleted=true";
   <% if (!deletedPosts) { %>
   <td class="alignleft lastpost">
     <% if(l) { %>
-    <div class="lp_author">by <%= l.author.name %> <a href="<%= link %>&page=-1#<%= l.getID() %>">(go)</a></div>
+    <div class="lp_author"> <a href="<%= link %>&page=-1#<%= l.getID() %>">by <%= l.author.name %></a></div>
     <nobr>
     at <%= l.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %>
     </nobr>
