@@ -16,7 +16,7 @@ function doRound( date , t ){
 }
 
 
-function getTotalByteArray(cursor, t) {
+function getTotalByteArray(cursor, t,min) {
     cursor.sort( { ts : 1 } );
     
     var lastTS = null;
@@ -37,24 +37,39 @@ function getTotalByteArray(cursor, t) {
             last = n;
         } );
 
+    if ( min ){
+	while ( a.length < min ){
+	    a.unshift( { time : new Date( a[0].time.getTime() - ( 1000 * 60 * getMinutes( t ) ) ) , num : 0 } );
+	}
+    }
+
     return a;
-}
+};
+	    
+	    
+function getMinutes( t ){
+    if ( t == "h" )
+	return 60;
+    
+    if ( t == "d" )
+	return  60 * 24;
+    
+    if ( t == "w" )
+	return  60 * 24 * 7;
+    
+    if ( t == "m" )
+	return 60 * 24 * 30;    
+    
+    return 5;
+};
 
 /**
  * @return [ { time : Date , num : Number } ... ]
 */
 function mungeData( cursor , t , startTime ){
     var a = getTotalByteArray(cursor, t);
-
-    var minutes = 5;
-    if ( t == "h" )
-	minutes = 60;
-    else if ( t == "d" )
-	minutes = 60 * 24;
-    else if ( t == "w" )
-	minutes = 60 * 24 * 7;
-    else if ( t == "m" )
-	minutes = 60 * 24 * 30;
+    
+    var minutes = getMinutes( t );
 
     // convert sums to per second
     a = a.map( function( z ){
@@ -146,9 +161,10 @@ function formatMillis(millis) {
 
 function threeMonthSummary(limit, t) {
     
-    data_i = getTotalByteArray( db._system.usage.bytes_in.find().limit( limit ) , t );
-    data_o = getTotalByteArray( db._system.usage.bytes_out.find().limit( limit ) , t );
-    millis = getTotalByteArray( db._system.usage.cpu_millis.find().limit( limit ) , t );
+    data_i = getTotalByteArray( db._system.usage.bytes_in.find().limit( limit ) , t , 3 ).reverse();
+    data_o = getTotalByteArray( db._system.usage.bytes_out.find().limit( limit ) , t , 3 ).reverse();
+    millis = getTotalByteArray( db._system.usage.cpu_millis.find().limit( limit ) , t , 3 ).reverse(); 
+
 
     var sum = [];
     var i = 0;
