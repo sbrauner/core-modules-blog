@@ -60,8 +60,59 @@ else
       core.app.forum.html.forumheader("Forum | Edit User");
 
 
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
+
+%>
+<script type="text/javascript">
+var clientLoader = new YAHOO.util.YUILoader();
+
+clientLoader.insert({
+    require: ['container', 'animation'],
+    base: '/@@/yui/current/',
+
+    onSuccess: function(loader) {
+            YAHOO.util.Event.onDOMReady( function() {
+                moderateConfDialog = new YAHOO.widget.SimpleDialog("dlg", {
+                    width: "20em",
+                    fixedcenter:true,
+                    modal:true,
+                    visible:false,
+                    draggable:false });
+                moderateConfDialog.setHeader("Warning!");
+                moderateConfDialog.setBody("Are you sure you want to moderate all posts by this user?");
+                moderateConfDialog.cfg.setProperty("icon",YAHOO.widget.SimpleDialog.ICON_WARN);
+
+                var handleYes = function() {
+                    //user confirms the deletion of this item;
+                    //this method would perform that deletion;
+                    //when ready, hide the SimpleDialog:
+                    this.hide();
+                    var modbutton = document.getElementById("modbutton-real");
+                    modbutton.click();
+                }
+                var handleNo = function() {
+                    //user cancels item deletion; this method
+                    //would handle the cancellation of the
+                    //process.
+                    //when ready, hide the SimpleDialog:
+                    this.hide();
+                }
+                var myButtons = [ { text:"Yes",
+                    handler:handleYes },
+                    { text:"Cancel",
+                    handler:handleNo,
+                    isDefault:true } ];
+                moderateConfDialog.cfg.queueProperty("buttons", myButtons);
+                moderateConfDialog.render(document.body);
+            });
+        }
+});
+</script>
+
+<%
+
 if(! user){ %>
-<form>
+<form id="userform">
 <div class="field">
   <div class="field_name">User</div>
   <div class="field_value">
@@ -75,7 +126,7 @@ if(! user){ %>
 <input type="submit" value="Select">
 </form>
      <% } else { %>
-<form method="POST">
+<form method="POST" class="yui-skin-sam">
 <input type="hidden" name="userid" value="<%= user._id %>"/>
 <div class="field">
   <div class="field_name">User</div>
@@ -102,8 +153,12 @@ if(! user){ %>
 </div>
 <div class="field">
   <div class="field_name">Moderate all posts by this user</div>
-  <div class="field_value"><input type="submit" name="action" value="Moderate"></div>
+  <div class="field_value"><input id="modbutton" type="submit" name="action" value="Moderate" onclick="moderateConfDialog.show(); return false"></div>
+  <input type="submit" style="visibility: hidden;" name="action" value="Moderate" id="modbutton-real"/>
 </div>
+  <div id="dlg"></div>
 </form>
-  <% } %>
+
+  <div id="dlg"></div>
+<% } %>
   <% htmlfooter() %>
