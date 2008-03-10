@@ -110,7 +110,7 @@ app.Forum.html.form.hidden = function(topic){
 
 app.Forum.html.search = function(location) {
          %>
-         <form action="search.jxp" method="post">
+         <form action="search.jxp">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search posts in <%= location %>" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="go">

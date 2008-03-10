@@ -93,6 +93,11 @@ else {
 
 <%
 threads = Search.search(db.forum.threads, query);
+core.app.forum.data.paging();
+paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+threads = paging.slice();
+core.app.forum.html.paging(paging);
+
 if(threads.length > 0){
     for(var i = 0; i < threads.length; i++){
        %>
@@ -117,5 +122,6 @@ else {
      <%
 }
 
+core.app.forum.html.paging(paging);
 htmlfooter();
 %>
