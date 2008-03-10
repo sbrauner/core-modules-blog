@@ -122,7 +122,7 @@ app.Forum.html.topicStack = function(tempTopic) {
      var topicStack = "";
      while(tempTopic.parent) {
           tempTopic = tempTopic.parent;
-          topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
+          topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' </a></div>' + topicStack;
      }
      print(topicStack);
 }
@@ -132,7 +132,7 @@ app.Forum.html.startBreadcrumbTable = function() {
     <table id="style1" cellspacing="0" >
     <tr>
     <th scope="col" class="article">
-    <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
+    <div class="top_level"><a href="index.jxp">forums </a></div>
     <%
 }
 
