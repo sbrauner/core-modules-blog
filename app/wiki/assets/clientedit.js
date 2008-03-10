@@ -101,7 +101,7 @@ var handleEditKeyPress = function() {
     window.location = window.location + "?edit=true";
 }
 
-var handleRenameKeyPress = function() {
+var handleRenameKeyPress = function(e, obj) {
     renameDialog.show();
     editKeyListener.disable();
     renameKeyListener.disable();
@@ -111,7 +111,7 @@ var handleRenameKeyPress = function() {
     homeKeyListener.disable();
 }
 
-var handleDeleteKeyPress = function() {
+var handleDeleteKeyPress = function(e, obj) {
     deleteDialog.show();
     editKeyListener.disable();
     renameKeyListener.disable();
@@ -121,7 +121,7 @@ var handleDeleteKeyPress = function() {
     homeKeyListener.disable();
 }
 
-var handleSaveKeyPress = function() {
+var handleSaveKeyPress = function(e, obj) {
     document.forms.wiki_edit_form.submit();
 }
 
