@@ -25,8 +25,9 @@ core.ext.getdefault();
 * @param config.pageSize         how many results on each page (defaults to request.pageSize or 20)
 * @param config.page             which page to display (defaults to request.page or 1)
 * @param config.displayOpts      what options to use in displaying the pager (see paging.jxp)
-* @param config.padding          how many page links to show when rendering the pager (defaults to 2)
+* @param config.padding          how many page links in either direction to show when rendering the pager (defaults to 2)
 * @param config.nextlinkInterval how many pages the "next" link should advance (defaults to twice padding plus 1)
+* @param config.minWindow        how many page links should be shown at a minimum (defaults to 5)
 */
 
 app.Forum.data.Paging = function(ary, config, request){
