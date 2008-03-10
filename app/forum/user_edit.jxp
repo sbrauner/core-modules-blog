@@ -60,8 +60,6 @@ else
       core.app.forum.html.forumheader("Forum | Edit User");
 
 
-head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
-
 %>
 <script type="text/javascript">
 var clientLoader = new YAHOO.util.YUILoader();
