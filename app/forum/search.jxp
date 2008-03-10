@@ -107,6 +107,9 @@ if(threads.length > 0){
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
             for(var j=0; snippets != null && j < snippets.length; j++) {
                 %>
+          <div class="author">
+            by <%= snippets[j].object.author.name %> on <%= snippets[j].object.ts %>
+          </div>
                 <div class="content">
                 <%= app.Forum.html.highlight(summarize(snippets[j].text, query), query) %>
                 </div>
