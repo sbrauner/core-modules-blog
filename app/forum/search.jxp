@@ -76,7 +76,7 @@ function toggleHighlight() {
 var query = request.query;
 
 print("<div>Search results for \""+request.query+"\":</div>");
-print('<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>');
+print('<div><input type="checkbox" value="highlight" onclick="toggleHighlight()" checked>Highlight</div>');
 
 cursor = Search.search(db.forum.topics, query );
 if(cursor.length > 0) {
