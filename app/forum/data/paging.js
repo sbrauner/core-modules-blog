@@ -35,6 +35,7 @@ app.Forum.data.Paging = function(ary, config, request){
     request = request || {};
     this.ary = ary;
     this.pageSize = config.pageSize || request.pageSize || 20;
+    this.minWindow = config.minWindow || request.minWindow || 5;
     this._numPages = Math.ceil(ary.length / this.pageSize);
 
     this.page = config.page || request.page || 1;
@@ -83,6 +84,22 @@ app.Forum.data.Paging.Window = function(pager, page, padding){
     if(this.first < 1) this.first = 1;
     this.last = page+padding;
     if(this.last > pager.numPages()) this.last = pager.numPages();
+    var range = this.last - this.first + 1;
+    if((this.first > 1 || this.last < pager.numPages()) &&
+       (range < pager.minWindow)){
+        if(pager.numPages() < pager.minWindow){
+            this.first = 1;
+            this.last = pager.numPages();
+        }
+        else {
+            if(this.first == 1){
+                this.last = pager.minWindow;
+            }
+            else {
+                this.first = pager.numPages() - pager.minWindow + 1;
+            }
+        }
+    }
 };
 
 app.Forum.data.Paging.Window.prototype.getFirstPage = function(){

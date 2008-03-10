@@ -190,7 +190,9 @@ if (threads){
 
     if(paging){
         core.app.forum.data.paging();
-        paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+        paging = new app.Forum.data.Paging(threads, {pageSize: 20,
+                                                     minWindow: 5},
+                                           request);
         threads = paging.slice();
 
         core.app.forum.html.paging(paging);

@@ -94,7 +94,8 @@ else {
 <%
 threads = Search.search(db.forum.threads, query);
 core.app.forum.data.paging();
-paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+paging = new app.Forum.data.Paging(threads, {pageSize: 20, minWindow: 5},
+                                   request);
 threads = paging.slice();
 core.app.forum.html.paging(paging);
 
