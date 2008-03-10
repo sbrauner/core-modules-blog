@@ -38,7 +38,7 @@ app.Forum.data.Paging = function(ary, config, request){
     this.ary = ary;
     this.pageSize = config.pageSize || request.pageSize || 20;
     this.minWindow = Ext.getdefault(config, 'minWindow',
-                                    Ext.getdefault(request, 'minWindow', 5));
+                                    request.minWindow || 5);
     this._numPages = Math.ceil(ary.length / this.pageSize);
 
     this.page = config.page || request.page || 1;
