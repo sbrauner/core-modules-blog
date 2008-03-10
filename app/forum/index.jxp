@@ -1,6 +1,5 @@
 <%
 core.app.forum.controller();
-
 core.app.forum.html.forumheader("Forum | Home");
 
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
@@ -43,5 +42,6 @@ core.app.forum.html.topictable("Forums", null, topics, null, [],
                                {createThread: false, thisid: null});
 
 %>
+
 
 <% htmlfooter(); %>

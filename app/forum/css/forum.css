@@ -34,17 +34,17 @@ td {
 		text-align: right;
 }
 
-table#style1 {
+table#style1, table.style1 {
 	margin-bottom: 1em;
 	width: 100%;
 	border: 1px solid #157491;
 }
 
-#style1 form {
+#style1 form, .style1 form {
 	display:inline;
 }
 
-#style1 input {
+#style1 input, .style1 input {
 	margin:0; 
 	background-color: #369fbf;
 	font-size:11px;
@@ -52,17 +52,17 @@ table#style1 {
 	border: 1px solid #ffffff;	
 }
 
-#style1 a {
-	display: block;
+#style1 a, .style1 a {
+/*	display: block;*/
 	line-height: 1.2em;
 }
 
-#style1 nobr {
+#style1 nobr, .style1 nobr {
 	font-size:11px; 
 	color: #AAAAAA;	
 }
 
-#style1 th {
+#style1 th, .style1 th {
 	padding: 7px 6px 5px 12px;
 	font-size: 11px;
 	color: #4f6a72;
@@ -73,7 +73,7 @@ table#style1 {
 	background-repeat: repeat-x;
 }
 
-#style1 th div.top_level {
+#style1 th div.top_level, .style1 th div.top_level {
 	float: left;
 	padding: 6px 6px 4px 12px;	
 	height: 13px;
@@ -82,42 +82,45 @@ table#style1 {
 	background-repeat: repeat-x;
 }
 
-#style1 th.article {
+#style1 th.article, .style1 th.article {
 	padding: 4px; 	
 }
 
-#style1 th.article div.top_level a {
+#style1 th.article div.top_level a, .style1 th.article div.top_level a {
 	color: #ffffff;
 }
 
-#style1 th.article div.second_level {
+#style1 th.article div.second_level, .style1 th.article div.second_level {
 	float: left;
 	padding: 6px 6px 0px 18px;
 	height: 17px; 
 	background-image: url(th_arrow.gif?v=2);
 	background-repeat: no-repeat;	
 }
-#style1 th.article div.second_level a {
+#style1 th.article div.second_level a, .style1 th.article div.second_level a {
         display: inline;
 }
-#style1 .alignleft {
+#style1 .alignleft, .style1 .alignleft {
 	text-align: left;	
 }
 
-#style1 .alignright {
+#style1 .alignright, .style1 .alignright {
 	padding-right: 4px; 
 	text-align: right;	
 }
 
-#style1 td {
+#style1 td, .style1 td {
 	padding: 6px 6px 6px 12px;
 	font-size: 14px;
 	background: #fff;
 	text-align:center;
 	border-top: 1px solid #9ac0cc; 
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
 }
 
-#style1 tr.alt td {
+#style1 tr.alt td, .style1 tr.alt td {
 	background-color: #f4f8f9;
 }
 
@@ -164,12 +167,6 @@ div.threadFooter {
 #style1 td.threadhead div.author, td.threadhead div.ts {
         color: grey;
         font-size: 11px;
-}
-
-#style1 td {
-   border-left: none;
-   border-right: none;
-   border-bottom: none;
 }
 
 #style1 tr.even td {
