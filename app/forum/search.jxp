@@ -33,13 +33,13 @@ function summarize(result, searchterm) {
              summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}", "i");
              match = summary.exec(result);
         // if there is trailing header
-             if(match) 
+             if(match)
                   return "..."+match[0];
              else {
                   summary = new RegExp("(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "i");
                   match = summary.exec(result);
         // if there is trailing footer
-                  if(match) 
+                  if(match)
                        return match[0]+"...";
                   else {
         // no trailing header or footer
