@@ -17,38 +17,40 @@ core.text.stem();
 // extract up to m words before the search term and n words after for context
 function summarize(result, searchterm) {
         var m = 15, n = 20;
+        retAr = [];
 
         if(result == null)
             return;
 
         searchterm = Search.queryToArray(searchterm);
         var stem = Stem.stem(searchterm[0]);
-        var summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "i");
-        match = summary.exec(result);
+        var summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "gi");
+        match = result.match(summary);
 
         // if there is trailing header and footer
         if(match)
-             return "..."+match[0]+"..."
-        else {
-             summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}", "i");
-             match = summary.exec(result);
+             for(i=0; i<match.length; i++) 
+                  retAr.push( "..."+match[i]+"...");
+
+        summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}\$", "i");
+        match = result.match(summary);
         // if there is trailing header
-             if(match)
-                  return "..."+match[0];
-             else {
-                  summary = new RegExp("(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "i");
-                  match = summary.exec(result);
+        if(match)
+             retAr.push("..."+match[0]);
+
+        summary = new RegExp("^(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "i");
+        match = result.match(summary);
         // if there is trailing footer
-                  if(match)
-                       return match[0]+"...";
-                  else {
+             if(match)
+                  retAr.push(match[0]+"...");
+
         // no trailing header or footer
-                       summary = new RegExp("(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}", "i");
-                       match = summary.exec(result);
-                       return match[0];
-                  }
-             }
-        }
+        summary = new RegExp("^(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}\$", "i");
+        match = result.match(summary);
+        if(match)
+              retAr.push(match[0]);
+
+        return retAr;
 }
 
 core.app.forum.controller();
@@ -106,16 +108,21 @@ if(threads.length > 0){
        <div class="title"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(threads[i].getTitle(), query) %></a></div>
        <%
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
-            for(var j=0; snippets != null && j < snippets.length; j++) {
+            for(var j=0; snippets != null && j < 4 && j < snippets.length; j++) {
                 %>
-          <div class="author">
-            by <%= snippets[j].object.author.name %> on <%= snippets[j].object.ts %>
-          </div>
+                <div class="author">by <%= snippets[j].object.author.name %> on <%= snippets[j].object.ts %></div>
                 <div class="content">
-                <%= app.Forum.html.highlight(summarize(snippets[j].text, query), query) %>
+                <% 
+                summary = summarize(snippets[j].text, query);
+                for(var k=0; k<summary.length; k++)
+                     print(app.Forum.html.highlight(summary[k], query)+"<br />"); 
+                %>
                 </div>
                 <%
-            }%>
+            }
+            if(snippets && snippets.length > 4) 
+                print("(First four shown, "+snippets.length+" matching posts in thread)");
+            %>
        </div>
        <%
     }
