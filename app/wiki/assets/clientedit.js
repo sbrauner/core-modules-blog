@@ -13,7 +13,7 @@ var saveKeySelector = { ctrl: true, keys: [13, 3] };
 var editKeySelectorWebKit = { alt: true, keys: 69 };
 var renameKeySelectorWebKit = { alt: true, keys: 82 };
 var deleteKeySelectorWebKit = { alt: true, keys: 68 };
-var saveKeySelectorWebKit = { alt: true, keys: 83 };
+var saveKeySelectorWebKit = { alt: true, keys: [13, 3] };
 
 clientEditLoader.insert({
     require: ['fonts','event','container','dom','connection','element','button','editor'],
@@ -107,6 +107,8 @@ var handleRenameKeyPress = function() {
     renameKeyListener.disable();
     deleteKeyListener.disable();
     saveKeyListener.disable();
+    searchKeyListener.disable();
+    homeKeyListener.disable();
 }
 
 var handleDeleteKeyPress = function() {
@@ -115,6 +117,8 @@ var handleDeleteKeyPress = function() {
     renameKeyListener.disable();
     deleteKeyListener.disable();
     saveKeyListener.disable();
+    searchKeyListener.disable();
+    homeKeyListener.disable();
 }
 
 var handleSaveKeyPress = function() {
@@ -127,6 +131,8 @@ var handleConfirm = function() {
     renameKeyListener.enable();
     deleteKeyListener.enable();
     saveKeyListener.enable();
+    searchKeyListener.enable();
+    homeKeyListener.enable();
 }
 
 var handleCancel = function() { 
@@ -135,5 +141,6 @@ var handleCancel = function() {
     renameKeyListener.enable();
     deleteKeyListener.enable();
     saveKeyListener.enable();
+    searchKeyListener.enable();
+    homeKeyListener.enable();
 };    
-

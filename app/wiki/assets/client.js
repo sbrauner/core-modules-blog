@@ -16,17 +16,19 @@ clientLoader.insert({
     onSuccess: function(loader) {
         YAHOO.util.Event.onDOMReady( function() {
             // only set these up on a non-edit page
-            if (YAHOO.env.ua.webkit) {
-		        searchKeyListener = new YAHOO.util.KeyListener(document, searchKeySelectorWebKit, handleSearchKeyPress);
-            } else {
-		        searchKeyListener = new YAHOO.util.KeyListener(document, searchKeySelector, handleSearchKeyPress);
+            if (!isEditPage) {
+                if (YAHOO.env.ua.webkit) {
+    		        searchKeyListener = new YAHOO.util.KeyListener(document, searchKeySelectorWebKit, handleSearchKeyPress);
+                } else {
+    		        searchKeyListener = new YAHOO.util.KeyListener(document, searchKeySelector, handleSearchKeyPress);
+                }
+                searchKeyListener.enable();
             }
-            searchKeyListener.enable();
-
+            
             if (YAHOO.env.ua.webkit) {
-                homeKeyListener = new YAHOO.util.KeyListener(document, searchKeySelectorWebKit, handleHomeKeyPress);
+                homeKeyListener = new YAHOO.util.KeyListener(document, homeKeySelectorWebKit, handleHomeKeyPress);
             } else {
-                homeKeyListener = new YAHOO.util.KeyListener(document, searchKeySelector, handleHomeKeyPress);
+                homeKeyListener = new YAHOO.util.KeyListener(document, homeKeySelector, handleHomeKeyPress);
             }
             homeKeyListener.enable();
         });
