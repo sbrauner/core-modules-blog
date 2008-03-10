@@ -17,19 +17,27 @@ Media.Video = function( file ){
 };
 
 
+Media.Video.prototype.getIMG = function(){
+    this.getFLV();
+    return db._files.findOne( this._file.imgID );
+};
+
 Media.Video.prototype.getFLV = function(){
     if ( this._file.flvID )
-        return db._files.findOne( file.flvID );
+        return db._files.findOne( this._file.flvID );
 
     if ( this._file.filename.match( /\.flv$/ ) )
         return this._file;
+
+    var doRM = true;
 
     mylog.info( "going to encode : " + this._file.filename );
 
     var r = Math.random();
     
-    var tempRaw = "/tmp/media_video_flv_" + r + "_" + this._file.filename;
-    tempRaw = this._file.writeToLocalFile( tempRaw );
+    var localTempRaw = "/tmp/media_video_flv_" + r + "_" + this._file.filename;
+    var tempRaw = this._file.writeToLocalFile( localTempRaw );
+    var absRoot = tempRaw.substring( 0 , tempRaw.length - localTempRaw.length );
     var tempFlv = tempRaw.replace( /\.\w+$/ , ".flv" );
     
     mylog.debug( "\t" + tempRaw );
@@ -46,29 +54,38 @@ Media.Video.prototype.getFLV = function(){
     cmd += " -vf scale=320:240 ";
     cmd += " -o " + tempFlv + " " + tempRaw;
 
-    sysexec( cmd );
+    var encodingResult = sysexec( cmd );
+    if ( doRM ) sysexec( "rm " + tempRaw );
     
-    var flv = openFile( tempFlv );
+    var flv = openFile( tempFlv.substring( absRoot.length ) );
+    if ( flv.length == 0 )
+        throw "encoding issue...<br>";// + tojson( encodingResult );
+
     db._files.save( flv );
     this._file.flvID = flv._id;    
-
+    
+    flv = db._files.findOne( flv._id );
+    if ( flv.length == 0 )
+        throw "encoding problem? :(";
     
     var imgBase = tempFlv.replace( /.flv$/ , "%d.jpg" );
     cmd = "ffmpeg -i " + tempFlv + " -an -r 1 -y -s 320x240 -vframes 10 " + imgBase;
     
     sysexec( cmd );
     
-    var img = openFile( imgBase.replace( /%d/ , "10" ) );
-    mylog.debug( "img.length : " + img.length );
+    var img = openFile( imgBase.replace( /%d/ , "10" ).substring( absRoot.length ) );
+    if ( img.length == 0 )
+        throw "img error";
     db._files.save( img );
     this._file.imgID = img._id;
 
-    db._file.save( this._file );
+    db._files.save( this._file );
     
-    sysexec( "rm " + tempFlv );
-    sysexec( "rm " + tempRaw );
-    for ( var i=1; i<=10; i++ )
-        sysexec( "rm " + imgBase.replace( /%d/ , "" + i ) );
+    if ( doRM ){
+        sysexec( "rm " + tempFlv );
+        for ( var i=1; i<=10; i++ )
+            sysexec( "rm " + imgBase.replace( /%d/ , "" + i ) );
+    }
     
-    return db._files.findOne( flv._id );
+    return flv;
 };

@@ -20,7 +20,7 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
       </div>
       <div class="title"><%= t.title %></div>
       <div class="author"><%= t.threaded_users == "auth"? t.author.name : t.author %></div><div class="ts"><%= prettyDate %>
-      (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
+      (<a href="#<%= t.getID() %>"/>#</a>)</div>
     </span>
 
     <div class="content">

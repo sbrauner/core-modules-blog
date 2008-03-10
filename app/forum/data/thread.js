@@ -1,5 +1,6 @@
 core.db.db();
 core.content.search();
+core.ext.getlist();
 app.Forum.data.Thread = function(){
     this.commentsEnabled = true;
     // Whether a thread is "sticky", "pinned", or otherwise. Such threads
@@ -110,6 +111,20 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
         this.save();
         this.saveDescendant(p);
     }
+};
+
+app.Forum.data.Thread.prototype.recalculate = function() {
+    var reps = this.getReplies();
+    reps = reps.filter(function(r) { return ! r.deleted; });
+    this.count = reps.length;
+    this.save();
+};
+
+app.Forum.data.Thread.prototype.isExpired = function(){
+    var days = Ext.getlist(allowModule, 'forum', 'threadExpirationDays');
+    if(! days) return false;
+    var end = new Date(this.created.getTime() + days * 24 * 60 * 60 * 1000 );
+    return new Date() > end;
 };
 
 // This adds children and the rendering thereof to the Thread class.

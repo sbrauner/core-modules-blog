@@ -9,6 +9,7 @@
 // a DBCursor.
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
+core.app.forum.js.yui();
 opts = opts || {};
 var topic;
 if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
@@ -35,6 +36,14 @@ topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
 
 t = topic || topics[0];
 
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
+}
+
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
@@ -49,13 +58,6 @@ if(moveTopic){
                       });
 }
 
-if(hideTopic){
-    topicActions.push({title: "Hidden",
-                       func: function(topic){
-                           app.Forum.html.form.hidden(topic);
-                           return "";
-                       }});
-}
 
 var movetargets = [];
 
@@ -63,6 +65,14 @@ if(app.Forum.Controller.hasPermission(user, "moveThread")){
     var topics = db.forum.topics.find({parent: null});
     topics = topics.toArray();
     movetargets = movetargets.concat(topics);
+}
+
+if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
+      editorPick(thread);
+      return "";
+   }});
 }
 
 
@@ -172,15 +182,22 @@ function cancelPopup(id) {
 
 <%
 // Show subtopics
-if(subs && subs.length > 0){ %>
-    <table id="style1">
+if(subs && subs.length > 0){
+    var tableid = "table1";
+    %>
+    <table id="<%= tableid %>" class="style1">
        <tr><th>Subtopic</th><th>Threads</th><th>Posts</th>
        <%
        for(i=0; i < topicActions.length; i++) {
             print("<th>"+ topicActions[i].title +"</th>");
        } %>
        </tr>
-       <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
+       <%
+       var numrows = 0;
+       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
+       if(numrows > 1)
+            app.Forum.js.addDragAndDrop(tableid, numrows);
+       %>
     </table>
     <%
 }
@@ -190,12 +207,14 @@ if (threads){
 
     if(paging){
         core.app.forum.data.paging();
-        paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+        paging = new app.Forum.data.Paging(threads, {pageSize: 20,
+                                                     minWindow: 5},
+                                           request);
         threads = paging.slice();
 
         core.app.forum.html.paging(paging);
     }
- %>
+    %>
      <table id="style1" >
           <tr><th>Thread</th><th>Replies</th><th>Last post</th>
           <%

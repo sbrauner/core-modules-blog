@@ -4,7 +4,7 @@ var cursor = db._files.find(  ).sort( { uploadDate : -1 } );
 
 while ( cursor.hasNext() ){
     var f = cursor.next();
-    print( "[ \"" +  f.filename + "\" , \"http://static.10gen.com/" + request.getHost() + "/~f?id=" + f._id + "\" ] , \n");
+    print( "[ \"" +  f.filename + "\" , \"http://static.10gen.com/" + request.getHost() + "/~~/f?id=" + f._id + "\" ] , \n");
 }
 %>
 [ "none" , "none"] 

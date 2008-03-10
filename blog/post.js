@@ -14,7 +14,7 @@ function Post(name, title) {
     this.categories = new Array();
 };
 
-Post.prototype.SEARCH_OPTIONS = { title : 1 , author : 1 , content : .2 };
+Post.prototype.SEARCH_OPTIONS = { title : 1 , author : 1 /* , content : .2 */ };
 
 Post.prototype.getTeaserContent = function(){
     return this.content.replace( /---JUMP---.*/m , "" );
@@ -220,6 +220,7 @@ function fixComments() {
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+    db.blog.posts.ensureIndex( { name : 1 } );
 
     db.blog.posts.setConstructor( Post );
 

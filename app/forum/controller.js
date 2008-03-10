@@ -57,7 +57,10 @@ app.Forum.Controller.adminPermissions = function(){
 
         // restore deleted posts
         viewDeleted: true,
-        viewSpecialTopic_Deleted: true
+        viewSpecialTopic_Deleted: true,
+
+        // this can DoS the forum
+        recalculateCounts: true
     };
     // add moderator permissions
     return Object.extend(p, app.Forum.Controller.moderatorPermissions());
