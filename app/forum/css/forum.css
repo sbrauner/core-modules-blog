@@ -83,9 +83,13 @@ table#style1, table.style1 {
 }
 
 #style1 th.article, .style1 th.article {
-	padding: 4px; 	
+	padding: 0px; 	
 }
-
+#style1 th.article div.mid_level, .style1 th.article div.mid_level {
+        padding-left: 20px;
+	background-repeat: no-repeat;	
+        background-image: url("th_arrow.gif");
+}
 #style1 th.article div.top_level a, .style1 th.article div.top_level a {
 	color: #ffffff;
 }
@@ -94,7 +98,7 @@ table#style1, table.style1 {
 	float: left;
 	padding: 6px 6px 0px 18px;
 	height: 17px; 
-	background-image: url(th_arrow.gif?v=2);
+	background-image: url(th_arrow2.gif);
 	background-repeat: no-repeat;	
 }
 #style1 th.article div.second_level a, .style1 th.article div.second_level a {
