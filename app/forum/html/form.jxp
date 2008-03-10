@@ -58,7 +58,6 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
 
     attrfunc = attrfunc || function (){ return {}; };
     options = options || {};
-    log(tojson(options));
     options.filter = (options.filter == null) ? function(){return true;} : options.filter;
     options.select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
