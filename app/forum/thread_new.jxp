@@ -19,12 +19,12 @@ else {
         var thread = new app.Forum.data.Thread();
         thread.save();
         var rep = thread.decoratorsHandle();
-        
+
         if(rep){
             thread.topic = topic;
-            
+
             thread.topic.addThread(1);
-            
+
             thread.latestPost = rep.getID();
             if(request.sticky)
                 thread.pinned = true;
@@ -46,7 +46,7 @@ else {
     opts = {};
     opts.newThread = true;
     app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts);
-    
+
     var backurl = "viewtopic?name="+topic.name;
 }
 %>
