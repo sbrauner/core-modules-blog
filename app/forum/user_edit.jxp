@@ -51,9 +51,10 @@ else if(request.permission){
     // Remove all other forum permissions
     allowed.forEach(function(p) { user.removePermission(p); });
     user.addPermission(request.permission);
+    db.users.save(user);
 }
 
-if(user) 
+if(user)
       core.app.forum.html.forumheader("Forum | Edit User "+user.name+" ("+user.nickname+")");
 else
       core.app.forum.html.forumheader("Forum | Edit User");

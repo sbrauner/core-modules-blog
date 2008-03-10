@@ -18,7 +18,16 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
       <div class="actions">
            <% for(var i in actions){ actions[i](t); } %>
       </div>
-      <div class="author"><%= t.threaded_users == "auth"? t.author.name : t.author %></div><div class="ts"><%= prettyDate %>
+      <div class="author">
+        <%= t.author.name %>
+    <% if(app.Forum.Controller.userPermissionType(t.author) == "ADMIN"){ %>
+admin
+    <% }
+else if(app.Forum.Controller.userPermissionType(t.author) == "MODERATOR"){ %>
+moderator
+    <% } 
+%>
+</div><div class="ts"><%= prettyDate %>
       (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
     </span>
 

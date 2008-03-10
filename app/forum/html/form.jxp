@@ -60,14 +60,12 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     options = options || {};
     filter = (options.filter == null) ? function(){return true;} : options.filter;
     select = (options.select == null) ? function(){return false;} : options.select;
+    // return an action, which is a function which is called on each of several rows.
     return function(t){
-
-        if(parseInt(t._id.toString()) < 10)
-            return "&nbsp;";
-
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
+            // Create new functions for exploreTopic which close over the thread.
             retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); },
                                                   function(choice){ return select(t, choice); });
         }
@@ -112,7 +110,7 @@ app.Forum.html.form.hidden = function(topic){
 
 app.Forum.html.search = function(location) {
          %>
-         <form action="search.jxp" method="post">
+         <form action="search.jxp">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search posts in <%= location %>" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="go">

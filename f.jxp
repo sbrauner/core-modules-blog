@@ -6,10 +6,15 @@ var cacheScaled = false;
 
 log.f.level = log.LEVEL.ERROR;
 
-log.f.debug( request.id );
+var id = request.id;
+if ( ! id )
+    request.applyServletParams( /f\/(\w+)/ , [ "id" ] );
+id = request.id;
 
-if ( request.id )
-    file = db._files.findOne( { _id : CrID( request.id ) } );
+log.f.debug( id );
+
+if ( id )
+    file = db._files.findOne( { _id : CrID( id ) } );
 
 if ( ! file ){
     response.setResponseCode( 404 );

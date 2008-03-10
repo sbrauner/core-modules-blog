@@ -1,3 +1,4 @@
+// image.js
 
 Media.Image = function( file ){
     if ( file == null )
@@ -95,7 +96,12 @@ Media.Image.prototype.scaleRatio = function( xOrBoth , y ){
         return this.file;
     
     img = javaStatic( "ed.util.ImageUtil" , "getScaledInstance" , img , xOrBoth * img.getWidth() , ( y || xOrBoth ) * img.getHeight() );
-    return javaStatic( "ed.util.ImageUtil" , "imgToJpg" , img , 0 , this._file.filename.replace( /\.\w+$/ , ".jpg" ) );
+    
+    var options = "-" + xOrBoth.toFixed(2);
+    if ( y )
+        options += "x" + y.toFixed(2);
+    
+    return javaStatic( "ed.util.ImageUtil" , "imgToJpg" , img , 0 , this._file.filename.replace( /(\.\w+)$/ , options + "$1" ) );
 };
 
 

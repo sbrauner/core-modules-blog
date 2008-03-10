@@ -33,13 +33,13 @@ function summarize(result, searchterm) {
              summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}", "i");
              match = summary.exec(result);
         // if there is trailing header
-             if(match) 
+             if(match)
                   return "..."+match[0];
              else {
                   summary = new RegExp("(\\w+\\W+){0,"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){"+n+"}", "i");
                   match = summary.exec(result);
         // if there is trailing footer
-                  if(match) 
+                  if(match)
                        return match[0]+"...";
                   else {
         // no trailing header or footer
@@ -93,6 +93,12 @@ else {
 
 <%
 threads = Search.search(db.forum.threads, query);
+core.app.forum.data.paging();
+paging = new app.Forum.data.Paging(threads, {pageSize: 20, minWindow: 5},
+                                   request);
+threads = paging.slice();
+core.app.forum.html.paging(paging);
+
 if(threads.length > 0){
     for(var i = 0; i < threads.length; i++){
        %>
@@ -102,6 +108,9 @@ if(threads.length > 0){
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
             for(var j=0; snippets != null && j < snippets.length; j++) {
                 %>
+          <div class="author">
+            by <%= snippets[j].object.author.name %> on <%= snippets[j].object.ts %>
+          </div>
                 <div class="content">
                 <%= app.Forum.html.highlight(summarize(snippets[j].text, query), query) %>
                 </div>
@@ -117,5 +126,6 @@ else {
      <%
 }
 
+core.app.forum.html.paging(paging);
 htmlfooter();
 %>
