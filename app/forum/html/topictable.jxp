@@ -9,6 +9,7 @@
 // a DBCursor.
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
+core.app.forum.js.yui();
 opts = opts || {};
 var topic;
 if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
@@ -172,15 +173,22 @@ function cancelPopup(id) {
 
 <%
 // Show subtopics
-if(subs && subs.length > 0){ %>
-    <table id="style1">
+if(subs && subs.length > 0){ 
+    var tableid = "table1";
+    %>
+    <table id="<%= tableid %>" class="style1">
        <tr><th>Subtopic</th><th>Threads</th><th>Posts</th>
        <%
        for(i=0; i < topicActions.length; i++) {
             print("<th>"+ topicActions[i].title +"</th>");
        } %>
        </tr>
-       <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
+       <% 
+       var numrows = 0;
+       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); }); 
+       if(numrows > 1) 
+            app.Forum.js.addDragAndDrop(tableid, numrows);
+       %>
     </table>
     <%
 }
@@ -197,7 +205,7 @@ if (threads){
 
         core.app.forum.html.paging(paging);
     }
- %>
+    %>
      <table id="style1" >
           <tr><th>Thread</th><th>Replies</th><th>Last post</th>
           <%

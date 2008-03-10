@@ -19,6 +19,10 @@ app.Forum.data.Topic = function(){
 
 };
 
+app.Forum.data.Topic.prototype.setOrder = function(o) {
+    this.order = o;
+};
+
 app.Forum.data.Topic.prototype.getAncestors = function() {
     var i = 0;
     var topicStack = [];

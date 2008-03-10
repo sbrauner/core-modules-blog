@@ -195,6 +195,7 @@ postoptions.actions.push(function(post) {
 
 replies = thread.getReplies();
 core.app.forum.data.paging();
+
 paging = new app.Forum.data.Paging(replies, {pageSize: 20, page: page,
                                              minWindow: 5},
                                    request);

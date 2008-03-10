@@ -1,7 +1,7 @@
 <%
 app.Forum.data.Topic();
 
-processArgs("topic", "options");
+processArgs("topic", "options", "rownum");
 
 var link = "viewtopic?name="+URL.escape_queryargs(topic.name);
 if(topic._id == app.Forum.Controller.specialDeletedID || 
@@ -11,8 +11,8 @@ var actions = (options.actions == null) ? [] : options.actions;
 %>
 
 
-<tr <%= topic.hidden ? 'class="hidden"' : '' %>>
-  <td class="alignleft"><a href="<%= link %>"><%= topic.name%></a><%= topic.description %></td>
+<tr id="tr<%= rownum %>" class="<%= topic.hidden ? ' hidden' : '' %>">
+  <td class="alignleft"><div class="topic_name" style="display:none;"><%= topic.name %></div><div class="subtopic_link"><a href="<%= link %>"><%= topic.name%></a></div><%= topic.description %></td>
   <td><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
   <td><%= topic.postCount.toFixed(0) %></td>
 

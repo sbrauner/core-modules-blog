@@ -4,7 +4,7 @@ core.app.forum.controller();
 if(! app.Forum.Controller.hasPermission(user, "createThread"))
     return Auth.cookie.reject(request, response);
 
-core.app.forum.html.forumheader("Forums | New Thread");
+core.app.forum.html.forumheader("Forum | New Thread");
 
 core.app.forum.data.thread();
 core.content.forms();
@@ -32,19 +32,18 @@ if(request.getMethod() == "POST"){
         Forum.data.Thread.remove(thread);
     }
 }
+
+%>
+
+<h3>New thread</h3>
+
+<%
+opts = {};
+opts.newThread = true;
+app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); 
+
 var backurl = "viewtopic?name="+topic.name;
 %>
-    <h3>New thread</h3>
-    <%
-    opts = {};
-opts.newThread = true;
-if(app.Forum.Controller.hasPermission(user, "stickyThread")){
-    opts.actions = [
-        function(){
-            return {name: 'Sticky', value:'<input type="checkbox" name="sticky">'};
-        }];
-} %>
-    <% app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); %>
-<a href="<%= backurl %>">Back to forum</a>
+<div class="backbtn"><a href="<%= backurl %>">Back to forum</a></div>
 
 <% htmlfooter(); %>
