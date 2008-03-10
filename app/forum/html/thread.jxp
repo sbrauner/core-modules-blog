@@ -40,7 +40,7 @@ if(deletedPosts) link += "&deleted=true";
   <% if (!deletedPosts) { %>
   <td class="alignleft lastpost">
     <% if(l) { %>
-    <div class="lp_author">by <%= l.author.name %> <a href="<%= link %>#<%= l.getID() %>">(go)</a></div>
+    <div class="lp_author">by <%= l.author.name %> <a href="<%= link %>&page=-1#<%= l.getID() %>">(go)</a></div>
     <nobr>
     at <%= l.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %>
     </nobr>

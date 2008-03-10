@@ -43,8 +43,7 @@ if(request.newname){
       Name: <input type="text" name="newname"><br/>
       Description: <input type="text" name="newdescription"><br/>
       Order: <input type="text" name="neworder"><br/>
-      <input type="submit" value="save">
+      <input type="button" value="cancel" onclick="location='./'"><input type="submit" value="save">
     </form>
-    <a href="./">Back to toplevel</a>
 
 <% htmlfooter(); %>

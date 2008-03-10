@@ -1,3 +1,4 @@
+// image.js
 
 Media.Image = function( file ){
     if ( file == null )

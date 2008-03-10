@@ -1,4 +1,4 @@
-<% 
+<%
 app.Forum.html.form = {};
 function stickyForm(id, action, text) { %>
 
@@ -8,7 +8,7 @@ function stickyForm(id, action, text) { %>
       <input type="submit" value="<%= text %>">
 </form>
 
-<% } 
+<% }
 
 function editorPick(thread) {
          if(thread.editorPick) { %>
@@ -17,6 +17,63 @@ function editorPick(thread) {
                 <input type="checkbox" class="edPick" id="check<%= thread._id %>" onclick="togglePick('<%= thread._id %>')">
          <% }
 }
+
+
+app.Forum.html.exploreTopic = function(topic, indent, filter, select){
+    retStr = "";
+    indent = indent || 0;
+    istr = "";
+    if(! filter(topic)) return;
+    for(var i = 0; i < indent; i++){
+        istr += "&nbsp;";
+    }
+    var selected = (select(topic))? " selected=\"1\"" : "";
+    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+topic.name+"</option>";
+    var subtopics = db.forum.topics.find( { parent : topic }).toArray();
+    for(var j=0; j<subtopics.length; j++) {
+        retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter, select);
+    }
+    return retStr;
+};
+
+
+app.Forum.html.selectify = function(choices, attrfunc, options){
+    // Create an action which, given an object, generates an HTML select
+    // for all topics it could move to, recursively.
+    //
+    // choices is the array of topics, including possible special topics
+    // for "Deleted" and "Moderated".
+    //
+    // attrfunc is a function which takes the object and returns a mapping
+    // which is converted to attributes for the select object.
+    //
+    // options.filter is a function which takes the object we're generating
+    // the select for and the choice we're putting in the select and returns
+    // false to prune or true to not-prune that choice.
+
+    //this is a psuedo topic and cannot be moved
+
+    var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+    var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+    attrfunc = attrfunc || function (){ return {}; };
+    options = options || {};
+    filter = (options.filter == null) ? function(){return true;} : options.filter;
+    select = (options.select == null) ? function(){return false;} : options.select;
+    // return an action, which is a function which is called on each of several rows.
+    return function(t){
+        var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
+        retStr+="<option value=\"\">&nbsp;</option>";
+        for(i=0; i<choices.length; i++) {
+            // Create new functions for exploreTopic which close over the thread.
+            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); },
+                                                  function(choice){ return select(t, choice); });
+        }
+        return retStr +"</select>";
+    }
+};
+
+
 
 var suffix = "able|ible|al|ial|ed|en|er|est|ful|ic|ing|ion|tion|ation|ition|ity|ty|ive|ative|itive|less|ly|ment|ness|ous|eous|ious|s|es|y";
 var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|semi|sub|super|trans|un|under";
@@ -53,7 +110,7 @@ app.Forum.html.form.hidden = function(topic){
 
 app.Forum.html.search = function(location) {
          %>
-         <form action="search.jxp" method="post">
+         <form action="search.jxp">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search posts in <%= location %>" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="go">
@@ -90,7 +147,7 @@ app.Forum.html.endBreadcrumbTable = function() {
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(topic); %>
-    <div class="second_level"><a href="viewtopic?name=<%= escape( topic.name )%>"><%= topic.name %></a></div><%
+    <div class="second_level"><%= topic.name %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
@@ -102,33 +159,6 @@ app.Forum.html.breadcrumb = function(thread) {
     <%= thread.getTitle() %> <a href="thread_rss.jxp?id=<%= thread._id %>">(RSS)</a>
     </div><%
     app.Forum.html.endBreadcrumbTable();
-}
-
-app.Forum.html.generateTopicSelect = function(t) {
-    var topics = db.forum.topics.find();
-    topics = topics.toArray();
-
-    var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-    var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-    if(deleteThread)
-          topics.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-
-    if(moderateThread)
-          topics.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
-
-     var retStr = "<select class=\"select\" name=\"topic\">";
-     retStr+="<option value=\"\">&nbsp;</option>";
-     for(i=0; i<topics.length; i++) {
-          if(topics[i].parent == null) {
-               retStr+="<option value=\""+topics[i]._id+"\">"+topics[i].name+"</option>";
-               var subtopics = db.forum.topics.find( { parent : topics[i] }).toArray();
-               for(var j=0; j<subtopics.length; j++) {
-                    retStr+="<option value=\""+subtopics[j]._id+"\">&nbsp;&nbsp;"+subtopics[j].name+"</option>";
-               }
-          }
-      }
-      return retStr +"</select>";
 }
 
 %>

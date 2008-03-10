@@ -1,10 +1,11 @@
+core.ext.getdefault();
 // *extremely* simplistic paging functionality
 // FIXME: Someone needs to think really hard about how this ought to work!
 
 // Seems like this will need to hook into the routes system in order to be
 // really "nice".
 
-// Here are how links to other web frameworks:
+// Here are links to how other web frameworks do it:
 
 // http://pylonshq.com/WebHelpers/class-webhelpers.pagination.Paginator.html
 // http://www.nullislove.com/2007/05/24/pagination-in-rails/
@@ -19,14 +20,34 @@
 
 // Where should page numbers be zero-based, when one-based?
 
+/**
+* @param ary                     the array to be paginated.
+* @param config.pageSize         how many results on each page (defaults to request.pageSize or 20)
+* @param config.page             which page to display (defaults to request.page or 1)
+* @param config.displayOpts      what options to use in displaying the pager (see paging.jxp)
+* @param config.padding          how many page links in either direction to show when rendering the pager (defaults to 2)
+* @param config.nextlinkInterval how many pages the "next" link should advance (defaults to twice padding plus 1)
+* @param config.minWindow        how many page links should be shown at a minimum (defaults to 5)
+                                 If this is smaller than 2*padding+1, weird things might happen!
+*/
+
 app.Forum.data.Paging = function(ary, config, request){
+    // one-based
     config = config || {};
     request = request || {};
     this.ary = ary;
     this.pageSize = config.pageSize || request.pageSize || 20;
+    this.minWindow = Ext.getdefault(config, 'minWindow',
+                                    request.minWindow || 5);
     this._numPages = Math.ceil(ary.length / this.pageSize);
 
-    this.page = config.page || request.page || 0;
+    this.page = config.page || request.page || 1;
+    this.page = parseInt(this.page);
+    if(this.page == -1) this.page = this._numPages;
+    this.padding = Ext.getdefault(config, 'padding', 2);
+    this.nextlinkInterval = Ext.getdefault(config, 'nextlinkInterval', 2*this.padding+1);
+
+    this.displayOpts = Ext.getdefault(config, 'displayOpts', {});
 };
 
 app.Forum.data.Paging.prototype.numPages = function(){
@@ -34,40 +55,64 @@ app.Forum.data.Paging.prototype.numPages = function(){
 };
 
 app.Forum.data.Paging.prototype.pageNumber = function(){
-    // 0-based?
+    // 1-based?
     return this.page;
 };
 
 app.Forum.data.Paging.prototype.slice = function(){
     ary = [];
+    // zero-based
+    var pagez = this.page - 1;
     for(var i = 0; i < this.pageSize; i++){
-        if(i+this.page*this.pageSize >= this.ary.length) break;
-        ary[i] = this.ary[i+this.page*this.pageSize];
+        if(i+pagez*this.pageSize >= this.ary.length) break;
+        ary[i] = this.ary[i+pagez*this.pageSize];
     }
     return ary;
 };
 
-app.Forum.data.Paging.prototype.display = function(uri, paramName, cssClass){
-    uri = uri || new URI(request.getURL());
-    paramName = paramName || "page";
-    cssClass = cssClass || "";
-    return app.Forum.data.Paging.display(this._numPages, this.page, uri, paramName, cssClass);
+app.Forum.data.Paging.prototype.getWindow = function(){
+    return new app.Forum.data.Paging.Window(this, this.page, this.padding);
 };
 
+// A Window is just a range of pages.
+// In this class, everything is one-based?
+
 /**
-* @link /foo?
-* @param paramName = "page"
-*
-* @return /foo?page=5
+* @param page is the page number you're currently on.
+* @param padding is the amount to extend the window in either direction.
 */
-app.Forum.data.Paging.display = function( numPages , curPage , uri , paramName , cssClass ){
-    var s = "";
-    for(var i = 0; i < numPages; i++){
-        if(i != curPage){
-            s += "<a class=\""+cssClass+"\" href=\""+uri.replaceArg(paramName, i).toString()+"\">"+(i+1)+"</a> ";
-        } else {
-            s += (i+1) + " ";
+app.Forum.data.Paging.Window = function(pager, page, padding){
+    padding = padding || 0;
+    this.first = page-padding;
+    if(this.first < 1) this.first = 1;
+    this.last = page+padding;
+    if(this.last > pager.numPages()) this.last = pager.numPages();
+    var range = this.last - this.first + 1;
+    if((this.first > 1 || this.last < pager.numPages()) &&
+       (range < pager.minWindow)){
+        if(pager.numPages() < pager.minWindow){
+            this.first = 1;
+            this.last = pager.numPages();
+        }
+        else {
+            if(this.first == 1){
+                this.last = pager.minWindow;
+            }
+            else if(this.last == pager.numPages()){
+                this.first = pager.numPages() - pager.minWindow + 1;
+            }
+            else {
+                // FIXME: distribute the slack on both sides until something
+                // bad happens?
+            }
         }
     }
-    return s;
+};
+
+app.Forum.data.Paging.Window.prototype.getFirstPage = function(){
+    return this.first;
+};
+
+app.Forum.data.Paging.Window.prototype.getLastPage = function(){
+    return this.last;
 };

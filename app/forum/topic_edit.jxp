@@ -4,7 +4,7 @@ core.app.forum.data.topic();
 
 // FIXME: permissions?
 core.app.forum.html.forumheader("Forum");
-core.net.uri();
+core.net.url();
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
 
@@ -12,7 +12,7 @@ if(request.name){
     topic.name = request.name;
     topic.description = request.description;
     db.forum.topics.save(topic);
-    response.sendRedirectTemporary("viewtopic?name="+URI.escape_queryargs(topic.name));
+    response.sendRedirectTemporary("viewtopic?name="+URL.escape_queryargs(topic.name));
     return;
 }
 
@@ -20,7 +20,7 @@ if(request.name){
 
 <script type="text/javascript">
 function cancel() {
-         location = "viewtopic?name=<%= URI.escape_queryargs(topic.name) %>";
+         location = "viewtopic?name=<%= URL.escape_queryargs(topic.name) %>";
 }
 </script>
 
