@@ -317,3 +317,15 @@ div.sitemap {
      padding: 5px;
      margin-left: 30px;
 }
+
+/* new thread/post */
+form.newpost div.button {
+     float: left;
+}
+
+.backbtn {
+     clear: left;
+     width: 100%;
+     text-align: left;
+     padding-top: 15px;
+}
