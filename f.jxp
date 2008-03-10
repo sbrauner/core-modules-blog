@@ -1,4 +1,8 @@
 <%
+/* send a file to user via http.  files are stored in the database in the _files and _chunks collections.
+
+   scaling handled here too for images.
+*/
 
 var sentFile = false;
 var file = null;
