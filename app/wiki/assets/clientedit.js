@@ -13,7 +13,7 @@ var saveKeySelector = { ctrl: true, keys: [13, 3] };
 var editKeySelectorWebKit = { alt: true, keys: 69 };
 var renameKeySelectorWebKit = { alt: true, keys: 82 };
 var deleteKeySelectorWebKit = { alt: true, keys: 68 };
-var saveKeySelectorWebKit = { alt: true, keys: [13, 3] };
+var saveKeySelectorWebKit = { alt: true, keys: 83 };
 
 clientEditLoader.insert({
     require: ['fonts','event','container','dom','connection','element','button','editor'],
