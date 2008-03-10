@@ -45,7 +45,7 @@ else {
 
 var titleStr = "";
 var a = t.getAncestors();
-for(var i=0; i<a.length; i++) 
+for(var i=0; i<a.length; i++)
         titleStr += " > " + a[i];
 core.app.forum.html.forumheader("Forum |"+titleStr);
 

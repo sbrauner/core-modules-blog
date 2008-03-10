@@ -181,7 +181,7 @@ function cancelPopup(id) {
 
 <%
 // Show subtopics
-if(subs && subs.length > 0){ 
+if(subs && subs.length > 0){
     var tableid = "table1";
     %>
     <table id="<%= tableid %>" class="style1">
@@ -191,10 +191,10 @@ if(subs && subs.length > 0){
             print("<th>"+ topicActions[i].title +"</th>");
        } %>
        </tr>
-       <% 
+       <%
        var numrows = 0;
-       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); }); 
-       if(numrows > 1) 
+       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
+       if(numrows > 1)
             app.Forum.js.addDragAndDrop(tableid, numrows);
        %>
     </table>
