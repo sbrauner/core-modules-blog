@@ -28,6 +28,7 @@ core.ext.getdefault();
 * @param config.padding          how many page links in either direction to show when rendering the pager (defaults to 2)
 * @param config.nextlinkInterval how many pages the "next" link should advance (defaults to twice padding plus 1)
 * @param config.minWindow        how many page links should be shown at a minimum (defaults to 5)
+                                 If this is smaller than 2*padding+1, weird things might happen!
 */
 
 app.Forum.data.Paging = function(ary, config, request){
@@ -97,8 +98,12 @@ app.Forum.data.Paging.Window = function(pager, page, padding){
             if(this.first == 1){
                 this.last = pager.minWindow;
             }
-            else {
+            else if(this.last == pager.numPages()){
                 this.first = pager.numPages() - pager.minWindow + 1;
+            }
+            else {
+                // FIXME: distribute the slack on both sides until something
+                // bad happens?
             }
         }
     }
