@@ -1,5 +1,20 @@
 var clientEditLoader = new YAHOO.util.YUILoader();
 
+var editKeyListener;
+var renameKeyListener;
+var deleteKeyListener;
+var saveKeyListener;
+
+var editKeySelector = { alt: false, keys: 69 };
+var renameKeySelector = { alt: false, keys: 82 };
+var deleteKeySelector = { alt: false, keys: 68 };
+var saveKeySelector = { ctrl: true, keys: [13, 3] };
+
+var editKeySelectorWebKit = { alt: true, keys: 69 };
+var renameKeySelectorWebKit = { alt: true, keys: 82 };
+var deleteKeySelectorWebKit = { alt: true, keys: 68 };
+var saveKeySelectorWebKit = { alt: true, keys: 83 };
+
 clientEditLoader.insert({
     require: ['fonts','event','container','dom','connection','element','button','editor'],
     base: '/@@/yui/current/',
@@ -46,19 +61,35 @@ clientEditLoader.insert({
 
                 // only set these up on a non-edit page
                 if (!isEditPage) {
-                    editKeyListener = new YAHOO.util.KeyListener(document, { alt: false, keys: 69 }, handleEditKeyPress);
+                    if (YAHOO.env.ua.webkit) {
+                        editKeyListener = new YAHOO.util.KeyListener(document, editKeySelectorWebKit, handleEditKeyPress);
+                    } else {
+                        editKeyListener = new YAHOO.util.KeyListener(document, editKeySelector, handleEditKeyPress);
+                    }
                     editKeyListener.enable();
 
-                    renameKeyListener = new YAHOO.util.KeyListener(document, { alt: false, keys: 82 }, handleRenameKeyPress);
+                    if (YAHOO.env.ua.webkit) {
+                        renameKeyListener = new YAHOO.util.KeyListener(document, renameKeySelectorWebKit, handleRenameKeyPress);
+                    } else {
+                        renameKeyListener = new YAHOO.util.KeyListener(document, renameKeySelector, handleRenameKeyPress);
+                    }
                     renameKeyListener.enable();
 
-                    deleteKeyListener = new YAHOO.util.KeyListener(document, { alt: false, keys: 68 }, handleDeleteKeyPress);
+                    if (YAHOO.env.ua.webkit) {
+                        deleteKeyListener = new YAHOO.util.KeyListener(document, deleteKeySelectorWebKit, handleDeleteKeyPress);
+                    } else {
+                        deleteKeyListener = new YAHOO.util.KeyListener(document, deleteKeySelector, handleDeleteKeyPress);
+                    }
                     deleteKeyListener.enable();
                 }
                 
                 // only set this up on an edit page
                 if (isEditPage) {
-                    saveKeyListener = new YAHOO.util.KeyListener(document, { ctrl: true, keys: [13, 3] }, handleEnterKeyPress);
+                    if (YAHOO.env.ua.webkit) {
+                        saveKeyListener = new YAHOO.util.KeyListener(document, saveKeySelectorWebKit, handleSaveKeyPress);
+                    } else {
+                        saveKeyListener = new YAHOO.util.KeyListener(document, saveKeySelector, handleSaveKeyPress);
+                    }
                     saveKeyListener.enable();
                 } 
             });
@@ -72,21 +103,37 @@ var handleEditKeyPress = function() {
 
 var handleRenameKeyPress = function() {
     renameDialog.show();
+    editKeyListener.disable();
+    renameKeyListener.disable();
+    deleteKeyListener.disable();
+    saveKeyListener.disable();
 }
 
 var handleDeleteKeyPress = function() {
     deleteDialog.show();
+    editKeyListener.disable();
+    renameKeyListener.disable();
+    deleteKeyListener.disable();
+    saveKeyListener.disable();
 }
 
-var handleEnterKeyPress = function() {
+var handleSaveKeyPress = function() {
     document.forms.wiki_edit_form.submit();
 }
 
 var handleConfirm = function() {
     this.submit();
+    editKeyListener.enable();
+    renameKeyListener.enable();
+    deleteKeyListener.enable();
+    saveKeyListener.enable();
 }
 
 var handleCancel = function() { 
     this.hide(); 
+    editKeyListener.enable();
+    renameKeyListener.enable();
+    deleteKeyListener.enable();
+    saveKeyListener.enable();
 };    
 
