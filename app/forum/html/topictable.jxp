@@ -164,8 +164,16 @@ function reload() {
 }
 
 function togglePick(threadId) {
-         var passData = "thread="+threadId;
-         ajax(passData, "editorPick.jxp", reload);
+    var passData = "thread="+threadId;
+    ajax(passData, "editorPick.jxp", function(){
+        var icondiv = document.getElementById("icons_"+threadId);
+        if(icondiv.innerHTML.match(/Thumbs/)){
+            icondiv.innerHTML = icondiv.innerHTML.replace(/<img src="css\/Thumbsup-icon.gif" class="edPick">/i, '');
+        }
+        else{
+            icondiv.innerHTML = '<img src="css/Thumbsup-icon.gif" class="edPick">' + icondiv.innerHTML;
+        }
+    });
 }
 
 function toggleHide(topicId) {
