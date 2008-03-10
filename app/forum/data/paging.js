@@ -30,6 +30,7 @@ core.ext.getdefault();
 */
 
 app.Forum.data.Paging = function(ary, config, request){
+    // one-based
     config = config || {};
     request = request || {};
     this.ary = ary;
@@ -38,6 +39,7 @@ app.Forum.data.Paging = function(ary, config, request){
 
     this.page = config.page || request.page || 1;
     this.page = parseInt(this.page);
+    if(this.page == -1) this.page = this._numPages;
     this.padding = Ext.getdefault(config, 'padding', 2);
     this.nextlinkInterval = Ext.getdefault(config, 'nextlinkInterval', 2*this.padding+1);
 
