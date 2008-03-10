@@ -66,6 +66,14 @@ if(app.Forum.Controller.hasPermission(user, "moveThread")){
     movetargets = movetargets.concat(topics);
 }
 
+if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
+      editorPick(thread);
+      return "";
+   }});
+}
+
 
 deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
 moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");

@@ -67,14 +67,6 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
       }});
 }
 
-if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
-   actions.push({ title : "Editor's Pick",
-                  func : function(thread) {
-      editorPick(thread);
-      return "";
-   }});
-}
-
 app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
 head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
