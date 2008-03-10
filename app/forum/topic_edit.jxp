@@ -11,6 +11,8 @@ var topic = db.forum.topics.findOne( { _id : request.id } );
 if(request.name){
     topic.name = request.name;
     topic.description = request.description;
+    if(request.closed == "closed") topic.allowPosts = false;
+    else topic.allowPosts = true;
     db.forum.topics.save(topic);
     response.sendRedirectTemporary("viewtopic?name="+URL.escape_queryargs(topic.name));
     return;

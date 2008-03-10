@@ -9,40 +9,46 @@ core.app.forum.html.forumheader("Forum | New Thread");
 core.app.forum.data.thread();
 core.content.forms();
 var topic = db.forum.topics.findOne({_id: request.top_id});
-if(request.getMethod() == "POST"){
-    var thread = new app.Forum.data.Thread();
-    thread.save();
-    var rep = thread.decoratorsHandle();
-
-    if(rep){
-        thread.topic = topic;
-
-        thread.topic.addThread(1);
-
-        thread.latestPost = rep.getID();
-        if(request.sticky)
-            thread.pinned = true;
-        thread.save();
-        db.forum.topics.save(thread.topic);
-        response.setResponseCode(301);
-        response.setHeader("Location", "viewthread?id="+thread._id);
-        return;
-    }
-    else {
-        Forum.data.Thread.remove(thread);
-    }
+if(topic.allowPosts == false){
+%>
+Thread creation is disabled in this topic.
+<%
 }
-
+else {
+    if(request.getMethod() == "POST"){
+        var thread = new app.Forum.data.Thread();
+        thread.save();
+        var rep = thread.decoratorsHandle();
+        
+        if(rep){
+            thread.topic = topic;
+            
+            thread.topic.addThread(1);
+            
+            thread.latestPost = rep.getID();
+            if(request.sticky)
+                thread.pinned = true;
+            thread.save();
+            db.forum.topics.save(thread.topic);
+            response.setResponseCode(301);
+            response.setHeader("Location", "viewthread?id="+thread._id);
+            return;
+        }
+        else {
+            Forum.data.Thread.remove(thread);
+        }
+    }
 %>
 
 <h3>New thread</h3>
 
 <%
-opts = {};
-opts.newThread = true;
-app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts); 
-
-var backurl = "viewtopic?name="+topic.name;
+    opts = {};
+    opts.newThread = true;
+    app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts);
+    
+    var backurl = "viewtopic?name="+topic.name;
+}
 %>
 <div class="backbtn"><a href="<%= backurl %>">Back to forum</a></div>
 
