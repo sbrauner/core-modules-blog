@@ -175,7 +175,7 @@ function moveTopic(topicId) {
 }
 
 function sticky(threadId, action) {
-    ajax("select="+threadId+"&action="+action, "thread_action", function(){
+    ajax('', "thread_action"+"?select="+threadId+"&action="+action, function(){
         var div = document.getElementById("sticky_"+threadId);
         var row = document.getElementById("thread_"+threadId);
         var table = row.parentNode;
