@@ -19,18 +19,6 @@ if (id) {
     }
 }
 
-var newCategories = new Array();
-if (request.new_categories) {
-    newCategories = request.new_categories.split('[,]').unique();
-    var emptyIndex = newCategories.indexOf('');
-    if (emptyIndex >= 0) newCategories.remove(emptyIndex);
-}
-
-newCategories.forEach ( function (categoryName) { 
-    if (!db.blog.categories.findOne( {name: categoryName} ))
-        db.blog.categories.save(new Category(categoryName, categoryName));
-} );
-
 var justSaved = false;
 
 if ( request.action == "save" ) {
@@ -58,8 +46,36 @@ if ( request.action == "save" ) {
         thePost.ts = new Date( request.ts );
         if ( request.author )
             thePost.author = request.author;
-        if (thePost.cls == 'entry')
-            thePost.categories = ( request.getParameters('categories') || [] ).concat(newCategories).unique().sort();
+        if (thePost.cls == 'entry'){
+            thePost.categories = request.getParameters('categories') || [];
+
+	    if (request.new_categories) {
+		request.new_categories.split('[,]').forEach( function( newName ){
+		    newName = newName.trim();
+		    if ( newName.length == 0 ) 
+			return;
+		    
+		    var found = false;
+		    thePost.categories.forEach( function( old ){
+			if ( old.toLowerCase() == newName.toLowerCase() )
+			    found = true;
+		    } );
+		    if ( found )
+			return;
+		    
+		    var cat = Category.find( newName );
+		    if ( ! cat ){
+			cat = new Category( newName , newName );
+			db.blog.categories.save( cat );
+		    }
+		    thePost.categories.push( cat.name );
+		} );
+	    }
+
+	    
+	    thePost.categories = thePost.categories.unique().sort();
+	}
+
         thePost.live = parseBool( request.live );
         thePost.commentsEnabled = parseBool(request.commentsEnabled);
         thePost.suppressImage = parseBool( request.suppressImage );
