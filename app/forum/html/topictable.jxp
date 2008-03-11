@@ -168,6 +168,39 @@ function moveTopic(topicId) {
          ajax(passData, "topic_move.jxp", reload, "POST");
 }
 
+function sticky(threadId, action) {
+    ajax("select="+threadId+"&action="+action, "thread_action", function(){
+        var div = document.getElementById("sticky_"+threadId);
+        var row = document.getElementById("thread_"+threadId);
+        var table = row.parentNode;
+        var form = document.getElementById("stickyform_"+threadId);
+        if(action == "sticky"){
+            if(div.innerHTML.match("sticky-icon")){
+                if(div.style.display == "none") div.style.display = "inline";
+            }
+            else{
+                div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
+            }
+
+            // bring the row to the top
+
+            table.removeChild(row);
+            table.insertBefore(row, table.childNodes[0]);
+            form.onclick = function () {sticky(threadId, "unsticky");};
+            form.value = "Unsticky";
+        }
+        else {
+            div.style.display = "none";
+
+            // restore its rightful order
+            table.removeChild(row);
+            table.insertBefore(row, table.childNodes[5]);
+            form.onclick = function () {sticky(threadId, "sticky");};
+            form.value = "Sticky";
+        }
+    });
+}
+
 function reload() {
          location.reload();
 }
