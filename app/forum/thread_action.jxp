@@ -25,13 +25,13 @@ if(back == "")
 
 var subtPost = function(attr){
     for(var i in selected){
-        thread.removePost(attr, i);
+        thread.removePost(attr, selected[i]);
     }
 };
 
 var addPost = function(attr){
     for(var i in selected){
-        thread.addPost(attr, i);
+        thread.addPost(attr, selected[i]);
     }
 };
 

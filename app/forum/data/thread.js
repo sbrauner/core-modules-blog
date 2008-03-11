@@ -9,6 +9,7 @@ app.Forum.data.Thread = function(){
     this.pinned = false;
     this.created = new Date();
     this.lastPostTime = new Date();
+    this.closed = false;
     this.latestPost = null;
     this.count = 1;
     this.editorPick = false;
@@ -39,11 +40,11 @@ app.Forum.data.Thread.prototype.setTitle = function(title){
     this.getFirstPost().title = title;
 };
 
-app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
+app.Forum.data.Thread.prototype.setClosed = function(isClosed){
     this.commentsEnabled = !isClosed;
 };
 
-app.Forum.data.Thread.prototype.getClosed =  function(isClosed){
+app.Forum.data.Thread.prototype.getClosed = function(isClosed){
     return !this.commentsEnabled;
 };
 
@@ -125,6 +126,10 @@ app.Forum.data.Thread.prototype.isExpired = function(){
     if(! days) return false;
     var end = new Date(this.created.getTime() + days * 24 * 60 * 60 * 1000 );
     return new Date() > end;
+};
+
+app.Forum.data.Thread.prototype.postable = function(){
+    return ! this.closed && ! this.isExpired();
 };
 
 // This adds children and the rendering thereof to the Thread class.
