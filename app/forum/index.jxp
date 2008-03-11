@@ -43,5 +43,4 @@ core.app.forum.html.topictable("Forums", null, topics, null, [],
 
 %>
 
-
 <% htmlfooter(); %>
