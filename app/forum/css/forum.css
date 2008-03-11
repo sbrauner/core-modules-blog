@@ -29,7 +29,7 @@ td {
 }
 
 .caption {
-	padding: 0 0 5px 0; 
+	padding: 0 0 5px 0;
 		font-size: 12px;
 		text-align: right;
 }
@@ -45,11 +45,11 @@ table#style1, table.style1 {
 }
 
 #style1 input, .style1 input {
-	margin:0; 
+	margin:0;
 	background-color: #369fbf;
 	font-size:11px;
-	color: #ffffff; 
-	border: 1px solid #ffffff;	
+	color: #ffffff;
+	border: 1px solid #ffffff;
 }
 
 #style1 a, .style1 a {
@@ -58,8 +58,8 @@ table#style1, table.style1 {
 }
 
 #style1 nobr, .style1 nobr {
-	font-size:11px; 
-	color: #AAAAAA;	
+	font-size:11px;
+	color: #AAAAAA;
 }
 
 #style1 th, .style1 th {
@@ -75,7 +75,7 @@ table#style1, table.style1 {
 
 #style1 th div.top_level, .style1 th div.top_level {
 	float: left;
-	padding: 6px 6px 4px 12px;	
+	padding: 6px 6px 4px 12px;
 	height: 13px;
 	color: #ffffff;
 	background-color: #369fbf;
@@ -83,11 +83,11 @@ table#style1, table.style1 {
 }
 
 #style1 th.article, .style1 th.article {
-	padding: 0px; 	
+	padding: 0px;
 }
 #style1 th.article div.mid_level, .style1 th.article div.mid_level {
         padding-left: 20px;
-	background-repeat: no-repeat;	
+	background-repeat: no-repeat;
         background-image: url("th_arrow.gif");
 }
 #style1 th.article div.top_level a, .style1 th.article div.top_level a {
@@ -97,20 +97,20 @@ table#style1, table.style1 {
 #style1 th.article div.second_level, .style1 th.article div.second_level {
 	float: left;
 	padding: 6px 6px 0px 18px;
-	height: 17px; 
+	height: 17px;
 	background-image: url(th_arrow2.gif);
-	background-repeat: no-repeat;	
+	background-repeat: no-repeat;
 }
 #style1 th.article div.second_level a, .style1 th.article div.second_level a {
         display: inline;
 }
 #style1 .alignleft, .style1 .alignleft {
-	text-align: left;	
+	text-align: left;
 }
 
 #style1 .alignright, .style1 .alignright {
-	padding-right: 4px; 
-	text-align: right;	
+	padding-right: 4px;
+	text-align: right;
 }
 
 #style1 td, .style1 td {
@@ -118,7 +118,7 @@ table#style1, table.style1 {
 	font-size: 14px;
 	background: #fff;
 	text-align:center;
-	border-top: 1px solid #9ac0cc; 
+	border-top: 1px solid #9ac0cc;
         border-left: none;
         border-right: none;
         border-bottom: none;
@@ -231,6 +231,7 @@ input.submit, input.button {
 div.button {
            margin-left: 55px;
            border: 1px solid #9ac0cc;
+           cursor: default;
 }
 div.caption input.submit {
             cursor: pointer;
@@ -259,10 +260,10 @@ div.actions {
 
 div.popup {
           display: none;
-          position: absolute;       
+          position: absolute;
           border: 1px solid black;
           background-color: #cce5ec;
-          color: #000000;      
+          color: #000000;
           margin-left: auto;
           margin-right: auto;
           padding: 5px;
