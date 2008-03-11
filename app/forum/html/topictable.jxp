@@ -115,7 +115,11 @@ yes = { newtopic : function() {
      move : function() {
           this.hide();
           this.target(this.targetId);
-     }};
+     },
+     confirm : function() {
+          this.hide();
+     }
+};
 
 
 var no = { newtopic : function() {
@@ -257,10 +261,20 @@ function showPopup(id) {
 function cancelPopup(id) {
         document.getElementById(id).style.display = "none";
 }
-function confirmDialog(txt) {
 
-         alert(txt);
+function makeDialog(title, body, buttons) {
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.cfg.queueProperty("buttons", buttons);
+    dialog.render(document.body);
+    dialog.show();
 }
+
+function confirmDialog(txt) {
+    var myButtons = [ { text:"Okay", handler: yes['confirm'] } ];
+    makeDialog("Confirmation", txt, myButtons);
+}
+
 
 </script>
 <h1><%= name %></h1>
@@ -338,6 +352,7 @@ if(subs && subs.length > 0){
        if(numrows > 1)
             app.Forum.js.addDragAndDrop(tableid, numrows);
        %>
+       <script type="text/javascript">var lastRow = <%= numrows %>;</script>
     </table>
     <%
 }

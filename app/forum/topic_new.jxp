@@ -7,10 +7,7 @@ if(! app.Forum.Controller.hasPermission(user, "createTopic"))
     return Auth.cookie.reject(request, response);
 
 var error = "";
-
 var topic = new app.Forum.data.Topic();
-Forms.fillInObject( "new", topic );
-print.setFormObject( topic );
 
 if(request.newname){
     var back;
