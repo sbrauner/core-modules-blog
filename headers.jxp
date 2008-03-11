@@ -8,24 +8,47 @@
 %>
 <html>
   <body>
-    
-    Remote User <b><%= request.getRemoteIP() %></b>
+  
+    <h3>Special</h3>    
+    <table border="1">
+
+      <tr>
+         <th>Remote User</th>
+	 <td><%= request.getRemoteIP() %></td>
+      </tr>
+
+      <tr>
+         <th>Host</th>
+	 <td><%= request.getHost() %></td>
+      </tr>
+
+      <tr>
+         <th>URI</th>
+	 <td><%= request.getURI() %></td>
+      </tr>
+
+      <tr>
+         <th>URL</th>
+	 <td><%= request.getURL() %></td>
+      </tr>
+
+    </table>
 
     <h3>Headers</h3>
     <table border="1">
     <% request.getHeaderNames().forEach( function( z ){ 
             print( "<tr>" );
-            print( "<td>" + z + "</td>" );
+            print( "<th>" + z + "</th>" );
             print( "<td>" + request.getHeader( z ) + "</td>" );
             print( "</tr>" );
-        } ); %>
+    } ); %>
     </table>
 
     <h3>Cookies</h3>
     <table border="1">
     <% request.getCookieNames().forEach( function( z ){ 
             print( "<tr>" );
-            print( "<td>" + z + "</td>" );
+            print( "<th>" + z + "</th>" );
             print( "<td>" + request.getCookie( z ) + "</td>" );
 
 	    print( "<td>" );
