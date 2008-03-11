@@ -47,7 +47,7 @@ else {
     opts.newThread = true;
     app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts);
 
-    var backurl = "viewtopic?name="+topic.name;
+    var backurl = "viewtopic?name="+URL.escape_queryargs(topic.name);
 }
 %>
 <div class="backbtn"><a href="<%= backurl %>">Back to forum</a></div>

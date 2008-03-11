@@ -34,7 +34,7 @@ if(request.id){
 else {
     name = request.name;
     t = db.forum.topics.findOne({name: name});
-    name = t.name;
+    name = content.HTML.escape(t.name);
     description = t.description;
     var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
 
@@ -69,7 +69,7 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
 
 app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
-head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
+head.push('<link rel="alternate" type="application/rss+xml" title="'+name+'" href="topic_rss.jxp?id='+t._id+'" />');
 core.app.forum.html.topictable(name, description, subs, threadList.toArray(), actions, tableOptions);
 
 htmlfooter();

@@ -22,7 +22,7 @@ app.Forum.html.exploreTopic = function(topic, indent, filter, select){
         istr += "&nbsp;";
     }
     var selected = (select(topic))? " selected=\"1\"" : "";
-    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+topic.name+"</option>";
+    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+content.HTML.escape(topic.name)+"</option>";
     var subtopics = db.forum.topics.find( { parent : topic }).toArray();
     for(var j=0; j<subtopics.length; j++) {
         retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter, select);
@@ -55,7 +55,7 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     var filter = (options.filter == null) ? function(){return true;} : options.filter;
     var select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
-    return function(t){ 
+    return function(t){
     log("t: "+t);
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
@@ -117,7 +117,7 @@ app.Forum.html.topicStack = function(tempTopic) {
      var topicStack = "";
      while(tempTopic.parent) {
           tempTopic = tempTopic.parent;
-          topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' </a></div>' + topicStack;
+         topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(tempTopic.name)+'">'+content.HTML.escape(tempTopic.name)+' </a></div>' + topicStack;
      }
      print(topicStack);
 }
@@ -142,14 +142,14 @@ app.Forum.html.endBreadcrumbTable = function() {
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(topic); %>
-    <div class="second_level"><%= topic.name %></div><%
+    <div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(thread.topic); %>
-    <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
+    <div class="top_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level">
     <%= content.HTML.escape(thread.getTitle()) %>
     </div><%

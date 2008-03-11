@@ -170,8 +170,8 @@ function newTopic(parent) {
 function editTopic(parent) {
   var message = '<form action="topic_edit" id="edittopic">'
     +'<input type="hidden" name="id" value="<%= opts.thisid %>">'
-      +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= (topic) ? topic.name : "" %>"></div>'
-      +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= (topic) ? topic.description : "" %>"></div>'
+      +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= content.HTML.escape((topic) ? topic.name : "") %>"></div>'
+      +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= content.HTML.escape((topic) ? topic.description : "") %>"></div>'
       +'<div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>></div>'
   +'</form>';
 
@@ -184,8 +184,8 @@ function editTopic(parent) {
 //FIXME: Change URL, too, or refresh won't work
 function changeTagline(response) {
     var r = response.split("&");
-    document.getElementById("topicName").innerHTML = r[0];
-    document.getElementById("tagline").innerHTML = r[1];
+    document.getElementById("topicName").innerHTML = decodeURIComponent(r[0]);
+    document.getElementById("tagline").innerHTML = decodeURIComponent(r[1]);
 }
 
 function move(threadId) {

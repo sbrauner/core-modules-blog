@@ -166,9 +166,12 @@ URL.prototype._replaceLastPath = function(s){
     this.path = components.join('/');
 };
 
-URL.escape_queryargs = function(s){
+URL.escape_queryargs = function(s, broken){
     // This temporary function is meant to be roughly equivalent to the JS
     // encodeURIComponent function, which isn't implemented yet in the appserver.
+
+    // The *real* encodeURIComponent doesn't replace spaces with +, but instead
+    // uses %20. We support this with the "broken" parameter (if true, use %20).
     var re = /[^A-Za-z0-9\._~-]/;
     var strhex = '0123456789abcdef';
     var t = '';
@@ -177,7 +180,7 @@ URL.escape_queryargs = function(s){
         if(exec == null) break;
         var i = exec.index;
         t = t + s.substring(0, i);
-        if(s[i] == ' '){
+        if(s[i] == ' ' && ! broken){
             var rep = '+';
         } else {
             var n = s.charCodeAt(i);
@@ -190,8 +193,13 @@ URL.escape_queryargs = function(s){
     return t;
 };
 
-URL.unescape_queryargs = function(s){
-    s = s.replace(/\+/g, ' ');
+URL.unescape_queryargs = function(s, broken){
+    // Analagously to escape_queryargs, support treating + signs as + signs
+    // (rather than really as spaces). This doesn't usually come up, because
+    // plus signs are usually encoded into %2b, so no "raw" plus signs come
+    // through unless they were encoded from spaces.
+    if(! broken)
+        s = s.replace(/\+/g, ' ');
     var re = /%([0123456789abcdef]{2})/;
     var t = '';
     while(true){
