@@ -12,7 +12,7 @@ var actions = (options.actions == null) ? [] : options.actions;
 
 
 <tr id="tr<%= rownum %>" class="<%= topic.hidden ? ' hidden' : '' %>">
-  <td class="alignleft"><div class="topic_name" style="display:none;"><%= topic.name %></div><div class="subtopic_link"><a href="<%= link %>"><%= topic.name || "(no name given)" %></a></div><%= topic.description %></td>
+  <td class="alignleft"><div class="topic_name" style="display:none;"><%= content.HTML.escape(topic.name) %></div><div class="subtopic_link"><a href="<%= link %>"><%= content.HTML.escape(topic.name) || "(no name given)" %></a></div><%= content.HTML.escape(topic.description) %></td>
   <td><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
   <td><%= topic.postCount.toFixed(0) %></td>
 

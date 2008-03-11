@@ -110,7 +110,7 @@ if(threads.length > 0){
             app.Forum.html.startBreadcrumbTable();
             app.Forum.html.topicStack(threads[i].topic);
             %>
-            <div class="second_level"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(threads[i].getTitle(), query) %></a></div>
+            <div class="second_level"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(content.HTML.escape(threads[i].getTitle()), query) %></a></div>
             <%
             app.Forum.html.endBreadcrumbTable();
             %>

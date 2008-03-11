@@ -28,7 +28,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
         %>
 
         <item>
-          <title><%= thread.getTitle() %></title>
+          <title><%= RSS.clean(thread.getTitle()) %></title>
           <link><%= "http://" + request.getHeader( "Host") + "/forum/viewthread?id="+thread._id %></link>
           <pubDate><%= thread.lastPostTime.webFormat() %></pubDate>
           <author><%= post.author.name %></author>
