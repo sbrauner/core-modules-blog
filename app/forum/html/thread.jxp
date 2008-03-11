@@ -33,11 +33,11 @@ if(deletedPosts) link += "&deleted=true";
     date="<%= t.lastPostTime.getTime() %>">
   <td class="alignleft threadhead">
     <div class="icons" id="icons_<%= t._id %>">
-      <div id="edpick_<%= t._id %>">
-        <%= t.editorPick ? '<img src="css/Thumbsup-icon.gif" class="edPick">' : '' %>
+      <div id="edpick_<%= t._id %>" class="edPick">
+        <%= t.editorPick ? '<img src="css/Thumbsup-icon.gif">' : '' %>
       </div>
-      <div id="sticky_<%= t._id %>">
-        <%= t.pinned ? '<img src="css/sticky-icon.gif" class="sticky">' : '' %>
+      <div id="sticky_<%= t._id %>" class="sticky">
+        <%= t.pinned ? '<img src="css/sticky-icon.gif" >' : '' %>
       </div>
     </div>
     <div class="title"><a href="<%= link %>"><%= title%></a></div>

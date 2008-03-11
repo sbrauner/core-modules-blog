@@ -193,6 +193,10 @@ div.icons {
      float: left;
      padding-right: 3px;
 }
+div.icons div.edPick, div.icons div.sticky {
+     float: left;
+}
+
 
 .field {
        display: block;
