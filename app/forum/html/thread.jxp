@@ -29,11 +29,15 @@ var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
 
-<tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %>">
+<tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %>" id="thread_<%= t._id %>">
   <td class="alignleft threadhead">
-    <div class="icons">
-    <%= t.editorPick ? '<img src="css/Thumbsup-icon.gif" class="edPick">' : '' %>
-    <%= t.pinned ? '<img src="css/sticky-icon.gif" class="sticky">' : '' %>
+    <div class="icons" id="icons_<%= t._id %>">
+      <div id="edpick_<%= t._id %>">
+        <%= t.editorPick ? '<img src="css/Thumbsup-icon.gif" class="edPick">' : '' %>
+      </div>
+      <div id="sticky_<%= t._id %>">
+        <%= t.pinned ? '<img src="css/sticky-icon.gif" class="sticky">' : '' %>
+      </div>
     </div>
     <div class="title"><a href="<%= link %>"><%= title%></a></div>
     <div class="author">started by <%= f.author.name %></div>
