@@ -15,7 +15,7 @@ if(request.newname){
     topic.name = request.newname;
     if(request.parent != "null" && request.parent != null ){
         topic.parent = db.forum.topics.findOne({_id: request.parent});
-        back = "viewtopic?name="+escape(topic.parent.name);
+        back = "viewtopic?name="+URL.escape_queryargs(topic.parent.name);
     }
     else{
         back = "./";
