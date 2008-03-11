@@ -22,7 +22,9 @@ app.Forum.html.exploreTopic = function(topic, indent, filter, select){
         istr += "&nbsp;";
     }
     var selected = (select(topic))? " selected=\"1\"" : "";
-    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+content.HTML.escape(topic.name)+"</option>";
+    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+content.HTML.escape(topic.name);
+    if(topic.hidden) retStr += " (hidden)";
+    retStr += "</option>";
     var subtopics = db.forum.topics.find( { parent : topic }).toArray();
     for(var j=0; j<subtopics.length; j++) {
         retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter, select);
