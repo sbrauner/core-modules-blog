@@ -126,7 +126,7 @@ var yes = { newtopic : function() {
           var ntForm = document.getElementById("edittopic");
           var passData = "";
           for(var i=0; i<ntForm.elements.length; i++) {
-                  passData += "&"+ntForm.elements.item(i).name + "="+ntForm.elements.item(i).value;
+              passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
           }
           passData = passData.substring(1);
           ajax(passData, "topic_edit.jxp", changeTagline);
