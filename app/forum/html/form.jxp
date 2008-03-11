@@ -1,13 +1,7 @@
 <%
 app.Forum.html.form = {};
 function stickyForm(id, action, text) { %>
-
-<form action="thread_action">
-      <input type="hidden" name="select" value="<%= id %>">
-      <input type="hidden" name="action" value="<%= action %>">
-      <input type="submit" value="<%= text %>">
-</form>
-
+<input type="submit" id="stickyform_<%= id %>" onclick="sticky('<%= id %>', '<%= action %>')" value="<%= text %>">
 <% }
 
 function editorPick(thread) {
@@ -58,10 +52,11 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
 
     attrfunc = attrfunc || function (){ return {}; };
     options = options || {};
-    filter = (options.filter == null) ? function(){return true;} : options.filter;
-    select = (options.select == null) ? function(){return false;} : options.select;
+    var filter = (options.filter == null) ? function(){return true;} : options.filter;
+    var select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
-    return function(t){
+    return function(t){ 
+    log("t: "+t);
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
@@ -122,7 +117,7 @@ app.Forum.html.topicStack = function(tempTopic) {
      var topicStack = "";
      while(tempTopic.parent) {
           tempTopic = tempTopic.parent;
-          topicStack = '<div class="top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' &nbsp;&gt;</a></div>' + topicStack;
+          topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' </a></div>' + topicStack;
      }
      print(topicStack);
 }
@@ -132,7 +127,7 @@ app.Forum.html.startBreadcrumbTable = function() {
     <table id="style1" cellspacing="0" >
     <tr>
     <th scope="col" class="article">
-    <div class="top_level"><a href="index.jxp">forums &nbsp;&gt;</a></div>
+    <div class="top_level"><a href="index.jxp">forums </a></div>
     <%
 }
 
@@ -156,7 +151,7 @@ app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.topicStack(thread.topic); %>
     <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
     <div class="second_level">
-    <%= thread.getTitle() %> <a href="thread_rss.jxp?id=<%= thread._id %>">(RSS)</a>
+    <%= thread.getTitle() %>
     </div><%
     app.Forum.html.endBreadcrumbTable();
 }

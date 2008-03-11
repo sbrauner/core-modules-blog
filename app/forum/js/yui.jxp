@@ -179,4 +179,36 @@ Event.onDOMReady(YAHOO.example.DDApp.init, YAHOO.example.DDApp, true);
 </script>
 <%
 }
+
+
+app.Forum.js.addYesNoDialog = function() {
+     %>
+
+<script type="text/javascript">
+
+var clientLoader = new YAHOO.util.YUILoader();
+
+clientLoader.insert({
+    require: ['container', 'animation'],
+    base: '/@@/yui/current/',
+
+    onSuccess: function(loader) {
+        YAHOO.util.Event.onDOMReady( function() {
+                dialog = new YAHOO.widget.SimpleDialog("dlg", {
+                    width: "20em",
+                    fixedcenter:true,
+                    modal:true,
+                    visible:false,
+                    draggable:true });
+                                
+                dialog.render(document.body);
+            });
+     }
+});
+</script>
+
+
+     <%
+}
 %>
+

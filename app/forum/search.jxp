@@ -105,7 +105,16 @@ if(threads.length > 0){
     for(var i = 0; i < threads.length; i++){
        %>
        <div class="threadbox">
-       <div class="title"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(threads[i].getTitle(), query) %></a></div>
+       <div class="title">
+            <%
+            app.Forum.html.startBreadcrumbTable();
+            app.Forum.html.topicStack(threads[i].topic);
+            %>
+            <div class="second_level"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(threads[i].getTitle(), query) %></a></div>
+            <%
+            app.Forum.html.endBreadcrumbTable();
+            %>
+       </div>
        <%
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
             for(var j=0; snippets != null && j < 4 && j < snippets.length; j++) {
