@@ -6,6 +6,10 @@ var thread = app.Forum.data.Thread.findOne({_id: request.id});
 var canPost = app.Forum.Controller.hasPermission(user, "makePost")
     && ! request.deleted && thread.commentsEnabled && thread.postable();
 
+var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+var canDelete = app.Forum.Controller.hasPermission(user, "deleteThread");
+var canModerate = app.Forum.Controller.hasPermission(user, "moderateThread");
+
 if(canPost){
     // see if we got a post
     var p = thread.decoratorsHandle();
@@ -20,7 +24,7 @@ if(canPost){
         var newnumpages = page.numPages();
 
         print(newnumpages+"&");
-        p.render();
+        p.render(app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread), thread.threaded_pieces);
     }
 }
 %>
