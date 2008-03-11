@@ -3,7 +3,7 @@
 opts = opts || {};
 opts.newThread = (opts.newThread == null) ? false : opts.newThread;
 %>
-<form method="POST" class="newpost">
+<form method="POST" class="newpost" id="replyform">
   <input type="hidden" name="reply_target" value="<%=arguments[0]%>"/>
      <input type="hidden" name="nauthor" value="<%= user._id %>"/>
      <% if(opts.newThread){ %>

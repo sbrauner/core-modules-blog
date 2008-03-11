@@ -119,7 +119,6 @@ app.Forum.html.topicStack = function(tempTopic) {
           topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' </a></div>' + topicStack;
      }
      print(topicStack);
-     log("topicstack: "+topicStack);
 }
 
 app.Forum.html.startBreadcrumbTable = function() {
