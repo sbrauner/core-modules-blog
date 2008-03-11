@@ -181,6 +181,7 @@ function editTopic(parent) {
 
 }
 
+//FIXME: Change URL, too, or refresh won't work
 function changeTagline(response) {
     var r = response.split("&");
     document.getElementById("topicName").innerHTML = r[0];
@@ -308,7 +309,7 @@ function confirmDialog(txt) {
 </script>
 
 
-<h1 id="topicName"><%= name %></h1>
+<h1 id="topicName"><%= name %></h1><a href="topic_rss.jxp?id=<%= t._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
 <% if ( description ){ %>
 <div id="tagline"><%= description %></div>
 <% } %>

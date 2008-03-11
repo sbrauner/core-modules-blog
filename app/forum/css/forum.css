@@ -340,3 +340,9 @@ form.newpost div.button {
      padding-top: 15px;
 }
 
+h1 {
+      display: inline;
+}
+img.feed {
+     padding: 3px 3px 0px 3px;
+}
