@@ -1,13 +1,7 @@
 <%
 app.Forum.html.form = {};
 function stickyForm(id, action, text) { %>
-
-<form action="thread_action">
-      <input type="hidden" name="select" value="<%= id %>">
-      <input type="hidden" name="action" value="<%= action %>">
-      <input type="submit" value="<%= text %>">
-</form>
-
+<input type="submit" id="stickyform_<%= id %>" onclick="sticky('<%= id %>', '<%= action %>')" value="<%= text %>">
 <% }
 
 function editorPick(thread) {

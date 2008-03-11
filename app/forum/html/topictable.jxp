@@ -91,7 +91,8 @@ if(moderateThread)
 
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
-                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "moveDlg('thread', move, '"+topic._id+"')", id: topic._id.toString() }; } )
+                  func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
+                                                                                         "if(this.value != '"+ topic._id +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
@@ -160,11 +161,13 @@ function newTopic(parent) {
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
-    ajax(passData, "moveThread.jxp", function(){
+    ajax(passData, "moveThread.jxp", function(text){
+        // If we move it into this thread, don't hide it.
+        if(text.match("fail")){
+            return;
+        }
         // FIXME: This doesn't really handle moving things into subtopics.
-        // We'd need to update the thread/post count. Also,
-        // if we move it into this thread, don't hide it!
-        // (Probably ignore it, above.)
+        // We'd need to update the thread/post count.
         document.getElementById("thread_"+threadId).style.display = "none";
     }, "POST");
 }
@@ -173,6 +176,39 @@ function moveTopic(topicId) {
          targetId = document.getElementById(topicId).value;
          var passData = "topic="+topicId+"&to="+targetId;
          ajax(passData, "topic_move.jxp", reload, "POST");
+}
+
+function sticky(threadId, action) {
+    ajax("select="+threadId+"&action="+action, "thread_action", function(){
+        var div = document.getElementById("sticky_"+threadId);
+        var row = document.getElementById("thread_"+threadId);
+        var table = row.parentNode;
+        var form = document.getElementById("stickyform_"+threadId);
+        if(action == "sticky"){
+            if(div.innerHTML.match("sticky-icon")){
+                if(div.style.display == "none") div.style.display = "inline";
+            }
+            else{
+                div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
+            }
+
+            // bring the row to the top
+
+            table.removeChild(row);
+            table.insertBefore(row, table.childNodes[0]);
+            form.onclick = function () {sticky(threadId, "unsticky");};
+            form.value = "Unsticky";
+        }
+        else {
+            div.style.display = "none";
+
+            // restore its rightful order
+            table.removeChild(row);
+            table.insertBefore(row, table.childNodes[5]);
+            form.onclick = function () {sticky(threadId, "sticky");};
+            form.value = "Sticky";
+        }
+    });
 }
 
 function reload() {
