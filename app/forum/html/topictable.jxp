@@ -91,7 +91,8 @@ if(moderateThread)
 
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
-                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "moveDlg('thread', move, '"+topic._id+"')", id: topic._id.toString() }; } )
+                  func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
+                                                                                         "if(this.value != '"+ topic._id +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
@@ -150,11 +151,13 @@ function moveDlg(label, target, targetId) {
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
-    ajax(passData, "moveThread.jxp", function(){
+    ajax(passData, "moveThread.jxp", function(text){
+        // If we move it into this thread, don't hide it.
+        if(text.match("fail")){
+            return;
+        }
         // FIXME: This doesn't really handle moving things into subtopics.
-        // We'd need to update the thread/post count. Also,
-        // if we move it into this thread, don't hide it!
-        // (Probably ignore it, above.)
+        // We'd need to update the thread/post count.
         document.getElementById("thread_"+threadId).style.display = "none";
     }, "POST");
 }
