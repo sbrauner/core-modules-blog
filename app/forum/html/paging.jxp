@@ -16,7 +16,8 @@ core.ext.getdefault();
 var w = pager.getWindow();
 var first = w.getFirstPage();
 var last = w.getLastPage();
-if(first == last) return;
+if(first >= last) return;
+
 var n = pager.pageNumber();
 var skip = pager.nextlinkInterval;
 
