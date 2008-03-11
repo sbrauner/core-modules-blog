@@ -99,53 +99,59 @@ if(movetargets.length > 0) {
 
 %>
 <script type="text/javascript">
-var clientLoader = new YAHOO.util.YUILoader();
 
-clientLoader.insert({
-    require: ['container'],
-    base: '/@@/yui/current/',
+var yes = [];
+yes = { newtopic : function() {
+          //user confirms the creation of a new topic
+          this.hide();
+          var ntForm = document.getElementById("newtopic");
+          var passData = "";
+          for(var i=0; i<ntForm.elements.length; i++) {
+                  passData += "&"+ntForm.elements.item(i).name + "="+ntForm.elements.item(i).value;
+          }
+          passData = passData.substring(1);
+          ajax(passData, "topic_new.jxp", confirmDialog);
+     },
+     move : function() {
+          this.hide();
+          this.target(this.targetId);
+     }};
 
-    onSuccess: function(loader) {
-            YAHOO.util.Event.onDOMReady( function() {
-                moveConfDialog = new YAHOO.widget.SimpleDialog("dlg", {
-                    width: "20em",
-                    fixedcenter:true,
-                    modal:true,
-                    visible:false,
-                    draggable:false });
-                moveConfDialog.setHeader("Move?");
-                moveConfDialog.cfg.setProperty("icon",YAHOO.widget.SimpleDialog.ICON_WARN);
 
-                var handleYes = function() {
-                    //user confirms the deletion of this item;
-                    //this method would perform that deletion;
-                    //when ready, hide the SimpleDialog:
-                    this.hide();
-                    this.target(this.targetId);
-                }
-                var handleNo = function() {
-                    //user cancels item deletion; this method
-                    //would handle the cancellation of the
-                    //process.
-                    //when ready, hide the SimpleDialog:
-                    this.hide();
-                }
-                var myButtons = [ { text:"Yes",
-                    handler:handleYes },
-                    { text:"Cancel",
-                    handler:handleNo,
-                    isDefault:true } ];
-                moveConfDialog.cfg.queueProperty("buttons", myButtons);
-                moveConfDialog.render(document.body);
-            });
-        }
-});
+var no = { newtopic : function() {
+          this.hide();
+     }, 
+     move : function() {
+          this.hide();
+     }}; 
 
 function moveDlg(label, target, targetId) {
-    moveConfDialog.setBody("Do you really want to move this "+label+"?");
-    moveConfDialog.target = target;
-    moveConfDialog.targetId = targetId;
-    moveConfDialog.show();
+    dialog.setHeader("Move");
+    dialog.setBody("Do you really want to move this "+label+"?");
+    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    dialog.target = target;
+    dialog.targetId = targetId;
+    var myButtons = [ { text:"Save", handler: yes['move'] },
+                      { text:"Cancel", handler: no['move'], isDefault:true } ];
+    dialog.cfg.queueProperty("buttons", myButtons);
+    dialog.render(document.body);
+    dialog.show();
+}
+
+function newTopic(parent) {
+    var message = '<form id="newtopic" action="topic_new">';
+    if(parent) 
+         message += '<input type="hidden" name="parent" value="'+parent+'">';
+    message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
+               '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
+
+    dialog.setHeader("New Topic");
+    dialog.setBody(message);
+    var myButtons = [ { text:"Save", handler: yes['newtopic'] },
+                      { text:"Cancel", handler: no['newtopic'], isDefault:true } ];
+    dialog.cfg.queueProperty("buttons", myButtons);
+    dialog.render(document.body);
+    dialog.show();
 }
 
 function move(threadId) {
@@ -231,6 +237,10 @@ function showPopup(id) {
 function cancelPopup(id) {
         document.getElementById(id).style.display = "none";
 }
+function confirmDialog(txt) {
+
+         alert(txt);
+}
 
 </script>
 <h1><%= name %></h1>
@@ -247,7 +257,7 @@ function cancelPopup(id) {
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
-        <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a>
+        <div class="button" onclick="newTopic('<%= opts.thisid %>')">New Topic</div>
         <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
           <input type="hidden" name="id" value="<%= opts.thisid %>">
           <input type="submit" class="button" name="action" value="Edit topic">
@@ -256,10 +266,14 @@ function cancelPopup(id) {
       }
       else {
         %>
-        <a href="topic_new">New Topic</a> |
+        <input type="button" onclick="newTopic()" value="New Topic" class="button"> |
         <%
       }
     }
+      
+    app.Forum.js.addYesNoDialog();
+
+
     %>
         <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
         <a href="user_edit">Edit user</a> |
@@ -286,6 +300,7 @@ function cancelPopup(id) {
   <% } %>
 
 <%
+
 // Show subtopics
 if(subs && subs.length > 0){
     var tableid = "table1";

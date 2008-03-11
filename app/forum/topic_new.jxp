@@ -1,24 +1,21 @@
 <%
 core.app.forum.controller();
+core.app.forum.data.topic();
+core.content.forms();
 
 if(! app.Forum.Controller.hasPermission(user, "createTopic"))
     return Auth.cookie.reject(request, response);
-
-
-core.app.forum.html.forumheader("Forums");
-
-core.app.forum.data.topic();
-core.content.forms();
 
 var error = "";
 
 var topic = new app.Forum.data.Topic();
 Forms.fillInObject( "new", topic );
 print.setFormObject( topic );
+
 if(request.newname){
     var back;
-    topic.order = parseInt(topic.order);
-    if(request.parent != "null"){
+    topic.order = 99; //parseInt(topic.order);
+    if(request.parent != "null" && request.parent != null ){
         topic.parent = db.forum.topics.findOne({_id: request.parent});
         back = "viewtopic?name="+escape(topic.parent.name);
     }
@@ -27,23 +24,13 @@ if(request.newname){
     }
     // Don't allow duplicate names.
     if(db.forum.topics.findOne({name: topic.name}) == null){
+        topic.description = request.desc;
         db.forum.topics.save(topic);
-        response.setResponseCode(301);
-        response.setHeader("Location", back);
+        print( "New topic created." );
     }
     else {
-        error = "This name is already in use."
+        print( "This name is already in use." );
     }
 }
 %>
-    <h3>Make a new topic</h3>
-    <span class="error"><%= error %></span>
-    <form>
-      <input type="hidden" name="parent" value="<%= request.parent%>"/>
-      Name: <input type="text" name="newname"><br/>
-      Description: <input type="text" name="newdescription"><br/>
-      Order: <input type="text" name="neworder"><br/>
-      <input type="button" value="cancel" onclick="location='./'"><input type="submit" value="save">
-    </form>
 
-<% htmlfooter(); %>
