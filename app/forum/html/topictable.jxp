@@ -150,7 +150,13 @@ function moveDlg(label, target, targetId) {
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
-         ajax(passData, "moveThread.jxp", reload, "POST");
+    ajax(passData, "moveThread.jxp", function(){
+        // FIXME: This doesn't really handle moving things into subtopics.
+        // We'd need to update the thread/post count. Also,
+        // if we move it into this thread, don't hide it!
+        // (Probably ignore it, above.)
+        document.getElementById("thread_"+threadId).style.display = "none";
+    }, "POST");
 }
 
 function moveTopic(topicId) {
