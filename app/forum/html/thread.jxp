@@ -29,7 +29,8 @@ var link = "viewthread?id="+t._id;
 if(deletedPosts) link += "&deleted=true";
 %>
 
-<tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %>" id="thread_<%= t._id %>">
+<tr class="<%= even %> <%= t.editorPick ? "edPick" : "" %> <%= t.pinned ? 'sticky' : '' %>" id="thread_<%= t._id %>"
+    date="<%= t.lastPostTime.getTime() %>">
   <td class="alignleft threadhead">
     <div class="icons" id="icons_<%= t._id %>">
       <div id="edpick_<%= t._id %>">

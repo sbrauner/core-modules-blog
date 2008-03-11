@@ -180,6 +180,8 @@ function sticky(threadId, action) {
         var row = document.getElementById("thread_"+threadId);
         var table = row.parentNode;
         var form = document.getElementById("stickyform_"+threadId);
+        var header = YAHOO.util.Dom.getFirstChild(table);
+        var thisdate = new YAHOO.util.Element(row).get('date');
         if(action == "sticky"){
             if(div.innerHTML.match("sticky-icon")){
                 if(div.style.display == "none") div.style.display = "inline";
@@ -189,18 +191,28 @@ function sticky(threadId, action) {
             }
 
             // bring the row to the top
-
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the next row which is either not sticky or younger than this row
+                if(thisdate > new YAHOO.util.Element(sib).get('date') || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
+                return false;
+            });
             table.removeChild(row);
-            table.insertBefore(row, table.childNodes[0]);
+            YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
         }
         else {
             div.style.display = "none";
 
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the first row that is neither sticky nor younger than this row
+                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < new YAHOO.util.Element(sib).get('date')) return false;
+                return true;
+            });
             // restore its rightful order
+            alert("-- "+nextRow);
             table.removeChild(row);
-            table.insertBefore(row, table.childNodes[5]);
+            YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
         }
