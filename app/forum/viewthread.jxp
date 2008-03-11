@@ -20,8 +20,8 @@ if(thread == null){
 var titleStr = "";
 var a = thread.topic.getAncestors();
 for(var i=0; i<a.length; i++)
-        titleStr += " > " + a[i];
-core.app.forum.html.forumheader("Forum | "+thread.getTitle()+titleStr);
+    titleStr += content.HTML.escape(a[i]) + " > ";
+core.app.forum.html.forumheader("Forum | "+titleStr + content.HTML.escape(thread.getTitle()));
 
 
 // PERMISSIONS
@@ -49,7 +49,7 @@ else {
 var url = new URL(request.getURL());
 
 // ------------
-head.push('<link rel="alternate" type="application/rss+xml" title="'+thread.getTitle()+'" href="thread_rss.jxp?id='+thread._id+'" />');
+head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTML.escape(thread.getTitle())+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
 %>
 <script type="text/javascript">
@@ -83,7 +83,7 @@ if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
      <div class="popup" id="editpop">
           <div class="stitle">Edit Thread</div>
-          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= thread.getTitle() %>"></div>
+          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
           <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" value="closed" <%= thread.getClosed() ? "CHECKED" : "" %>></div>
           <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
                <input type="submit" class="submit" name="action" value="edit"></div>
@@ -120,13 +120,18 @@ if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
 
 app.Forum.html.search(thread.topic.name);
 
-if(request.highlight) {
-     print("<h1>"+app.Forum.html.highlight(thread.getTitle(), request.highlight)+'</h1> <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>');
-     print('<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>');
+if(request.highlight) { %>
+<h1><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h1>
+<a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
+<div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>
+<%
      postoptions.highlight = request.highlight;
 }
 else {
-     print("<h1>"+ thread.getTitle() +'</h1> <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>');
+%>
+<h1><%= content.HTML.escape(thread.getTitle()) %></h1>
+<a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
+<%
 }
 
 
@@ -172,7 +177,7 @@ postoptions.actions.push(function(post) {
            %>
 
           <div class="stitle">Split Thread at Post</div>
-          <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= thread.getTitle() %>"></div>
+          <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
         <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
                                                                             {select: function(thread, o){ return o._id == thread.topic._id }}
                                                                            )(thread) %></div>

@@ -40,7 +40,7 @@ if(deletedPosts) link += "&deleted=true";
         <%= t.pinned ? '<img src="css/sticky-icon.gif" >' : '' %>
       </div>
     </div>
-    <div class="title"><a href="<%= link %>"><%= title%></a></div>
+    <div class="title"><a href="<%= link %>"><%= content.HTML.escape(title) %></a></div>
     <div class="author">started by <%= f.author.name %></div>
     <div class="ts">at <%= f.ts.format("EEE MMM dd HH:mm:ss zzz yyyy") %></div>
   </td>

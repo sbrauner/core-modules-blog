@@ -10,7 +10,7 @@ var topic = db.forum.topics.findOne( { _id : request.id } );
 if(request.name){
     topic.name = request.name;
     topic.description = request.description;
-    print(topic.name +"&"+ topic.description);
+    print(URL.escape_queryargs(content.HTML.escape(topic.name), true) +"&"+ URL.escape_queryargs(content.HTML.escape(topic.description), true));
     if(request.closed == "closed") topic.allowPosts = false;
     else topic.allowPosts = true;
     db.forum.topics.save(topic);
