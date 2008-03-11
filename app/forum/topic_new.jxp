@@ -21,6 +21,8 @@ if(request.newname){
     }
     // Don't allow duplicate names.
     if(db.forum.topics.findOne({name: topic.name}) == null){
+        if(topic.description != request.desc) 
+             print(request.desc);
         topic.description = request.desc;
         db.forum.topics.save(topic);
         print( "New topic created." );

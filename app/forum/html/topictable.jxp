@@ -10,6 +10,8 @@
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
 core.app.forum.js.yui();
+core.app.forum.html.form();
+
 opts = opts || {};
 var createThread = true;
 var topic;
@@ -92,16 +94,16 @@ if(moderateThread)
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
                   func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
-                                                                                         "if(this.value != '"+ topic._id +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
+                                                                                         "if(this.value != '"+ (topic ? topic._id : "''") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
 
 %>
+
 <script type="text/javascript">
 
-var yes = [];
-yes = { newtopic : function() {
+var yes = { newtopic : function() {
           //user confirms the creation of a new topic
           this.hide();
           var ntForm = document.getElementById("newtopic");
@@ -118,16 +120,24 @@ yes = { newtopic : function() {
      },
      confirm : function() {
           this.hide();
+     },
+     edittopic : function() {
+          this.hide();
+          var ntForm = document.getElementById("edittopic");
+          var passData = "";
+          for(var i=0; i<ntForm.elements.length; i++) {
+                  passData += "&"+ntForm.elements.item(i).name + "="+ntForm.elements.item(i).value;
+          }
+          passData = passData.substring(1);
+          ajax(passData, "topic_edit.jxp", changeTagline);
      }
 };
 
 
-var no = { newtopic : function() {
-          this.hide();
-     }, 
-     move : function() {
-          this.hide();
-     }}; 
+var no = { newtopic : function() { this.hide(); }, 
+     move : function() { this.hide(); },
+     edittopic : function() { this.hide(); } }; 
+
 
 function moveDlg(label, target, targetId) {
     dialog.setHeader("Move");
@@ -156,6 +166,26 @@ function newTopic(parent) {
     dialog.cfg.queueProperty("buttons", myButtons);
     dialog.render(document.body);
     dialog.show();
+}
+
+function editTopic(parent) {
+  var message = '<form action="topic_edit" id="edittopic">'
+    +'<input type="hidden" name="id" value="<%= opts.thisid %>">'
+      +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= (topic) ? topic.name : "" %>"></div>'
+      +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= (topic) ? topic.description : "" %>"></div>'
+      +'<div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>></div>'
+  +'</form>';
+
+    var myButtons = [ { text:"Save", handler: yes['edittopic'] },
+                      { text:"Cancel", handler: no['edittopic'], isDefault:true } ];
+    makeDialog("Edit Topic", message, myButtons);
+
+}
+
+function changeTagline(response) {
+    var r = response.split("&");
+    document.getElementById("topicName").innerHTML = r[0];
+    document.getElementById("tagline").innerHTML = r[1];
 }
 
 function move(threadId) {
@@ -257,9 +287,11 @@ function confirmDialog(txt) {
 
 
 </script>
-<h1><%= name %></h1>
+
+
+<h1 id="topicName"><%= name %></h1>
 <% if ( description ){ %>
-<h2><%= description %></h2>
+<div id="tagline"><%= description %></div>
 <% } %>
 
 <div class="caption">
@@ -272,11 +304,7 @@ function confirmDialog(txt) {
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
         <div class="button" onclick="newTopic('<%= opts.thisid %>')">New Topic</div>
-        <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
-          <input type="hidden" name="id" value="<%= opts.thisid %>">
-          <input type="submit" class="button" name="action" value="Edit topic">
-        </form>
-        <%
+        <div class="button" onclick="editTopic('<%= opts.thisid %>')">Edit Topic</div> <%
       }
       else {
         %>
@@ -286,31 +314,18 @@ function confirmDialog(txt) {
     }
       
     app.Forum.js.addYesNoDialog();
-
-
     %>
         <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
-        <a href="user_edit">Edit user</a> |
+        <div class="button" onclick="location='user_edit'">Edit user</div>
         <% } %>
   <% if(opts.parent){ %>
-  <a href="viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
+  <div class="button" onclick="location='viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>'">Back to Parent Topic</div>
   <% }
     else { %>
   <a href="./">Back to Top Level</a>
   <% } %>
   </div>
   <% if(topic){ %>
-  <form action="topic_edit">
-    <input type="hidden" name="id" value="<%= opts.thisid %>">
-    <div class="popup" id="editpop">
-      <div class="title">Edit Topic</div>
-      <div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= topic.name %>"></div>
-      <div class="field"><label>Description:</label><input type="text" name="description" value="<%= topic.description %>"></div>
-      <div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= topic.allowPosts ? "" : "CHECKED" %>></div>
-
-      <div class="field"><input type="button" class="button" value="cancel" onclick="cancelPopup('editpop')"><input type="submit" class="submit" value="Save"></div>
-    </div>
-  </form>
   <% } %>
 
 <%

@@ -3,7 +3,6 @@ core.app.forum.html.check_ban();
 core.app.forum.data.topic();
 
 // FIXME: permissions?
-core.app.forum.html.forumheader("Forum");
 core.net.url();
 
 var topic = db.forum.topics.findOne( { _id : request.id } );
@@ -11,29 +10,10 @@ var topic = db.forum.topics.findOne( { _id : request.id } );
 if(request.name){
     topic.name = request.name;
     topic.description = request.description;
+    print(topic.name +"&"+ topic.description);
     if(request.closed == "closed") topic.allowPosts = false;
     else topic.allowPosts = true;
     db.forum.topics.save(topic);
-    response.sendRedirectTemporary("viewtopic?name="+URL.escape_queryargs(topic.name));
-    return;
 }
 
-%>
-
-<script type="text/javascript">
-function cancel() {
-         location = "viewtopic?name=<%= URL.escape_queryargs(topic.name) %>";
-}
-</script>
-
-<h2>Edit topic</h2>
-<form method="POST">
-<input type="hidden" name="id" value="<%= topic._id %>">
-<div id="field">Topic name: <input type="text" name="name" value="<%= topic.name %>"></div>
-<div id="field">Topic description: <input type="text" name="description" value="<%= topic.description %>"></div>
-<div id="field"><input type="button" value="Cancel" onclick="cancel()"><input type="submit" value="Change"></div>
-</form>
-
-<%
-htmlfooter();
 %>
