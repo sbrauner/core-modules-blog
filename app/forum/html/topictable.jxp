@@ -91,72 +91,144 @@ if(moderateThread)
 
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
-                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "moveDlg('thread', move, '"+topic._id+"')", id: topic._id.toString() }; } )
+                  func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
+                                                                                         "if(this.value != '"+ topic._id +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
 
 %>
 <script type="text/javascript">
-var clientLoader = new YAHOO.util.YUILoader();
 
-clientLoader.insert({
-    require: ['container'],
-    base: '/@@/yui/current/',
+var yes = [];
+yes = { newtopic : function() {
+          //user confirms the creation of a new topic
+          this.hide();
+          var ntForm = document.getElementById("newtopic");
+          var passData = "";
+          for(var i=0; i<ntForm.elements.length; i++) {
+                  passData += "&"+ntForm.elements.item(i).name + "="+ntForm.elements.item(i).value;
+          }
+          passData = passData.substring(1);
+          ajax(passData, "topic_new.jxp", confirmDialog);
+     },
+     move : function() {
+          this.hide();
+          this.target(this.targetId);
+     },
+     confirm : function() {
+          this.hide();
+     }
+};
 
-    onSuccess: function(loader) {
-            YAHOO.util.Event.onDOMReady( function() {
-                moveConfDialog = new YAHOO.widget.SimpleDialog("dlg", {
-                    width: "20em",
-                    fixedcenter:true,
-                    modal:true,
-                    visible:false,
-                    draggable:false });
-                moveConfDialog.setHeader("Move?");
-                moveConfDialog.cfg.setProperty("icon",YAHOO.widget.SimpleDialog.ICON_WARN);
 
-                var handleYes = function() {
-                    //user confirms the deletion of this item;
-                    //this method would perform that deletion;
-                    //when ready, hide the SimpleDialog:
-                    this.hide();
-                    this.target(this.targetId);
-                }
-                var handleNo = function() {
-                    //user cancels item deletion; this method
-                    //would handle the cancellation of the
-                    //process.
-                    //when ready, hide the SimpleDialog:
-                    this.hide();
-                }
-                var myButtons = [ { text:"Yes",
-                    handler:handleYes },
-                    { text:"Cancel",
-                    handler:handleNo,
-                    isDefault:true } ];
-                moveConfDialog.cfg.queueProperty("buttons", myButtons);
-                moveConfDialog.render(document.body);
-            });
-        }
-});
+var no = { newtopic : function() {
+          this.hide();
+     },
+     move : function() {
+          this.hide();
+     }};
 
 function moveDlg(label, target, targetId) {
-    moveConfDialog.setBody("Do you really want to move this "+label+"?");
-    moveConfDialog.target = target;
-    moveConfDialog.targetId = targetId;
-    moveConfDialog.show();
+    dialog.setHeader("Move");
+    dialog.setBody("Do you really want to move this "+label+"?");
+    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    dialog.target = target;
+    dialog.targetId = targetId;
+    var myButtons = [ { text:"Save", handler: yes['move'] },
+                      { text:"Cancel", handler: no['move'], isDefault:true } ];
+    dialog.cfg.queueProperty("buttons", myButtons);
+    dialog.render(document.body);
+    dialog.show();
+}
+
+function newTopic(parent) {
+    var message = '<form id="newtopic" action="topic_new">';
+    if(parent)
+         message += '<input type="hidden" name="parent" value="'+parent+'">';
+    message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
+               '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
+
+    dialog.setHeader("New Topic");
+    dialog.setBody(message);
+    var myButtons = [ { text:"Save", handler: yes['newtopic'] },
+                      { text:"Cancel", handler: no['newtopic'], isDefault:true } ];
+    dialog.cfg.queueProperty("buttons", myButtons);
+    dialog.render(document.body);
+    dialog.show();
 }
 
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
-         ajax(passData, "moveThread.jxp", reload, "POST");
+    ajax(passData, "moveThread.jxp", function(text){
+        // If we move it into this thread, don't hide it.
+        if(text.match("fail")){
+            return;
+        }
+        // FIXME: This doesn't really handle moving things into subtopics.
+        // We'd need to update the thread/post count.
+        document.getElementById("thread_"+threadId).style.display = "none";
+    }, "POST");
 }
 
 function moveTopic(topicId) {
          targetId = document.getElementById(topicId).value;
          var passData = "topic="+topicId+"&to="+targetId;
          ajax(passData, "topic_move.jxp", reload, "POST");
+}
+
+function sticky(threadId, action) {
+    ajax('', "thread_action"+"?select="+threadId+"&action="+action, function(){
+        var div = document.getElementById("sticky_"+threadId);
+        var row = document.getElementById("thread_"+threadId);
+        var table = row.parentNode;
+        var form = document.getElementById("stickyform_"+threadId);
+        var header = YAHOO.util.Dom.getFirstChild(table);
+        var getDate = function(elem){
+            for(var i = 0; i < elem.attributes.length; i ++){
+                var attr = elem.attributes[i];
+                if(attr.name == "date") return attr.value;
+            }
+            return 99999999999999;
+        };
+        var thisdate = getDate(row);
+        if(action == "sticky"){
+            if(div.innerHTML.match("sticky-icon")){
+                if(div.style.display == "none") div.style.display = "inline";
+            }
+            else{
+                div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
+            }
+            table.removeChild(row);
+
+            // bring the row to the top
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the next row which is either not sticky or younger than this row
+
+                var sibdate = getDate(sib);
+                if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
+                return false;
+            });
+            YAHOO.util.Dom.insertBefore(row, nextRow);
+            form.onclick = function () {sticky(threadId, "unsticky");};
+            form.value = "Unsticky";
+        }
+        else {
+            div.style.display = "none";
+            table.removeChild(row);
+
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the first row that is neither sticky nor younger than this row
+                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
+                return true;
+            });
+            // restore its rightful order
+            YAHOO.util.Dom.insertBefore(row, nextRow);
+            form.onclick = function () {sticky(threadId, "sticky");};
+            form.value = "Sticky";
+        }
+    });
 }
 
 function reload() {
@@ -166,12 +238,13 @@ function reload() {
 function togglePick(threadId) {
     var passData = "thread="+threadId;
     ajax(passData, "editorPick.jxp", function(){
-        var icondiv = document.getElementById("icons_"+threadId);
-        if(icondiv.innerHTML.match(/Thumbs/)){
-            icondiv.innerHTML = icondiv.innerHTML.replace(/<img src="css\/Thumbsup-icon.gif" class="edPick">/i, '');
+        var div = document.getElementById("edpick_"+threadId);
+        if(div.innerHTML.match(/Thumbs/)){
+            if(div.style.display == "none") div.style.display = "inline";
+            else div.style.display = "none";
         }
         else{
-            icondiv.innerHTML = '<img src="css/Thumbsup-icon.gif" class="edPick">' + icondiv.innerHTML;
+            div.innerHTML = '<img src="css/Thumbsup-icon.gif" class="edPick">';
         }
     });
 }
@@ -189,6 +262,20 @@ function cancelPopup(id) {
         document.getElementById(id).style.display = "none";
 }
 
+function makeDialog(title, body, buttons) {
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.cfg.queueProperty("buttons", buttons);
+    dialog.render(document.body);
+    dialog.show();
+}
+
+function confirmDialog(txt) {
+    var myButtons = [ { text:"Okay", handler: yes['confirm'] } ];
+    makeDialog("Confirmation", txt, myButtons);
+}
+
+
 </script>
 <h1><%= name %></h1>
 <% if ( description ){ %>
@@ -204,7 +291,7 @@ function cancelPopup(id) {
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
-        <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a>
+        <div class="button" onclick="newTopic('<%= opts.thisid %>')">New Topic</div>
         <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
           <input type="hidden" name="id" value="<%= opts.thisid %>">
           <input type="submit" class="button" name="action" value="Edit topic">
@@ -213,10 +300,14 @@ function cancelPopup(id) {
       }
       else {
         %>
-        <a href="topic_new">New Topic</a> |
+        <input type="button" onclick="newTopic()" value="New Topic" class="button"> |
         <%
       }
     }
+
+    app.Forum.js.addYesNoDialog();
+
+
     %>
         <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
         <a href="user_edit">Edit user</a> |
@@ -243,6 +334,7 @@ function cancelPopup(id) {
   <% } %>
 
 <%
+
 // Show subtopics
 if(subs && subs.length > 0){
     var tableid = "table1";
@@ -260,6 +352,7 @@ if(subs && subs.length > 0){
        if(numrows > 1)
             app.Forum.js.addDragAndDrop(tableid, numrows);
        %>
+       <script type="text/javascript">var lastRow = <%= numrows %>;</script>
     </table>
     <%
 }
