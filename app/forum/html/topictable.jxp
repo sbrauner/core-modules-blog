@@ -134,9 +134,9 @@ var yes = { newtopic : function() {
 };
 
 
-var no = { newtopic : function() { this.hide(); }, 
+var no = { newtopic : function() { this.hide(); },
      move : function() { this.hide(); },
-     edittopic : function() { this.hide(); } }; 
+     edittopic : function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
     dialog.setHeader("Move");
@@ -309,7 +309,7 @@ function confirmDialog(txt) {
 </script>
 
 
-<h1 id="topicName"><%= name %></h1><a href="topic_rss.jxp?id=<%= t._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
+<h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
 <% if ( description ){ %>
 <div id="tagline"><%= description %></div>
 <% } %>
@@ -318,7 +318,7 @@ function confirmDialog(txt) {
   <%
     if(createThread &&
        app.Forum.Controller.hasPermission(user, "createThread")){ %>
-  <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> |
+  <div class="button" onclick="location='thread_new?top_id=<%= opts.thisid %>&reply=true'">New Thread</div>
   <%
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
@@ -328,7 +328,7 @@ function confirmDialog(txt) {
       }
       else {
         %>
-        <input type="button" onclick="newTopic()" value="New Topic" class="button"> |
+        <div class="button" onclick="newTopic()">New Topic</div>
         <%
       }
     }
@@ -341,12 +341,11 @@ function confirmDialog(txt) {
   <% if(opts.parent){ %>
   <div class="button" onclick="location='viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>'">Back to Parent Topic</div>
   <% }
-    else { %>
-  <a href="./">Back to Top Level</a>
+    else if (topic) { %>
+  <div class="button onclick="location='./'">Back to Top Level</div>
   <% } %>
+
   </div>
-  <% if(topic){ %>
-  <% } %>
 
 <%
 

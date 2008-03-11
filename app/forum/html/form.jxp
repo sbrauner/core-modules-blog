@@ -55,8 +55,7 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     var filter = (options.filter == null) ? function(){return true;} : options.filter;
     var select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
-    return function(t){ 
-    log("t: "+t);
+    return function(t){
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
@@ -108,7 +107,7 @@ app.Forum.html.search = function(location) {
          <form action="search.jxp">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search all posts in forum" id="search" onclick="clearBox()">
-                <input type="submit" class="submit" value="go">
+                <input type="submit" class="submit" value="Go">
          </form>
          <%
 }
@@ -120,6 +119,7 @@ app.Forum.html.topicStack = function(tempTopic) {
           topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+escape(tempTopic.name)+'">'+tempTopic.name+' </a></div>' + topicStack;
      }
      print(topicStack);
+     log("topicstack: "+topicStack);
 }
 
 app.Forum.html.startBreadcrumbTable = function() {
@@ -149,10 +149,8 @@ app.Forum.html.topicBreadcrumb = function(topic) {
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(thread.topic); %>
-    <div class="top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
-    <div class="second_level">
-    <%= thread.getTitle() %>
-    </div><%
+    <div class="mid_level top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
+    <div class="second_level"><%= thread.getTitle() %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
