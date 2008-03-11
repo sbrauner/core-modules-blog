@@ -186,6 +186,7 @@ function changeTagline(response) {
     var r = response.split("&");
     document.getElementById("topicName").innerHTML = decodeURIComponent(r[0]);
     document.getElementById("tagline").innerHTML = decodeURIComponent(r[1]);
+    location = 'viewtopic?name='+r[0];
 }
 
 function move(threadId) {
