@@ -149,15 +149,8 @@ app.Forum.html.topicBreadcrumb = function(topic) {
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(thread.topic); %>
-<<<<<<< HEAD:app/forum/html/form.jxp
     <div class="top_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
-    <div class="second_level">
-    <%= content.HTML.escape(thread.getTitle()) %>
-    </div><%
-=======
-    <div class="mid_level top_level"><a href="viewtopic?name=<%= escape( thread.topic.name )%>"><%= thread.topic.name %></a></div>
-    <div class="second_level"><%= thread.getTitle() %></div><%
->>>>>>> 688ca7b1e9fb39770dcf56e84c895c8c1ed4ae44:app/forum/html/form.jxp
+    <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
