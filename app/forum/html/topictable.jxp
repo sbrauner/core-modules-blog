@@ -109,7 +109,7 @@ var yes = { newtopic : function() {
           var ntForm = document.getElementById("newtopic");
           var passData = "";
           for(var i=0; i<ntForm.elements.length; i++) {
-                  passData += "&"+ntForm.elements.item(i).name + "="+ntForm.elements.item(i).value;
+              passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
           }
           passData = passData.substring(1);
           ajax(passData, "topic_new.jxp", confirmDialog);
@@ -134,9 +134,9 @@ var yes = { newtopic : function() {
 };
 
 
-var no = { newtopic : function() { this.hide(); }, 
+var no = { newtopic : function() { this.hide(); },
      move : function() { this.hide(); },
-     edittopic : function() { this.hide(); } }; 
+     edittopic : function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
     dialog.setHeader("Move");
