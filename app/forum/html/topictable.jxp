@@ -181,7 +181,14 @@ function sticky(threadId, action) {
         var table = row.parentNode;
         var form = document.getElementById("stickyform_"+threadId);
         var header = YAHOO.util.Dom.getFirstChild(table);
-        var thisdate = new YAHOO.util.Element(row).get('date');
+        var getDate = function(elem){
+            for(var i = 0; i < elem.attributes.length; i ++){
+                var attr = elem.attributes[i];
+                if(attr.name == "date") return attr.value;
+            }
+            return 99999999999999;
+        };
+        var thisdate = getDate(row);
         if(action == "sticky"){
             if(div.innerHTML.match("sticky-icon")){
                 if(div.style.display == "none") div.style.display = "inline";
@@ -189,29 +196,31 @@ function sticky(threadId, action) {
             else{
                 div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
             }
+            table.removeChild(row);
 
             // bring the row to the top
             var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
                 // return the next row which is either not sticky or younger than this row
-                if(thisdate > new YAHOO.util.Element(sib).get('date') || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
+
+                var sibdate = getDate(sib);
+                alert(thisdate + " " + sibdate);
+                if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
                 return false;
             });
-            table.removeChild(row);
             YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
         }
         else {
             div.style.display = "none";
+            table.removeChild(row);
 
             var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
                 // return the first row that is neither sticky nor younger than this row
-                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < new YAHOO.util.Element(sib).get('date')) return false;
+                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
                 return true;
             });
             // restore its rightful order
-            alert("-- "+nextRow);
-            table.removeChild(row);
             YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
