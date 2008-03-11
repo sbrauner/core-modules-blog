@@ -4,8 +4,7 @@
 }
 
 .wiki blockquote {
-	background: red;
-	border: solid 1px #999;
+	border-left: solid 2px #333;
 	margin: 5px;
 	padding: 5px;
 }
