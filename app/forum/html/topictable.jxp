@@ -203,7 +203,6 @@ function sticky(threadId, action) {
                 // return the next row which is either not sticky or younger than this row
 
                 var sibdate = getDate(sib);
-                alert(thisdate + " " + sibdate);
                 if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
                 return false;
             });
