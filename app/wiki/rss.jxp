@@ -45,14 +45,15 @@ function clean( s ){
 	var page = cursor.next();
 	var lastEdit = page.getLastEdit();
 	
+	var url = "http://" + request.getHost() + request.getURI().replace( /\/rss.*/ , "/" ) + page.name ;
         %>
         <item>
-            <guid><%= md5( page.name + page.lastEdit ) %></guid>
+            <guid><%= url %></guid>
             <title><%= page.name %></title>
-            <link>http://<%= request.getHost() + request.getURI().replace( /\/rss.*/ , "/" ) + page.name %></link>
+            <link><%= url %></link>
             <pubDate><%= page.lastEdit.webFormat() %></pubDate>
             <author><%= lastEdit && lastEdit.user ? lastEdit.user.name :  "none"  %></author>
-            <description><%= lastEdit ? lastEdit.diff : ""  %></description>
+            <description><%= lastEdit ? clean( lastEdit.diff ) : ""  %></description>
         </item>
         <% } %>
 

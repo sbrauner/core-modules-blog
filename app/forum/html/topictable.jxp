@@ -138,7 +138,6 @@ var no = { newtopic : function() { this.hide(); },
      move : function() { this.hide(); },
      edittopic : function() { this.hide(); } }; 
 
-
 function moveDlg(label, target, targetId) {
     dialog.setHeader("Move");
     dialog.setBody("Do you really want to move this "+label+"?");
@@ -154,7 +153,7 @@ function moveDlg(label, target, targetId) {
 
 function newTopic(parent) {
     var message = '<form id="newtopic" action="topic_new">';
-    if(parent) 
+    if(parent)
          message += '<input type="hidden" name="parent" value="'+parent+'">';
     message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
                '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
@@ -209,11 +208,20 @@ function moveTopic(topicId) {
 }
 
 function sticky(threadId, action) {
-    ajax("select="+threadId+"&action="+action, "thread_action", function(){
+    ajax('', "thread_action"+"?select="+threadId+"&action="+action, function(){
         var div = document.getElementById("sticky_"+threadId);
         var row = document.getElementById("thread_"+threadId);
         var table = row.parentNode;
         var form = document.getElementById("stickyform_"+threadId);
+        var header = YAHOO.util.Dom.getFirstChild(table);
+        var getDate = function(elem){
+            for(var i = 0; i < elem.attributes.length; i ++){
+                var attr = elem.attributes[i];
+                if(attr.name == "date") return attr.value;
+            }
+            return 99999999999999;
+        };
+        var thisdate = getDate(row);
         if(action == "sticky"){
             if(div.innerHTML.match("sticky-icon")){
                 if(div.style.display == "none") div.style.display = "inline";
@@ -221,20 +229,31 @@ function sticky(threadId, action) {
             else{
                 div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
             }
+            table.removeChild(row);
 
             // bring the row to the top
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the next row which is either not sticky or younger than this row
 
-            table.removeChild(row);
-            table.insertBefore(row, table.childNodes[0]);
+                var sibdate = getDate(sib);
+                if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
+                return false;
+            });
+            YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
         }
         else {
             div.style.display = "none";
-
-            // restore its rightful order
             table.removeChild(row);
-            table.insertBefore(row, table.childNodes[5]);
+
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the first row that is neither sticky nor younger than this row
+                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
+                return true;
+            });
+            // restore its rightful order
+            YAHOO.util.Dom.insertBefore(row, nextRow);
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
         }
@@ -312,7 +331,7 @@ function confirmDialog(txt) {
         <%
       }
     }
-      
+
     app.Forum.js.addYesNoDialog();
     %>
         <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
