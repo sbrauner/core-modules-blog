@@ -58,16 +58,16 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
 
     attrfunc = attrfunc || function (){ return {}; };
     options = options || {};
-    options.filter = (options.filter == null) ? function(){return true;} : options.filter;
-    options.select = (options.select == null) ? function(){return false;} : options.select;
+    var filter = (options.filter == null) ? function(){return true;} : options.filter;
+    var select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
     return function(t){
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
             // Create new functions for exploreTopic which close over the thread.
-            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return options.filter(t, choice); },
-                                                  function(choice){ return options.select(t, choice); });
+            retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); },
+                                                  function(choice){ return select(t, choice); });
         }
         return retStr +"</select>";
     }
