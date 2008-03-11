@@ -9,7 +9,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
 core.content.table();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-core.app.forum.html.form();
 
 core.util.format();
 

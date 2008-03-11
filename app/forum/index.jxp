@@ -7,7 +7,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
 
 core.app.forum.data.topic();
 core.app.forum.data.thread();
-core.app.forum.html.form();
 
 app.Forum.html.search("forums");
 

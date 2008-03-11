@@ -5,7 +5,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
 
     core.net.url();
-core.app.forum.html.form();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 

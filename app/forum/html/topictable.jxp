@@ -10,7 +10,6 @@
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
 core.app.forum.js.yui();
-core.app.forum.html.form();
 
 opts = opts || {};
 var createThread = true;
