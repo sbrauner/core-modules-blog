@@ -93,7 +93,7 @@ if(moderateThread)
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
                   func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
-                                                                                         "if(this.value != '"+ (topic ? topic._id : "''") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
+                                                                                         "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
@@ -138,16 +138,12 @@ var no = { newtopic : function() { this.hide(); },
      edittopic : function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
-    dialog.setHeader("Move");
-    dialog.setBody("Do you really want to move this "+label+"?");
-    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    var myButtons = [ { text:"Move", handler: yes['move'] },
+                      { text:"Cancel", handler: no['move'], isDefault:true } ];
     dialog.target = target;
     dialog.targetId = targetId;
-    var myButtons = [ { text:"Save", handler: yes['move'] },
-                      { text:"Cancel", handler: no['move'], isDefault:true } ];
-    dialog.cfg.queueProperty("buttons", myButtons);
-    dialog.render(document.body);
-    dialog.show();
+    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    makeDialog("Move", "Do you really want to move this "+label+"?", myButtons);
 }
 
 function newTopic(parent) {
@@ -156,14 +152,9 @@ function newTopic(parent) {
          message += '<input type="hidden" name="parent" value="'+parent+'">';
     message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
                '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
-
-    dialog.setHeader("New Topic");
-    dialog.setBody(message);
     var myButtons = [ { text:"Save", handler: yes['newtopic'] },
                       { text:"Cancel", handler: no['newtopic'], isDefault:true } ];
-    dialog.cfg.queueProperty("buttons", myButtons);
-    dialog.render(document.body);
-    dialog.show();
+    makeDialog("New Topic", message, myButtons);
 }
 
 function editTopic(parent) {
@@ -241,6 +232,7 @@ function sticky(threadId, action) {
                 return false;
             });
             YAHOO.util.Dom.insertBefore(row, nextRow);
+            YAHOO.util.Dom.addClass(row, "sticky");
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
         }
@@ -248,13 +240,20 @@ function sticky(threadId, action) {
             div.style.display = "none";
             table.removeChild(row);
 
+            var lastRow;
+            // restore its rightful order
             var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
                 // return the first row that is neither sticky nor younger than this row
+                lastRow = sib;
                 if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
                 return true;
             });
-            // restore its rightful order
-            YAHOO.util.Dom.insertBefore(row, nextRow);
+            if(nextRow)
+                YAHOO.util.Dom.insertBefore(row, nextRow);
+            else {
+                YAHOO.util.Dom.insertAfter(row, lastRow);
+            }
+            YAHOO.util.Dom.removeClass(row, "sticky");
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
         }
@@ -301,8 +300,17 @@ function makeDialog(title, body, buttons) {
 }
 
 function confirmDialog(txt) {
+    var r = txt.split("$");
     var myButtons = [ { text:"Okay", handler: yes['confirm'] } ];
-    makeDialog("Confirmation", txt, myButtons);
+    makeDialog("Confirmation", r[0], myButtons);
+
+    // if the new topic was created, add it to the topic table
+    if(r.length > 1) {
+        var header = document.getElementById("tr1");
+        var newRow = header.cloneNode(true);
+        YAHOO.util.Dom.insertBefore(newRow, header);
+        newRow.innerHTML = r[1].substring(r[1].indexOf(">")+1, r[1].lastIndexOf("<"));
+    }
 }
 
 

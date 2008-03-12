@@ -49,6 +49,10 @@ app.Forum.data.Thread.prototype.getClosed = function(isClosed){
     return !this.commentsEnabled;
 };
 
+app.Forum.data.Thread.prototype.getHidden = function(){
+    return this.topic.getHidden();
+};
+
 app.Forum.data.Thread.prototype.getFirstPost = function(){
     return this.getReplies()[0];
 };
