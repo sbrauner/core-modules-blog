@@ -138,16 +138,12 @@ var no = { newtopic : function() { this.hide(); },
      edittopic : function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
-    dialog.setHeader("Move");
-    dialog.setBody("Do you really want to move this "+label+"?");
-    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
-    dialog.target = target;
-    dialog.targetId = targetId;
     var myButtons = [ { text:"Move", handler: yes['move'] },
                       { text:"Cancel", handler: no['move'], isDefault:true } ];
-    dialog.cfg.queueProperty("buttons", myButtons);
-    dialog.render(document.body);
-    dialog.show();
+    dialog.target = target;
+    dialog.targetId = targetId;
+    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    makeDialog("Move", "Do you really want to move this "+label+"?", myButtons);
 }
 
 function newTopic(parent) {
@@ -156,14 +152,9 @@ function newTopic(parent) {
          message += '<input type="hidden" name="parent" value="'+parent+'">';
     message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
                '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
-
-    dialog.setHeader("New Topic");
-    dialog.setBody(message);
     var myButtons = [ { text:"Save", handler: yes['newtopic'] },
                       { text:"Cancel", handler: no['newtopic'], isDefault:true } ];
-    dialog.cfg.queueProperty("buttons", myButtons);
-    dialog.render(document.body);
-    dialog.show();
+    makeDialog("New Topic", message, myButtons);
 }
 
 function editTopic(parent) {

@@ -206,7 +206,7 @@ div.icons div.edPick, div.icons div.sticky {
 label {
        display: block;
        float: left;
-       width: 50px;
+       width: 10em;
        text-align: right;
        margin-right: 5px;
 }
@@ -218,6 +218,7 @@ textarea {
 input.text {
            border: 1px solid #9ac0cc;
            margin-top: -3px;
+           width: 12em;
 }
 
 input.submit, input.button {
