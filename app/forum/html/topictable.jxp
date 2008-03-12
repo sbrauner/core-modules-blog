@@ -143,7 +143,7 @@ function moveDlg(label, target, targetId) {
     dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
     dialog.target = target;
     dialog.targetId = targetId;
-    var myButtons = [ { text:"Save", handler: yes['move'] },
+    var myButtons = [ { text:"Move", handler: yes['move'] },
                       { text:"Cancel", handler: no['move'], isDefault:true } ];
     dialog.cfg.queueProperty("buttons", myButtons);
     dialog.render(document.body);
