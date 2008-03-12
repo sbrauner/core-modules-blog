@@ -149,7 +149,7 @@ app.Forum.html.topicBreadcrumb = function(topic) {
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(thread.topic); %>
-    <div class="top_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
+    <div class="top_level mid_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
