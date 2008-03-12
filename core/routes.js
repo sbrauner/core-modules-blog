@@ -1,9 +1,34 @@
 // routes.js
 
 /**
-* for usage, for now look ad corejs/core/test/test_routes
-*/
 
+for usage, for now look ad corejs/core/test/test_routes
+
+==basics==
+* keys are urls
+** routes.wiki 
+*** matches /wiki/
+** routes.wiki.abc
+*** /wiki/abc
+
+* value are path to jxp
+** if starts with / its absolute
+** otherwise relative
+
+<prenh>
+routes.wiki.search = "/wiki/doSearch";
+</prenh>
+is equivlant to
+<prenh>
+routes.wiki.search = "doSearch";
+</prenh>
+
+== regex ==
+<prenh>
+* routes.add( /abc/ , "" )
+* routes.add( /abc(\d)/ , "/foo/$0/$1
+
+*/
 Routes = function(){
     this._regexp = [];
     this._default = null;
