@@ -241,6 +241,7 @@ function sticky(threadId, action) {
                 return false;
             });
             YAHOO.util.Dom.insertBefore(row, nextRow);
+            YAHOO.util.Dom.addClass(row, "sticky");
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
         }
@@ -248,13 +249,20 @@ function sticky(threadId, action) {
             div.style.display = "none";
             table.removeChild(row);
 
+            var lastRow;
+            // restore its rightful order
             var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
                 // return the first row that is neither sticky nor younger than this row
+                lastRow = sib;
                 if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
                 return true;
             });
-            // restore its rightful order
-            YAHOO.util.Dom.insertBefore(row, nextRow);
+            if(nextRow)
+                YAHOO.util.Dom.insertBefore(row, nextRow);
+            else {
+                YAHOO.util.Dom.insertAfter(row, lastRow);
+            }
+            YAHOO.util.Dom.removeClass(row, "sticky");
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
         }
