@@ -1,4 +1,11 @@
 core.content.wikiparser();
+
+app.wiki.routes = new Routes();
+app.wiki.routes.search = "/~~/app/wiki/search";
+app.wiki.routes.add( /.*\.(js|css|jpg|gif|jpeg|png|ico|jxp)$/ , "/~~/app/wiki/$0" ); 
+app.wiki.routes.setDefault( "/~~/app/wiki/" );
+
+
 app.wiki.WikiController = function() {};
 
 app.wiki.WikiController.TEXT_PARSER = content.WikiParser;
