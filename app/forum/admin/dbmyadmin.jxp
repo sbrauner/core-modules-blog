@@ -5,17 +5,20 @@ function printCheck(cursor, field) {
 
 var count = 0;
 function printText(cursor, field) {
-     print("<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+count+"')\">");
+     print("<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+typeof cursor[field]+"','"+count+"')\">");
      count++;
 }
 
 function printObj(cursor, field) {
-     if(typeof val == "boolean") 
+     if(!cursor || !cursor[field]) return;
+
+     if(typeof cursor[field] == "boolean")
           printCheck(cursor, field);
-     else if(typeof val == "string" || typeof val == "number")
-          printText(cursor, field); 
-     else if(typeof val == "object") {
-          print("<div class=\"parent\" onclick=\"showObj('"+cursor._id+"')\">Object</div><div class=\"obj\" id=\""+cursor._id+"\"");
+     else if(typeof cursor[field] == "string" || typeof cursor[field] == "number")
+          printText(cursor, field);
+     else if(typeof cursor[field] == "object") {
+          //name = cursor[field].name || cursor[field].toString() || "Object";
+          print("<div class=\"parent\" onclick=\"showObj('"+cursor._id+"')\">Object</div><div class=\"obj\" id=\""+cursor._id+"\">");
           for(var name in cursor[field]) {
                printObj(cursor[field], name);
           }
@@ -34,7 +37,6 @@ htmlheader();
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }
-
 function defaultResponder(r) {
          if(r!= "")
          log(r);
@@ -42,49 +44,53 @@ function defaultResponder(r) {
 function reloader() {
          location.reload();
 }
-function rewrite(i, f, txt) {
+function rewrite(i, f, type, txt) {
          val = document.getElementById("txt"+txt).value;
-         passData="id="+i+"&field="+f+"&value="+val+"&action=change";
+         passData="id="+i+"&field="+f+"&value="+val+"&dt="+type+"&action=change";
          ajax(passData, "modDb.jxp", reloader);
 }
 
 function toggle(i, f, val) {
-         passData = "id="+i+"&field="+f+"&value="+val+"&action=change";
+         passData = "id="+i+"&field="+f+"&value="+val+"&dt=boolean&action=change";
          ajax(passData, "modDb.jxp", defaultResponder);
 }
 
-function deleteRow(i) {
+function deleteRow(i, row) {
          passData = "id="+i+"&action=delete";
-         ajax(passData, "modDb.jxp", reloader);
+         ajax(passData, "modDb.jxp");
+         document.getElementById("row"+row).style.display = "none";
 }
-
 </script>
 
 <table>
 <%
 
-cursor = db.forum.threads.find().toArray();
+cursor = db.forum.topics.find().toArray();
 print("<th>Remove</th>");
 for(var field in cursor[0]) {
      print("<th>"+field+"</th>");
 }
 
 for(var i=0; i<cursor.length; i++) {
-     print("<tr>");
-     print("<td><input type=\"button\" value=\"x\" onclick=\"deleteRow('"+cursor[i]._id+"')\"></td>");
+     print("<tr id='row"+i+"'>");
+     print("<td><input type=\"button\" value=\"x\" onclick=\"deleteRow('"+cursor[i]._id+"',"+i+")\"></td>");
      for(var field in cursor[i]) {
           print("<td>");
           if(typeof cursor[i][field] == "boolean") {
               printCheck(cursor[i], field);
           }
           else if(typeof cursor[i][field] == "string" || typeof cursor[i][field] == "number") {
-              printText(cursor[i], field); 
+              printText(cursor[i], field);
           }
           else if(typeof cursor[i][field] == "object") {
+              log("in obj");
               printObj(cursor[i], field);
           }
           else {
-              print(cursor[i][field]);
+              if(cursor[i][field])
+                   print(cursor[i][field]);
+              else
+                   print("null");
           }
           print("</td>");
      }
