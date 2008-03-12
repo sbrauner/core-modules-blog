@@ -163,20 +163,30 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     postoptions.highlight = request.highlight;
     postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 
+    var notdeleted = function(p) { if (p.deleted) return false; return true; };
     if(request.show) {
         postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
     }
     else {
-        postoptions.filter = function(p) { if (p.deleted) return false; return true; };
+        postoptions.filter = notdeleted;
+    }
+    var reps = thread.getReplies();
+    var firstPost;
+
+    for(var i = 0; i < reps.length; i++){
+        if(notdeleted(reps[i])){ firstPost = reps[i]; break; }
     }
 
     postoptions.actions = [];
     postoptions.actions.push(function(post) {
+        // Don't show split button whenever:
+        // 1. the post is deleted
+        // 2. the post is the first non-deleted post in the thread
         %>
         <form action="thread_action">
           <input type="hidden" name="threadId" value="<%= thread._id %>">
           <input type="hidden" name="select" value="<%= post.getID() %>">
-          <% if(canSplit && post.getID() > 0){ %>
+          <% if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
              }
              if(post.deleted == "deleted" && canDelete) { %>

@@ -93,7 +93,7 @@ if(moderateThread)
 if(movetargets.length > 0) {
     actions.push({title : "Move Thread",
                   func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
-                                                                                         "if(this.value != '"+ (topic ? topic._id : "''") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
+                                                                                         "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
