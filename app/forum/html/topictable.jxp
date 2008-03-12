@@ -106,12 +106,13 @@ var yes = { newtopic : function() {
           //user confirms the creation of a new topic
           this.hide();
           var ntForm = document.getElementById("newtopic");
-          var passData = "";
+          ntForm.submit();
+/*          var passData = "";
           for(var i=0; i<ntForm.elements.length; i++) {
               passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
           }
           passData = passData.substring(1);
-          ajax(passData, "topic_new.jxp", confirmDialog);
+          ajax(passData, "topic_new.jxp", confirmDialog);*/
      },
      move : function() {
           this.hide();
