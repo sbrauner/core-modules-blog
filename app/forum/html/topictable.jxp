@@ -300,8 +300,17 @@ function makeDialog(title, body, buttons) {
 }
 
 function confirmDialog(txt) {
+    var r = txt.split("$");
     var myButtons = [ { text:"Okay", handler: yes['confirm'] } ];
-    makeDialog("Confirmation", txt, myButtons);
+    makeDialog("Confirmation", r[0], myButtons);
+
+    // if the new topic was created, add it to the topic table
+    if(r.length > 1) {
+        var header = document.getElementById("tr1");
+        var newRow = header.cloneNode(true);
+        YAHOO.util.Dom.insertBefore(newRow, header);
+        newRow.innerHTML = r[1].substring(r[1].indexOf(">")+1, r[1].lastIndexOf("<"));
+    }
 }
 
 

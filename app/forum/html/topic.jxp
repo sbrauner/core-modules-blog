@@ -4,10 +4,10 @@ app.Forum.data.Topic();
 processArgs("topic", "options", "rownum");
 
 var link = "viewtopic?name="+URL.escape_queryargs(topic.name);
-if(topic._id == app.Forum.Controller.specialDeletedID || 
+if(topic._id == app.Forum.Controller.specialDeletedID ||
    topic._id == app.Forum.Controller.specialModeratedID)
     link = "viewtopic?id="+topic._id;
-var actions = (options.actions == null) ? [] : options.actions;
+var actions = (options) ? ((options.actions) ? options.actions : []) : [];
 %>
 
 
@@ -17,10 +17,12 @@ var actions = (options.actions == null) ? [] : options.actions;
   <td><%= topic.postCount.toFixed(0) %></td>
 
   <%
-  if (actions.length > 0){ 
+ log("actions: "+tojson(actions));
+  if (actions.length > 0){
        for(var i in actions){ %>
+       <% log(tojson(actions[i].func)); %>
             <td><%= actions[i].func(topic) %></td>
-            <% 
+            <%
        }
   }%>
 </tr>

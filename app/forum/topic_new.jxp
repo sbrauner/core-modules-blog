@@ -26,7 +26,45 @@ if(request.newname){
              print(request.desc);
         topic.description = request.desc;
         db.forum.topics.save(topic);
-        print( "New topic created." );
+        print( "New topic created.$" );
+
+// Horrible, horrible repeat of code!
+// move this somewhere central
+var topics = db.forum.topics.find({parent: null}).toArray();
+topicActions = [];
+topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
+
+t = topic || topics[0];
+
+var moveTopic = app.Forum.Controller.hasPermission(user, "moveTopic");
+var hideTopic = app.Forum.Controller.hasPermission(user, "hideTopic");
+
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic);
+                           return "";
+                       }});
+}
+
+core.app.forum.html.form();
+log("selectify: "+tojson(app.Forum.html.selectify));
+if(moveTopic){
+    topicActions.push({title : "Move Topic",
+                       func : app.Forum.html.selectify(topics,
+                                                       function(t){ return {onChange: "moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()};},
+                                        {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
+                                            // We wrap the function so that when we get the Special Topics,
+                                            // we don't generate a <select> for you to move them.
+                                            if(parseInt(t._id.toString()) < 10)
+                                                return "&nbsp;";
+                                            return proceed(t);
+                                        })
+                      });
+}
+
+
+        app.Forum.renderer.topic(topic, {actions : topicActions}, 0);
     }
     else {
         print( "This name is already in use." );
