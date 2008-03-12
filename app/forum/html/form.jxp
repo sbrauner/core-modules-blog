@@ -14,7 +14,6 @@ function editorPick(thread) {
 
 
 app.Forum.html.exploreTopic = function(topic, indent, filter, select){
-    log("groupies " + filter(topic));
     retStr = "";
     indent = indent || 0;
     istr = "";
@@ -49,7 +48,6 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     // false to prune or true to not-prune that choice.
 
     //this is a psuedo topic and cannot be moved
-log("here");
     var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
     var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
 
@@ -59,7 +57,6 @@ log("here");
     var select = (options.select == null) ? function(){return false;} : options.select;
     // return an action, which is a function which is called on each of several rows.
     return function(t){
-        log(Util.format_htmlattr(attrfunc(t)));
         var retStr = "<select " +Util.format_htmlattr(attrfunc(t)) + ">";
         retStr+="<option value=\"\">&nbsp;</option>";
         for(i=0; i<choices.length; i++) {
@@ -67,7 +64,6 @@ log("here");
             retStr += app.Forum.html.exploreTopic(choices[i], 0, function(choice){ return filter(t, choice); },
                                                   function(choice){ return select(t, choice); });
         }
-        log("returning "+ retStr);
         return retStr +"</select>";
     }
 };

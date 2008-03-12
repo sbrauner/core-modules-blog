@@ -17,10 +17,8 @@ var actions = (options) ? ((options.actions) ? options.actions : []) : [];
   <td><%= topic.postCount.toFixed(0) %></td>
 
   <%
- log("actions: "+tojson(actions));
   if (actions.length > 0){
        for(var i in actions){ %>
-       <% log(tojson(actions[i].func)); %>
             <td><%= actions[i].func(topic) %></td>
             <%
        }

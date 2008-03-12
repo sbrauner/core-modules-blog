@@ -48,7 +48,6 @@ if(hideTopic){
 }
 
 core.app.forum.html.form();
-log("selectify: "+tojson(app.Forum.html.selectify));
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
