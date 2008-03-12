@@ -93,7 +93,6 @@ function makeDialog(title, body, buttons) {
 
 function respond(response) {
     var r = response.split("&");
-    alert(response);
     document.getElementById("threadtitle").innerHTML = r[0];
     if(r[1])
         document.getElementById("threadFooter").style.display = "none";
@@ -212,7 +211,7 @@ function goToNewPost(response) {
 <div id="threadFooter" class="threadFooter">
     <%
     if(canPost){ %>
-         <div class="button" onclick="document.getElementById('replyform').style.display = 'block';">Reply</div>
+         <div class="button" onclick="document.getElementById('replyform').style.display = 'block'; document.getElementById('reply_btn').style.display = 'none';" id="reply_btn">Reply</div>
          <div class="field"><label>New Post: </label><textarea id="ncontent" rows=10 cols=80 name="ncontent"></textarea></div>
          <div class="field"><div class="button" onclick="post()">Post</div></div><%
     }
