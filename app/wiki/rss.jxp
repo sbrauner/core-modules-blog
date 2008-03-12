@@ -2,7 +2,6 @@
 <rss version="2.0">
 <%
 
-core.app.wiki.wikipage();
 
 var cursor = db.wiki.find().sort( { lastEdit : -1 } ).limit( 50 );
 var now = new Date();

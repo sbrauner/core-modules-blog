@@ -1,8 +1,6 @@
 <%
     /* determine the base url we are running under.
     */
-    core.app.wiki.wiki();
-    core.app.wiki.wikipage();
 
     var uri = request.getURI();
 

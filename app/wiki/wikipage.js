@@ -1,5 +1,3 @@
-core.util.diff();
-core.app.wiki.wikipagehistory();
 
 app.wiki.WikiPage = function(name) {
     this.name = name || '';
