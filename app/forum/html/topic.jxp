@@ -8,18 +8,19 @@ if(topic._id == app.Forum.Controller.specialDeletedID ||
    topic._id == app.Forum.Controller.specialModeratedID)
     link = "viewtopic?id="+topic._id;
 var actions = (options) ? ((options.actions) ? options.actions : []) : [];
+var count = 1;
 %>
 
 
 <tr id="tr<%= rownum %>" class="<%= topic.hidden ? ' hidden' : '' %>">
-  <td class="alignleft"><div class="topic_name" style="display:none;"><%= content.HTML.escape(topic.name) %></div><div class="subtopic_link"><a href="<%= link %>"><%= content.HTML.escape(topic.name) || "(no name given)" %></a></div><%= content.HTML.escape(topic.description) %></td>
-  <td><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
-  <td><%= topic.postCount.toFixed(0) %></td>
+  <td id="td<%= rownum %>_<%= count++ %>" class="alignleft"><div class="topic_name" style="display:none;"><%= content.HTML.escape(topic.name) %></div><div class="subtopic_link"><a href="<%= link %>"><%= content.HTML.escape(topic.name) || "(no name given)" %></a></div><%= content.HTML.escape(topic.description) %></td>
+  <td id="td<%= rownum %>_<%= count++ %>"><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
+  <td id="td<%= rownum %>_<%= count++ %>"><%= topic.postCount.toFixed(0) %></td>
 
   <%
   if (actions.length > 0){
        for(var i in actions){ %>
-            <td><%= actions[i].func(topic) %></td>
+            <td id="td<%= rownum %>_<%= count++ %>"><%= actions[i].func(topic) %></td>
             <%
        }
   }%>

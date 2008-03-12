@@ -2,7 +2,8 @@
 app.Forum.js = {};
 
 //FIXME: a post can be moved below deleted/moderated!
-app.Forum.js.addDragAndDrop = function(tableid, numrows) {
+//FIXME2: numcols is, at the moment, a limit.  it should be an array of columns to be made handles
+app.Forum.js.addDragAndDrop = function(tableid, numrows, numcols) {
 
      head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/yahoo-min.js?_yuiversion=2.5.0"></script>'+
@@ -13,7 +14,7 @@ app.Forum.js.addDragAndDrop = function(tableid, numrows) {
      '<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js?_yuiversion=2.5.0"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/button/button-min.js?_yuiversion=2.5.0"></script>');
 
-
+numcols = numcols || 4;
      %>
 
 <script type="text/javascript">
@@ -31,17 +32,19 @@ YAHOO.example.DDApp = {
         new YAHOO.util.DDTarget("<%= tableid %>");
 
         for (i=1;i<rows+1;i=i+1) {
-            new YAHOO.example.DDList("tr" + i);
+            new YAHOO.example.DDList("tr" + i, null, null, i, <%= numcols %>);
         }
     }
 };
 
-YAHOO.example.DDList = function(id, sGroup, config) {
+YAHOO.example.DDList = function(id, sGroup, config, row, numcols) {
 
     YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config);
-
-    this.logger = this.logger || YAHOO;
     var el = this.getDragEl();
+
+    for(var i=1; i<numcols+1; i++)
+        this.setHandleElId("td"+row+"_"+i);
+
     Dom.setStyle(el, "opacity", 0.67); // The proxy is slightly transparent
 
     this.goingUp = false;
@@ -51,8 +54,6 @@ YAHOO.example.DDList = function(id, sGroup, config) {
 YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
 
     startDrag: function(x, y) {
-        this.logger.log(this.id + " startDrag");
-
         // make the proxy look like the source element
         var dragEl = this.getDragEl();
         var clickEl = this.getEl();
