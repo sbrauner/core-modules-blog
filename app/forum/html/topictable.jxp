@@ -257,6 +257,16 @@ function sticky(threadId, action) {
             form.onclick = function () {sticky(threadId, "sticky");};
             form.value = "Sticky";
         }
+        var rows = YAHOO.util.Dom.getChildren(table);
+        for(i=1; i<rows.length; i++) {
+//             YAHOO.util.Dom.setStyle(rows[i], "background", (i % 2 == 0) ? "#FFFFFF" : "#EEEEEE");
+             if(i%2 == 0)
+             YAHOO.util.Dom.addClass(rows[i], "even");
+            else
+
+             YAHOO.util.Dom.removeClass(rows[i], "even");
+//             alert("row "+rows[i].id+": "+rows[i].style.background);
+        }
     });
 }
 
