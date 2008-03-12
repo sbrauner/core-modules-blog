@@ -42,6 +42,6 @@ assert( "/sub/view" == routes.apply( "/sub/asd" ) );
 routes = new Routes();
 routes.wiki = new Routes();
 routes.wiki.add( /.*\.jpg$/ , "/~~/wiki/$0" );
-print( routes.apply( "/wiki/a/1.jpg" ) );
+assert( "/~~/wiki/a/1.jpg" == routes.apply( "/wiki/a/1.jpg" ) );
 routes.wiki.add( /.*\.gif/ , "~~/wiki/$0" );
-print( routes.apply( "/wiki/a/2.gif" ) );
+assert( "/wiki/~~/wiki/a/2.gif" == routes.apply( "/wiki/a/2.gif" ) );

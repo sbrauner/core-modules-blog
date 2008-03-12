@@ -114,9 +114,10 @@ Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
     
     if ( isObject( end ) && end.apply ){
         var res = end.apply( uri.substring( 1 + firstPiece.length ) ) || "";
-        if ( res && res.startsWith( "/" ) )
-            return res;
-        return "/" + firstPiece + "/" + res;
+        if ( ! ( res && res.startsWith( "/" ) ) )
+            res =  "/" + firstPiece + "/" + res;
+        res = res.replace( /\/+/g , "/" );
+        return res;
     }
     
     throw "can't handle value: " + end;
