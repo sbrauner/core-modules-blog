@@ -5,11 +5,14 @@ if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     return Auth.cookie.reject(request, response);
 
     core.net.url();
-core.app.forum.html.form();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
+
+if(thread.getHidden() && ! app.Forum.Controller.hasPermission(user, "viewTopicHidden"))
+    return Auth.cookie.reject(request, response);
+
 
 if(thread == null){
     print("thread not found");
@@ -35,16 +38,9 @@ var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 var page = request.page;
 
 
-postoptions = {replyable: false};
-postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 
 
-if(request.show) {
-    postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
-}
-else {
-    postoptions.filter = function(p) { if (p.deleted) return false; return true; };
-}
+
 
 var url = new URL(request.getURL());
 
@@ -166,7 +162,6 @@ if(request.highlight) { %>
 <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
 <div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>
 <%
-     postoptions.highlight = request.highlight;
 }
 else {
 %>
@@ -175,58 +170,6 @@ else {
 <%
 }
 
-
-postoptions.actions = [];
-postoptions.actions.push(function(post) {
-     %>
-     <form action="thread_action">
-     <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="hidden" name="select" value="<%= post.getID() %>">
-     <%
-     if(canSplit && post.getID() > 0){ %>
-           <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
-     }
-     if(post.deleted == "deleted" && canDelete) { %>
-           <input type="submit" class="submit" name="action" value="undelete">
-           <%
-     }
-     if(post.deleted == "moderated" && canModerate){ %>
-           <input type="submit" class="submit" name="action" value="unmoderate">
-     <%
-     }
-     if (thread.count > 1 && !post.deleted && canDelete){ %>
-           <input type="submit" class="submit" name="action" value="delete">
-     <%
-     }
-     if(thread.count > 1 && !post.deleted && canModerate){ %>
-           <input type="submit" class="submit" name="action" value="moderate">
-     <%
-     }
-     %>
-     <div class="popup" id="splitpop<%= post.getID() %>">
-           <%
-           var choices = db.forum.topics.find({parent: null}).toArray();
-           var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-           var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-           if(deleteThread)
-                choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-
-           if(moderateThread)
-                choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
-
-           %>
-
-          <div class="stitle">Split Thread at Post</div>
-          <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-        <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
-                                                                            {select: function(thread, o){ return o._id == thread.topic._id }}
-                                                                           )(thread) %></div>
-          <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
-     </div>
-     </form>
-<%
-});
 
 replies = thread.getReplies();
 core.app.forum.data.paging();
@@ -238,9 +181,8 @@ replies = paging.slice();
 
 core.app.forum.html.paging(paging);
 
-postoptions.replyable = false;
 replies.forEach(function(reply){
-    reply.render(postoptions, thread.threaded_pieces);
+    reply.render(app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread), thread.threaded_pieces);
 });
 %>
 <div id="newpostbox">

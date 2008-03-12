@@ -9,7 +9,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
 core.content.table();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-core.app.forum.html.form();
 
 core.util.format();
 
@@ -29,7 +28,7 @@ if(request.id){
         threadList = app.Forum.data.Thread.list(app.Forum.Controller.specialModeratedID);
         name = "Moderated threads";
     }
-    t = {name: name, parent: null};
+    t = {name: name, parent: null, getHidden: function(){ return false; } };
 }
 else {
     name = request.name;
@@ -42,6 +41,10 @@ else {
     threadList = app.Forum.data.Thread.list(t);
     tableOptions = {parent: t.parent, thisid: t._id};
 }
+
+log("Displaying topic " + t);
+if(t.getHidden() && ! showHidden)
+    return Auth.cookie.reject(request, response);
 
 var titleStr = "";
 var a = t.getAncestors();

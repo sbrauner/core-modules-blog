@@ -22,7 +22,9 @@ app.Forum.html.exploreTopic = function(topic, indent, filter, select){
         istr += "&nbsp;";
     }
     var selected = (select(topic))? " selected=\"1\"" : "";
-    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+content.HTML.escape(topic.name)+"</option>";
+    retStr+="<option value=\""+topic._id+"\""+selected+">"+istr+content.HTML.escape(topic.name);
+    if(topic.hidden) retStr += " (hidden)";
+    retStr += "</option>";
     var subtopics = db.forum.topics.find( { parent : topic }).toArray();
     for(var j=0; j<subtopics.length; j++) {
         retStr += app.Forum.html.exploreTopic(subtopics[j], indent + 2, filter, select);
@@ -152,5 +154,70 @@ app.Forum.html.breadcrumb = function(thread) {
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
+
+app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate, thread){
+    var postoptions = {replyable: false};
+    postoptions.highlight = request.highlight;
+    postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
+
+    if(request.show) {
+        postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
+    }
+    else {
+        postoptions.filter = function(p) { if (p.deleted) return false; return true; };
+    }
+
+    postoptions.actions = [];
+    postoptions.actions.push(function(post) {
+        %>
+        <form action="thread_action">
+          <input type="hidden" name="threadId" value="<%= thread._id %>">
+          <input type="hidden" name="select" value="<%= post.getID() %>">
+          <% if(canSplit && post.getID() > 0){ %>
+          <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
+             }
+             if(post.deleted == "deleted" && canDelete) { %>
+          <input type="submit" class="submit" name="action" value="undelete">
+          <%
+             }
+             if(post.deleted == "moderated" && canModerate){ %>
+          <input type="submit" class="submit" name="action" value="unmoderate">
+          <%
+             }
+             if (thread.count > 1 && !post.deleted && canDelete){ %>
+          <input type="submit" class="submit" name="action" value="delete">
+          <%
+             }
+             if(thread.count > 1 && !post.deleted && canModerate){ %>
+          <input type="submit" class="submit" name="action" value="moderate">
+          <%
+             }
+             %>
+          <div class="popup" id="splitpop<%= post.getID() %>">
+            <%
+               var choices = db.forum.topics.find({parent: null}).toArray();
+               var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+               var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+               if(deleteThread)
+                   choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+
+               if(moderateThread)
+                   choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+            %>
+            <div class="stitle">Split Thread at Post</div>
+            <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
+            <div class="field"><label>Topic</label>
+              <%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+                                           {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
+            </div>
+            <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
+          </div>
+        </form>
+        <%
+                 return "";
+    });
+    return postoptions;
+};
 
 %>

@@ -1,9 +1,34 @@
 // routes.js
 
 /**
-* for usage, for now look ad corejs/core/test/test_routes
-*/
 
+for usage, for now look ad corejs/core/test/test_routes
+
+==basics==
+* keys are urls
+** routes.wiki 
+*** matches /wiki/
+** routes.wiki.abc
+*** /wiki/abc
+
+* value are path to jxp
+** if starts with / its absolute
+** otherwise relative
+
+<prenh>
+routes.wiki.search = "/wiki/doSearch";
+</prenh>
+is equivlant to
+<prenh>
+routes.wiki.search = "doSearch";
+</prenh>
+
+== regex ==
+<prenh>
+* routes.add( /abc/ , "" )
+* routes.add( /abc(\d)/ , "/foo/$0/$1
+
+*/
 Routes = function(){
     this._regexp = [];
     this._default = null;
@@ -42,7 +67,6 @@ Routes.prototype._createValue = function( key , end , attachment ){
 // main public method
 
 Routes.prototype.apply = function( uri , request ){
-    
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
@@ -54,19 +78,19 @@ Routes.prototype.apply = function( uri , request ){
             continue;
 
         if ( key == firstPiece )
-            return this.finish( uri , request , firstPiece , this[ key ] );
+            return this.finish( uri , request , firstPiece , key , this[ key ] );
     }
 
     for ( var i=0; i<this._regexp.length; i++ ){
         var value = this._regexp[i];
         if ( value.key.test( uri ) )
-            return this.finish( uri , request , firstPiece , value );
+            return this.finish( uri , request , firstPiece , value.key , value );
     }
     
-    return this.finish( uri , request , firstPiece , this._default );
+    return this.finish( uri , request , firstPiece , null , this._default );
 };
 
-Routes.prototype.finish = function( uri , request , firstPiece , value ){
+Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
     if ( ! value )
         return null;
     
@@ -77,16 +101,25 @@ Routes.prototype.finish = function( uri , request , firstPiece , value ){
     if ( ! end )
         return null;
     
-    if ( isString( end ) )
+    if ( isString( end ) ){
+
+        if ( end.indexOf( "$" ) < 0 )
+            return end;
+
+        if ( key instanceof RegExp )
+            end = uri.replace( key , end );
+
         return end;
+    }
     
     if ( isObject( end ) && end.apply ){
-        var res = end.apply( uri.substring( 1 + firstPiece.length ) ) || "/";
-        if ( res && ! res.startsWith( "/" ) )
-            res = "/" + res;
-        return "/" + firstPiece + res;
+        var res = end.apply( uri.substring( 1 + firstPiece.length ) ) || "";
+        if ( ! ( res && res.startsWith( "/" ) ) )
+            res =  "/" + firstPiece + "/" + res;
+        res = res.replace( /\/+/g , "/" );
+        return res;
     }
-         
+    
     throw "can't handle value: " + end;
 };
 
