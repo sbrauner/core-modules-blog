@@ -127,16 +127,18 @@ if(request.action == "split"){
 }
 
 if(request.action == "edit") {
+                  log(tojson(request));
     if(! app.Forum.Controller.hasPermission(user, "editThread")){
         return Auth.cookie.reject(request, response);
     }
     if(request.ttl != "") {
         thread.setTitle(request.ttl);
     }
-    closed = (request.closed == "closed") ? true : false;
+    closed = (request.closed == "true") ? true : false;
     thread.setClosed(closed);
-
+    print(thread.getTitle()+"&"+closed);
     thread.save();
+    return;
 }
 
 response.setResponseCode(301);
