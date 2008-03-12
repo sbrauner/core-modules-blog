@@ -51,7 +51,10 @@ var url = new URL(request.getURL());
 // ------------
 head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTML.escape(thread.getTitle())+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
+core.app.forum.js.yui();
+app.Forum.js.addYesNoDialog();
 %>
+
 <script type="text/javascript">
 
 function splitPopup(i) {
@@ -73,6 +76,51 @@ function toggleHighlight() {
        color = color == "white" ? "yellow" : "white";
 }
 
+
+var threadClosed = <%= thread.getClosed() %>;
+
+function editThread() {
+     var message='<form id="editThreadForm"><div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>'+
+          '<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '></div></form>';
+     var buttons = [ { text:"Save", handler: yes['editthread'] },
+                      { text:"Cancel", handler: no['editthread'], isDefault:true } ];
+     makeDialog("Edit Thread", message, buttons);
+}
+
+function makeDialog(title, body, buttons) {
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.cfg.queueProperty("buttons", buttons);
+    dialog.render(document.body);
+    dialog.show();
+}
+
+function respond(response) {
+    var r = response.split("&");
+    alert(response);
+    document.getElementById("threadtitle").innerHTML = r[0];
+    if(r[1])
+        document.getElementById("threadFooter").style.display = "none";
+    else
+        document.getElementById("threadFooter").style.display = "block";
+    if(r[1] == "true") threadClosed = true;
+    else threadClosed = false;
+}
+
+var yes = { editthread : function() {
+          //user confirms the creation of a new topic
+          this.hide();
+          var ntForm = document.getElementById("editThreadForm");
+          var passData = "";
+              passData += "&"+ntForm.elements.item(0).name + "="+encodeURIComponent(ntForm.elements.item(0).value);
+              passData += "&"+ntForm.elements.item(1).name + "="+encodeURIComponent(ntForm.elements.item(1).checked);
+          passData = passData.substring(1)+"&threadId=<%= thread._id %>&action=edit";
+          ajax(passData, "thread_action.jxp", respond);
+     }
+};
+
+var no = { editthread : function() { this.hide(); }};
+
 </script>
 
 <div class="caption">
@@ -80,14 +128,7 @@ function toggleHighlight() {
 if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <form action="thread_action">
      <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="button" class="button" name="edit" value="Edit Thread" onclick="document.getElementById('editpop').style.display='block'">
-     <div class="popup" id="editpop">
-          <div class="stitle">Edit Thread</div>
-          <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-          <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" value="closed" <%= thread.getClosed() ? "CHECKED" : "" %>></div>
-          <div class="field"><input type="button" class="button" value="cancel" onclick="document.getElementById('editpop').style.display='none'">
-               <input type="submit" class="submit" name="action" value="edit"></div>
-     </div>
+     <input type="button" class="button" name="edit" value="Edit Thread" onclick="editThread()">
      <%
 }
 if(request.show == "deleted"){ %>
@@ -121,7 +162,7 @@ if(app.Forum.Controller.hasPermission(user, "editUser")){ %>
 app.Forum.html.search(thread.topic.name);
 
 if(request.highlight) { %>
-<h1><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h1>
+<h1 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h1>
 <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
 <div>Highlight search term: <input type="checkbox" value="highlight" onclick="toggleHighlight()" checked></div>
 <%
@@ -129,7 +170,7 @@ if(request.highlight) { %>
 }
 else {
 %>
-<h1><%= content.HTML.escape(thread.getTitle()) %></h1>
+<h1 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %></h1>
 <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
 <%
 }
@@ -226,7 +267,7 @@ function goToNewPost(response) {
 
 </script>
 
-<div class="threadFooter">
+<div id="threadFooter" class="threadFooter">
     <%
     if(canPost){ %>
          <div class="button" onclick="document.getElementById('replyform').style.display = 'block';">Reply</div>
