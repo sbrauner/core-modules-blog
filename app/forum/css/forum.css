@@ -301,6 +301,9 @@ div.popup input.button {
 form.onebutton {
 	  display: inline;
 }
+td select {
+    float: left;
+}
 
 form.search {
      width: 100%;

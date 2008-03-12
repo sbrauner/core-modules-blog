@@ -22,6 +22,7 @@ if (opts.thisid){
 // Whether to try to create links for all these functions.
 var createThread = (opts.createThread == null) ? createThread : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+var editUser = (opts.editUser == null) ? true : opts.editUser;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 
 var paging = Ext.getdefault(opts, "paging", true);
@@ -356,9 +357,9 @@ function confirmDialog(txt) {
 
     app.Forum.js.addYesNoDialog();
     %>
-        <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
+    <% if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){ %>
         | <div class="button" onclick="location='user_edit'">Edit user</div>
-        <% } %>
+    <% } %>
 
   </div>
 

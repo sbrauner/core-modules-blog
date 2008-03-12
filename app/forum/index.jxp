@@ -13,7 +13,7 @@ app.Forum.html.search("forums");
 /* Editor's picks */
 head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Picks" href="edpick_rss.jxp" />');
 edPicks = db.forum.threads.find( { editorPick : true } ).toArray();
-core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\"> <img src='/images/feed-icon16x16.png?lm=1203477029000'></a>", "", null, edPicks, [], {noRSS: true, createThread: false, thisid: null, paging: false});
+core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\"> <img src='/images/feed-icon16x16.png?lm=1203477029000'></a>", "", null, edPicks, [], {noRSS: true, createThread: false, editUser: false, createTopic: false, thisid: null, paging: false});
 
 
 /* Main topic table */
