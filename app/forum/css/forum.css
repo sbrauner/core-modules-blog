@@ -302,6 +302,11 @@ form.onebutton {
 	  display: inline;
 }
 
+form.search {
+     width: 100%;
+     text-align: right;
+}
+
 table.search div {
              display: block;
           text-align: left;
