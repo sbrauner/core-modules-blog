@@ -265,13 +265,10 @@ function sticky(threadId, action) {
         }
         var rows = YAHOO.util.Dom.getChildren(table);
         for(i=1; i<rows.length; i++) {
-//             YAHOO.util.Dom.setStyle(rows[i], "background", (i % 2 == 0) ? "#FFFFFF" : "#EEEEEE");
-             if(i%2 == 0)
-             YAHOO.util.Dom.addClass(rows[i], "even");
+            if(i%2 == 0)
+                 YAHOO.util.Dom.addClass(rows[i], "even");
             else
-
-             YAHOO.util.Dom.removeClass(rows[i], "even");
-//             alert("row "+rows[i].id+": "+rows[i].style.background);
+                 YAHOO.util.Dom.removeClass(rows[i], "even");
         }
     });
 }
@@ -347,8 +344,8 @@ function confirmDialog(txt) {
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
-        <div class="button" onclick="newTopic('<%= opts.thisid %>')">New Topic</div>
-        <div class="button" onclick="editTopic('<%= opts.thisid %>')">Edit Topic</div> <%
+        <div class="button" onclick="newTopic('<%= opts.thisid %>')">New Topic</div> |
+        <div class="button" onclick="editTopic('<%= opts.thisid %>')">Edit Topic</div>  <%
       }
       else {
         %>
@@ -360,14 +357,8 @@ function confirmDialog(txt) {
     app.Forum.js.addYesNoDialog();
     %>
         <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
-        <div class="button" onclick="location='user_edit'">Edit user</div>
+        | <div class="button" onclick="location='user_edit'">Edit user</div>
         <% } %>
-  <% if(opts.parent){ %>
-  <div class="button" onclick="location='viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>'">Back to Parent Topic</div>
-  <% }
-    else if (topic) { %>
-  <div class="button onclick="location='./'">Back to Top Level</div>
-  <% } %>
 
   </div>
 

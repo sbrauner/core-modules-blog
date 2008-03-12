@@ -229,14 +229,13 @@ input.submit, input.button {
 }
 
 div.button {
-           border: 1px solid #9ac0cc;
-           cursor: default;
+           cursor: pointer;
            margin: 0px 1px 10px 3px;
            padding: 2px 5px 1px;
-           background: #369fbf;
-           border: 1px solid #369fbf;
-           color: white;
            font-size: 13px;
+}
+div.button:hover {
+           color: #770000;
 }
 div.threadFooter div.button {
            margin-left: 55px;
