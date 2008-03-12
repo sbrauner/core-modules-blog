@@ -23,15 +23,25 @@ routes.add( /.*\/c\/.*/ , "/abc" );
 assert( "/abc" == routes.apply( "/c/a/asd" ) );
 
 assert( null == routes.apply( "/sub/d/foo" ) );
+
 routes.sub = new Routes();
 routes.sub.d = "/eliot";
-assert( "/sub/eliot" == routes.apply( "/sub/d/foo" ) );
+assert( "/eliot" == routes.apply( "/sub/d/foo" ) );
+
+routes.sub = new Routes();
+routes.sub.e = "funky";
+assert( "/sub/funky" == routes.apply( "/sub/e/a" ) );
+
 assert( "/sub/" == routes.apply( "/sub/asd" ) );
+
 routes.sub.setDefault( "view" );
-print( routes.apply( "/sub/asd" ) );
 assert( "/sub/view" == routes.apply( "/sub/asd" ) );
 
 // test 2
 
 routes = new Routes();
-
+routes.wiki = new Routes();
+routes.wiki.add( /.*\.jpg$/ , "/~~/wiki/$0" );
+print( routes.apply( "/wiki/a/1.jpg" ) );
+routes.wiki.add( /.*\.gif/ , "~~/wiki/$0" );
+print( routes.apply( "/wiki/a/2.gif" ) );
