@@ -223,15 +223,21 @@ function sticky(threadId, action) {
             }
             table.removeChild(row);
 
+            var lastRow;
             // bring the row to the top
             var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
                 // return the next row which is either not sticky or younger than this row
 
+                lastRow = sib;
                 var sibdate = getDate(sib);
                 if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
                 return false;
             });
-            YAHOO.util.Dom.insertBefore(row, nextRow);
+            if(nextRow)
+                YAHOO.util.Dom.insertBefore(row, nextRow);
+            else {
+                YAHOO.util.Dom.insertAfter(row, lastRow);
+            }
             YAHOO.util.Dom.addClass(row, "sticky");
             form.onclick = function () {sticky(threadId, "unsticky");};
             form.value = "Unsticky";
