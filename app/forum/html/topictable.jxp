@@ -139,7 +139,7 @@ var no = { newtopic : function() { this.hide(); },
 
 function moveDlg(label, target, targetId) {
     var myButtons = [ { text:"Move", handler: yes['move'] },
-                      { text:"Cancel", handler: no['move'], isDefault:true } ];
+                      { text:"Cancel", handler: no['move'] } ];
     dialog.target = target;
     dialog.targetId = targetId;
     dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
@@ -153,7 +153,7 @@ function newTopic(parent) {
     message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
                '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
     var myButtons = [ { text:"Save", handler: yes['newtopic'] },
-                      { text:"Cancel", handler: no['newtopic'], isDefault:true } ];
+                      { text:"Cancel", handler: no['newtopic'] } ];
     makeDialog("New Topic", message, myButtons);
 }
 
@@ -166,7 +166,7 @@ function editTopic(parent) {
   +'</form>';
 
     var myButtons = [ { text:"Save", handler: yes['edittopic'] },
-                      { text:"Cancel", handler: no['edittopic'], isDefault:true } ];
+                      { text:"Cancel", handler: no['edittopic'], } ];
     makeDialog("Edit Topic", message, myButtons);
 
 }
@@ -336,11 +336,10 @@ function confirmDialog(txt) {
 <% } %>
 
 <div class="caption">
-  <%
-    if(createThread &&
-       app.Forum.Controller.hasPermission(user, "createThread")){ %>
-  <div class="button" onclick="location='thread_new?top_id=<%= opts.thisid %>&reply=true'">New Thread</div>
-  <%
+    <%
+    if(createThread && app.Forum.Controller.hasPermission(user, "createThread")){ %>
+        <div class="button" onclick="location='thread_new?top_id=<%= opts.thisid %>&reply=true'">New Thread</div> |
+        <%
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
       if(opts.thisid){ %>
