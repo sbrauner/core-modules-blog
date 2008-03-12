@@ -49,7 +49,7 @@ app.Forum.data.Topic.prototype.SEARCH_OPTIONS = {
 };
 
 app.Forum.data.Topic.prototype.getHidden = function(){
-    return this.hidden || this.parent.getHidden();
+    return this.hidden || (this.parent && this.parent.getHidden());
 };
 
 app.Forum.data.Topic.prototype.presave = function(){

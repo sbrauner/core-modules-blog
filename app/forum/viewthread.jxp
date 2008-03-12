@@ -10,6 +10,10 @@ core.app.forum.data.topic();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
+if(thread.getHidden() && ! app.Forum.Controller.hasPermission(user, "viewTopicHidden"))
+    return Auth.cookie.reject(request, response);
+
+
 if(thread == null){
     print("thread not found");
     return;
