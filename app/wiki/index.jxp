@@ -1,8 +1,6 @@
 <%
     /* determine the base url we are running under.
     */
-    core.app.wiki.wiki();
-    core.app.wiki.wikipage();
 
     var uri = request.getURI();
 
@@ -20,7 +18,7 @@
         return;
     }
 
-    request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
+    //request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
 
     // Get the name of the page we are supposed to display. Assume we want the Main page if no page name is provided
     var displayName = request.name;
