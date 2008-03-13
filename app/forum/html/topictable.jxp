@@ -429,8 +429,6 @@ if(subs && subs.length > 0){
        subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
        if(numrows > 1) {
             var numcols = 3+topicActions.length-1;
-            log(numcols);
-            log("topic id: " +subs[subs.length-1]._id)
             if(subs[subs.length-1]._id < 5) {
                 numrows-=2;
             }
