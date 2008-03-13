@@ -113,13 +113,22 @@ app.Forum.html.search = function(location) {
          <%
 }
 
+// Returns an array of topics, arranged from least to most specific, given a starting topic
 app.Forum.html.topicStack = function(tempTopic) {
-     var topicStack = "";
+     var topicStack = [];
      while(tempTopic.parent) {
-          tempTopic = tempTopic.parent;
-         topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(tempTopic.name)+'">'+content.HTML.escape(tempTopic.name)+' </a></div>' + topicStack;
+         tempTopic = tempTopic.parent;
+         log("topic name: "+tempTopic.name);
+         topicStack.push(tempTopic.name);
      }
-     print(topicStack);
+     return topicStack.reverse();
+}
+
+// decorates topic array
+// what this should do is take an array and make the whole table
+app.Forum.html.decorateBreadcrumb = function(arr) {
+     for(var i=0; i<arr.length; i++)
+         print('<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(arr[i])+'">'+content.HTML.escape(arr[i])+' </a></div>');
 }
 
 app.Forum.html.startBreadcrumbTable = function() {
@@ -141,14 +150,14 @@ app.Forum.html.endBreadcrumbTable = function() {
 
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(topic); %>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(topic)); %>
     <div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(thread.topic); %>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(thread.topic)); %>
     <div class="top_level mid_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
