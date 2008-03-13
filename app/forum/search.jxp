@@ -29,7 +29,7 @@ function summarize(result, searchterm) {
 
         // if there is trailing header and footer
         if(match)
-             for(i=0; i<match.length; i++)
+             for(var i=0; i<match.length; i++)
                   retAr.push( "..."+match[i]+"...");
 
         summary = new RegExp("(\\w+\\W+){"+m+"}("+prefix+")?"+stem+"("+suffix+")?(\\W+\\w+){0,"+n+"}\$", "i");
@@ -59,14 +59,14 @@ core.app.forum.data.thread();
 %>
 
 <script type="text/javascript">
-var color = "white";
+var color = "none";
 function toggleHighlight() {
        var all = document.all ? document.all :
            document.getElementsByTagName('span');
        for (var e = 0; e < all.length; e++)
            all[e].style.background = color;
 
-       color = color == "white" ? "yellow" : "white";
+       color = color == "none" ? "yellow" : "none";
 }
 </script>
 
@@ -103,12 +103,13 @@ core.app.forum.html.paging(paging);
 
 if(threads.length > 0){
     for(var i = 0; i < threads.length; i++){
+       var starti = i;
        %>
        <div class="threadbox">
        <div class="title">
             <%
             app.Forum.html.startBreadcrumbTable();
-            app.Forum.html.topicStack(threads[i].topic);
+            app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(threads[i].topic));
             %>
             <div class="second_level"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(content.HTML.escape(threads[i].getTitle()), query) %></a></div>
             <%

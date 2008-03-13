@@ -118,7 +118,6 @@ app.Forum.html.topicStack = function(tempTopic) {
      var topicStack = [];
      while(tempTopic.parent) {
          tempTopic = tempTopic.parent;
-         log("topic name: "+tempTopic.name);
          topicStack.push(tempTopic.name);
      }
      return topicStack.reverse();
