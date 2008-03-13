@@ -195,6 +195,27 @@ Post.getNoResults = function() {
     return noResultsPage;
 };
 
+Post.getMostPopular = function( num , articlesBack ){
+    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    all = all.sort( function( a , b ){
+	return b.views - a.views;
+    } );
+    
+    all = all.slice( 0 , num );
+    
+    return all;
+};
+
+Post.getMostCommented = function( num , articlesBack ){
+    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    all = all.sort( function( a , b ){
+	return b.getNumComments() - a.getNumComments();
+    } );
+    
+    all = all.slice( 0 , num );
+    
+    return all;
+};
 
 function fixComments() {
     
