@@ -126,35 +126,39 @@ if(! user){ %>
      <% } else { %>
 <form method="POST" class="yui-skin-sam">
 <input type="hidden" name="userid" value="<%= user._id %>"/>
-<div class="field">
-  <div class="field_name">User</div>
-  <div class="field_value"><%= user.name %></div>
-</div>
-<div class="field">
-  <div class="field_name">Permissions</div>
-  <div class="field_value">
-    <select name="permission">
-        <% var type = app.Forum.Controller.userPermissionType(user);
-    for(var key in app.Forum.Controller.permissions){ %>
-      <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= app.Forum.Controller.permissions[key]%>"><%= key %></option>
-            <% } %>
-    </select>
-  </div>
-</div>
-<div class="field">
-  <input type="checkbox" name="block" value="1" <%= isBanned? "checked" : "" %>/>
-  <label>Block user</label>
-</div>
+<table>
+  <tbody>
+    <tr>
+      <th>User</th>
+      <th>Permissions</th>
+      <th>Blocked?</th>
+      <th>Moderate all posts by this user?</th>
+    </tr>
+
+    <tr>    
+      <td><%= user.name %></div>
+      <td>
+        <select name="permission">
+          <% var type = app.Forum.Controller.userPermissionType(user);
+             for(var key in app.Forum.Controller.permissions){ %>
+          <option <%= type == key? "selected=\"selected\"" : "" %> value="<%= app.Forum.Controller.permissions[key]%>"><%= key %></option>
+          <% } %>
+        </select>
+      </td>
+      <td>
+        <input type="checkbox" name="block" value="1" <%= isBanned? "checked" : "" %>/>
+      </td>
+      <td>
+        <div class="field_value"><input id="modbutton" type="submit" name="action" value="Moderate" onclick="moderateConfDialog.show(); return false"></div>
+	<input type="submit" style="visibility: hidden;" name="action" value="Moderate" id="modbutton-real"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <div class="field">
   <div class="field_name">&nbsp;</div>
   <div class="field_value"><input type="submit" value="Save"></div>
 </div>
-<div class="field">
-  <div class="field_name">Moderate all posts by this user</div>
-  <div class="field_value"><input id="modbutton" type="submit" name="action" value="Moderate" onclick="moderateConfDialog.show(); return false"></div>
-  <input type="submit" style="visibility: hidden;" name="action" value="Moderate" id="modbutton-real"/>
-</div>
-  <div id="dlg"></div>
 </form>
 
   <div id="dlg"></div>

@@ -20,6 +20,10 @@ div.deleted {
     background: #FFDDDD;
 }
 
+div.moderated {
+    background: #FFFAAA;
+}
+
 table {
     width: 100%;
 }
@@ -365,4 +369,11 @@ h1 {
 }
 img.feed {
      padding: 3px 3px 0px 3px;
+}
+
+
+/* viewthread */
+
+form.thread_action {
+     display: inline;
 }

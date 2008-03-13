@@ -113,13 +113,21 @@ app.Forum.html.search = function(location) {
          <%
 }
 
+// Returns an array of topics, arranged from least to most specific, given a starting topic
 app.Forum.html.topicStack = function(tempTopic) {
-     var topicStack = "";
+     var topicStack = [];
      while(tempTopic.parent) {
-          tempTopic = tempTopic.parent;
-         topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(tempTopic.name)+'">'+content.HTML.escape(tempTopic.name)+' </a></div>' + topicStack;
+         tempTopic = tempTopic.parent;
+         topicStack.push(tempTopic.name);
      }
-     print(topicStack);
+     return topicStack.reverse();
+}
+
+// decorates topic array
+// what this should do is take an array and make the whole table
+app.Forum.html.decorateBreadcrumb = function(arr) {
+     for(var i=0; i<arr.length; i++)
+         print('<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(arr[i])+'">'+content.HTML.escape(arr[i])+' </a></div>');
 }
 
 app.Forum.html.startBreadcrumbTable = function() {
@@ -141,14 +149,14 @@ app.Forum.html.endBreadcrumbTable = function() {
 
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(topic); %>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(topic)); %>
     <div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(thread.topic); %>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(thread.topic)); %>
     <div class="top_level mid_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
@@ -179,32 +187,34 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // 1. the post is deleted
         // 2. the post is the first non-deleted post in the thread
 
-          if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-          <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)"><%
-             }%>
-        <form action="thread_action">
-          <input type="hidden" name="threadId" value="<%= thread._id %>">
-          <input type="hidden" name="select" value="<%= post.getID() %>">
-          <%  if(post.deleted == "deleted" && canDelete) { %>
-          <input type="submit" class="submit" name="action" value="undelete">
-          <%
-             }
-             if(post.deleted == "moderated" && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="unmoderate">
-          <%
-             }
-             if (thread.count > 1 && !post.deleted && canDelete){ %>
-          <input type="submit" class="submit" name="action" value="delete">
-          <%
-             }
-             if(thread.count > 1 && !post.deleted && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="moderate">
-          <%
-             }
-             %>
+        if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
+             <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)" value="Split"><%
+        }
+        %>
+        <form action="thread_action" class="thread_action">
+            <input type="hidden" name="threadId" value="<%= thread._id %>">
+            <input type="hidden" name="select" value="<%= post.getID() %>">
+            <%
+            if(post.deleted == "deleted" && canDelete) { %>
+                 <input type="submit" class="submit" name="action" value="Undelete">
+                 <%
+            }
+            if(post.deleted == "moderated" && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Unmoderate">
+                 <%
+            }
+            if (thread.count > 1 && !post.deleted && canDelete){ %>
+                 <input type="submit" class="submit" name="action" value="Delete">
+                 <%
+            }
+            if(thread.count > 1 && !post.deleted && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Moderate">
+                 <%
+            }
+            %>
         </form>
         <%
-                 return "";
+        return "";
     });
     return postoptions;
 };

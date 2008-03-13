@@ -42,8 +42,10 @@ YAHOO.example.DDList = function(id, sGroup, config, row, numcols) {
     YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config);
     var el = this.getDragEl();
 
-    for(var i=1; i<numcols+1; i++)
+    for(var i=1; i<numcols+1; i++) {
         this.setHandleElId("td"+row+"_"+i);
+        document.getElementById("td"+row+"_"+i).style.cursor = "move";
+    }
 
     Dom.setStyle(el, "opacity", 0.67); // The proxy is slightly transparent
 
