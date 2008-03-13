@@ -198,11 +198,12 @@ function post() {
 }
 
 function goToNewPost(response) {
-     var r = response.split("&");
-     if(r[0] != <%= paging.pageNumber() %>)
+     var page = response.substring(0, response.indexOf('&'));
+     var html = response.substring(response.indexOf('&')+1);
+     if(page != <%= paging.pageNumber() %>)
           location = "viewthread?id=<%= thread._id %>&page=-1";
      else  {
-          document.getElementById("newpostbox").innerHTML += r[1];
+          document.getElementById("newpostbox").innerHTML += html;
      }
 }
 
