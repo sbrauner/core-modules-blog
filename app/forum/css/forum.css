@@ -317,7 +317,9 @@ table.search div {
 
 
 /* Search results page */
-
+div.match_div {
+     margin: 10px 0px;
+}
 div.threadbox {
       background: #cce5ec url(th_back.gif?v=2) repeat-x;
       border: 1px solid black;
