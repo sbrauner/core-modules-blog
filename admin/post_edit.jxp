@@ -21,6 +21,8 @@ if (id) {
 
 var justSaved = false;
 
+Blog.extraFields = allowModule.blog.extraFields;
+
 if ( request.action == "save" ) {
 
     thePost.cls = request.cls || "entry";
@@ -79,6 +81,19 @@ if ( request.action == "save" ) {
         thePost.live = parseBool( request.live );
         thePost.commentsEnabled = parseBool(request.commentsEnabled);
         thePost.suppressImage = parseBool( request.suppressImage );
+
+	if ( Blog.extraFields ){
+	    for ( var extraFieldName in Blog.extraFields ){
+		var extraVal = request[ "extra_" + extraFieldName ];
+		var extraConfig = Blog.extraFields[extraFieldName];
+		log( "extraConfig : " + tojson( extraConfig ) );
+		if ( extraConfig.parse ){
+		    log( "parsing" );
+		    extraVal = extraConfig.parse( extraVal );
+		}
+		thePost[ extraFieldName ] = extraVal;
+	    }
+	}
 
 
         db.blog.posts.save( thePost );
@@ -256,6 +271,18 @@ tinyMCE.init({
                 </div>
             </div>
         </div>
+
+	<if Blog.extraFields >
+	  <forin extraFieldName Blog.extraFields >
+
+	     <div class="post_meta_field">
+                <div class="post_meta_field_name"><%= Blog.extraFields[ extraFieldName ].niceName || extraFieldName %></div>
+                <div class="post_meta_field_value"><input name="extra_<%= extraFieldName %>" size="30" value="<%= thePost[ extraFieldName ] || "" %>"/></div>
+	     </div>
+
+	  </forin>
+	</if>
+
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
             <div class="post_meta_field_value"><input name="ts" size="30" value="<%= thePost.ts.simpleFormat() %>"/></div>
