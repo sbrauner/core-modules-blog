@@ -20,6 +20,10 @@ div.deleted {
     background: #FFDDDD;
 }
 
+div.moderated {
+    background: #FFFAAA;
+}
+
 table {
     width: 100%;
 }
