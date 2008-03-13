@@ -178,14 +178,14 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // Don't show split button whenever:
         // 1. the post is deleted
         // 2. the post is the first non-deleted post in the thread
-        %>
+
+          if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
+          <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)"><%
+             }%>
         <form action="thread_action">
           <input type="hidden" name="threadId" value="<%= thread._id %>">
           <input type="hidden" name="select" value="<%= post.getID() %>">
-          <% if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-          <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
-             }
-             if(post.deleted == "deleted" && canDelete) { %>
+          <%  if(post.deleted == "deleted" && canDelete) { %>
           <input type="submit" class="submit" name="action" value="undelete">
           <%
              }
@@ -202,26 +202,6 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
           <%
              }
              %>
-          <div class="popup" id="splitpop<%= post.getID() %>">
-            <%
-               var choices = db.forum.topics.find({parent: null}).toArray();
-               var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-               var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-               if(deleteThread)
-                   choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-
-               if(moderateThread)
-                   choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
-            %>
-            <div class="stitle">Split Thread at Post</div>
-            <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-            <div class="field"><label>Topic</label>
-              <%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
-                                           {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
-            </div>
-            <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
-          </div>
         </form>
         <%
                  return "";

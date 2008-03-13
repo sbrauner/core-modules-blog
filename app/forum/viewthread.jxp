@@ -10,6 +10,7 @@ core.app.forum.data.topic();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
+/* if topic has been deleted but threads within topic have not */
 if(thread.getHidden() && ! app.Forum.Controller.hasPermission(user, "viewTopicHidden"))
     return Auth.cookie.reject(request, response);
 
@@ -18,7 +19,6 @@ if(thread == null){
     print("thread not found");
     return;
 }
-
 
 var titleStr = "";
 var a = thread.topic.getAncestors();
@@ -53,12 +53,47 @@ app.Forum.js.addYesNoDialog();
 
 <script type="text/javascript">
 
-function splitPopup(i) {
-        document.getElementById("splitpop"+i).style.display = "block";
+function makeDialog(title, body, buttons) {
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.cfg.queueProperty("buttons", buttons);
+    dialog.render(document.body);
+    dialog.show();
 }
-function cancelSplit(i) {
-        document.getElementById("splitpop"+i).style.display = "none";
+
+function split(post) {
+    dialog.hide();
+    document.getElementById("splitterForm").submit();
 }
+
+no = { split : function() { this.hide(); } };
+
+
+function splitDialog(post) {
+    <%
+     var choices = db.forum.topics.find({parent: null}).toArray();
+     var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+     var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+     if(deleteThread)
+            choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+     if(moderateThread)
+            choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+%>
+
+     var message = '<form id="splitterForm" action="thread_action">'
+               +'<input type="hidden" name="select" value="'+post+'">'
+               +'<input type="hidden" name="action" value="split">'
+               +'<div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>'
+               +'<div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+                    {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>'
+               +'</div></form>';
+
+     var myButtons = [ { text:"Split", handler: split(post) },
+                      { text:"Cancel", handler: no['split'] } ];
+     makeDialog("Split Thread at Post", message, myButtons);
+}
+
 
 var color = "white";
 function toggleHighlight() {
