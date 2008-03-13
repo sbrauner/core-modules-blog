@@ -36,7 +36,7 @@ response.setHeader( "Content-Type" , "text/xml"); %>
           <language>en-us</language>
           <date>2008-02-28T03:43:44-08:00</date>
           <description>
-            Posts: <%= thread.count %><br />
+            Posts: <%= thread.count.toFixed(0) %>&lt;br /&gt;
              Most Recent Post on <%= thread.lastPostTime %> by <%= thread.getDescendant(thread.latestPost).author.name %>
           </description>
         </item>
