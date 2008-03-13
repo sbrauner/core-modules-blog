@@ -23,6 +23,7 @@ if (opts.thisid){
 var createThread = (opts.createThread == null) ? createThread : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+var buttons = (opts.buttons == null)? true : opts.buttons;
 
 var paging = Ext.getdefault(opts, "paging", true);
 
@@ -336,6 +337,9 @@ function confirmDialog(txt) {
 <div id="tagline"><%= description %></div>
 <% } %>
 
+<%
+if(buttons){
+%>
 <div class="caption">
     <%
     if(createThread && app.Forum.Controller.hasPermission(user, "createThread")){ %>
@@ -363,6 +367,7 @@ function confirmDialog(txt) {
   </div>
 
 <%
+}
 
 // Show subtopics
 if(subs && subs.length > 0){
