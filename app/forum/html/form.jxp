@@ -48,7 +48,6 @@ app.Forum.html.selectify = function(choices, attrfunc, options){
     // false to prune or true to not-prune that choice.
 
     //this is a psuedo topic and cannot be moved
-
     var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
     var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
 
@@ -106,7 +105,7 @@ app.Forum.html.form.hidden = function(topic){
 
 app.Forum.html.search = function(location) {
          %>
-         <form action="search.jxp">
+         <form action="search.jxp" class="search">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search all posts in forum" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="Go">
@@ -150,7 +149,7 @@ app.Forum.html.topicBreadcrumb = function(topic) {
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.topicStack(thread.topic); %>
-    <div class="top_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
+    <div class="top_level mid_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }

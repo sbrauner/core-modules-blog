@@ -25,16 +25,16 @@ admin
     <% }
 else if(app.Forum.Controller.userPermissionType(t.author) == "MODERATOR"){ %>
 moderator
-    <% } 
+    <% }
 %>
 </div><div class="ts"><%= prettyDate %>
-      (<a href="#<%= t.getID() %>"/>#<%= t.getID() %></a>)</div>
+      (<a href="#<%= t.getID() %>">#</a>)</div>
     </span>
 
     <div class="content">
       <% if(options.highlight) {
               print(app.Forum.html.highlight(t.content, options.highlight));
-          } 
+          }
           else {
               print(t.content);
           }
