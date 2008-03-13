@@ -42,7 +42,6 @@ else {
     tableOptions = {thisid: t._id};
 }
 
-log("Displaying topic " + t);
 if(t.getHidden() && ! showHidden)
     return Auth.cookie.reject(request, response);
 
