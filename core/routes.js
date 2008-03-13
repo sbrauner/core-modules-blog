@@ -67,12 +67,32 @@ Routes.prototype._createValue = function( key , end , attachment ){
 
 // main public method
 
+/**
+* returns the root at which the last sub-routes took over
+*/
+Routes.prototype.currentRoot = function(){
+    return currentRoot;
+};
+
 Routes.prototype.apply = function( uri , request ){
     
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
-    var firstPiece = uri.replace( /^\/?(\w+)\b.*/ , "$1" );
+    var firstPiece = uri.replace( /^\/?([\w\.]+)\b.*/ , "$1" );
+    
+    // currentRoot stuff
+    if ( true ) { 
+
+	if ( ! currentRoot )
+	    currentRoot = "";
+	
+	if ( lastPiece ){
+	    currentRoot += "/" + lastPiece;
+	}
+	
+	lastPiece = firstPiece;
+    }
     
     for ( var key in this ){
         
