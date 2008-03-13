@@ -25,7 +25,7 @@ app.wiki.config.prefix = app.wiki.config.prefix || "";
 
 app.wiki.routes = new Routes();
 app.wiki.routes.search = "/~~/app/wiki/search";
+app.wiki.routes.rss = "/~~/app/wiki/rss";
 app.wiki.routes.add( /.*\.(js|css|jpg|gif|jpeg|png|ico)$/ , "/~~/app/wiki/$0" ); 
 app.wiki.routes.add( /\/?(.*)/ , "/~~/app/wiki" , { names : [ "name" ] } );
-
 
