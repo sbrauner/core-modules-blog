@@ -198,6 +198,10 @@ function newUser(){
     '<label for="email">Email</label>'+
     '<input name="email" size=35>'+
     '</div>'+
+    '<div id="comments-open-captcha">'+
+    '<img src="NOCDN/~~/user/captchaIMG.jxp"><br/>'+
+    'Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/>'+
+    '<input name="captcha">'+
     '</form>';
 
   var myButtons = [ {text: 'Register', handler: yes['newuser'] },
