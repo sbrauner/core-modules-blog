@@ -1,0 +1,81 @@
+<%
+    core.app.forum.data.pendinguser();
+
+var username = request.username;
+var email = request.email;
+var password = request.pass1;
+
+if ( ! ( username && username.trim().length >= 5 ) )
+    throw "username error";
+
+if ( ! ( password && password.trim().length >= 5 ) )
+    throw "password error";
+
+if ( ! ( email && email.trim().length >= 3 ) )
+    throw "email error";
+
+// add 
+
+if ( db.users.findOne( { name : username } ) )
+    throw "username exists";
+
+if ( db.users.findOne( { email : email } ) )
+    throw "email exists";
+
+p = new app.Forum.data.PendingUser();
+p.name = username;
+p.email = email;
+p.password = password;
+
+p.save();
+
+// Send a mail to the user
+
+if(! mail){ %>
+
+<h1>Error: no mail account!</h1>
+
+<p>
+  The owner of this site hasn&apos;t configured mail correctly, so no confirmation
+  email could be sent. Please notify your site administrator.
+</p>
+
+<%
+
+    return;
+}
+
+var forumTitle = Ext.getlist(allowModule, "forum", "forumTitle");
+var forumTitleSubj = forumTitle ? forumTitle : (request.getHost() + " Forum");
+
+var subj = "[" + forumTitleSubj + "] Confirmation email";
+var link = new URL(request.getURL()).replaceLastPath("user_confirm");
+link.clearArgs();
+link.addArg('id', p._id).addArg("password", p.password);
+link.hostname = request.getHost();
+link.port = request.getPort();
+link = link.toString();
+
+body = "Someone tried to sign up for an account on "+forumTitleSubj+" with this email address.\n"+
+    "If this was you, please confirm by following the link below.\n\n"+
+    link;
+m = new Mail.Message( subj, body );
+m.addRecipient(  email  );
+m.send( mail );
+
+// Render
+
+core.app.forum.html.forumheader("Forum | Email sent");
+
+%>
+
+<h1>Confirmation email sent</h1>
+
+<p>
+  An email was sent to <%= email %>. Please click the link in order to 
+  finish creating an account.
+</p>
+
+<%
+    htmlfooter();
+%>
