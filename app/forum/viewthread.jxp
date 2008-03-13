@@ -129,12 +129,14 @@ function makeDialog(title, body, buttons) {
 function respond(response) {
     var r = response.split("&");
     document.getElementById("threadtitle").innerHTML = r[0];
-    if(r[1])
+    if(r[1] == "true"){
+        threadClosed = true;
         document.getElementById("threadFooter").style.display = "none";
-    else
+    }
+    else {
+        threadClosed = false;
         document.getElementById("threadFooter").style.display = "block";
-    if(r[1] == "true") threadClosed = true;
-    else threadClosed = false;
+    }
 }
 
 var yes = { editthread : function() {
