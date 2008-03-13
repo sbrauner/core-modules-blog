@@ -314,19 +314,19 @@ function makeDialog(title, body, buttons) {
 }
 
 function addTopicToTable(txt) {
-    //Does the table exist?  If not, reload the page.
-    var header = document.getElementById("tr_header");
-    if(!header) {
-        location.reload();
-        return;
-    }
-
     // if the topic was not successfully added, alert the user:
     if(txt == "This name is already in use.\n") {
         buttons = [ { text:"Okay", handler: no['newtopic'] } ];
         makeDialog("Error", txt, buttons);
     }
     else {
+        //Does the table exist?  If not, reload the page.
+        var header = document.getElementById("tr_header");
+        if(!header) {
+            location.reload();
+            return;
+        }
+
         // if the table exists and the new topic was successfully created, add a new row to the topic table
         var newRow = header.cloneNode(true);
         YAHOO.util.Dom.insertAfter(newRow, header);
