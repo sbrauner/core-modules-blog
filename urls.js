@@ -174,8 +174,10 @@ Blog.handleRequest = function( request , arg ){
         }
     
         search = uri;
+	baseSearch = uri;
     
         posts = entries.toArray();
+	hasPrevious = pageNumber > 1;
         hasNext = entries.length() > pageSize;
         if (posts.length > pageSize) {
             hasNext = true;
