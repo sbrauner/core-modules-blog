@@ -3,3 +3,4 @@ app.Forum = {
 };
 
 core.app.forum.html.form();
+core.ext.getlist();

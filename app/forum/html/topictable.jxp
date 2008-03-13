@@ -132,13 +132,19 @@ var yes = { newtopic : function() {
           }
           passData = passData.substring(1);
           ajax(passData, "topic_edit.jxp", changeTagline);
+     },
+     newuser: function() {
+          this.hide();
+          var form = document.getElementById('userform');
+          form.submit();
      }
 };
 
 
 var no = { newtopic : function() { this.hide(); },
      move : function() { this.hide(); },
-     edittopic : function() { this.hide(); } };
+     edittopic : function() { this.hide(); },
+     newuser: function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
     var myButtons = [ { text:"Move", handler: yes['move'] },
@@ -172,6 +178,32 @@ function editTopic(parent) {
                       { text:"Cancel", handler: no['edittopic'], } ];
     makeDialog("Edit Topic", message, myButtons);
 
+}
+
+function newUser(){
+  var message = '<form action="user_new" id="userform">'+
+    '<div>'+
+    '<label for="username">Username</label>'+
+    '<input name="username" />'+
+    '</div>'+
+    '<div>'+
+    '<label for="pass1">Password</label>'+
+    '<input type="password" name="pass1" />'+
+    '</div>'+
+    '<div>'+
+    '<label for="pass2">Confirm password</label>'+
+    '<input type="password" name="pass2" />'+
+    '</div>'+
+    '<div>'+
+    '<label for="email">Email</label>'+
+    '<input name="email" size=35>'+
+    '</div>'+
+    '</form>';
+
+  var myButtons = [ {text: 'Register', handler: yes['newuser'] },
+                   {text: 'Cancel', handler: no['newuser'] } ];
+
+  makeDialog("Register", message, myButtons);
 }
 
 //FIXME: Change URL, too, or refresh won't work
@@ -367,6 +399,10 @@ function addTopicToTable(txt) {
     %>
     <% if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){ %>
         | <div class="button" onclick="location='user_edit'">Edit user</div>
+    <% } %>
+
+    <% if(! user) { %>
+        | <div class="button" onclick="newUser()">Register</div>
     <% } %>
 
   </div>
