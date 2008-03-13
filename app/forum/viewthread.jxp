@@ -224,7 +224,8 @@ core.app.forum.html.paging(paging);
 
 <script type="text/javascript">
 function post() {
-     var passData = "ncontent="+document.getElementById("ncontent").value+"&reply_target=true&reply=true&id=<%= thread._id %>";
+     var content = newlineToBr(document.getElementById("ncontent").value);
+     var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>";
      ajax(passData, "post_new.jxp", goToNewPost);
 }
 
@@ -238,6 +239,16 @@ function goToNewPost(response) {
      }
      document.getElementById("ncontent").value = "";
 }
+
+function newlineToBr(s) {
+        s = s.split("\n");
+        var htmlstr="";
+        for(var i=0; i<s.length; i++) {
+            htmlstr += s[i]+"<br />";
+        }
+        return htmlstr;
+}
+
 
 </script>
 
