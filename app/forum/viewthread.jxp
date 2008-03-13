@@ -154,7 +154,7 @@ split : function() {
 if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <form action="thread_action">
      <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="button" class="button" name="edit" value="Edit Thread" onclick="editThread()">
+     <a href="#"><div class="button" onclick="editThread()">Edit Thread</div></a>
      <%
 }
 if(request.show == "deleted"){ %>
