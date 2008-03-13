@@ -25,7 +25,7 @@ var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
 var editUser = (opts.editUser == null) ? true : opts.editUser;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 var buttons = (opts.buttons == null)? true : opts.buttons;
-var displayActions = (opts.displayActions == null)? true : opts.displayActions;
+var addActions = (opts.addActions == null)? true : opts.addActions;
 
 var paging = Ext.getdefault(opts, "paging", true);
 
@@ -75,7 +75,7 @@ if(app.Forum.Controller.hasPermission(user, "moveThread")){
     movetargets = movetargets.concat(topics);
 }
 
-if(displayActions && app.Forum.Controller.hasPermission(user, "edPickThread")) {
+if(addActions && app.Forum.Controller.hasPermission(user, "edPickThread")) {
    actions.push({ title : "Editor's Pick",
                   func : function(thread) {
       editorPick(thread);
@@ -93,7 +93,7 @@ if(deleteThread)
 if(moderateThread)
     movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
 
-if(displayActions && movetargets.length > 0) {
+if(addActions && movetargets.length > 0) {
     actions.push({title : "Move Thread",
                   func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
                                                                                          "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )

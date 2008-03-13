@@ -26,7 +26,7 @@ actions = [ { title : "Topic",
         }
         } ];
 
-core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\"> <img src='/images/feed-icon16x16.png?lm=1203477029000'></a>", "", null, edPicks, actions, {displayActions: false, noRSS: true, createThread: false, editUser: false, createTopic: false, thisid: null, paging: false});
+core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\"> <img src='/images/feed-icon16x16.png?lm=1203477029000'></a>", "", null, edPicks, actions, {addActions: false, noRSS: true, createThread: false, editUser: false, createTopic: false, thisid: null, paging: false});
 
 
 /* Main topic table */
