@@ -62,3 +62,15 @@ assert( "/~~/wiki/" == routes.apply( "/wiki/do/4" , request ) );
 assert( request.action == "do" );
 assert( request.value == "4" );
 
+// ---
+
+routes = new Routes();
+routes.wiki = new Routes();
+
+routes.wiki.add( /(\w+)\/(\w+)\/(\w+)/ , "/~~/wiki/" , { names : [ "action" , "value" , "value" ] } );
+request = javaStatic( "ed.net.httpserver.HttpRequest" , "getDummy" , "/" );
+assert( "/~~/wiki/" == routes.apply( "/wiki/do/4/5" , request ) );
+assert( request.action == "do" );
+assert( request.getParameters( "value" ).length == 2 );
+assert( request.getParameters( "value" )[0] == "4" );
+assert( request.getParameters( "value" )[1] == "5" );
