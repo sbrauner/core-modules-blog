@@ -187,32 +187,34 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // 1. the post is deleted
         // 2. the post is the first non-deleted post in the thread
 
-          if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-          <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)"><%
-             }%>
-        <form action="thread_action">
-          <input type="hidden" name="threadId" value="<%= thread._id %>">
-          <input type="hidden" name="select" value="<%= post.getID() %>">
-          <%  if(post.deleted == "deleted" && canDelete) { %>
-          <input type="submit" class="submit" name="action" value="undelete">
-          <%
-             }
-             if(post.deleted == "moderated" && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="unmoderate">
-          <%
-             }
-             if (thread.count > 1 && !post.deleted && canDelete){ %>
-          <input type="submit" class="submit" name="action" value="delete">
-          <%
-             }
-             if(thread.count > 1 && !post.deleted && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="moderate">
-          <%
-             }
-             %>
+        if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
+             <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)" value="Split"><%
+        }
+        %>
+        <form action="thread_action" class="thread_action">
+            <input type="hidden" name="threadId" value="<%= thread._id %>">
+            <input type="hidden" name="select" value="<%= post.getID() %>">
+            <%
+            if(post.deleted == "deleted" && canDelete) { %>
+                 <input type="submit" class="submit" name="action" value="Undelete">
+                 <%
+            }
+            if(post.deleted == "moderated" && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Unmoderate">
+                 <%
+            }
+            if (thread.count > 1 && !post.deleted && canDelete){ %>
+                 <input type="submit" class="submit" name="action" value="Delete">
+                 <%
+            }
+            if(thread.count > 1 && !post.deleted && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Moderate">
+                 <%
+            }
+            %>
         </form>
         <%
-                 return "";
+        return "";
     });
     return postoptions;
 };

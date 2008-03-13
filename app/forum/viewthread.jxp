@@ -7,6 +7,7 @@ if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     core.net.url();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
+core.app.forum.html.form();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
@@ -53,20 +54,8 @@ app.Forum.js.addYesNoDialog();
 
 <script type="text/javascript">
 
-function makeDialog(title, body, buttons) {
-    dialog.setHeader(title);
-    dialog.setBody(body);
-    dialog.cfg.queueProperty("buttons", buttons);
-    dialog.render(document.body);
-    dialog.show();
-}
-
-function split(post) {
-    dialog.hide();
-    document.getElementById("splitterForm").submit();
-}
-
-no = { split : function() { this.hide(); } };
+no = { split : function() { this.hide(); },
+     editthread : function() { this.hide(); }};
 
 
 function splitDialog(post) {
@@ -84,12 +73,13 @@ function splitDialog(post) {
      var message = '<form id="splitterForm" action="thread_action">'
                +'<input type="hidden" name="select" value="'+post+'">'
                +'<input type="hidden" name="action" value="split">'
+               +'<input type="hidden" name="threadId" value="<%= thread._id %>">'
                +'<div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>'
                +'<div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
                     {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>'
                +'</div></form>';
 
-     var myButtons = [ { text:"Split", handler: split(post) },
+     var myButtons = [ { text:"Split", handler: yes['split'] },
                       { text:"Cancel", handler: no['split'] } ];
      makeDialog("Split Thread at Post", message, myButtons);
 }
@@ -148,10 +138,14 @@ var yes = { editthread : function() {
               passData += "&"+ntForm.elements.item(1).name + "="+encodeURIComponent(ntForm.elements.item(1).checked);
           passData = passData.substring(1)+"&threadId=<%= thread._id %>&action=edit";
           ajax(passData, "thread_action.jxp", respond);
-     }
+     },
+split : function() {
+    this.hide();
+    document.getElementById("splitterForm").submit();
+}
+
 };
 
-var no = { editthread : function() { this.hide(); }};
 
 </script>
 
