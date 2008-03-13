@@ -38,7 +38,7 @@ if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
 
 
 core.app.forum.html.topictable("Forums", null, topics, null, [],
-                               {createThread: false, thisid: null, buttons: false});
+                               {createThread: false, thisid: null});
 
 %>
 

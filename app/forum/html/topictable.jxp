@@ -344,9 +344,6 @@ function addTopicToTable(txt) {
 <div id="tagline"><%= description %></div>
 <% } %>
 
-<%
-if(buttons){
-%>
 <div class="caption">
     <%
     if(createThread && app.Forum.Controller.hasPermission(user, "createThread")){ %>
@@ -374,7 +371,6 @@ if(buttons){
   </div>
 
 <%
-}
 
 // Show subtopics
 if(subs && subs.length > 0){
