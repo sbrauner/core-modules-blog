@@ -387,8 +387,15 @@ if(subs && subs.length > 0){
        <%
        var numrows = 0;
        subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
-       if(numrows > 1)
-            app.Forum.js.addDragAndDrop(tableid, numrows);
+       if(numrows > 1) {
+            var numcols = 3+topicActions.length-1;
+            log(numcols);
+            log("topic id: " +subs[subs.length-1]._id)
+            if(subs[subs.length-1]._id < 5) {
+                numrows-=2;
+            }
+            app.Forum.js.addDragAndDrop(tableid, numrows, numcols);
+       }
        %>
        <script type="text/javascript">var lastRow = <%= numrows %>;</script>
     </table>

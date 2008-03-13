@@ -14,7 +14,6 @@ app.Forum.js.addDragAndDrop = function(tableid, numrows, numcols) {
      '<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js?_yuiversion=2.5.0"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/button/button-min.js?_yuiversion=2.5.0"></script>');
 
-numcols = numcols || 4;
      %>
 
 <script type="text/javascript">
@@ -28,11 +27,11 @@ var DDM = YAHOO.util.DragDropMgr;
 YAHOO.example.DDApp = {
     init: function() {
 
-        var rows=<%= numrows %>,cols=1,i,j;
-        new YAHOO.util.DDTarget("<%= tableid %>");
+        var rows=<%= numrows %>,i,j;
 
         for (i=1;i<rows+1;i=i+1) {
             new YAHOO.example.DDList("tr" + i, null, null, i, <%= numcols %>);
+            new YAHOO.util.DDTarget("tr"+i);
         }
     }
 };
