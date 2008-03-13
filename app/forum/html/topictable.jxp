@@ -132,13 +132,19 @@ var yes = { newtopic : function() {
           }
           passData = passData.substring(1);
           ajax(passData, "topic_edit.jxp", changeTagline);
+     },
+     newuser: function() {
+          this.hide();
+          var form = document.getElementById('userform');
+          form.submit();
      }
 };
 
 
 var no = { newtopic : function() { this.hide(); },
      move : function() { this.hide(); },
-     edittopic : function() { this.hide(); } };
+     edittopic : function() { this.hide(); },
+     newuser: function() { this.hide(); } };
 
 function moveDlg(label, target, targetId) {
     var myButtons = [ { text:"Move", handler: yes['move'] },
@@ -172,6 +178,15 @@ function editTopic(parent) {
                       { text:"Cancel", handler: no['edittopic'], } ];
     makeDialog("Edit Topic", message, myButtons);
 
+}
+
+function newUser(){
+  var message = '<% app.Forum.html.form.userform(); %>';
+
+  var myButtons = [ {text: 'Register', handler: yes['newuser'] },
+                   {text: 'Cancel', handler: no['newuser'] } ];
+
+  makeDialog("Register", message, myButtons);
 }
 
 //FIXME: Change URL, too, or refresh won't work
@@ -369,6 +384,10 @@ function addTopicToTable(txt) {
         | <div class="button" onclick="location='user_edit'">Edit user</div>
     <% } %>
 
+    <% if(! user) { %>
+        | <div class="button" onclick="newUser()">Register</div>
+    <% } %>
+
   </div>
 
 <%
@@ -387,8 +406,13 @@ if(subs && subs.length > 0){
        <%
        var numrows = 0;
        subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
-       if(numrows > 1)
-            app.Forum.js.addDragAndDrop(tableid, numrows);
+       if(numrows > 1) {
+            var numcols = 3+topicActions.length-1;
+            if(subs[subs.length-1]._id < 5) {
+                numrows-=2;
+            }
+            app.Forum.js.addDragAndDrop(tableid, numrows, numcols);
+       }
        %>
        <script type="text/javascript">var lastRow = <%= numrows %>;</script>
     </table>
