@@ -70,6 +70,7 @@ function toggleHighlight() {
 }
 </script>
 
+<div class="match_div">
 <%
 
 var query = request.query;
@@ -88,8 +89,8 @@ else {
     <%
 }
 %>
-
-
+</div>
+<div class="match_div">
 <h1>Matching threads:</h1>
 
 <%
@@ -140,6 +141,9 @@ else {
      No matches in threads.
      <%
 }
+%>
+</div>
+<%
 
 core.app.forum.html.paging(paging);
 htmlfooter();
