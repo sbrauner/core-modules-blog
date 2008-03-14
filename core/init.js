@@ -34,6 +34,11 @@ function mapUrlToJxpFileCore( uri , request ){
         if ( res )
             return res;
     }
+
+    // these are special things which you can't override.
+    if ( uri.match( /^\/~~\// ) ||
+	 uri.match( /^\/@@\// ) )
+	return uri;
     
 };
 

@@ -105,7 +105,7 @@ app.Forum.html.form.hidden = function(topic){
 
 app.Forum.html.search = function(location) {
          %>
-         <form action="search.jxp">
+         <form action="search.jxp" class="search">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
                 <input type="text" class="text" name="query" value="search all posts in forum" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="Go">
@@ -113,13 +113,21 @@ app.Forum.html.search = function(location) {
          <%
 }
 
+// Returns an array of topics, arranged from least to most specific, given a starting topic
 app.Forum.html.topicStack = function(tempTopic) {
-     var topicStack = "";
+     var topicStack = [];
      while(tempTopic.parent) {
-          tempTopic = tempTopic.parent;
-         topicStack = '<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(tempTopic.name)+'">'+content.HTML.escape(tempTopic.name)+' </a></div>' + topicStack;
+         tempTopic = tempTopic.parent;
+         topicStack.push(tempTopic.name);
      }
-     print(topicStack);
+     return topicStack.reverse();
+}
+
+// decorates topic array
+// what this should do is take an array and make the whole table
+app.Forum.html.decorateBreadcrumb = function(arr) {
+     for(var i=0; i<arr.length; i++)
+         print('<div class="mid_level top_level"><a href="viewtopic?name='+URL.escape_queryargs(arr[i])+'">'+content.HTML.escape(arr[i])+' </a></div>');
 }
 
 app.Forum.html.startBreadcrumbTable = function() {
@@ -141,15 +149,15 @@ app.Forum.html.endBreadcrumbTable = function() {
 
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(topic); %>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(topic)); %>
     <div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
 app.Forum.html.breadcrumb = function(thread) {
     app.Forum.html.startBreadcrumbTable();
-    app.Forum.html.topicStack(thread.topic); %>
-    <div class="top_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
+    app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(thread.topic)); %>
+    <div class="top_level mid_level"><a href="viewtopic?name=<%= URL.escape_queryargs( thread.topic.name )%>"><%= content.HTML.escape(thread.topic.name) %></a></div>
     <div class="second_level"><%= content.HTML.escape(thread.getTitle()) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
@@ -178,55 +186,46 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // Don't show split button whenever:
         // 1. the post is deleted
         // 2. the post is the first non-deleted post in the thread
+
+        if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
+             <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)" value="Split"><%
+        }
         %>
-        <form action="thread_action">
-          <input type="hidden" name="threadId" value="<%= thread._id %>">
-          <input type="hidden" name="select" value="<%= post.getID() %>">
-          <% if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-          <input type="button" class="button" name="action" value="split" onclick="splitPopup(<%= post.getID() %>)"><%
-             }
-             if(post.deleted == "deleted" && canDelete) { %>
-          <input type="submit" class="submit" name="action" value="undelete">
-          <%
-             }
-             if(post.deleted == "moderated" && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="unmoderate">
-          <%
-             }
-             if (thread.count > 1 && !post.deleted && canDelete){ %>
-          <input type="submit" class="submit" name="action" value="delete">
-          <%
-             }
-             if(thread.count > 1 && !post.deleted && canModerate){ %>
-          <input type="submit" class="submit" name="action" value="moderate">
-          <%
-             }
-             %>
-          <div class="popup" id="splitpop<%= post.getID() %>">
+        <form action="thread_action" class="thread_action">
+            <input type="hidden" name="threadId" value="<%= thread._id %>">
+            <input type="hidden" name="select" value="<%= post.getID() %>">
             <%
-               var choices = db.forum.topics.find({parent: null}).toArray();
-               var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-               var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-               if(deleteThread)
-                   choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-
-               if(moderateThread)
-                   choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+            if(post.deleted == "deleted" && canDelete) { %>
+                 <input type="submit" class="submit" name="action" value="Undelete">
+                 <%
+            }
+            if(post.deleted == "moderated" && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Unmoderate">
+                 <%
+            }
+            if (thread.count > 1 && !post.deleted && canDelete){ %>
+                 <input type="submit" class="submit" name="action" value="Delete">
+                 <%
+            }
+            if(thread.count > 1 && !post.deleted && canModerate){ %>
+                 <input type="submit" class="submit" name="action" value="Moderate">
+                 <%
+            }
             %>
-            <div class="stitle">Split Thread at Post</div>
-            <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-            <div class="field"><label>Topic</label>
-              <%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
-                                           {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
-            </div>
-            <div class="field"><input type="button" class="button" value="cancel" onclick="cancelSplit(<%= post.getID() %>)"><input type="submit" class="submit" name="action" value="split"></div>
-          </div>
         </form>
         <%
-                 return "";
+        return "";
     });
     return postoptions;
+};
+
+
+// This sucks. We use this form in JS code in topictable and as HTML in
+// user_new.jxp. Correspondingly, it has to print out all on one line and
+// without any apostrophes in it.
+
+app.Forum.html.form.userform = function(){
+        %><form action="user_new" id="userform"><div><label for="username">Username</label><input name="username" /></div><div><label for="pass1">Password</label><input type="password" name="pass1" /></div><div><label for="pass2">Confirm password</label><input type="password" name="pass2" /></div><div><label for="email">Email</label><input name="email" size=35></div><div id="comments-open-captcha"><img src="NOCDN/~~/user/captchaIMG.jxp"><br/>Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/><input name="captcha"></form><%
 };
 
 %>

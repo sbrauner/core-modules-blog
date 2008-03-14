@@ -7,9 +7,11 @@ if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
     core.net.url();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
+core.app.forum.html.form();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 
+/* if topic has been deleted but threads within topic have not */
 if(thread.getHidden() && ! app.Forum.Controller.hasPermission(user, "viewTopicHidden"))
     return Auth.cookie.reject(request, response);
 
@@ -18,7 +20,6 @@ if(thread == null){
     print("thread not found");
     return;
 }
-
 
 var titleStr = "";
 var a = thread.topic.getAncestors();
@@ -53,12 +54,36 @@ app.Forum.js.addYesNoDialog();
 
 <script type="text/javascript">
 
-function splitPopup(i) {
-        document.getElementById("splitpop"+i).style.display = "block";
+no = { split : function() { this.hide(); },
+     editthread : function() { this.hide(); }};
+
+
+function splitDialog(post) {
+    <%
+     var choices = db.forum.topics.find({parent: null}).toArray();
+     var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
+     var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
+
+     if(deleteThread)
+            choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
+     if(moderateThread)
+            choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
+%>
+
+     var message = '<form id="splitterForm" action="thread_action">'
+               +'<input type="hidden" name="select" value="'+post+'">'
+               +'<input type="hidden" name="action" value="split">'
+               +'<input type="hidden" name="threadId" value="<%= thread._id %>">'
+               +'<div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>'
+               +'<div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+                    {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>'
+               +'</div></form>';
+
+     var myButtons = [ { text:"Split", handler: yes['split'] },
+                      { text:"Cancel", handler: no['split'] } ];
+     makeDialog("Split Thread at Post", message, myButtons);
 }
-function cancelSplit(i) {
-        document.getElementById("splitpop"+i).style.display = "none";
-}
+
 
 var color = "white";
 function toggleHighlight() {
@@ -94,12 +119,14 @@ function makeDialog(title, body, buttons) {
 function respond(response) {
     var r = response.split("&");
     document.getElementById("threadtitle").innerHTML = r[0];
-    if(r[1])
+    if(r[1] == "true"){
+        threadClosed = true;
         document.getElementById("threadFooter").style.display = "none";
-    else
+    }
+    else {
+        threadClosed = false;
         document.getElementById("threadFooter").style.display = "block";
-    if(r[1] == "true") threadClosed = true;
-    else threadClosed = false;
+    }
 }
 
 var yes = { editthread : function() {
@@ -111,10 +138,14 @@ var yes = { editthread : function() {
               passData += "&"+ntForm.elements.item(1).name + "="+encodeURIComponent(ntForm.elements.item(1).checked);
           passData = passData.substring(1)+"&threadId=<%= thread._id %>&action=edit";
           ajax(passData, "thread_action.jxp", respond);
-     }
+     },
+split : function() {
+    this.hide();
+    document.getElementById("splitterForm").submit();
+}
+
 };
 
-var no = { editthread : function() { this.hide(); }};
 
 </script>
 
@@ -123,7 +154,7 @@ var no = { editthread : function() { this.hide(); }};
 if(app.Forum.Controller.hasPermission(user, "editThread")) { %>
      <form action="thread_action">
      <input type="hidden" name="threadId" value="<%= thread._id %>">
-     <input type="button" class="button" name="edit" value="Edit Thread" onclick="editThread()">
+     <a href="#"><div class="button" onclick="editThread()">Edit Thread</div></a>
      <%
 }
 if(request.show == "deleted"){ %>
@@ -193,18 +224,31 @@ core.app.forum.html.paging(paging);
 
 <script type="text/javascript">
 function post() {
-     var passData = "ncontent="+document.getElementById("ncontent").value+"&reply_target=true&reply=true&id=<%= thread._id %>";
+     var content = newlineToBr(document.getElementById("ncontent").value);
+     var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>";
      ajax(passData, "post_new.jxp", goToNewPost);
 }
 
 function goToNewPost(response) {
-     var r = response.split("&");
-     if(r[0] != <%= paging.pageNumber() %>)
+     var page = response.substring(0, response.indexOf('&'));
+     var html = response.substring(response.indexOf('&')+1);
+     if(page != <%= paging.pageNumber() %>)
           location = "viewthread?id=<%= thread._id %>&page=-1";
      else  {
-          document.getElementById("newpostbox").innerHTML += r[1];
+          document.getElementById("newpostbox").innerHTML += html;
      }
+     document.getElementById("ncontent").value = "";
 }
+
+function newlineToBr(s) {
+        s = s.split("\n");
+        var htmlstr="";
+        for(var i=0; i<s.length; i++) {
+            htmlstr += s[i]+"<br />";
+        }
+        return htmlstr;
+}
+
 
 </script>
 
@@ -212,8 +256,12 @@ function goToNewPost(response) {
     <%
     if(canPost){ %>
          <div class="button" onclick="document.getElementById('replyform').style.display = 'block'; document.getElementById('reply_btn').style.display = 'none';" id="reply_btn">Reply</div>
+         <form id="replyform">
          <div class="field"><label>New Post: </label><textarea id="ncontent" rows=10 cols=80 name="ncontent"></textarea></div>
-         <div class="field"><div class="button" onclick="post()">Post</div></div><%
+         <div class="field"><div class="button" onclick="post()">Post</div></div>
+         </form>
+         <%
+
     }
     %>
 </div>

@@ -1,6 +1,7 @@
 <%
 core.app.forum.controller();
 core.app.forum.data.thread();
+core.html.html();
 
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 var canPost = app.Forum.Controller.hasPermission(user, "makePost")

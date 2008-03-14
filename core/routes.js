@@ -27,6 +27,7 @@ routes.wiki.search = "doSearch";
 <prenh>
 * routes.add( /abc/ , "" )
 * routes.add( /abc(\d)/ , "/foo/$0/$1
+</prenh>
 
 */
 Routes = function(){
@@ -66,11 +67,32 @@ Routes.prototype._createValue = function( key , end , attachment ){
 
 // main public method
 
+/**
+* returns the root at which the last sub-routes took over
+*/
+Routes.prototype.currentRoot = function(){
+    return currentRoot;
+};
+
 Routes.prototype.apply = function( uri , request ){
+    
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
-    var firstPiece = uri.replace( /^\/?(\w+)\b.*/ , "$1" );
+    var firstPiece = uri.replace( /^\/?([\w\.]+)\b.*/ , "$1" );
+    
+    // currentRoot stuff
+    if ( true ) { 
+
+	if ( ! currentRoot )
+	    currentRoot = "";
+	
+	if ( lastPiece ){
+	    currentRoot += "/" + lastPiece;
+	}
+	
+	lastPiece = firstPiece;
+    }
     
     for ( var key in this ){
         
@@ -97,23 +119,36 @@ Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
     var end = value;
     if ( isObject( end ) && end.isValue )
         end = value.end;
-    
+
     if ( ! end )
         return null;
     
     if ( isString( end ) ){
-
-        if ( end.indexOf( "$" ) < 0 )
-            return end;
-
-        if ( key instanceof RegExp )
+        
+        if ( key instanceof RegExp ){
             end = uri.replace( key , end );
+            
+            if ( value.attachment && value.attachment.names ){
+                
+                var names = value.attachment.names;
+                var r = key.exec( uri );
 
+                if ( ! r )
+                    throw "something is wrong";
+                
+                for ( var i=0; i<names.length; i++ ){
+                    if ( r[i+1] )
+                        request[ names[i] ] = r[i+1];
+                }
+                
+            }
+        }
+        
         return end;
     }
     
     if ( isObject( end ) && end.apply ){
-        var res = end.apply( uri.substring( 1 + firstPiece.length ) ) || "";
+        var res = end.apply( uri.substring( 1 + firstPiece.length ) , request ) || "";
         if ( ! ( res && res.startsWith( "/" ) ) )
             res =  "/" + firstPiece + "/" + res;
         res = res.replace( /\/+/g , "/" );

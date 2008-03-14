@@ -1,15 +1,22 @@
 
 htmlheader = function(title) {
     title = title || '10gen Application';
-    if (useHeader) useHeader();
-    else if (jxp.pieces && jxp.pieces.header) jxp.pieces.header({ title: title });
-    else if (jxp.html && jxp.html.pieces && jxp.html.pieces.header)  jxp.html.pieces.header({ title: title }); 
-    else print('<html><head><title>' + title + '</title></head><body>');
+    
+    if ( useHeader )
+        return useHeader( { title : title } );
+
+    if ( jxp.pieces && jxp.pieces.header ) 
+        return jxp.pieces.header( { title: title } );
+    
+    print('<html><head><title>' + title + '</title></head><body>');
 }
 
 htmlfooter = function() {
-    if (useFooter) useFooter();
-    else if (jxp.pieces && jxp.pieces.footer) jxp.pieces.footer();
-    else if (jxp.html && jxp.html.pieces && jxp.html.pieces.footer) jxp.html.pieces.footer();
-    else print('</body></html>');
+    if ( useFooter ) 
+        return useFooter();
+    
+    if ( jxp.pieces && jxp.pieces.footer )
+        return jxp.pieces.footer();
+    
+    print('</body></html>');
 }
