@@ -221,7 +221,7 @@ if(app.Forum.Controller.hasPermission(user, "editThread")) {
      caption_ar.push('<a href="#"><div class="button" onclick="edit_d.show()">Edit Thread</div></a>');
 }
 if(request.show == "deleted"){
-     caption_ar.push('<a href="<%=url.removeArg("show")%>"><div class="button">Hide deleted</div></a>');
+     caption_ar.push('<a href="'+url.removeArg("show")+'"><div class="button">Hide deleted</div></a>');
 } else if(app.Forum.Controller.hasPermission(user, "viewDeleted")){
      caption_ar.push('<a href="'+url.replaceArg("show", "deleted")+'"><div class="button">Show deleted</div></a>');
 }
