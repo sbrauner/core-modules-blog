@@ -2,14 +2,15 @@
 core.user.data.confirmation();
 var id = request.id;
 
-var confirm = User.Confirmations.findOne({_id: id});
+var confirm = User.Confirmation.findOne({_id: id});
 
 if(confirm.user._id != user._id){
     return Auth.cookie.reject(request, response);
 }
 
-User.Confirmations.remove(confirm);
+User.Confirmation.remove(confirm);
 user.addPermission("confirmed_email");
+db.users.save(user);
 
 htmlheader("Confirmed");
 %>

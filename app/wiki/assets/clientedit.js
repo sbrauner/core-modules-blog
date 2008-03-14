@@ -16,7 +16,7 @@ var deleteKeySelectorWebKit = { alt: true, keys: 68 };
 var saveKeySelectorWebKit = { alt: true, keys: 83 };
 
 clientEditLoader.insert({
-    require: ['fonts','event','container','dom','connection','element','button','editor'],
+    require: ['event','container','dom','connection','element','button','editor'],
     base: '/@@/yui/current/',
 
     onSuccess: function(loader) {

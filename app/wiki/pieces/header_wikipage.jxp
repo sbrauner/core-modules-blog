@@ -5,8 +5,8 @@ if (request.edit)
 else 
     head.push('<script type="text/javascript">isEditPage = false;</script>');
 
-head.push('<link rel="stylesheet" href="assets/wiki.css" type="text/css">');
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
+head.push('<link rel="stylesheet" href="assets/wiki.css" type="text/css">');
 head.addRSS( ( routes ? routes.currentRoot() : "/wiki" )  + "/rss" );
 
 if( !request.edit )
