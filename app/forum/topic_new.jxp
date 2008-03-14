@@ -11,7 +11,7 @@ var topic = new app.Forum.data.Topic();
 
 if(request.newname){
     var back;
-    topic.order = 99; //parseInt(topic.order);
+    topic.order = 0; //parseInt(topic.order);
     topic.name = request.newname;
     if(request.parent != "null" && request.parent != null ){
         topic.parent = db.forum.topics.findOne({_id: request.parent});

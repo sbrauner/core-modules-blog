@@ -372,3 +372,11 @@ img.feed {
 form.thread_action {
      display: inline;
 }
+div.topic_desc {
+     color: grey;
+     font-size: 14px;
+}
+
+div.subtopic_link a {
+     cursor: pointer;
+}

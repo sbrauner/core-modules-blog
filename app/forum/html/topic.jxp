@@ -13,7 +13,7 @@ var count = 1;
 
 
 <tr id="tr<%= rownum %>" class="<%= topic.hidden ? ' hidden' : '' %>">
-  <td id="td<%= rownum %>_<%= count++ %>" class="alignleft"><div class="topic_name" style="display:none;"><%= content.HTML.escape(topic.name) %></div><div class="subtopic_link"><a href="<%= link %>"><%= content.HTML.escape(topic.name) || "(no name given)" %></a></div><%= content.HTML.escape(topic.description) %></td>
+  <td id="td<%= rownum %>_<%= count++ %>" class="alignleft"><div class="topic_name" style="display:none;"><%= content.HTML.escape(topic.name) %></div><div class="subtopic_link"><a href="<%= link %>"><%= content.HTML.escape(topic.name) || "(no name given)" %></a></div><div class="topic_desc"><%= content.HTML.escape(topic.description) %></div></td>
   <td id="td<%= rownum %>_<%= count++ %>"><%= topic.threadCount.toFixed(0) %><% /*topic.getThreadCount()*/ %></td>
   <td id="td<%= rownum %>_<%= count++ %>"><%= topic.postCount.toFixed(0) %></td>
 
