@@ -115,7 +115,7 @@ if(! user){ %>
   <div class="field_name">User</div>
   <div class="field_value">
     <select name="userid" size="12">
-      <% db.users.find({}).forEach(function(u){ %>
+      <% db.users.find({}).sort({name: 1}).forEach(function(u){ %>
       <option value="<%= u._id%>"><%= u.name %></option>
       <% }); %>
     </select>
@@ -135,7 +135,7 @@ if(! user){ %>
       <th>Moderate all posts by this user?</th>
     </tr>
 
-    <tr>    
+    <tr>
       <td><%= user.name %></div>
       <td>
         <select name="permission">
@@ -150,7 +150,7 @@ if(! user){ %>
       </td>
       <td>
         <div class="field_value"><input id="modbutton" type="submit" name="action" value="Moderate" onclick="moderateConfDialog.show(); return false"></div>
-	<input type="submit" style="visibility: hidden;" name="action" value="Moderate" id="modbutton-real"/>
+        <input type="submit" style="visibility: hidden;" name="action" value="Moderate" id="modbutton-real"/>
       </td>
     </tr>
   </tbody>
