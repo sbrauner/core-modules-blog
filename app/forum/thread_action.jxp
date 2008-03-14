@@ -134,6 +134,8 @@ if(request.action == "split"){
         newthread.save();
 
         thread.threaded_reorderChildren();
+        replies = thread.getReplies();
+        thread.latestPost = replies[replies.length-1].getID();
         thread.save();
 
         thread.modifyPostCount(-threaddown);
