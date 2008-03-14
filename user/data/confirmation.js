@@ -5,6 +5,9 @@ User.Confirmation = function(user){
 
 core.db.db();
 dbutil.associate(User.Confirmation, db.users.confirmations);
+db.users.confirmations.setConstructor(User.Confirmation);
+
+core.core.mail();
 
 User.Confirmation.prototype.send = function(){
     this.save();
@@ -15,7 +18,7 @@ User.Confirmation.prototype.send = function(){
 
     // Send a mail to the user
     var subj = "[" + siteName + "] Confirmation email";
-    var link = new URL('/~~/user/confirm_check').addArg('id', this._id);
+    var link = new URL('/~~/user/confirm_receive').addArg('id', this._id);
     link.hostname = request.getHost();
     link.port = request.getPort();
     link = link.toString();
@@ -24,7 +27,7 @@ User.Confirmation.prototype.send = function(){
         "Please click the link below.\n\n" + link;
 
     m = new Mail.Message( subj, body );
-    m.addRecipient(  email  );
+    m.addRecipient(  this.user.email  );
     m.send( mail );
 };
 
