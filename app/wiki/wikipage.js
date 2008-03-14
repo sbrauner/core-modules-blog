@@ -89,3 +89,18 @@ app.wiki.WikiPage.prototype.getWikiPageHistory = function(wikiPageHistoryId) {
     // get the WikiPageHistory objects for the current page
     return db.wiki_history.findOne( { parent: this._id, _id: wikiPageHistoryId } );
 }
+
+app.wiki.WikiPage.prototype.getChildPages = function() {
+    var pageNameRegularExpression = /^[^.]+$/;
+    if (this.name != app.wiki.config.prefix + "Main") pageNameRegularExpression = RegExp("^" + this.name + "\.[^.]+$");
+    else if (app.wiki.config.prefix) pageNameRegularExpression = RegExp("^" + app.wiki.config.prefix + "\.[^.]+$");
+
+    var childPages = db.wiki.find( { name: pageNameRegularExpression } ).sort( { name: 1 } ).toArray();
+
+    childPages.forEach( function(childPage) {
+        childPage.name = childPage.name.replace(new RegExp('^' + app.wiki.config.prefix), '');
+    });
+
+    return childPages;
+};
+
