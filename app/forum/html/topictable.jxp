@@ -180,15 +180,6 @@ function editTopic(parent) {
 
 }
 
-function newUser(){
-  var message = '<% app.Forum.html.form.userform(); %>';
-
-  var myButtons = [ {text: 'Register', handler: yes['newuser'] },
-                   {text: 'Cancel', handler: no['newuser'] } ];
-
-  makeDialog("Register", message, myButtons);
-}
-
 //FIXME: Change URL, too, or refresh won't work
 function changeTagline(response) {
     var r = response.split("&");
@@ -382,10 +373,6 @@ function addTopicToTable(txt) {
     %>
     <% if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){ %>
         | <div class="button" onclick="location='user_edit'">Edit user</div>
-    <% } %>
-
-    <% if(! user) { %>
-        | <div class="button" onclick="newUser()">Register</div>
     <% } %>
 
   </div>

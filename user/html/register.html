@@ -24,6 +24,12 @@
       <input name="login_email" size=35 >
     </div>
 
+    <div ? User.config.useCaptcha id="comments-open-captcha">
+      <img src="NOCDN/~~/user/captchaIMG.jxp" /><br/>
+      Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/>
+      <input name="login_captcha">    
+    </div>
+
     <input type="submit" value="register">
     
   </form>
@@ -39,6 +45,8 @@
 
     var p1 = frm.login_pass1.value;
     var p2 = frm.login_pass2.value;
+
+    var c = frm.login_captcha.value;
 
     if ( ! ( u && u.trim().length != 0 ) ){
       window.alert( "need a username" );
@@ -76,7 +84,7 @@
       return false;
     } 
     
-    var u = "/~~/user/register?username=" + u + "&email=" + e + "&password=" + p1;
+    var u = "/~~/user/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
     location.href = u;
     return false;
   }
