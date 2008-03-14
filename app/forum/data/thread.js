@@ -9,7 +9,6 @@ app.Forum.data.Thread = function(){
     this.pinned = false;
     this.created = new Date();
     this.lastPostTime = new Date();
-    this.closed = false;
     this.latestPost = null;
     this.count = 1;
     this.editorPick = false;
@@ -134,7 +133,7 @@ app.Forum.data.Thread.prototype.isExpired = function(){
 };
 
 app.Forum.data.Thread.prototype.postable = function(){
-    return ! this.closed && ! this.isExpired();
+    return ! this.commentsEnabled && ! this.isExpired();
 };
 
 // This adds children and the rendering thereof to the Thread class.
