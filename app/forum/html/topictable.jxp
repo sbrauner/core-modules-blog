@@ -151,6 +151,7 @@ function moveDlg(label, target, targetId) {
                       { text:"Cancel", handler: no['move'] } ];
     dialog.target = target;
     dialog.targetId = targetId;
+    if(! document.getElementById(targetId).value) return;
     dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
     makeDialog("Move", "Do you really want to move this "+label+"?", myButtons);
 }

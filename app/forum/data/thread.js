@@ -133,7 +133,7 @@ app.Forum.data.Thread.prototype.isExpired = function(){
 };
 
 app.Forum.data.Thread.prototype.postable = function(){
-    return ! this.commentsEnabled && ! this.isExpired();
+    return this.commentsEnabled && ! this.isExpired();
 };
 
 // This adds children and the rendering thereof to the Thread class.

@@ -1,0 +1,14 @@
+<%
+    htmlheader("Login");
+
+
+core.user.html.login();
+%>
+<script>
+  url = "<%= request.getHeader("Referer") %>";
+</script>
+
+
+<%
+htmlfooter();
+%>
