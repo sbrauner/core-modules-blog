@@ -211,13 +211,4 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     return postoptions;
 };
 
-
-// This sucks. We use this form in JS code in topictable and as HTML in
-// user_new.jxp. Correspondingly, it has to print out all on one line and
-// without any apostrophes in it.
-
-app.Forum.html.form.userform = function(){
-        %><form action="user_new" id="userform"><div><label for="username">Username</label><input name="username" /></div><div><label for="pass1">Password</label><input type="password" name="pass1" /></div><div><label for="pass2">Confirm password</label><input type="password" name="pass2" /></div><div><label for="email">Email</label><input name="email" size=35></div><div id="comments-open-captcha"><img src="NOCDN/~~/user/captchaIMG.jxp"><br/>Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/><input name="captcha"></form><%
-};
-
 %>
