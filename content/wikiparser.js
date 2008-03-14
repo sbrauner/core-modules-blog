@@ -117,10 +117,9 @@ content.WikiParser.prototype._line = function(str) {
     // * bullets
     if( str.match(/^\*/) ) {
         var stars = "" + str.match(/^\*+/);
-        stars = stars.replace( /\*/g, "u" );
+//        stars = stars.replace( /\*/g, "u" );
         newLevel = stars.length;
-        str = str.replace( /^(\*+ *)(.*)/, '">$2</li>');
-        str = '<li class="' + stars + str;
+        str = str.replace( /^(\*+ *)(.*)/, '<li class="u">$2</li>');
     }
 
     this._reLevel(newLevel);
@@ -165,7 +164,7 @@ content.WikiParser.test = function() {
     content.WikiParser._chk("in '''bold'''", "in <b>bold</b>\n");
     content.WikiParser._chk("<b>", "<b>\n");
     content.WikiParser._chk("<nohtml>\n<b>", "&lt;b&gt;\n");
-    content.WikiParser._chk("*** test", "<ul><ul><ul><li class=\"uuu\">test</li>\n");
+    content.WikiParser._chk("*** test", "<ul><ul><ul><li class=\"u\">test</li>\n");
     print("---------\nTest Done\n");
 };
 
