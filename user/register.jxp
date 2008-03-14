@@ -17,6 +17,10 @@ if ( ! ( password && password.trim().length >= 5 ) )
 if ( ! ( email && email.trim().length >= 3 ) )
     throw "email error";
 
+if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
+    error = "captcha was wrong";
+}
+
 // add 
 
 if ( db.users.findOne( { name : username } ) )
