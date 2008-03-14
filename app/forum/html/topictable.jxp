@@ -47,7 +47,7 @@ t = topic || topics[0];
 if(hideTopic){
     topicActions.push({title: "Hidden",
                        func: function(topic){
-                           app.Forum.html.form.hidden(topic);
+                           app.Forum.html.form.hidden(topic, function(t) { if(parseInt(t._id.toString()) < 10) return true; } );
                            return "";
                        }});
 }
@@ -178,15 +178,6 @@ function editTopic(parent) {
                       { text:"Cancel", handler: no['edittopic'], } ];
     makeDialog("Edit Topic", message, myButtons);
 
-}
-
-function newUser(){
-  var message = '<% app.Forum.html.form.userform(); %>';
-
-  var myButtons = [ {text: 'Register', handler: yes['newuser'] },
-                   {text: 'Cancel', handler: no['newuser'] } ];
-
-  makeDialog("Register", message, myButtons);
 }
 
 //FIXME: Change URL, too, or refresh won't work
@@ -382,10 +373,6 @@ function addTopicToTable(txt) {
     %>
     <% if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){ %>
         | <div class="button" onclick="location='user_edit'">Edit user</div>
-    <% } %>
-
-    <% if(! user) { %>
-        | <div class="button" onclick="newUser()">Register</div>
     <% } %>
 
   </div>

@@ -1,4 +1,3 @@
-
 /**
  * User
  *   email
@@ -6,10 +5,6 @@
  *   name
  *   nickname
  */
-
-function User(){
-
-};
 
 User.prototype.setPassword = function( pass , name ){
     if ( ! name )

@@ -210,7 +210,7 @@ div.icons div.edPick, div.icons div.sticky {
 label {
        display: block;
        float: left;
-       width: 10em;
+      // width: 10em;
        text-align: right;
        margin-right: 5px;
 }
@@ -267,6 +267,7 @@ span.highlight {
 
 div.actions {
             width: 100%;
+            height: 20px;
             text-align: right;
             float: right;
 }

@@ -8,15 +8,24 @@ core.app.forum.data.thread();
 core.app.forum.data.topic();
 //core.app.forum.data.deletion();
 core.user.auth();
-var url = new URL(request.getURL());
+
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
 var selected = [];
-for(var i in url.args){
-    if(url.args[i].key == "select"){
-        selected.push(url.args[i].value);
-    }
+
+var url = new URL(request.getURL());
+/*    for(var i in url.args){
+        if(url.args[i].key == "select"){
+            selected.push(url.args[i].value);
+        }
+    }*/
+
+for(var i in request) {
+     if(i == "select")
+          selected.push(request[i]);
 }
+
+
 
 // Which URL should we redirect to? Some handlers change this.
 var back = request.getHeader("Referer");
@@ -24,6 +33,7 @@ if(back == "")
     back = "./";
 
 var subtPost = function(attr){
+    log(tojson(selected));
     for(var i in selected){
         thread.removePost(attr, selected[i]);
     }
@@ -45,6 +55,11 @@ if(request.action == "undelete"){
     if(! app.Forum.Controller.hasPermission(user, "deletePost"))
         return Auth.cookie.reject(request, response);
     addPost("deleted");
+    var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+    var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+    var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
+    return;
 }
 
 if(request.action == "moderate"){
@@ -57,12 +72,16 @@ if(request.action == "unmoderate"){
     if(! app.Forum.Controller.hasPermission(user, "moderatePost"))
         return Auth.cookie.reject(request, response);
     addPost("moderated");
+    var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+    var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+    var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
+    return;
 }
 
 if(request.action == "sticky"){
     if(! app.Forum.Controller.hasPermission(user, "stickyThread"))
         return Auth.cookie.reject(request, response);
-    log.app.forum.thread_action.debug("stickifying " + selected);
     selected.forEach(function(sel1){
         var thread = app.Forum.data.Thread.findOne({_id: sel1});
         thread.pinned = true;
@@ -105,7 +124,6 @@ if(request.action == "split"){
             postid = post.getID();
         }
 
-        log(tojson(newthread));
         newthread.setTitle(request.subject);
         newthread.latestPost = postid;
         var newthreadcount = newthread.getReplies().length;
@@ -127,7 +145,6 @@ if(request.action == "split"){
 }
 
 if(request.action == "edit") {
-                  log(tojson(request));
     if(! app.Forum.Controller.hasPermission(user, "editThread")){
         return Auth.cookie.reject(request, response);
     }
