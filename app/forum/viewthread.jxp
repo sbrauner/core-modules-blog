@@ -60,7 +60,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <div class="hd">Split Thread</div>
 <div class="bd">
 <form id="splitterForm" action="thread_action">
-<input type="hidden" id="select" name="select">
+<input type="hidden" id="split_select" name="select">
 <input type="hidden" name="action" value="split">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
 <div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
@@ -75,6 +75,8 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <div class="bd">
 <form id="editThreadForm" action="thread_action">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
+<input type="hidden" name="select" id="edit_select">
+<input type="hidden" name="action" value="edit">
 <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
 <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '></div>
 </form>
@@ -134,11 +136,27 @@ function addCaptionBtns(reply) {
 
 
 var handleSubmit = function() {
-     this.submit();
+    document.getElementById("split_select").value=post;
+    document.getElementById("edit_select").value=post;
+    this.submit();
 }
 
 var handleCancel = function() {
     this.hide();
+}
+
+var handleSuccess = function(o) {
+    var response = o.responseText;
+    var r = response.split("&");
+    document.getElementById("threadtitle").innerHTML = r[0];
+    if(r[1] == "true"){
+        threadClosed = true;
+        document.getElementById("threadFooter").style.display = "none";
+    }
+    else {
+        threadClosed = false;
+        document.getElementById("threadFooter").style.display = "block";
+    }
 }
 
 var loader = new YAHOO.util.YUILoader({
@@ -146,17 +164,29 @@ var loader = new YAHOO.util.YUILoader({
     loadOptional: true,
     onSuccess: function() {
          splitter_d = new YAHOO.widget.Dialog("splitterDiv", {
+              width: "300px",
               fixedcenter: true,
-              buttons: [{text: "Split", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]
+              modal:true,
+              visible:false,
+              draggable:true,
+              postmethod: "form"
          });
+         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSubmit},
+                        {text: "Cancel", handler:handleCancel}]);
+         splitter_d.render(document.body);
+
+
          edit_d = new YAHOO.widget.Dialog("editThreadDiv", {
               width: "300px",
               fixedcenter: true,
-              constraintoviewport: true,
-              buttons: [{text: "Split", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]
+              modal:true,
+              visible:false,
+              draggable:true,
          });
+         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
+                        {text: "Cancel", handler:handleCancel}]);
+         edit_d.callback = { success: handleSuccess };
+         edit_d.render(document.body);
     }
 });
 

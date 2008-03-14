@@ -9,20 +9,22 @@ core.app.forum.data.topic();
 //core.app.forum.data.deletion();
 core.user.auth();
 
-var url = new URL(request.getURL());
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
 var selected = [];
+
+var url = new URL(request.getURL());
+/*    for(var i in url.args){
+        if(url.args[i].key == "select"){
+            selected.push(url.args[i].value);
+        }
+    }*/
+
 for(var i in request) {
      if(i == "select")
-         selected.push(request[i]);
+          selected.push(request[i]);
 }
 
-/*for(var i in url.args){
-    if(url.args[i].key == "select"){
-        selected.push(url.args[i].value);
-    }
-}*/
 
 
 // Which URL should we redirect to? Some handlers change this.
