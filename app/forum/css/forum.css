@@ -245,12 +245,6 @@ div.threadFooter div.button {
            margin-left: 55px;
            float: left;
 }
-div.threadFooter form {
-     display: none;
-}
-div.threadFooter form input.submit {
-     margin-left: 55px;
-}
 div.caption div.button {
            display: inline;
 }

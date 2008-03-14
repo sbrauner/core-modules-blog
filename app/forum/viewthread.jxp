@@ -312,13 +312,11 @@ function newlineToBr(s) {
 <div id="threadFooter" class="threadFooter">
     <%
     if(canPost){ %>
-         <div class="button" onclick="document.getElementById('replyform').style.display = 'block'; document.getElementById('reply_btn').style.display = 'none';" id="reply_btn">Reply</div>
          <form id="replyform">
          <div class="field"><label>New Post: </label><textarea id="ncontent" rows=10 cols=80 name="ncontent"></textarea></div>
          <div class="field"><div class="button" onclick="post()">Post</div></div>
          </form>
          <%
-
     }
     %>
 </div>
