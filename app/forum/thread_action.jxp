@@ -8,15 +8,22 @@ core.app.forum.data.thread();
 core.app.forum.data.topic();
 //core.app.forum.data.deletion();
 core.user.auth();
+
 var url = new URL(request.getURL());
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
 var selected = [];
-for(var i in url.args){
+for(var i in request) {
+     if(i == "select")
+         selected.push(request[i]);
+}
+
+/*for(var i in url.args){
     if(url.args[i].key == "select"){
         selected.push(url.args[i].value);
     }
-}
+}*/
+
 
 // Which URL should we redirect to? Some handlers change this.
 var back = request.getHeader("Referer");
@@ -24,6 +31,7 @@ if(back == "")
     back = "./";
 
 var subtPost = function(attr){
+    log(tojson(selected));
     for(var i in selected){
         thread.removePost(attr, selected[i]);
     }
@@ -45,6 +53,11 @@ if(request.action == "undelete"){
     if(! app.Forum.Controller.hasPermission(user, "deletePost"))
         return Auth.cookie.reject(request, response);
     addPost("deleted");
+    var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+    var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+    var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
+    return;
 }
 
 if(request.action == "moderate"){
@@ -57,6 +70,11 @@ if(request.action == "unmoderate"){
     if(! app.Forum.Controller.hasPermission(user, "moderatePost"))
         return Auth.cookie.reject(request, response);
     addPost("moderated");
+    var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
+    var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
+    var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
+    return;
 }
 
 if(request.action == "sticky"){

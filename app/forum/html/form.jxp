@@ -188,32 +188,24 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // 2. the post is the first non-deleted post in the thread
 
         if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-             <input type="button" class="button" onclick="splitDialog(<%= post.getID() %>)" value="Split"><%
+             <input type="button" class="button" onclick="post=<%= post.getID() %>; splitter_d.show()" value="Split"><%
         }
-        %>
-        <form action="thread_action" class="thread_action">
-            <input type="hidden" name="threadId" value="<%= thread._id %>">
-            <input type="hidden" name="select" value="<%= post.getID() %>">
-            <%
             if(post.deleted == "deleted" && canDelete) { %>
-                 <input type="submit" class="submit" name="action" value="Undelete">
+                 <input type="button" class="button" onclick="post=<%= post.getID() %>; undeletePost(<%= post.getID() %>)" value="Undelete">
                  <%
             }
             if(post.deleted == "moderated" && canModerate){ %>
-                 <input type="submit" class="submit" name="action" value="Unmoderate">
+                 <input type="button" class="button" onclick="post=<%= post.getID() %>; unmoderatePost(<%= post.getID() %>)" value="Unmoderate">
                  <%
             }
             if (thread.count > 1 && !post.deleted && canDelete){ %>
-                 <input type="submit" class="submit" name="action" value="Delete">
+                 <input type="button" class="button" onclick="post=<%= post.getID() %>; deletePost(<%= post.getID() %>)" value="Delete">
                  <%
             }
             if(thread.count > 1 && !post.deleted && canModerate){ %>
-                 <input type="submit" class="submit" name="action" value="Moderate">
+                 <input type="button" class="button" onclick="post=<%= post.getID() %>; moderatePost(<%= post.getID() %>)" value="Moderate">
                  <%
             }
-            %>
-        </form>
-        <%
         return "";
     });
     return postoptions;

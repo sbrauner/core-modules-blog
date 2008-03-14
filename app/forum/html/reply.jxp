@@ -14,10 +14,10 @@ var prettyDate = t.ts.format("MMMMM d, yyyy '<span class=''time''>' h:mm aa '</s
 %>
 
 
-<div class="postbox <%= htmlclass %>">
+<div id="post<%= t.getID() %>" class="postbox <%= htmlclass %>">
   <a name="<%= t.getID() %>"></a>
     <span class="titlebar">
-      <div class="actions">
+      <div id="actions<%= t.getID() %>" class="actions">
            <% for(var i in actions){ actions[i](t); } %>
       </div>
       <div class="author">
