@@ -47,7 +47,7 @@ t = topic || topics[0];
 if(hideTopic){
     topicActions.push({title: "Hidden",
                        func: function(topic){
-                           app.Forum.html.form.hidden(topic);
+                           app.Forum.html.form.hidden(topic, function(t) { if(parseInt(t._id.toString()) < 10) return true; } );
                            return "";
                        }});
 }

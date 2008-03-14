@@ -94,13 +94,17 @@ app.Forum.html.highlight = function(result, searchterm) {
 
 
 
-app.Forum.html.form.hidden = function(topic){
+app.Forum.html.form.hidden = function(topic, filter){
+         if(filter == null || !filter(topic)) {
          if(topic.hidden) { %>
                 <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" checked>
          <% } else { %>
                 <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')">
          <% }
-
+         }
+         else {
+               print("&nbsp;");
+         }
 }
 
 app.Forum.html.search = function(location) {
