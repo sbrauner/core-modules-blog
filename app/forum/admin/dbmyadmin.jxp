@@ -9,20 +9,30 @@ function printText(cursor, field) {
      count++;
 }
 
+var objcount = 0;
+
 function printObj(cursor, field) {
      if(!cursor || !cursor[field]) return;
 
-     if(typeof cursor[field] == "boolean")
+     if(typeof cursor[field] == "boolean") {
+          print("<div>"+field+": ");
           printCheck(cursor, field);
-     else if(typeof cursor[field] == "string" || typeof cursor[field] == "number")
+          print("</div>");
+     }
+     else if(typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+          print("<div>"+field+": ");
           printText(cursor, field);
+          print("</div>");
+     }
      else if(typeof cursor[field] == "object") {
           //name = cursor[field].name || cursor[field].toString() || "Object";
-          print("<div class=\"parent\" onclick=\"showObj('"+cursor._id+"')\">Object</div><div class=\"obj\" id=\""+cursor._id+"\">");
+          print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\">Object</div><div class=\"obj\" id=\"o"+objcount+"\">");
+          var tempobj = objcount;
+          objcount++;
           for(var name in cursor[field]) {
                printObj(cursor[field], name);
           }
-          print("</div>");
+          print("<input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='x'></div>");
      }
      else {
           print(typeof cursor[field]);
@@ -57,6 +67,9 @@ if (request.table) {
 <script type="text/javascript">
 function showObj(i) {
          document.getElementById(i).style.display = "block";
+}
+function hideObj(i) {
+         document.getElementById(i).style.display = "none";
 }
 function defaultResponder(r) {
          if(r!= "")
