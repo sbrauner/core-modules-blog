@@ -3,7 +3,7 @@ app.wiki.WikiPageHistory = function(wikiPageId, textDiff , who ) {
     this.parent = wikiPageId;
     this.diff = textDiff;
     this.user = who;
-	
+
     this.ts = new Date();
 };
 
@@ -41,3 +41,6 @@ app.wiki.WikiPageHistory.prototype.getHistoricalText = function() {
      return historicalText;
 };
 
+app.wiki.WikiPageHistory.prototype.getDiff = function() {
+    return this.diff;
+};

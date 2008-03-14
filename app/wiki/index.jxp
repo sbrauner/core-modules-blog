@@ -40,6 +40,9 @@
     var wikiPageHistoricalVersion;
     if (request.version) {
         wikiPageHistoricalVersion = wikiPage.getWikiPageHistory(request.version);
+        if (request.diff == "true") {
+            wikiPageShowDiff = true;
+        }
     }
 
     if ( ! app.wiki.config.readOnly ){
