@@ -6,35 +6,33 @@ var username = request.username;
 var email = request.email;
 var password = request.pass1;
 
+var error;
 if ( ! ( username && username.trim().length >= 5 ) )
-    throw "username error";
+    error = "username error";
 
 if ( ! ( password && password.trim().length >= 5 ) )
-    throw "password error";
+    error = "password error";
 
 if ( ! ( email && email.trim().length >= 3 ) )
-    throw "email error";
+    error = "email error";
 
 if ( ! Captcha.valid( request ) ) {
-    throw "captcha was wrong";
+    error = "captcha was wrong";
 }
 
-// add 
-
 if ( db.users.findOne( { name : username } ) )
-    throw "username exists";
+    error = "username exists";
 
 if ( db.users.findOne( { email : email } ) )
-    throw "email exists";
+    error = "email exists";
 
-p = new app.Forum.data.PendingUser();
-p.name = username;
-p.email = email;
-p.password = password;
-
-p.save();
-
-// Send a mail to the user
+if(error){
+    core.app.forum.html.forumheader("Forum | Registration error");
+    print(error);
+    app.Forum.html.form.userform();
+    htmlfooter();
+    return;
+}
 
 if(! mail){ %>
 
@@ -49,6 +47,15 @@ if(! mail){ %>
 
     return;
 }
+
+p = new app.Forum.data.PendingUser();
+p.name = username;
+p.email = email;
+p.password = password;
+
+p.save();
+
+// Send a mail to the user
 
 var forumTitle = Ext.getlist(allowModule, "forum", "forumTitle");
 var forumTitleSubj = forumTitle ? forumTitle : (request.getHost() + " Forum");
