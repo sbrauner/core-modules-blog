@@ -1,5 +1,5 @@
 <%
-var database = db.forum.topics;
+var database = db.forum.threads;
 
 if(request.action == "delete") {
      database.remove( { _id : request.id });

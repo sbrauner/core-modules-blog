@@ -13,13 +13,13 @@
 <p />
 <div>
 <%
-    var childPageNames = app.wiki.WikiController.getChildPageNames(wikiPage);
-    if( childPageNames.length ) {
+    var childPages = wikiPage.getChildPages(wikiPage);
+    if( childPages.length ) {
 %>
     <b>Child Articles</b>
     <ul>
     <%
-        childPageNames.forEach(core.app.wiki.pieces.html.childpagelist);
+        childPages.forEach(core.app.wiki.pieces.html.childpagelist);
     %>
     </ul>
 <%}%>
