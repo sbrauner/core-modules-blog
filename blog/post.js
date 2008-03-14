@@ -141,6 +141,28 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
+Post.prototype.getNextPost = function(){
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $lt : this.ts } } );
+    cursor.sort( { ts : -1 } );
+    cursor.limit( 1 );
+    
+    if ( cursor.hasNext() )
+	return cursor.next();
+
+    return null;
+};
+
+Post.prototype.getPreviousPost = function(){
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $gt : this.ts } } );
+    cursor.sort( { ts : 1 } );
+    cursor.limit( 1 );
+    
+    if ( cursor.hasNext() )
+	return cursor.next();
+
+    return null;
+};
+
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
