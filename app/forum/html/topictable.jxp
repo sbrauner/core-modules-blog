@@ -142,7 +142,8 @@ var yes = { newtopic : function() {
 
 
 var no = { newtopic : function() { this.hide(); },
-     move : function() { this.hide(); },
+     move : function() { this.hide();
+                         document.getElementById(this.targetId).value = ""; },
      edittopic : function() { this.hide(); },
      newuser: function() { this.hide(); } };
 
