@@ -4,3 +4,8 @@ app.Forum = {
 
 core.app.forum.html.form();
 core.ext.getlist();
+core.user.auth();
+core.app.forum.controller();
+core.app.forum.data.thread();
+core.app.forum.data.topic();
+core.content.search();

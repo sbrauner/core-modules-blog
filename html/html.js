@@ -15,13 +15,7 @@ if (!HTML.__init) {
     };
 
     HTML.decodeBr = function(s) {
-        s = s.split("&lt;br /&gt;");
-        log("matching: "+s.length);
-        var htmlstr="";
-        for(var i=0; i<s.length; i++) {
-            htmlstr += s[i]+"<br />";
-        }
-        return htmlstr;
+        return s.replace(/&lt;br \/&gt;/g, "<br />");
     }
 
     HTML.__init = true;

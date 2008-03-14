@@ -1,6 +1,4 @@
 core.content.search();
-core.app.forum.data.thread();
-
 app.Forum.data.Topic = function(){
     this.name = "";
     this.description = "";
@@ -65,9 +63,9 @@ app.Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
     while(topic){
         topic.postCount += postCount;
         topic.threadCount += threadCount;
-        db.forum.topics.save(topic);
         topic = topic.parent;
     }
+    db.forum.topics.save(this);
 };
 
 app.Forum.data.Topic.prototype.setParent = function(topic){

@@ -4,14 +4,12 @@
 // Doesn't actually render; just redirect.
 core.app.forum.html.check_ban();
 core.net.url();
-core.app.forum.data.thread();
-core.app.forum.data.topic();
-//core.app.forum.data.deletion();
-core.user.auth();
 
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
 var selected = [];
+
+// FIXME: are these all AJAX handlers? If so, don't redirect at all.
 
 var url = new URL(request.getURL());
 /*    for(var i in url.args){
@@ -33,7 +31,6 @@ if(back == "")
     back = "./";
 
 var subtPost = function(attr){
-    log(tojson(selected));
     for(var i in selected){
         thread.removePost(attr, selected[i]);
     }
@@ -49,6 +46,7 @@ if(request.action == "delete"){
     if(! app.Forum.Controller.hasPermission(user, "deletePost"))
         return Auth.cookie.reject(request, response);
     subtPost("deleted");
+    return;
 }
 
 if(request.action == "undelete"){
@@ -66,6 +64,7 @@ if(request.action == "moderate"){
     if(! app.Forum.Controller.hasPermission(user, "moderatePost"))
         return Auth.cookie.reject(request, response);
     subtPost("moderated");
+    return;
 }
 
 if(request.action == "unmoderate"){

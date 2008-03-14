@@ -1,6 +1,4 @@
 core.db.db();
-core.content.search();
-core.ext.getlist();
 app.Forum.data.Thread = function(){
     this.commentsEnabled = true;
     // Whether a thread is "sticky", "pinned", or otherwise. Such threads
