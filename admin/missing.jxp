@@ -1,9 +1,10 @@
-<h3>404s last 24 hours</h3>
+<h3>404s this hour</h3>
 <%
+    print( "Since " + (new Date()).roundHour() + "<p>");
 
     var all = {};
 
-var cursor = db.blog.missingpages.find( { date : { $gt : ( new Date() ).roundDay() } } );
+var cursor = db.blog.missingpages.find( { date : { $gte : ( new Date() ).roundHour() } } );
 cursor.forEach( function(z){
 		    var c = all[z.uri] || 0;
 		    c += z.num;
@@ -24,7 +25,7 @@ print( "<table>" );
 a.forEach( function(z){
 	       print( "<tr>" );
 	       print( "<td>" + z.num + "</td>" );
-	       print( "<td>" + z.uri + "</td>" );
+	       print( "<td><a href=\"/" + z.uri + "\">" + z.uri + "</a></td>" );
 	       print( "</tr>" );
 	   } );
 print( "</table>" );
