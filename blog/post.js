@@ -141,6 +141,28 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
+Post.prototype.getNextPost = function(){
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $lt : this.ts } } );
+    cursor.sort( { ts : -1 } );
+    cursor.limit( 1 );
+    
+    if ( cursor.hasNext() )
+	return cursor.next();
+
+    return null;
+};
+
+Post.prototype.getPreviousPost = function(){
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $gt : this.ts } } );
+    cursor.sort( { ts : 1 } );
+    cursor.limit( 1 );
+    
+    if ( cursor.hasNext() )
+	return cursor.next();
+
+    return null;
+};
+
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
@@ -195,6 +217,27 @@ Post.getNoResults = function() {
     return noResultsPage;
 };
 
+Post.getMostPopular = function( num , articlesBack ){
+    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    all = all.sort( function( a , b ){
+	return b.views - a.views;
+    } );
+    
+    all = all.slice( 0 , num );
+    
+    return all;
+};
+
+Post.getMostCommented = function( num , articlesBack ){
+    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    all = all.sort( function( a , b ){
+	return b.getNumComments() - a.getNumComments();
+    } );
+    
+    all = all.slice( 0 , num );
+    
+    return all;
+};
 
 function fixComments() {
     
@@ -220,6 +263,7 @@ function fixComments() {
 if ( db ) {
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
+    db.blog.posts.ensureIndex( { name : 1 } );
 
     db.blog.posts.setConstructor( Post );
 

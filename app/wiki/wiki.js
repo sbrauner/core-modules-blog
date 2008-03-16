@@ -1,4 +1,4 @@
-core.content.wikiparser();
+
 app.wiki.WikiController = function() {};
 
 app.wiki.WikiController.TEXT_PARSER = content.WikiParser;
@@ -79,27 +79,4 @@ app.wiki.WikiController.getCookieCrumb = function(wikiPage) {
     }
 
     return cookieCrumb;
-};
-
-app.wiki.WikiController.getChildPageNames = function(wikiPage) {
-    if (!wikiPage) return [];
-
-    var pageNameRegularExpression = /^[^.]*$/;
-    if (wikiPage.name != app.wiki.config.prefix + "Main") pageNameRegularExpression = RegExp("^" + wikiPage.name + "\.[^.]+$");
-    else if (app.wiki.config.prefix) pageNameRegularExpression = RegExp("^" + app.wiki.config.prefix + "\.[^.]+$");
-
-    var childPages = db.wiki.find( { name: pageNameRegularExpression }, { name: true } ).sort( { name: 1 } ).toArray();
-
-    childPages.forEach( function(childPage) {
-        childPage.name = childPage.name.replace(new RegExp('^' + app.wiki.config.prefix), '');
-    });
-
-    return childPages;
-
-    // remove the prefix from all of the names
-    var prefixRegularExpression = null;
-    if (app.wiki.config.prefix) {
-        var s = app.wiki.config.prefix.replace(/\./g, '\.');
-        prefixRegularExpression = RegExp(s);
-    }
 };

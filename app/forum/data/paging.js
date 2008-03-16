@@ -25,19 +25,25 @@ core.ext.getdefault();
 * @param config.pageSize         how many results on each page (defaults to request.pageSize or 20)
 * @param config.page             which page to display (defaults to request.page or 1)
 * @param config.displayOpts      what options to use in displaying the pager (see paging.jxp)
-* @param config.padding          how many page links to show when rendering the pager (defaults to 2)
+* @param config.padding          how many page links in either direction to show when rendering the pager (defaults to 2)
 * @param config.nextlinkInterval how many pages the "next" link should advance (defaults to twice padding plus 1)
+* @param config.minWindow        how many page links should be shown at a minimum (defaults to 5)
+                                 If this is smaller than 2*padding+1, weird things might happen!
 */
 
 app.Forum.data.Paging = function(ary, config, request){
+    // one-based
     config = config || {};
     request = request || {};
     this.ary = ary;
     this.pageSize = config.pageSize || request.pageSize || 20;
+    this.minWindow = Ext.getdefault(config, 'minWindow',
+                                    request.minWindow || 5);
     this._numPages = Math.ceil(ary.length / this.pageSize);
 
     this.page = config.page || request.page || 1;
     this.page = parseInt(this.page);
+    if(this.page == -1) this.page = this._numPages;
     this.padding = Ext.getdefault(config, 'padding', 2);
     this.nextlinkInterval = Ext.getdefault(config, 'nextlinkInterval', 2*this.padding+1);
 
@@ -81,6 +87,26 @@ app.Forum.data.Paging.Window = function(pager, page, padding){
     if(this.first < 1) this.first = 1;
     this.last = page+padding;
     if(this.last > pager.numPages()) this.last = pager.numPages();
+    var range = this.last - this.first + 1;
+    if((this.first > 1 || this.last < pager.numPages()) &&
+       (range < pager.minWindow)){
+        if(pager.numPages() < pager.minWindow){
+            this.first = 1;
+            this.last = pager.numPages();
+        }
+        else {
+            if(this.first == 1){
+                this.last = pager.minWindow;
+            }
+            else if(this.last == pager.numPages()){
+                this.first = pager.numPages() - pager.minWindow + 1;
+            }
+            else {
+                // FIXME: distribute the slack on both sides until something
+                // bad happens?
+            }
+        }
+    }
 };
 
 app.Forum.data.Paging.Window.prototype.getFirstPage = function(){

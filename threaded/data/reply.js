@@ -1,5 +1,6 @@
 log.threaded.data.reply.debug("Running replyfile. threaded="+threaded + " data="+threaded.data);
 core.content.html();
+core.content.simple();
 core.net.url();
 
 threaded.data.Reply = function(){
@@ -45,7 +46,10 @@ threaded.data.Reply.prototype.validateReply = function(r){
 };
 
 threaded.data.Reply.prototype.encodeContent = function(txt){
-    return content.HTML.escape_html(txt);
+    var s = new content.Simple();
+    txt = content.HTML.escape_html(txt);
+    txt = s.toHtml(txt);
+    return txt;
 };
 
 threaded.data.Reply.prototype.decoratorsHandle = function(args){

@@ -1,5 +1,4 @@
 core.db.db();
-core.content.search();
 app.Forum.data.Thread = function(){
     this.commentsEnabled = true;
     // Whether a thread is "sticky", "pinned", or otherwise. Such threads
@@ -22,6 +21,7 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
         // reply styles
+        title: .2,
         content: .2
     }
 };
@@ -38,12 +38,16 @@ app.Forum.data.Thread.prototype.setTitle = function(title){
     this.getFirstPost().title = title;
 };
 
-app.Forum.data.Thread.prototype.setClosed =  function(isClosed){
+app.Forum.data.Thread.prototype.setClosed = function(isClosed){
     this.commentsEnabled = !isClosed;
 };
 
-app.Forum.data.Thread.prototype.getClosed =  function(isClosed){
+app.Forum.data.Thread.prototype.getClosed = function(isClosed){
     return !this.commentsEnabled;
+};
+
+app.Forum.data.Thread.prototype.getHidden = function(){
+    return this.topic.getHidden();
 };
 
 app.Forum.data.Thread.prototype.getFirstPost = function(){
@@ -110,6 +114,24 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
         this.save();
         this.saveDescendant(p);
     }
+};
+
+app.Forum.data.Thread.prototype.recalculate = function() {
+    var reps = this.getReplies();
+    reps = reps.filter(function(r) { return ! r.deleted; });
+    this.count = reps.length;
+    this.save();
+};
+
+app.Forum.data.Thread.prototype.isExpired = function(){
+    var days = Ext.getlist(allowModule, 'forum', 'threadExpirationDays');
+    if(! days) return false;
+    var end = new Date(this.created.getTime() + days * 24 * 60 * 60 * 1000 );
+    return new Date() > end;
+};
+
+app.Forum.data.Thread.prototype.postable = function(){
+    return this.commentsEnabled && ! this.isExpired();
 };
 
 // This adds children and the rendering thereof to the Thread class.

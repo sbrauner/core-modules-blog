@@ -9,14 +9,23 @@
 // a DBCursor.
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
+core.app.forum.js.yui();
+
 opts = opts || {};
+var createThread = true;
 var topic;
-if (opts.thisid) topic = db.forum.topics.findOne({_id: opts.thisid});
+if (opts.thisid){
+    topic = db.forum.topics.findOne({_id: opts.thisid});
+    createThread = topic.allowPosts;
+}
 
 // Whether to try to create links for all these functions.
-var createThread = (opts.createThread == null) ? true : opts.createThread;
+var createThread = (opts.createThread == null) ? createThread : opts.createThread;
 var createTopic = (opts.createTopic == null) ? true : opts.createTopic;
+var editUser = (opts.editUser == null) ? true : opts.editUser;
 var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
+var buttons = (opts.buttons == null)? true : opts.buttons;
+var addActions = (opts.addActions == null)? true : opts.addActions;
 
 var paging = Ext.getdefault(opts, "paging", true);
 
@@ -31,14 +40,22 @@ var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
 
 var topics = db.forum.topics.find({parent: null}).toArray();
 topicActions = [];
-topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
+topics = [{_id: null, name: "(Top Level)"}].concat(topics);
 
 t = topic || topics[0];
+
+if(hideTopic){
+    topicActions.push({title: "Hidden",
+                       func: function(topic){
+                           app.Forum.html.form.hidden(topic, function(t) { if(parseInt(t._id.toString()) < 10) return true; } );
+                           return "";
+                       }});
+}
 
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
-                                        function(t){ return {onChange: "moveTopic('"+t._id+"')", id: t._id.toString()}; },
+                                                       function(t){ return {onChange: "moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
                                         {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
                                             // We wrap the function so that when we get the Special Topics,
                                             // we don't generate a <select> for you to move them.
@@ -49,13 +66,6 @@ if(moveTopic){
                       });
 }
 
-if(hideTopic){
-    topicActions.push({title: "Hidden",
-                       func: function(topic){
-                           app.Forum.html.form.hidden(topic);
-                           return "";
-                       }});
-}
 
 var movetargets = [];
 
@@ -63,6 +73,14 @@ if(app.Forum.Controller.hasPermission(user, "moveThread")){
     var topics = db.forum.topics.find({parent: null});
     topics = topics.toArray();
     movetargets = movetargets.concat(topics);
+}
+
+if(addActions && app.Forum.Controller.hasPermission(user, "edPickThread")) {
+   actions.push({ title : "Editor's Pick",
+                  func : function(thread) {
+      editorPick(thread);
+      return "";
+   }});
 }
 
 
@@ -75,20 +93,115 @@ if(deleteThread)
 if(moderateThread)
     movetargets.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
 
-if(movetargets.length > 0) {
+if(addActions && movetargets.length > 0) {
     actions.push({title : "Move Thread",
-                  func : app.Forum.html.selectify(movetargets, function(topic){ return {onChange: "move('"+topic._id+"')", id: topic._id.toString() }; } )
+                  func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
+                                                                                         "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
 
 %>
+
 <script type="text/javascript">
+
+var yes = { newtopic : function() {
+          //user confirms the creation of a new topic
+          this.hide();
+          var ntForm = document.getElementById("newtopic");
+          var passData = "";
+          for(var i=0; i<ntForm.elements.length; i++) {
+              passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
+          }
+          passData = passData.substring(1);
+          ajax(passData, "topic_new.jxp", addTopicToTable);
+     },
+     move : function() {
+          this.hide();
+          this.target(this.targetId);
+     },
+     confirm : function() {
+          this.hide();
+     },
+     edittopic : function() {
+          this.hide();
+          var ntForm = document.getElementById("edittopic");
+          var passData = "";
+          for(var i=0; i<ntForm.elements.length; i++) {
+              passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
+          }
+          passData = passData.substring(1);
+          ajax(passData, "topic_edit.jxp", changeTagline);
+     },
+     newuser: function() {
+          this.hide();
+          var form = document.getElementById('userform');
+          form.submit();
+     }
+};
+
+
+var no = { newtopic : function() { this.hide(); },
+     move : function() { this.hide();
+                         document.getElementById(this.targetId).value = ""; },
+     edittopic : function() { this.hide(); },
+     newuser: function() { this.hide(); } };
+
+function moveDlg(label, target, targetId) {
+    var myButtons = [ { text:"Move", handler: yes['move'] },
+                      { text:"Cancel", handler: no['move'] } ];
+    dialog.target = target;
+    dialog.targetId = targetId;
+    if(! document.getElementById(targetId).value) return;
+    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    makeDialog("Move", "Do you really want to move this "+label+"?", myButtons);
+}
+
+function newTopic(parent) {
+    var message = '<form id="newtopic" action="topic_new">';
+    if(parent)
+         message += '<input type="hidden" name="parent" value="'+parent+'">';
+    message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
+               '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
+    var myButtons = [ { text:"Save", handler: yes['newtopic'] },
+                      { text:"Cancel", handler: no['newtopic'] } ];
+    makeDialog("New Topic", message, myButtons);
+}
+
+function editTopic(parent) {
+  var message = '<form action="topic_edit" id="edittopic">'
+    +'<input type="hidden" name="id" value="<%= opts.thisid %>">'
+      +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= content.HTML.escape((topic) ? topic.name : "") %>"></div>'
+      +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= content.HTML.escape((topic) ? topic.description : "") %>"></div>'
+      +'<div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>></div>'
+  +'</form>';
+
+    var myButtons = [ { text:"Save", handler: yes['edittopic'] },
+                      { text:"Cancel", handler: no['edittopic'], } ];
+    makeDialog("Edit Topic", message, myButtons);
+
+}
+
+//FIXME: Change URL, too, or refresh won't work
+function changeTagline(response) {
+    var r = response.split("&");
+    document.getElementById("topicName").innerHTML = decodeURIComponent(r[0]);
+    document.getElementById("tagline").innerHTML = decodeURIComponent(r[1]);
+    location = 'viewtopic?name='+r[0];
+}
 
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
          var passData = "thread="+threadId+"&to="+topicId;
-         ajax(passData, "moveThread.jxp", reload, "POST");
+    ajax(passData, "moveThread.jxp", function(text){
+        // If we move it into this thread, don't hide it.
+        if(text.match("fail")){
+            return;
+        }
+        // FIXME: This doesn't really handle moving things into subtopics.
+        // We'd need to update the thread/post count.
+        document.getElementById("thread_"+threadId).style.display = "none";
+    }, "POST");
 }
 
 function moveTopic(topicId) {
@@ -97,13 +210,96 @@ function moveTopic(topicId) {
          ajax(passData, "topic_move.jxp", reload, "POST");
 }
 
+function sticky(threadId, action) {
+    ajax('', "thread_action"+"?select="+threadId+"&action="+action, function(){
+        var div = document.getElementById("sticky_"+threadId);
+        var row = document.getElementById("thread_"+threadId);
+        var table = row.parentNode;
+        var form = document.getElementById("stickyform_"+threadId);
+        var header = YAHOO.util.Dom.getFirstChild(table);
+        var getDate = function(elem){
+            for(var i = 0; i < elem.attributes.length; i ++){
+                var attr = elem.attributes[i];
+                if(attr.name == "date") return attr.value;
+            }
+            return 99999999999999;
+        };
+        var thisdate = getDate(row);
+        if(action == "sticky"){
+            if(div.innerHTML.match("sticky-icon")){
+                if(div.style.display == "none") div.style.display = "inline";
+            }
+            else{
+                div.innerHTML = '<img src="css/sticky-icon.gif" class="sticky">';
+            }
+            table.removeChild(row);
+
+            var lastRow;
+            // bring the row to the top
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the next row which is either not sticky or younger than this row
+
+                lastRow = sib;
+                var sibdate = getDate(sib);
+                if(thisdate > sibdate || ! YAHOO.util.Dom.hasClass(sib, "sticky")) return true;
+                return false;
+            });
+            if(nextRow)
+                YAHOO.util.Dom.insertBefore(row, nextRow);
+            else {
+                YAHOO.util.Dom.insertAfter(row, lastRow);
+            }
+            YAHOO.util.Dom.addClass(row, "sticky");
+            form.onclick = function () {sticky(threadId, "unsticky");};
+            form.value = "Unsticky";
+        }
+        else {
+            div.style.display = "none";
+            table.removeChild(row);
+
+            var lastRow;
+            // restore its rightful order
+            var nextRow = YAHOO.util.Dom.getNextSiblingBy(header, function(sib){
+                // return the first row that is neither sticky nor younger than this row
+                lastRow = sib;
+                if(YAHOO.util.Dom.hasClass(sib, 'sticky') || thisdate < getDate(sib)) return false;
+                return true;
+            });
+            if(nextRow)
+                YAHOO.util.Dom.insertBefore(row, nextRow);
+            else {
+                YAHOO.util.Dom.insertAfter(row, lastRow);
+            }
+            YAHOO.util.Dom.removeClass(row, "sticky");
+            form.onclick = function () {sticky(threadId, "sticky");};
+            form.value = "Sticky";
+        }
+        var rows = YAHOO.util.Dom.getChildren(table);
+        for(i=1; i<rows.length; i++) {
+            if(i%2 == 0)
+                 YAHOO.util.Dom.addClass(rows[i], "even");
+            else
+                 YAHOO.util.Dom.removeClass(rows[i], "even");
+        }
+    });
+}
+
 function reload() {
          location.reload();
 }
 
 function togglePick(threadId) {
-         var passData = "thread="+threadId;
-         ajax(passData, "editorPick.jxp", reload);
+    var passData = "thread="+threadId;
+    ajax(passData, "editorPick.jxp", function(){
+        var div = document.getElementById("edpick_"+threadId);
+        if(div.innerHTML.match(/Thumbs/)){
+            if(div.style.display == "none") div.style.display = "inline";
+            else div.style.display = "none";
+        }
+        else{
+            div.innerHTML = '<img src="css/Thumbsup-icon.gif" class="edPick">';
+        }
+    });
 }
 
 function toggleHide(topicId) {
@@ -119,68 +315,93 @@ function cancelPopup(id) {
         document.getElementById(id).style.display = "none";
 }
 
+function makeDialog(title, body, buttons) {
+    dialog.setHeader(title);
+    dialog.setBody(body);
+    dialog.cfg.queueProperty("buttons", buttons);
+    dialog.render(document.body);
+    dialog.show();
+}
+
+function addTopicToTable(txt) {
+    // if the topic was not successfully added, alert the user:
+    if(txt == "This name is already in use.\n") {
+        buttons = [ { text:"Okay", handler: no['newtopic'] } ];
+        makeDialog("Error", txt, buttons);
+    }
+    else {
+        //Does the table exist?  If not, reload the page.
+        var header = document.getElementById("tr_header");
+        if(!header) {
+            location.reload();
+            return;
+        }
+
+        // if the table exists and the new topic was successfully created, add a new row to the topic table
+        var newRow = header.cloneNode(true);
+        YAHOO.util.Dom.insertAfter(newRow, header);
+        newRow.innerHTML = txt.substring(txt.indexOf(">")+1, txt.lastIndexOf("<"));
+    }
+}
+
+
 </script>
-<h1><%= name %></h1>
-<% if ( description ){ %>
-<h2><%= description %></h2>
-<% } %>
+
+
+<h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
+<div id="tagline"><%= description || "" %></div>
 
 <div class="caption">
-  <%
-    if(createThread &&
-       app.Forum.Controller.hasPermission(user, "createThread")){ %>
-  <a href="thread_new?top_id=<%= opts.thisid %>&reply=true">New Thread</a> |
-  <%
+    <%
+    var caption_ar = [];
+    if(createThread && app.Forum.Controller.hasPermission(user, "createThread")){
+        caption_ar.push('<div class="button" onclick="location=\'thread_new?top_id='+opts.thisid+'&reply=true\'">New Thread</div>');
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
-      if(opts.thisid){ %>
-        <a href="topic_new?parent=<%= opts.thisid %>">New Topic</a>
-        <form action="topic_edit" onSubmit="return showPopup('editpop')" class="onebutton">
-          <input type="hidden" name="id" value="<%= opts.thisid %>">
-          <input type="submit" class="button" name="action" value="Edit topic">
-        </form>
-        <%
+      if(opts.thisid){
+        caption_ar.push('<div class="button" onclick="newTopic(\''+opts.thisid+'\')">New Topic</div> | <div class="button" onclick="editTopic(\''+opts.thisid+'\')">Edit Topic</div>');
       }
       else {
-        %>
-        <a href="topic_new">New Topic</a> |
-        <%
+        caption_ar.push('<div class="button" onclick="newTopic()">New Topic</div>');
       }
     }
+    if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){
+        caption_ar.push('<div class="button" onclick="location=\'user_edit\'">Edit user</div>');
+    }
+    for(var i=0; i<caption_ar.length-1; i++)
+        print(caption_ar[i]+" | ");
+    print(caption_ar.length > 0 ? caption_ar[caption_ar.length-1] : '');
+
+    app.Forum.js.addYesNoDialog();
     %>
-        <% if (app.Forum.Controller.hasPermission(user, "editUser")){ %>
-        <a href="user_edit">Edit user</a> |
-        <% } %>
-  <% if(opts.parent){ %>
-  <a href="viewtopic?name=<%= URL.escape_queryargs(opts.parent.name) %>">Back to Parent Topic</a>
-  <% }
-    else { %>
-  <a href="./">Back to Top Level</a>
-  <% } %>
+
   </div>
-  <% if(topic){ %>
-  <form action="topic_edit">
-    <input type="hidden" name="id" value="<%= opts.thisid %>">
-    <div class="popup" id="editpop">
-      <div class="title">Edit Topic</div>
-      <div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= topic.name %>"></div>
-      <div class="field"><label>Description:</label><input type="text" name="description" value="<%= topic.description %>"></div>
-      <div class="field"><input type="button" class="button" value="cancel" onclick="cancelPopup('editpop')"><input type="submit" class="submit" value="Save"></div>
-    </div>
-  </form>
-  <% } %>
 
 <%
+
 // Show subtopics
-if(subs && subs.length > 0){ %>
-    <table id="style1">
-       <tr><th>Subtopic</th><th>Threads</th><th>Posts</th>
+if(subs && subs.length > 0){
+    var tableid = "table1";
+    %>
+    <table id="<%= tableid %>" class="style1">
+       <tr id="tr_header"><th>Subtopic</th><th>Threads</th><th>Posts</th>
        <%
        for(i=0; i < topicActions.length; i++) {
             print("<th>"+ topicActions[i].title +"</th>");
        } %>
        </tr>
-       <% subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions} ); }); %>
+       <%
+       var numrows = 0;
+       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
+       if(numrows > 1) {
+            var numcols = 3+topicActions.length-1;
+            if(subs[subs.length-1]._id < 5) {
+                numrows-=2;
+            }
+            app.Forum.js.addDragAndDrop(tableid, numrows, numcols);
+       }
+       %>
+       <script type="text/javascript">var lastRow = <%= numrows %>;</script>
     </table>
     <%
 }
@@ -190,12 +411,14 @@ if (threads){
 
     if(paging){
         core.app.forum.data.paging();
-        paging = new app.Forum.data.Paging(threads, {pageSize: 20}, request);
+        paging = new app.Forum.data.Paging(threads, {pageSize: 20,
+                                                     minWindow: 5},
+                                           request);
         threads = paging.slice();
 
         core.app.forum.html.paging(paging);
     }
- %>
+    %>
      <table id="style1" >
           <tr><th>Thread</th><th>Replies</th><th>Last post</th>
           <%

@@ -1,6 +1,13 @@
 <%
     core.user.auth();
 
+if(!request.username){
+    htmlheader("Register");
+    core.user.html.register();
+    htmlfooter();
+    return;
+
+}
 var username = request.username;
 var email = request.email;
 var password = request.password;
@@ -17,7 +24,11 @@ if ( ! ( password && password.trim().length >= 5 ) )
 if ( ! ( email && email.trim().length >= 3 ) )
     throw "email error";
 
-// add 
+if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
+    error = "captcha was wrong";
+}
+
+// add
 
 if ( db.users.findOne( { name : username } ) )
     throw "username exists";

@@ -1,6 +1,6 @@
 <%
-core.app.forum.controller();
 
+core.app.forum.controller();
 core.app.forum.html.check_ban();
 
 if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
@@ -9,7 +9,6 @@ if(! app.Forum.Controller.hasPermission(user, "viewTopicNonHidden"))
 core.content.table();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
-core.app.forum.html.form();
 
 core.util.format();
 
@@ -29,23 +28,26 @@ if(request.id){
         threadList = app.Forum.data.Thread.list(app.Forum.Controller.specialModeratedID);
         name = "Moderated threads";
     }
-    t = {name: name, parent: null};
+    t = {name: name, parent: null, getHidden: function(){ return false; } };
 }
 else {
     name = request.name;
     t = db.forum.topics.findOne({name: name});
-    name = t.name;
+    name = content.HTML.escape(t.name);
     description = t.description;
     var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
 
     subs = app.Forum.data.Topic.list(t, showHidden).toArray();
     threadList = app.Forum.data.Thread.list(t);
-    tableOptions = {parent: t.parent, thisid: t._id};
+    tableOptions = {thisid: t._id};
 }
+
+if(t.getHidden() && ! showHidden)
+    return Auth.cookie.reject(request, response);
 
 var titleStr = "";
 var a = t.getAncestors();
-for(var i=0; i<a.length; i++) 
+for(var i=0; i<a.length; i++)
         titleStr += " > " + a[i];
 core.app.forum.html.forumheader("Forum |"+titleStr);
 
@@ -67,22 +69,9 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
       }});
 }
 
-if(app.Forum.Controller.hasPermission(user, "edPickThread")) {
-   actions.push({ title : "Editor's Pick",
-                  func : function(thread) {
-      editorPick(thread);
-      return "";
-   }});
-}
-
 app.Forum.html.topicBreadcrumb(t);
 app.Forum.html.search(t.name);
-head.push('<link rel="alternate" type="application/rss+xml" title="'+t.name+'" href="topic_rss.jxp?id='+t._id+'" />');
-%>
-
-<a href="topic_rss.jxp?id=<%= t._id %>">Subscribe to <%= t.name %>'s RSS feed</a>
-
-<%
+head.push('<link rel="alternate" type="application/rss+xml" title="'+name+'" href="topic_rss.jxp?id='+t._id+'" />');
 core.app.forum.html.topictable(name, description, subs, threadList.toArray(), actions, tableOptions);
 
 htmlfooter();

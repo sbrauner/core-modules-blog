@@ -1,0 +1,25 @@
+<%
+core.user.data.confirmation();
+var id = request.id;
+
+var confirm = User.Confirmation.findOne({_id: id});
+
+if(confirm.user._id != user._id){
+    return Auth.cookie.reject(request, response);
+}
+
+User.Confirmation.remove(confirm);
+user.addPermission("confirmed_email");
+db.users.save(user);
+
+htmlheader("Confirmed");
+%>
+<h1>Your email has been confirmed!</h1>
+
+<p>
+  Your email is now shown as confirmed.
+</p>
+
+<%
+    htmlfooter();
+%>

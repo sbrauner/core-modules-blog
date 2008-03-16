@@ -20,6 +20,10 @@ div.deleted {
     background: #FFDDDD;
 }
 
+div.moderated {
+    background: #FFFAAA;
+}
+
 table {
     width: 100%;
 }
@@ -29,40 +33,40 @@ td {
 }
 
 .caption {
-	padding: 0 0 5px 0; 
+	padding: 0 0 5px 0;
 		font-size: 12px;
 		text-align: right;
 }
 
-table#style1 {
+table#style1, table.style1 {
 	margin-bottom: 1em;
 	width: 100%;
 	border: 1px solid #157491;
 }
 
-#style1 form {
+#style1 form, .style1 form {
 	display:inline;
 }
 
-#style1 input {
-	margin:0; 
+#style1 input, .style1 input {
+	margin:0;
 	background-color: #369fbf;
 	font-size:11px;
-	color: #ffffff; 
-	border: 1px solid #ffffff;	
+	color: #ffffff;
+	border: 1px solid #ffffff;
 }
 
-#style1 a {
-	display: block;
+#style1 a, .style1 a {
+/*	display: block;*/
 	line-height: 1.2em;
 }
 
-#style1 nobr {
-	font-size:11px; 
-	color: #AAAAAA;	
+#style1 nobr, .style1 nobr {
+	font-size:11px;
+	color: #AAAAAA;
 }
 
-#style1 th {
+#style1 th, .style1 th {
 	padding: 7px 6px 5px 12px;
 	font-size: 11px;
 	color: #4f6a72;
@@ -73,51 +77,58 @@ table#style1 {
 	background-repeat: repeat-x;
 }
 
-#style1 th div.top_level {
+#style1 th div.top_level, .style1 th div.top_level {
 	float: left;
-	padding: 6px 6px 4px 12px;	
+	padding: 6px 6px 4px 12px;
 	height: 13px;
 	color: #ffffff;
 	background-color: #369fbf;
 	background-repeat: repeat-x;
 }
 
-#style1 th.article {
-	padding: 4px; 	
+#style1 th.article, .style1 th.article {
+	padding: 0px;
 }
-
-#style1 th.article div.top_level a {
+#style1 th.article div.mid_level, .style1 th.article div.mid_level {
+        padding-left: 20px;
+	background-repeat: no-repeat;
+        background-image: url("th_arrow.gif");
+}
+#style1 th.article div.top_level a, .style1 th.article div.top_level a {
 	color: #ffffff;
 }
 
-#style1 th.article div.second_level {
+#style1 th.article div.second_level, .style1 th.article div.second_level {
 	float: left;
 	padding: 6px 6px 0px 18px;
-	height: 17px; 
-	background-image: url(th_arrow.gif?v=2);
-	background-repeat: no-repeat;	
+	height: 17px;
+	background-image: url(th_arrow2.gif);
+	background-repeat: no-repeat;
 }
-#style1 th.article div.second_level a {
+#style1 th.article div.second_level a, .style1 th.article div.second_level a {
         display: inline;
 }
-#style1 .alignleft {
-	text-align: left;	
+#style1 .alignleft, .style1 .alignleft {
+	text-align: left;
 }
 
-#style1 .alignright {
-	padding-right: 4px; 
-	text-align: right;	
+#style1 .alignright, .style1 .alignright {
+	padding-right: 4px;
+	text-align: right;
 }
 
-#style1 td {
+#style1 td, .style1 td {
 	padding: 6px 6px 6px 12px;
 	font-size: 14px;
 	background: #fff;
 	text-align:center;
-	border-top: 1px solid #9ac0cc; 
+	border-top: 1px solid #9ac0cc;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
 }
 
-#style1 tr.alt td {
+#style1 tr.alt td, .style1 tr.alt td {
 	background-color: #f4f8f9;
 }
 
@@ -166,22 +177,12 @@ div.threadFooter {
         font-size: 11px;
 }
 
-#style1 td {
-   border-left: none;
-   border-right: none;
-   border-bottom: none;
-}
-
 #style1 tr.even td {
    background-color: #EEEEEE !important;
 }
 
 #style1 tr.hidden td {
    background-color: #EEEEEE;
-}
-
-#style1 tr.edPick td {
-   font-weight: bold;
 }
 
 #style1 td.lastpost {
@@ -192,6 +193,15 @@ div.threadFooter {
    padding-bottom: 3px;
 }
 
+div.icons {
+     float: left;
+     padding-right: 3px;
+}
+div.icons div.edPick, div.icons div.sticky {
+     float: left;
+}
+
+
 .field {
        display: block;
    padding-bottom: 5px;
@@ -200,7 +210,7 @@ div.threadFooter {
 label {
        display: block;
        float: left;
-       width: 50px;
+      // width: 10em;
        text-align: right;
        margin-right: 5px;
 }
@@ -212,6 +222,7 @@ textarea {
 input.text {
            border: 1px solid #9ac0cc;
            margin-top: -3px;
+           width: 12em;
 }
 
 input.submit, input.button {
@@ -221,23 +232,26 @@ input.submit, input.button {
              border: 1px solid white;
 }
 
-
 div.button {
-           margin-left: 55px;
-           border: 1px solid #9ac0cc;
+           cursor: pointer;
+           margin: 0px 1px 10px 3px;
+           padding: 2px 5px 1px;
+           font-size: 13px;
 }
+div.button:hover {
+           color: #770000;
+}
+div.threadFooter div.button {
+           margin-left: 55px;
+           float: left;
+}
+div.caption div.button {
+           display: inline;
+}
+
 div.caption input.submit {
             cursor: pointer;
             border: 1px solid #369fbf;
-}
-div.caption div.button {
-           margin: 0px 1px 10px 3px;
-           display: inline;
-           padding: 2px 5px 1px;
-           background: #369fbf;
-           border: 1px solid #369fbf;
-           color: white;
-           font-size: 13px;
 }
 
 span.highlight {
@@ -247,16 +261,17 @@ span.highlight {
 
 div.actions {
             width: 100%;
+            height: 20px;
             text-align: right;
             float: right;
 }
 
 div.popup {
           display: none;
-          position: absolute;       
+          position: absolute;
           border: 1px solid black;
           background-color: #cce5ec;
-          color: #000000;      
+          color: #000000;
           margin-left: auto;
           margin-right: auto;
           padding: 5px;
@@ -285,6 +300,14 @@ div.popup input.button {
 form.onebutton {
 	  display: inline;
 }
+td select {
+    float: left;
+}
+
+form.search {
+     width: 100%;
+     text-align: right;
+}
 
 table.search div {
              display: block;
@@ -293,11 +316,14 @@ table.search div {
 
 
 /* Search results page */
-
+div.match_div {
+     margin: 10px 0px;
+}
 div.threadbox {
-      background: grey;
+      background: #cce5ec url(th_back.gif?v=2) repeat-x;
       border: 1px solid black;
       padding-bottom: 5px;
+      padding-left: 5px;
       margin-bottom: 5px;
 }
 
@@ -312,4 +338,45 @@ div.threadbox div.content {
       border: 1px solid black;
       margin: 5px 5px 5px 20px;
       padding: 5px;
+}
+
+
+/* sitemap */
+div.sitemap {
+     padding: 5px;
+     margin-left: 30px;
+}
+
+/* new thread/post */
+form.newpost div.button {
+     float: left;
+}
+
+.backbtn {
+     clear: left;
+     width: 100%;
+     text-align: left;
+     padding-top: 15px;
+}
+
+h1 {
+      display: inline;
+}
+img.feed {
+     padding: 3px 3px 0px 3px;
+}
+
+
+/* viewthread */
+
+form.thread_action {
+     display: inline;
+}
+div.topic_desc {
+     color: grey;
+     font-size: 14px;
+}
+
+div.subtopic_link a {
+     cursor: pointer;
 }

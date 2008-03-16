@@ -73,3 +73,18 @@ function ajax(passData, to, responder, method) {
     }
     xmlhttp.send(passData);
 }
+
+function getCSSClass( e ){
+    e = getElement( e );
+    if ( e ){
+	return e.className;
+    }
+    return null;
+}
+
+function setClass( e , c ){
+    e = getElement( e );
+    if ( e ){
+	e.className = c;
+    }
+}

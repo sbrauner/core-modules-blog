@@ -1,5 +1,4 @@
 core.content.search();
-
 app.Forum.data.Topic = function(){
     this.name = "";
     this.description = "";
@@ -12,8 +11,14 @@ app.Forum.data.Topic = function(){
     this.parent = null;
     this.postCount = 0;
     this.threadCount = 0;
+    this.postCountJustThis = 0;
+    this.threadCountJustThis = 0;
     this.clean = false;
 
+};
+
+app.Forum.data.Topic.prototype.setOrder = function(o) {
+    this.order = o;
 };
 
 app.Forum.data.Topic.prototype.getAncestors = function() {
@@ -41,12 +46,15 @@ app.Forum.data.Topic.prototype.SEARCH_OPTIONS = {
     description: 1
 };
 
+app.Forum.data.Topic.prototype.getHidden = function(){
+    return this.hidden || (this.parent && this.parent.getHidden());
+};
+
 app.Forum.data.Topic.prototype.presave = function(){
     if ( ! this.description ||
          "null" == this.description )
         this.description = "";
 
-    log(this.SEARCH_OPTIONS);
     Search.index(this, this.SEARCH_OPTIONS);
 };
 
@@ -55,9 +63,9 @@ app.Forum.data.Topic.prototype.changeCounts = function(threadCount, postCount){
     while(topic){
         topic.postCount += postCount;
         topic.threadCount += threadCount;
-        db.forum.topics.save(topic);
         topic = topic.parent;
     }
+    db.forum.topics.save(this);
 };
 
 app.Forum.data.Topic.prototype.setParent = function(topic){
@@ -69,11 +77,42 @@ app.Forum.data.Topic.prototype.setParent = function(topic){
 };
 
 app.Forum.data.Topic.prototype.subtThread = function(postCount){
+    this.threadCountJustThis -= 1;
     this.changeCounts(-1, -postCount);
 };
 
 app.Forum.data.Topic.prototype.addThread = function(postCount){
+    this.threadCountJustThis += 1;
     this.changeCounts(1, postCount);
+};
+
+app.Forum.data.Topic.prototype.recalculateAll = function(){
+    this.threadCount = 0;
+    this.postCount = 0;
+    this.threadCountJustThis = 0;
+    this.postCountJustThis = 0;
+
+    var threads = db.forum.threads.find( { topic : this } ).toArray();
+    this.threadCountJustThis = threads.length;
+    for(var i=0; i < threads.length; i++){
+        var thread = threads[i];
+        thread.recalculate();
+        this.postCountJustThis += thread.count;
+    }
+
+    this.threadCount = this.threadCountJustThis;
+    this.postCount = this.postCountJustThis;
+
+    subtopics = db.forum.topics.find( { parent : this } ).toArray();
+    for(var i=0; i < subtopics.length; i++) {
+        var subtopic = subtopics[i];
+        subtopic.recalculateAll();
+        this.postCount += subtopic.postCount;
+        this.threadCount += subtopic.threadCount;
+    }
+
+    db.forum.topics.save(this);
+
 };
 
 app.Forum.data.Topic.list = function(parent, showHidden){

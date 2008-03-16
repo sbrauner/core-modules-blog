@@ -1,0 +1,28 @@
+<%
+
+if(user.hasPermission('confirmed_email')){
+    throw "your email is already confirmed!";
+}
+
+core.user.data.confirmation();
+var confirm = User.Confirmation.findOne({user: user});
+
+if(! confirm){
+    confirm = new User.Confirmation(user);
+}
+
+confirm.send();
+
+htmlheader("Confirmation sent");
+
+%>
+<h1>Confirmation sent.</h1>
+
+<p>
+  An email was sent to <%= confirm.user.email %>. Please click the link in order to
+  confirm your email address.
+</p>
+
+<%
+    htmlfooter();
+%>
