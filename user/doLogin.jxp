@@ -3,7 +3,7 @@
     user = Auth.getUser( request );
 
 if ( ! user ){
-    print( "invalid pasword" );
+    print( "invalid username/password" );
     Auth.cookie.reject( request , response );
     return;
 }

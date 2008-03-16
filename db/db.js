@@ -89,9 +89,14 @@ function validate( collection ) {
    Default is off, and resets to off on a database restart -- so if you want it on, 
    turn it on periodically.
      0=off
-     1=on
+     1=log very slow (>100ms) operations
+     2=log all
 */
 function setDbProfilingLevel(p) { 
+    if( p ) {
+	// if already exists does nothing
+	createCollection("system.profile", { capped: true, size: 128 * 1024 } );
+    }
     return _dbCommand( { profile: p } );
 }
 

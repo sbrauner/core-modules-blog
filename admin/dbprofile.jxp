@@ -1,0 +1,38 @@
+<%
+core.db.db();
+core.content.table();
+if( request.set != null ) {
+    print("Setting profiling level to " + request.set);
+    print(" ");
+    print(tojson(setDbProfilingLevel(parseInt(request.set))));
+    print("<p>");
+}
+%>
+DB Profiling: <a href="?set=0">Off</a> | 
+<a href="?set=1">On for slow operations</a> | 
+<a href="?set=2">On for all operations</a> | 
+<a href="http://www.10gen.com/wiki/db.profile">Help</a>
+<p>
+<%
+    var tab = new htmltable(
+    {
+     searchable : true,
+     ns : db.system.profile,
+     cols : [
+     { name: "ts", searchWidth: 8,
+       view: function(x) { return (""+x).replace(/.GMT.........../,''); } 
+     },
+    { name: "millis", searchWidth: 4,
+       view: function(x) { return x.toFixed(); }
+     },
+     { name: "info", searchWidth: 40 }
+     ]
+
+    }
+			    );
+
+
+
+tab.dbview( tab.find({},{$natural:-1}) );
+%>
+

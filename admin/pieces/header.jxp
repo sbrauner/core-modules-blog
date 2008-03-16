@@ -10,7 +10,7 @@ var menu = [
     { name : "Site" , link : "#" , 
       submenu : [
           { name : "Users" , link : "/admin/users.jxp" } ,
-          { name : "DB View" , link : "/admin/dbview.jxp" } ,
+          { name : "Database" , link : "/admin/database.jxp" } ,
           { name : "Files" , link : "/admin/files.jxp" } ,
           { name : "Cron" , link : "/admin/cron.jxp" } ,
           { name : "Usage" , link : "/admin/usage.jxp" }
