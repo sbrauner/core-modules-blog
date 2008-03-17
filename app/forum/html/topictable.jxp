@@ -55,7 +55,7 @@ if(hideTopic){
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
-                                                       function(t){ return {onChange: "moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
+                                                       function(t){ return {onChange: "fromTopic='"+t.name+"';moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
                                         {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
                                             // We wrap the function so that when we get the Special Topics,
                                             // we don't generate a <select> for you to move them.
@@ -117,14 +117,14 @@ var yes = { newtopic : function() {
           ajax(passData, "topic_new.jxp", addTopicToTable);
      },
      move : function() {
-          this.hide();
-          this.target(this.targetId);
+          dialog.hide();
+          dialog.target(this.targetId);
      },
      confirm : function() {
-          this.hide();
+          dialog.hide();
      },
      edittopic : function() {
-          this.hide();
+          dialog.hide();
           var ntForm = document.getElementById("edittopic");
           var passData = "";
           for(var i=0; i<ntForm.elements.length; i++) {
@@ -134,7 +134,7 @@ var yes = { newtopic : function() {
           ajax(passData, "topic_edit.jxp", changeTagline);
      },
      newuser: function() {
-          this.hide();
+          dialog.hide();
           var form = document.getElementById('userform');
           form.submit();
      }
@@ -142,19 +142,28 @@ var yes = { newtopic : function() {
 
 
 var no = { newtopic : function() { dialog.hide(); },
-     move : function() { this.hide();
+     move : function() { dialog.hide();
                          document.getElementById(this.targetId).value = ""; },
-     edittopic : function() { this.hide(); },
-     newuser: function() { this.hide(); } };
+     edittopic : function() { dialog.hide(); },
+     newuser: function() { dialog.hide(); } };
+
+var fromTopic = "";
 
 function moveDlg(label, target, targetId) {
-    var myButtons = [ { text:"Move", handler: yes['move'] },
-                      { text:"Cancel", handler: no['move'] } ];
+         alert(targetId);
     dialog.target = target;
     dialog.targetId = targetId;
+
+    toTopic = document.getElementById(targetId).value != '(Top Level)' ? 'the topic "'+document.getElementById(targetId).value+'"' : 'the home page';
+    message = '<fieldset class="dlg"><legend>Move Topic to '+toTopic+'</legend>'
+             +'<div class="field">Are you sure you want to move "'+fromTopic+'" to '+toTopic+'?</div>'
+             +'<div class="btns"><input type="button" class="button" value="Move" onclick="yes[\'move\']()">'
+             +'<input type="button" class="button" value="Cancel" onclick="no[\'move\']()"></div>'
+             +'</fieldset>';
+
     if(! document.getElementById(targetId).value) return;
-    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
-    makeDialog("Move", "Do you really want to move this "+label+"?", myButtons);
+//    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+    makeDialog("", message);
 }
 
 function newTopic(parent) {
@@ -169,17 +178,16 @@ function newTopic(parent) {
 }
 
 function editTopic(parent) {
-  var message = '<form action="topic_edit" id="edittopic">'
+  var message = '<fieldset class="dlg"><legend>Edit Topic</legend><form action="topic_edit" id="edittopic">'
     +'<input type="hidden" name="id" value="<%= opts.thisid %>">'
-    +'<div>Closing a thread prevents users from posting replies.</div>'
-      +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= content.HTML.escape((topic) ? topic.name : "") %>"></div>'
-      +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= content.HTML.escape((topic) ? topic.description : "") %>"></div>'
-      +'<div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>></div>'
-  +'</form>';
+    +'<div class="field">Closing a thread prevents users from posting replies.</div>'
+      +'<div class="field"><label>Topic Name</label><input type="text" class="text" name="name" value="<%= content.HTML.escape((topic) ? topic.name : "") %>"></div>'
+      +'<div class="field"><label>Description</label><input type="text" class="text" name="description" value="<%= content.HTML.escape((topic) ? topic.description : "") %>"></div>'
+      +'<div class="field"><label>&nbsp;</label><input type="checkbox" class="check" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>><span class="rightlabel">Closed</span></div>'
+      +'<div class="btns"><input type="button" class="button" value="Save" onclick="yes[\'edittopic\']()"><input type="button" class="button" value="Cancel" onclick="no[\'edittopic\']()"></div>'
+  +'</form></fieldset>';
 
-    var myButtons = [ { text:"Save", handler: yes['edittopic'] },
-                      { text:"Cancel", handler: no['edittopic'], } ];
-    makeDialog("Edit Topic", message, myButtons);
+    makeDialog("", message);
 
 }
 

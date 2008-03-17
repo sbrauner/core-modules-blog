@@ -192,7 +192,7 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // 2. the post is the first non-deleted post in the thread
      var action_ar = [];
      if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){
-           action_ar.push('<div class="button" onclick="splitter_d.post=\''+post.getID()+'\'; splitter_d.show()">Split</div>');
+           action_ar.push('<div class="button" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()">Split</div>');
      }
      if(post.deleted == "deleted" && canDelete) {
            action_ar.push('<div class="button" onclick="undeletePost(\''+ post.getID() +'\')">Undelete</div>');
