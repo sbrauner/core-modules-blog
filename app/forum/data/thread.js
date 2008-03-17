@@ -101,6 +101,18 @@ app.Forum.data.Thread.prototype.modifyPostCount = function(num){
 app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     p.deleted = reason;
+
+    if(this.latestPost == desc_id){
+        var reps = this.getReplies();
+        for(var i = reps.length - 1; i >= 0; --i){
+            if(! reps[i].deleted){
+                break;
+            }
+        }
+        this.latestPost = reps[i].getID();
+        this.lastPostTime = new Date(reps[i].ts.getTime());
+    }
+
     this.save();
     this.saveDescendant(p);
     this.modifyPostCount(-1);
@@ -110,6 +122,12 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     if(p.deleted == reason){
         p.deleted = false;
+
+        if(p.ts > this.lastPostTime){
+            this.lastPostTime = new Date(p.ts.getTime());
+            this.latestPost = p.getID();
+        }
+
         this.modifyPostCount(1);
         this.save();
         this.saveDescendant(p);
