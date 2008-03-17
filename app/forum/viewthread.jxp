@@ -50,11 +50,12 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 
 
 <div id="splitterDiv" style="display: none;">
-<fieldset class="dlg"><legend>Split Thread</legend>
+<fieldset class="dlg"><legend>Create New Thread From Split Posts</legend>
 <form id="splitterForm" action="thread_action">
 <input type="hidden" id="split_select" name="select">
 <input type="hidden" name="action" value="split">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
+<div class="field">Splitting a thread will move the select and all subsequent posts to a new thread in the chosen topic.</div>
 <div class="field"><label>New Subject</label><input type="text" name="subject" class="text" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
 <div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
      {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
@@ -70,6 +71,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <input type="hidden" name="threadId" value="<%= thread._id %>">
 <input type="hidden" name="select" id="edit_select">
 <input type="hidden" name="action" value="edit">
+<div class="field">Closing a thread prevents users from posting replies.</div>
 <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
 <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>></div>
 <div class="btns"><input type="button" value="Edit" onclick="handleEditSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
