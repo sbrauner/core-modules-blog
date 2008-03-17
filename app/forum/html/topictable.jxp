@@ -349,9 +349,6 @@ function addTopicToTable(txt) {
 </script>
 
 
-<h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
-<div id="tagline"><%= description || "" %></div>
-
 <div class="caption">
     <%
     var caption_ar = [];
@@ -359,11 +356,9 @@ function addTopicToTable(txt) {
         caption_ar.push('<div class="button" onclick="location=\'thread_new?top_id='+opts.thisid+'&reply=true\'">New Thread</div>');
     }
     if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
+      caption_ar.push('<div class="button" onclick="newTopic('+((opts.thisid) ? "'"+ opts.thisid+"'" : '') + ')">New Topic</div>');
       if(opts.thisid){
-        caption_ar.push('<div class="button" onclick="newTopic(\''+opts.thisid+'\')">New Topic</div> | <div class="button" onclick="editTopic(\''+opts.thisid+'\')">Edit Topic</div>');
-      }
-      else {
-        caption_ar.push('<div class="button" onclick="newTopic()">New Topic</div>');
+        caption_ar.push('<div class="button" onclick="editTopic(\''+opts.thisid+'\')">Edit Topic</div>');
       }
     }
     if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){
@@ -375,11 +370,13 @@ function addTopicToTable(txt) {
 
     app.Forum.js.addYesNoDialog();
     %>
+</div>
 
-  </div>
+<h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
+<div id="tagline"><%= description || "" %></div>
+
 
 <%
-
 // Show subtopics
 if(subs && subs.length > 0){
     var tableid = "table1";
