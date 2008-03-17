@@ -430,3 +430,51 @@ input#search {
      font-size: 11px;
      padding: 3px;
 }
+
+
+
+/* Dialog */
+
+div#dlg div#dlg_h {
+     background: white;
+     border-top: 1px dotted #157491;
+     border-left: 1px dotted #157491;
+     border-right: 1px dotted #157491;
+     border-bottom: none;
+}
+div#dlg div.bd {
+     background: white;
+     border-top: none;
+     border-left: 1px dotted #157491;
+     border-right: 1px dotted #157491;
+     border-bottom: 1px dotted #157491;
+}
+div#dlg div.ft {
+     display: none;
+}
+fieldset.dlg {
+     border: 1px solid #157491;
+     margin: 10px;
+     padding: 20px 10px;
+}
+div#dlg div.field {
+     padding-top: 5px;
+     vertical-align: middle;
+}
+div#dlg label {
+     display: block;
+     width: 100px;
+     margin: 5px 0px 0px;
+     padding: 0px;
+     text-align: right;
+     float: left;
+}
+div#dlg input.text {
+     border: 1px solid #157491;
+     margin: 0px 0px 0px 10px;
+     width: auto;
+}
+div#dlg div.btns {
+     padding-top: 10px;
+     float: right;
+}
