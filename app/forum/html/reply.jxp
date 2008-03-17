@@ -6,15 +6,15 @@ var options = arguments[1] || {};
 var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
 var filter = (options.filter == null)? function(){return true;} : options.filter;
+var even = (options.even) ? "postbox postboxEven" : "postbox";
 if(! filter(t)) return;
 var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
-log.threaded.data.reply.debug("Trying to show " + t + " " + tojson(t));
 
 var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.format("a").toLowerCase() +"</span>";
 %>
 
 
-<div id="post<%= t.getID() %>" class="postbox <%= htmlclass %>">
+<div id="post<%= t.getID() %>" class="<%= even +" "+ htmlclass %>">
   <a name="<%= t.getID() %>"></a>
     <span class="titlebar">
       <div id="actions<%= t.getID() %>" class="actions">
@@ -22,15 +22,18 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
       </div>
       <div class="author">
         <%= t.author.name %>
-    <% if(app.Forum.Controller.userPermissionType(t.author) == "ADMIN"){ %>
-admin
-    <% }
-else if(app.Forum.Controller.userPermissionType(t.author) == "MODERATOR"){ %>
-moderator
-    <% }
-%>
-</div><div class="ts"><%= prettyDate %>
-      (<a href="#<%= t.getID() %>">#</a>)</div>
+        <%
+        if(app.Forum.Controller.userPermissionType(t.author) == "ADMIN"){
+             print("(administrator)");
+        }
+        else if(app.Forum.Controller.userPermissionType(t.author) == "MODERATOR"){
+             print("(moderator)");
+        }
+        %>
+      </div>
+      <span class="pipe">|</span>
+      <div class="ts"><%= prettyDate %></div>
+        <!--(<a href="#<%= t.getID() %>">#</a>)</div>-->
     </span>
 
     <div class="content">

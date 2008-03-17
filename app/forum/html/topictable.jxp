@@ -161,16 +161,17 @@ function newTopic(parent) {
     var message = '<form id="newtopic" action="topic_new">';
     if(parent)
          message += '<input type="hidden" name="parent" value="'+parent+'">';
-    message += '<div class="field"><label>Name</label><input name="newname" type="text"></div>'+
+    message += '<div>Enter a name to create a new topic on this page.</div><div class="field"><label>Name</label><input name="newname" type="text"></div>'+
                '<div class="field"><label>Description</label><input name="desc" type="text"></div></form>';
     var myButtons = [ { text:"Save", handler: yes['newtopic'] },
                       { text:"Cancel", handler: no['newtopic'] } ];
-    makeDialog("New Topic", message, myButtons);
+    makeDialog("Create a New Topic", message, myButtons);
 }
 
 function editTopic(parent) {
   var message = '<form action="topic_edit" id="edittopic">'
     +'<input type="hidden" name="id" value="<%= opts.thisid %>">'
+    +'<div>Closing a thread prevents users from posting replies.</div>'
       +'<div class="field"><label>Topic Name:</label><input type="text" name="name" value="<%= content.HTML.escape((topic) ? topic.name : "") %>"></div>'
       +'<div class="field"><label>Description:</label><input type="text" name="description" value="<%= content.HTML.escape((topic) ? topic.description : "") %>"></div>'
       +'<div class="field"><label>Closed:</label><input type="checkbox" name="closed" value="closed" <%= (topic) ? (topic.allowPosts ? "" : "CHECKED") : "" %>></div>'

@@ -12,7 +12,12 @@ h2 {
 
 .postbox {
     padding: 9px 6px;
-    border: 1px solid black;
+    border: 1px solid #157491;
+    margin-bottom: 10px;
+}
+.postboxEven {
+    padding: 0px;
+    border: none;
     margin-bottom: 10px;
 }
 
@@ -34,8 +39,9 @@ td {
 
 .caption {
 	padding: 0 0 5px 0;
-		font-size: 12px;
-		text-align: right;
+	font-size: 12px;
+	text-align: right;
+        float: right;
 }
 
 table#style1, table.style1 {
@@ -142,13 +148,17 @@ div.postbox span.titlebar div.title {
 }
 div.postbox span.titlebar div.author {
         display: inline;
-        padding: 0px 10px 0px 0px;
+        padding: 0px 0px 0px 0px;
+}
+div.postbox span.pipe {
+      padding-left: 5px;
+      padding-right: 5px;
 }
 div.postbox span.titlebar div.ts {
       display: inline;
 }
 div.postbox span.titlebar div.ts span.time {
-      color: #5C0000;
+      color: #A81817;
 }
 div.postbox div.content {
          padding-top: 18px;
@@ -160,7 +170,9 @@ div.postbox div.selectThread {
         padding: 0px 10px 0px 0px;;
 }
 div.threadFooter {
-        padding-bottom: 30px;
+        background: #F0EFEF;
+        border: 1px dotted #157491;
+        padding: 20px 30px;
 }
 .threadFooter div.opt {
         display: inline;
@@ -247,6 +259,7 @@ div.threadFooter div.button {
 }
 div.caption div.button {
            display: inline;
+           margin-top: -5px;
 }
 
 div.caption input.submit {
@@ -307,6 +320,8 @@ td select {
 form.search {
      width: 100%;
      text-align: right;
+     padding-bottom: 0px;
+     margin-bottom: 6px;
 }
 
 table.search div {
@@ -364,6 +379,7 @@ h1 {
 }
 img.feed {
      padding: 3px 3px 0px 3px;
+     margin-bottom: -2px;
 }
 
 
@@ -379,4 +395,23 @@ div.topic_desc {
 
 div.subtopic_link a {
      cursor: pointer;
+}
+h1#forumtitle {
+     display: block;
+     padding-bottom: 10px;
+     padding-top: 20px;
+     margin-bottom: 0px;
+}
+h2#threadtitle {
+     display: block;
+     font-size: 16px;
+     padding-top: 15px;
+     padding-bottom: 0px;
+     margin-bottom: 4px;
+}
+textarea#ncontent {
+     width: 100%;
+}
+div.paging {
+     float: right;
 }
