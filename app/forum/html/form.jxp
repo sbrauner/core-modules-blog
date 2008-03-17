@@ -195,16 +195,16 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
            action_ar.push('<div class="button" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()">Split</div>');
      }
      if(post.deleted == "deleted" && canDelete) {
-           action_ar.push('<div class="button" onclick="post='+ post.getID() +'; undeletePost('+ post.getID() +')">Undelete</div>');
+           action_ar.push('<div class="button" onclick="undeletePost(\''+ post.getID() +'\')">Undelete</div>');
      }
      if(post.deleted == "moderated" && canModerate){
-           action_ar.push('<div class="button" onclick="post='+ post.getID() +'; unmoderatePost('+post.getID()+')">Unmoderate</div>');
+           action_ar.push('<div class="button" onclick="unmoderatePost(\''+post.getID()+'\')">Unmoderate</div>');
      }
      if (thread.count > 1 && !post.deleted && canDelete){
-            action_ar.push('<div class="button" onclick="post='+post.getID()+'; deletePost('+post.getID()+')">Delete</div>');
+            action_ar.push('<div class="button" onclick="deletePost(\''+post.getID()+'\')">Delete</div>');
      }
      if(thread.count > 1 && !post.deleted && canModerate){
-           action_ar.push('<div class="button" onclick="post=<%= post.getID() %>; moderatePost('+post.getID()+')">Moderate</div>');
+           action_ar.push('<div class="button" onclick="moderatePost(\''+post.getID()+'\')">Moderate</div>');
      }
 
     %>

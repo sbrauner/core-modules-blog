@@ -425,13 +425,15 @@ div.paging {
      float: right;
 }
 
+table select {
+      width: 10em;
+}
+
 input#search {
      border: 1px solid #157491;
      font-size: 11px;
      padding: 3px;
 }
-
-
 
 /* Dialog */
 

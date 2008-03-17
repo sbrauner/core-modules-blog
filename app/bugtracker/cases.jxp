@@ -9,14 +9,29 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 %>
 
 <html>
-  <head>
-    <title>Cases list</title>
-  </head>
-  <body>
-    <h1>Cases</h1>
+    <head>
+        <title>Cases List</title>
+        <link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">
+        <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="/@@/yui/current/container/container_core.js"></script>
+        <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
+        <script type="text/javascript" src="assets/menu.js"></script>
+    </head>
+    <body class="yui-skin-sam">
+        <div id="top_menu" class="yuimenubar">
+            <div class="bd">
+                <ul class="first-of-type">
+                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New case</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a project</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="yui-main">
 
     <% if(request.msg){ %>
-    <div class="notice"><%= content.HTML.escape_html(request.msg) %>
+        <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
 {
@@ -38,9 +53,9 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "type", searchWidth: 10, heading: "Type", cssClassName: 'field', view: function(x) { return x? x: "none"; }},
             {name: "project", searchWidth: 10, heading: "Project", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
             queryForm: function(u) { return db.bugtracker.projects.findOne({name: new RegExp(u)});} },
-            {name: "area", searchWidth: 10, heading: "Area", cssClassName: 'field'},
-            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
-            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
+            {name: "area", searchWidth: 10, heading: "Area", cssClassName: 'field'}
+//            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
+//            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
         detailUrl: "case_edit?id=",
         searchable: true
@@ -49,13 +64,6 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     tab.dbview(tab.find(null, {number: 1}));
 }
 
-    <a href="case_edit">New case</a><br/>
 
-<% if(user){ %>
-<a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a><br/>
-<% } %>
-
-<a href="project_edit">Edit a project</a>
-
-
+</div>
 </body>

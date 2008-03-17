@@ -38,6 +38,7 @@ var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 var page = request.page;
 
+var threadClosed = thread.getClosed();
 
 var url = new URL(request.getURL());
 
@@ -69,8 +70,8 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <input type="hidden" name="threadId" value="<%= thread._id %>">
 <input type="hidden" name="select" id="edit_select">
 <input type="hidden" name="action" value="edit">
-<div class="field"><label>Subject:</label><input type="text" class="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label></label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '>Closed</div>
+<div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
+<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>></div>
 <div class="btns"><input type="button" value="Edit" onclick="handleEditSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
 </form>
 </fieldset>
@@ -85,43 +86,47 @@ var showModerated = <%= request.show == "moderated" ? 'true' : 'false' %>
 
 var post;
 
-function deletePost() {
+function deletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Deleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=delete";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "deleted");
      if(showDeleted)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; undeletePost('+post+')" value="Undelete">';
+          document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="undeletePost(\''+post+'\')">Undelete</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
      } );
 }
 
-function moderatePost() {
+function moderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Moderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=moderate";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "moderated");
      if(showModerated)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; unmoderatePost('+post+')" value="Unmoderate">';
+          document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="unmoderatePost(\''+post+'\')">Unmoderate</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
      } );
 }
 
-function unmoderatePost() {
+function unmoderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Unmoderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=unmoderate";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         addCaptionBtns(post, reply);
+     });
 }
 
-function undeletePost() {
+function undeletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Undeleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=undelete";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         addCaptionBtns(post, reply);
+     });
 }
 
-function addCaptionBtns(reply) {
+function addCaptionBtns(post, reply) {
      YAHOO.util.Dom.removeClass("post"+post, "deleted");
      YAHOO.util.Dom.removeClass("post"+post, "moderated");
      document.getElementById("actions"+post).innerHTML = reply;
@@ -134,7 +139,6 @@ var handleEditSubmit = function() {
 
 var handleSplitSubmit = function() {
     document.getElementById("split_select").value=post;
-//    document.forms.splitterForm.submit();
     splitter_d.submit();
 }
 
