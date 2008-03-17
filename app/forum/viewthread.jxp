@@ -283,9 +283,11 @@ replies.forEach(function(reply){
 %>
 <div id="newpostbox">
 </div>
-<%
-core.app.forum.html.paging(paging);
 
+<%
+print('<div class="paging">');
+core.app.forum.html.paging(paging);
+print('</div>');
 %>
 
 <script type="text/javascript">
@@ -308,7 +310,7 @@ function goToNewPost(response) {
 
 </script>
 
-<div id="threadFooter" class="threadFooter">
+<div id="threadFooter" class="threadFooter" style="clear:right">
     <%
     if(canPost){ %>
          <form id="replyform">
