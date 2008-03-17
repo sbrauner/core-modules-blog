@@ -183,4 +183,4 @@ db.forum.threads.ensureIndex({pinned: 1});
 db.forum.threads.ensureIndex({pinned: 1, lastPostTime: 1});
 core.db.db();
 dbutil.associate(app.Forum.data.Thread, db.forum.threads);
-Search.fixTable(db.forum.threads, app.Forum.data.Thread.prototype.SEARCH_OPTIONS);
+Search.fixTable(db.forum.threads, app.Forum.data.Thread.prototype.SEARCH_WEIGHTS);
