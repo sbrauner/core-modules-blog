@@ -48,31 +48,32 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 %>
 
 
-<div id="splitterDiv">
-<div class="hd">Split Thread</div>
-<div class="bd">
+<div id="splitterDiv" style="display: none;">
+<fieldset class="dlg"><legend>Split Thread</legend>
 <form id="splitterForm" action="thread_action">
 <input type="hidden" id="split_select" name="select">
 <input type="hidden" name="action" value="split">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
-<div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label>Topic:</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+<div class="field"><label>New Subject</label><input type="text" name="subject" class="text" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
+<div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
      {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
-</div></form>
 </div>
+<div class="btns"><input type="button" value="Split" onclick="handleSplitSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
+</form>
+</fieldset>
 </div>
 
-<div id="editThreadDiv">
-<div class="hd">Edit Thread</div>
-<div class="bd">
+<div id="editThreadDiv" style="display: none;">
+<fieldset class="dlg"><legend>Edit Thread</legend>
 <form id="editThreadForm" action="thread_action">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
 <input type="hidden" name="select" id="edit_select">
 <input type="hidden" name="action" value="edit">
-<div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '></div>
+<div class="field"><label>Subject:</label><input type="text" class="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
+<div class="field"><label></label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '>Closed</div>
+<div class="btns"><input type="button" value="Edit" onclick="handleEditSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
 </form>
-</div>
+</fieldset>
 </div>
 
 
@@ -127,14 +128,19 @@ function addCaptionBtns(reply) {
 }
 
 
-var handleSubmit = function() {
+var handleEditSubmit = function() {
+    edit_d.submit();
+}
+
+var handleSplitSubmit = function() {
     document.getElementById("split_select").value=post;
-    document.getElementById("edit_select").value=post;
-    this.submit();
+//    document.forms.splitterForm.submit();
+    splitter_d.submit();
 }
 
 var handleCancel = function() {
-    this.hide();
+    splitter_d.hide();
+    edit_d.hide();
 }
 
 var handleSuccess = function(o) {
@@ -151,32 +157,34 @@ var handleSuccess = function(o) {
     }
 }
 
+var edit_d, splitter_d;
+
 var loader = new YAHOO.util.YUILoader({
     require: ["container"],
     loadOptional: true,
     onSuccess: function() {
          splitter_d = new YAHOO.widget.Dialog("splitterDiv", {
-              width: "300px",
+              width: "400px",
               fixedcenter: true,
               modal:true,
               visible:false,
               draggable:true,
               postmethod: "form"
          });
-         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]);
+/*         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSplitSubmit},
+                        {text: "Cancel", handler:handleCancel}]);*/
          splitter_d.render(document.body);
 
 
          edit_d = new YAHOO.widget.Dialog("editThreadDiv", {
-              width: "300px",
+              width: "400px",
               fixedcenter: true,
               modal:true,
               visible:false,
               draggable:true,
          });
-         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]);
+/*         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
+                        {text: "Cancel", handler:handleCancel}]);*/
          edit_d.callback = { success: handleSuccess };
          edit_d.render(document.body);
     }
@@ -203,7 +211,7 @@ function toggleHighlight() {
 app.Forum.html.search(thread.topic.name);
 var caption_ar = [];
 if(app.Forum.Controller.hasPermission(user, "editThread")) {
-     caption_ar.push('<a href="#"><div class="button" onclick="edit_d.show()">Edit Thread</div></a>');
+     caption_ar.push('<a href="#"><div class="button" onclick="document.getElementById(\'editThreadDiv\').style.display=\'block\';edit_d.show()">Edit Thread</div></a>');
 }
 if(request.show == "deleted"){
      caption_ar.push('<a href="'+url.removeArg("show")+'"><div class="button">Hide deleted</div></a>');

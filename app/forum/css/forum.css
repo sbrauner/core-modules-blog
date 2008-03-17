@@ -435,14 +435,14 @@ input#search {
 
 /* Dialog */
 
-div#dlg div#dlg_h {
+div#dlg div#dlg_h, div#editThreadDiv_h, div#splitterDiv_h {
      background: white;
      border-top: 1px dotted #157491;
      border-left: 1px dotted #157491;
      border-right: 1px dotted #157491;
      border-bottom: none;
 }
-div#dlg div.bd {
+div#dlg div.bd, div#editThreadDiv, div#splitterDiv {
      background: white;
      border-top: none;
      border-left: 1px dotted #157491;
@@ -457,11 +457,14 @@ fieldset.dlg {
      margin: 10px;
      padding: 20px 10px;
 }
-div#dlg div.field {
+legend {
+       font-size: 1.1 em;
+}
+div#dlg div.field, div#editThreadDiv div.field, div#splitterDiv div.field {
      padding-top: 5px;
      vertical-align: middle;
 }
-div#dlg label {
+div#dlg label, div#editThreadDiv label, div#splitterDiv label {
      display: block;
      width: 100px;
      margin: 5px 0px 0px;
@@ -469,12 +472,16 @@ div#dlg label {
      text-align: right;
      float: left;
 }
-div#dlg input.text {
+div#dlg input.text, div#editThreadDiv input.text, div#splitterDiv input.text, div#splitterDiv select {
      border: 1px solid #157491;
      margin: 0px 0px 0px 10px;
      width: auto;
 }
-div#dlg div.btns {
+div#dlg input.check, div#editThreadDiv input.check, div#splitterDiv input.check {
+     margin: 0px 10px 0px 10px;
+     width: auto;
+}
+div#dlg div.btns, div#editThreadDiv div.btns, div#splitterDiv div.btns {
      padding-top: 10px;
      float: right;
 }
