@@ -106,10 +106,20 @@ if(request.fstatus){
         orig = db.bugtracker.cases.findOne( { _id: request.id } );
     }
 }
+
+title = "New Case";
+if (feature.number > 0) title = "Case #" + feature.number;
 %>
 <html>
   <head>
-    <title>Editing case</title>
+    <title><%= title %></title>
+    <!-- <link rel="stylesheet" type="text/css" href="/@@/yui/current/reset-fonts-grids/reset-fonts-grids.css"> -->
+    <link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">
+    <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="/@@/yui/current/container/container_core.js"></script>
+    <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
+    <script type="text/javascript" src="assets/menu.js"></script>
+
     <script>
       function enableInput(input){
           var elems = document.getElementsByName(input);
@@ -150,20 +160,24 @@ function ObjectId(){ return null; }
               //
           areatext.disabled = true;
       }
-<%if(request.id==null){%>
-function bodyLoad(){
-    document.getElementById( "ftitle" ).focus();
-}
-<%}%>
+
+      function bodyLoad(){
+          document.getElementById( "ftitle" ).focus();
+      }
     </script>
   </head>
-<body onload="bodyLoad()" >
-    <% if(feature.number != 0){ %>
-    <h1>Editing case number <%= feature.number %></h1>
-    <% } else { %>
-    <h1>Editing new case</h1>
-    <% } %>
-    <a href="./">Case list</a>
+<body class="yui-skin-sam" onload="<%= request.id ? "" : "bodyLoad()" %>" >
+
+    <div id="top_menu" class="yuimenubar">
+        <div class="bd">
+            <ul class="first-of-type">
+                <li class="yuimenubaritem first-of-type"><a href="./">Case list</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="yui-main">
+        <h1><%= title %></h1>
 
     <% if (orig) { %>
     <div id="original">
@@ -185,71 +199,68 @@ function bodyLoad(){
     <% } %>
 
     <form method="POST">
-      <input type="hidden" name="f_id"/>
-      <input type="hidden" name="starttime" value="<%= timestamp %>"/>
-      <div id="post_form">
-        <div class="field">
-          <div class="field_name">Title</div>
-          <div class="field_value"><input size="80" id="ftitle" name="ftitle"/></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Date reported</div>
-          <div class="field_value"><%= feature.creationDate%></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Last modified</div>
-          <div class="field_value"><%= feature.lastModified%></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Reporter</div>
-          <div class="field_value"><%= feature.reporter.name %></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Owner</div>
-          <div class="field_value">
-            <% // This doesn't set the None user if feature.owner
-    // is null; that happens implicitly since None is first. %>
-    <%= app.bugtracker.data.helper.select(feature, "owner", "f",
-                                          [false].concat(db.users.find({}).toArray()),
-                                          {view: function(u){return u?u.name:"None";},
-                                           value: function(u){return u?u._id:"null"; },
-                                          }) %> </div>
-        </div>
-        <div class="field">
-          <div class="field_name">Status</div>
-          <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "status", "f") %></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Severity</div>
-          <div class="field_value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Type</div>
-          <div class="field_value">
-            <%=
-               app.bugtracker.data.helper.select(feature, "type", "f") %>
-          </div>
-        </div>
-        <div class="field">
-          <div class="field_name">Project</div>
-          <div class="field_value">
-            <%
-var choices = app.bugtracker.app.list_projects();
-choices = [new app.bugtracker.data.Project("None")].concat(choices);
-var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
-
-                       %>
-            <%=
-               app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
+    <input type="hidden" name="f_id"/>
+    <input type="hidden" name="starttime" value="<%= timestamp %>"/>
+    <table>
+        <tr>
+            <td class="label case_title">Title</td>
+            <td class="value case_title" colspan="3"><input size="50" id="ftitle" name="ftitle"/></td>
+        </tr>
+        <tr>
+            <td class="label">Date reported</td>
+            <td class="value"><%= feature.creationDate%></td>
+            <td class="label">Last modified</td>
+            <td class="value"><%= feature.lastModified%></td>
+        </tr>
+        <tr>
+            <td class="label">Reporter</td>
+            <td class="value"><%= feature.reporter.name %></td>
+            <td class="label">Owner</td>
+            <td class="value">
+                  <% //This doesn't set the None user if feature.owner is null; that happens implicitly since None is first. %>
+          <%= app.bugtracker.data.helper.select(feature, "owner", "f",
+                                                [false].concat(db.users.find({}).toArray()),
+                                                {view: function(u){return u?u.name:"None";},
+                                                 value: function(u){return u?u._id:"null"; },
+                                                }) %> </div>
+        </tr>
+        <tr>
+            <td class="label">Status</td>
+            <td class="value"><%= app.bugtracker.data.helper.select(feature, "status", "f") %></td>
+            <td class="label">Severity</td>
+            <td class="value"><%= app.bugtracker.data.helper.select(feature, "severity", "f") %></td>
+        </tr>
+        <tr>
+            <td class="label">Type</td>
+            <td class="value"><%= app.bugtracker.data.helper.select(feature, "type", "f") %></td>
+            <td class="label">OS</td>
+            <td class="value">
+                   <% var choices = app.bugtracker.list_OSes();
+                      if (choices) { %>
+                   <%= app.bugtracker.data.helper.select(feature, "OS", "f", choices)%>
+                              <% }
+                      else { %>
+                              <input name="fOS"/>
+                              <% } %>
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Project</td>
+            <td class="value">
+                <%
+                var choices = app.bugtracker.app.list_projects();
+                choices = [new app.bugtracker.data.Project("None")].concat(choices);
+                var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
+                %>
+                <%=
+                app.bugtracker.data.helper.select(feature, "project", "f", pchoices,
                                                  {view: function(p){ return p.name; },
                                                   value: function(p){ return p._id; },
                                                   onchange: "enableInput('fproject');updateAreas();"})%>
-            <input name="extra_fproject" <%=choices.length > 0? "disabled=\"true\"": "" %>/>
-          </div>
-        </div>
-        <div class="field">
-          <div class="field_name">Area</div>
-          <div class="field_value">
+                <input name="extra_fproject" <%=choices.length > 0? "disabled=\"true\"": "" %>/>
+            </td>
+            <td class="label">Area</td>
+            <td class="value">
             <%
             var project = feature.project || choices[0];
 var pchoices = ["None"].concat(project.areas);
@@ -261,55 +272,51 @@ if(project.areas.length > 0){
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
                                                  {onchange: "enableInput('farea')"})%>
             <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
-          </div>
-        </div>
-        <div class="field">
-          <div class="field_name">OS</div>
-          <div class="field_value">
-                   <% var choices = app.bugtracker.list_OSes();
-                      if (choices) { %>
-                   <%= app.bugtracker.data.helper.select(feature, "OS", "f", choices)%>
-                              <% }
-                      else { %>
-                              <input name="fOS"/>
-                              <% } %>
-          </div>
-        </div>
-        <div class="field">
-          <div class="field_name">Target release</div>
-          <div class="field_value"><input name="ftargetRelease"/></div>
-        </div>
-        <div class="field">
-          <div class="field_name">Description</div>
-          <div class="field_value"><textarea cols=80 rows=20 name="fdescription"><%= feature.description %></textarea></div>
-        </div>
-        <div class="field">
-            <div class="field_name">&nbsp;</div>
-            <div class="field_value"><input type="submit" value="Save"></div>
-      </div>
-    </form>
+          </td>
+        </tr>
+        <tr>
+            <td class="label">Target Release</td>
+            <td class="value" colspan="3"><input size="30" name="ftargetRelease"/></td>
+        </tr>
+        <tr><td colspan="4" class="section_divider"><hr /></td></tr>
+        <tr>
+            <td class="label description">Description</td>
+            <td class="value" colspan="3"><textarea cols=80 rows=20 name="fdescription"><%= feature.description %></textarea></td>
+        </tr>
+        <tr>
+            <td class="label">&nbsp;</td>
+            <td class="value" colspan="3"><input type="submit" value="Save"></td>
+        </tr>
 
-    <form method="POST">
-      <input type="hidden" name="f_id"/>
-      <input type="hidden" name="_method" value="delete"/>
-        <div class="field">
-            <div class="field_name">&nbsp;</div>
-            <div class="field_value"><input type="submit" value="Delete"
-                                            onclick="return confirm('Are you sure you want to delete this item?');" <%= request.id == null? "disabled=\"true\"" : ""%>></div>
-      </div>
-      </form>
-<div class="comments">
-<hr>
-Comments:
-<div><% if(feature.decoratorsHandle()){
-    feature.lastModified = new Date();
-    db.bugtracker.cases.save(feature);
-}%></div>
-<%
-feature.decoratorsRender("threaded.replylink");
-feature.decoratorsRender("threaded.replyform");
-feature.decoratorsRender("threaded.replies");
- %>
+        <tr>
+            <td class="label">&nbsp;</td>
+            <td class="value" colspan="3">
+                <form method="POST">
+                <input type="hidden" name="f_id"/>
+                <input type="hidden" name="_method" value="delete"/>
+                <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this item?');" <%= request.id == null? "disabled=\"true\"" : ""%> >
+                </form>
+            </td>
+        </tr>
+        <tr><td colspan="4" class="section_divider"><hr /></td></tr>
+    </table>
+    </form>
+    <div class="comments">
+        <h1>Comments</h1>
+        <div>
+            <%
+            if(feature.decoratorsHandle()) {
+                feature.lastModified = new Date();
+                db.bugtracker.cases.save(feature);
+            }
+            %>
+        </div>
+        <%
+        feature.decoratorsRender("threaded.replylink");
+        feature.decoratorsRender("threaded.replyform");
+        feature.decoratorsRender("threaded.replies");
+        %>
+    </div>
 </div>
 
   </body>
