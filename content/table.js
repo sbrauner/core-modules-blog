@@ -1,29 +1,42 @@
 /* table.js
 
-Fields in the constructor specification object:
+htmltable provides a means to display data from the database in table format automatically, 
+with some additional functionality automatically provided such as a simple search user 
+interface.
 
-tabname: name of the table.  used in the html etc. optional if only one table on the page.
-ns: namespace in the db to query
-cols: column specs
-  name:         col name
-  searchWidth:  width of the input field in the heading
+Fields in the constructor specification object listed below.  Most fields are optional and 
+have reasonable defaults.
+
+tableName:      name of the table.  used in the html etc. optional if only one table on the page.
+                Not yet supported/used.
+ns:             database collection object to query
+searchable:     if true, search header provided and supported
+cols:           array of column specifications
+  name:         column name (corresponds to name of member in each database object)
+  searchWidth:  width of the search input field in the heading, if using search
   heading:      prettier name than 'name' for col heading
-  view:         function that makes the value for the col pretty
+  view:         function that makes the value for the column pretty
   type:         "boolean" for bool columns.  used by search.
-  queryForm:    translate what the user typed in the input field into db query format
-  isLink:       true or false; display this column as a link to the detail for this row
+  queryForm:    user specified function to translate, on a search, what the user typed in the 
+                column input field  into db query format.
+                Optional; by default most things entered are converted into a case insensitive
+		regular expression.
+  isLink:       true or false; display this column as a link to the detail for this row.
   className:    CSS class name for this field
-detailUrl: drill down url prefix.  uses obj id (_id)
-detail: function which takes object and returns detail url
-searchable: if you want it searchable.
-filter: a function, which if specified, returns true if the row from the db should be included for display.  Note you are
-  generally better off including the condition in the query rather than using this client-side facility.
+  searchable:   specifies if specific column is searchable.  defaults to true if table overall
+                is searchable.
+detailUrl:      drill down url prefix.  uses obj id (_id)
+detail:         function which takes object and returns detail url.  when specified, detailUrl 
+                is not used.
+filter:         a function, which if specified, returns true if the row from the db should be 
+                displayed.  You are generally better off including the condition in the query 
+		rather than using this client-side facility.
 
 Example:
 
 var tab = new htmltable(
  {
-  ns : posts,
+  ns : db.posts,
   cols : [
     { name: "title", searchWidth: 40 },
     { name: "author" },
@@ -219,12 +232,13 @@ function htmltable(specs) {
     };
 
     this.find = function(baseQuery, baseSort) {
-        return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
+	assert(isObject(this.specs.ns));
+	return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
     };
 
     this.dbview = function(cursor) {
         print("<table>\n");
-        this._rows( cursor );
+        this._rows(cursor );
         if( cursor.numSeen() == 300 )
             print( tr(["Only first 300 results displayed."]) );
         print("</table>\n");

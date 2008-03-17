@@ -89,19 +89,24 @@ pre {
     width: 100%;
 }
 
+.content p {
+	margin: 1em 0 0 0;
+	padding: 0;
+}
+
 /* Layout */
 
 #container {
-	width: 975px;
+	width: 840px;
 	margin: 0 auto;
 }
 
 #nav {
-	width: 825px;
+	width: 690px;
 }
 
 #nav ul {
-	margin: 84px 0 0 183px;
+	margin: 84px 0 0 125px;
 }
 
 #maincontent {

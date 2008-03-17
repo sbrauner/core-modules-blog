@@ -45,14 +45,6 @@ var url = new URL(request.getURL());
 head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTML.escape(thread.getTitle())+'" href="thread_rss.jxp?id='+thread._id+'" />');
 
      var choices = db.forum.topics.find({parent: null}).toArray();
-     var deleteThread = app.Forum.Controller.hasPermission(user, "deleteThread");
-     var moderateThread = app.Forum.Controller.hasPermission(user, "moderateThread");
-
-     if(deleteThread)
-            choices.push({_id: app.Forum.Controller.specialDeletedID, name: "Delete"});
-     if(moderateThread)
-            choices.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderate"});
-
 %>
 
 

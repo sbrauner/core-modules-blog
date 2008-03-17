@@ -31,7 +31,7 @@ if(request.newname){
 // move this somewhere central
 var topics = db.forum.topics.find({parent: null}).toArray();
 topicActions = [];
-topics = [{_id: null, name: "(:Top Level:)"}].concat(topics);
+topics = [{_id: null, name: "(Top Level)"}].concat(topics);
 
 t = topic || topics[0];
 

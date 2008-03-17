@@ -16,7 +16,7 @@ app.Forum.data.Thread = function(){
     this.topic = null;
 };
 
-app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
+app.Forum.data.Thread.prototype.SEARCH_WEIGHTS = {
     title: 1,
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
@@ -26,8 +26,16 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     }
 };
 
+app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
+    title: {stripHTML: true},
+    threaded_children: {
+        title: {stripHTML: true},
+        content: {stripHTML: true}
+    }
+};
+
 app.Forum.data.Thread.prototype.presave = function() {
-    Search.index( this , this.SEARCH_OPTIONS );
+    Search.index( this , this.SEARCH_WEIGHTS, this.SEARCH_OPTIONS );
 };
 
 app.Forum.data.Thread.prototype.getTitle = function() {
@@ -101,6 +109,18 @@ app.Forum.data.Thread.prototype.modifyPostCount = function(num){
 app.Forum.data.Thread.prototype.removePost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     p.deleted = reason;
+
+    if(this.latestPost == desc_id){
+        var reps = this.getReplies();
+        for(var i = reps.length - 1; i >= 0; --i){
+            if(! reps[i].deleted){
+                break;
+            }
+        }
+        this.latestPost = reps[i].getID();
+        this.lastPostTime = new Date(reps[i].ts.getTime());
+    }
+
     this.save();
     this.saveDescendant(p);
     this.modifyPostCount(-1);
@@ -110,6 +130,12 @@ app.Forum.data.Thread.prototype.addPost = function(reason, desc_id){
     var p = this.getDescendant(desc_id);
     if(p.deleted == reason){
         p.deleted = false;
+
+        if(p.ts > this.lastPostTime){
+            this.lastPostTime = new Date(p.ts.getTime());
+            this.latestPost = p.getID();
+        }
+
         this.modifyPostCount(1);
         this.save();
         this.saveDescendant(p);
@@ -157,4 +183,4 @@ db.forum.threads.ensureIndex({pinned: 1});
 db.forum.threads.ensureIndex({pinned: 1, lastPostTime: 1});
 core.db.db();
 dbutil.associate(app.Forum.data.Thread, db.forum.threads);
-Search.fixTable(db.forum.threads, app.Forum.data.Thread.prototype.SEARCH_OPTIONS);
+Search.fixTable(db.forum.threads, app.Forum.data.Thread.prototype.SEARCH_WEIGHTS);

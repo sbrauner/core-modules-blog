@@ -1,6 +1,8 @@
 // search.js
 
 core.text.stem();
+core.ext.getdefault();
+core.content.html();
 
 if ( Search && Search._doneInit )
     return;
@@ -75,11 +77,11 @@ Search = {
 
     } ,
 
-    index : function( obj, weights ){
-         return Search.indexSub(obj, obj, weights);
+    index : function( obj, weights, options ){
+        return Search.indexSub(obj, obj, weights, options);
     },
 
-    indexSub : function( top , obj , weights ){
+    indexSub : function( top , obj , weights, options){
 
         if ( weights == null )
             throw "weights can't be null";
@@ -87,13 +89,14 @@ Search = {
         if( obj instanceof Array ){
             for(var i = 0; i < obj.length; i++){
                 if(obj[i])
-                    Search.indexSub(top, obj[i], weights);
+                    Search.indexSub(top, obj[i], weights, options);
             }
         }
 
         for ( var field in weights ){
 
             var w = weights[field];
+            var o = Ext.getdefault(options, field, {});
 
             if ( typeof w == "number" ){
                 var idx = Search.getIndexName( weights[field] );
@@ -103,10 +106,13 @@ Search = {
                     words = [];
                     top[idx] = words;
                 }
-
                 var s = obj[field];
                 if ( ! s )
                     continue;
+
+                if(o.stripHTML){
+                    s = content.HTML.strip(s);
+                }
 
                 s.split( Search.wordRegex ).forEach( function( z ){
                     z = Search.cleanString( z );
@@ -117,7 +123,7 @@ Search = {
                 });
             }
             else {
-                Search.indexSub(top, obj[field], w);
+                Search.indexSub(top, obj[field], w, o);
             }
 
         }
@@ -127,7 +133,7 @@ Search = {
 
     queryToArray : function(queryString){
         var words = [];
-        
+
         queryString.split( Search.wordRegex ).forEach( function( z ){
                 z = Search.cleanString( z );
                 if ( z.length == 0 )
