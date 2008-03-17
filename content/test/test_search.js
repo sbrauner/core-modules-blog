@@ -70,6 +70,25 @@ assert( Search.search( t, "go", {min: 1}). length == 0);
 
 t.remove(o);
 
+// HTML stripping
+var WEIGHTS = { title: 1, posts: {text: 0.2}};
+o = {
+    title: 'the &lt; title',
+    posts: [
+        {text: "some &lt; text"},
+        {text: "<b>more</b> text"}
+    ]
+};
+
+var OPTIONS = {posts: {text: {stripHTML: true}}};
+Search.index(o, WEIGHTS, OPTIONS);
+t.save(o);
+Search.fixTable(t, WEIGHTS);
+
+assert( Search.search( t, "lt", {min: 1}).length == 1);
+assert( Search.search( t, "b", {min: 1}).length == 0);
+
+
 //exit();
 
 
