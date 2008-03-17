@@ -39,6 +39,9 @@ if(deletedPosts) link += "&deleted=true";
       <div id="sticky_<%= t._id %>" class="sticky">
         <%= t.pinned ? '<img src="css/sticky-icon.gif" >' : '' %>
       </div>
+      <div id="locked_<%= t._id %>" class="locked">
+        <%= t.getClosed() ? '<img src="css/lock-icon.gif">' : "" %>
+      </div>
     </div>
     <div class="title"><a href="<%= link %>"><%= content.HTML.escape(title) %></a></div>
     <div class="author">started by <%= f.author.name %></div>
