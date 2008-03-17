@@ -199,18 +199,12 @@ function move(threadId) {
         if(text.match("fail")){
             return;
         }
-        // FIXME: This doesn't really handle moving things into subtopics.
-        // We'd need to update the thread/post count.
-        alert(text);
         text = text.replace(/<\/?response>/g, '').replace(/\s/g, '');
-        alert(text);
         var results = text.split(":");
         var id = results[0];
         if(id == "null") return;
-        alert(id);
         var count = results[1];
         var idnode = document.getElementById(id);
-        alert(idnode);
         var tr = idnode.parentNode.parentNode;
         var tds = YAHOO.util.Dom.getChildren(tr);
         tds[1].innerHTML = parseInt(tds[1].innerHTML, 10)+1;
