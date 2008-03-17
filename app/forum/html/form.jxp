@@ -190,27 +190,33 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
         // Don't show split button whenever:
         // 1. the post is deleted
         // 2. the post is the first non-deleted post in the thread
+     var action_ar = [];
+     if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){
+           action_ar.push('<div class="button" onclick="post='+post.getID()+'; splitter_d.show()">Split</div>');
+     }
+     if(post.deleted == "deleted" && canDelete) {
+           action_ar.push('<div class="button" onclick="post='+ post.getID() +'; undeletePost('+ post.getID() +')">Undelete</div>');
+     }
+     if(post.deleted == "moderated" && canModerate){
+           action_ar.push('<div class="button" onclick="post='+ post.getID() +'; unmoderatePost('+post.getID()+')">Unmoderate</div>');
+     }
+     if (thread.count > 1 && !post.deleted && canDelete){
+            action_ar.push('<div class="button" onclick="post='+post.getID()+'; deletePost('+post.getID()+')">Delete</div>');
+     }
+     if(thread.count > 1 && !post.deleted && canModerate){
+           action_ar.push('<div class="button" onclick="post=<%= post.getID() %>; moderatePost('+post.getID()+')">Moderate</div>');
+     }
 
-        if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){ %>
-             <input type="button" class="button" onclick="post=<%= post.getID() %>; splitter_d.show()" value="Split"><%
-        }
-            if(post.deleted == "deleted" && canDelete) { %>
-                 <input type="button" class="button" onclick="post=<%= post.getID() %>; undeletePost(<%= post.getID() %>)" value="Undelete">
-                 <%
-            }
-            if(post.deleted == "moderated" && canModerate){ %>
-                 <input type="button" class="button" onclick="post=<%= post.getID() %>; unmoderatePost(<%= post.getID() %>)" value="Unmoderate">
-                 <%
-            }
-            if (thread.count > 1 && !post.deleted && canDelete){ %>
-                 <input type="button" class="button" onclick="post=<%= post.getID() %>; deletePost(<%= post.getID() %>)" value="Delete">
-                 <%
-            }
-            if(thread.count > 1 && !post.deleted && canModerate){ %>
-                 <input type="button" class="button" onclick="post=<%= post.getID() %>; moderatePost(<%= post.getID() %>)" value="Moderate">
-                 <%
-            }
-        return "";
+    %>
+    <div class="caption">
+    <%
+    for(var i=0; i<action_ar.length-1; i++)
+         print(action_ar[i]+" | ");
+    print(action_ar.length > 0 ? action_ar[action_ar.length-1] : '');
+    %>
+    </div>
+    <%
+    return "";
     });
     return postoptions;
 };

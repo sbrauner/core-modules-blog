@@ -12,7 +12,12 @@ h2 {
 
 .postbox {
     padding: 9px 6px;
-    border: 1px solid black;
+    border: 1px solid #157491;
+    margin-bottom: 10px;
+}
+.postboxEven {
+    padding: 0px;
+    border: none;
     margin-bottom: 10px;
 }
 
@@ -142,13 +147,17 @@ div.postbox span.titlebar div.title {
 }
 div.postbox span.titlebar div.author {
         display: inline;
-        padding: 0px 10px 0px 0px;
+        padding: 0px 0px 0px 0px;
+}
+div.postbox span.pipe {
+      padding-left: 5px;
+      padding-right: 5px;
 }
 div.postbox span.titlebar div.ts {
       display: inline;
 }
 div.postbox span.titlebar div.ts span.time {
-      color: #5C0000;
+      color: #A81817;
 }
 div.postbox div.content {
          padding-top: 18px;
@@ -160,7 +169,9 @@ div.postbox div.selectThread {
         padding: 0px 10px 0px 0px;;
 }
 div.threadFooter {
-        padding-bottom: 30px;
+        background: #F0EFEF;
+        border: 1px dotted #157491;
+        padding: 20px 30px;
 }
 .threadFooter div.opt {
         display: inline;
@@ -379,4 +390,11 @@ div.topic_desc {
 
 div.subtopic_link a {
      cursor: pointer;
+}
+h1#threadtitle {
+     padding-top: 10px;
+     display: block;
+}
+textarea#ncontent {
+     width: 100%;
 }
