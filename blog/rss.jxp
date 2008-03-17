@@ -9,6 +9,9 @@ var now = new Date();
 
 function clean( s ){
 
+    if ( CDN )
+	s = s.replace( /(<img[^>]*src=.)\//g , CDN + "/$1" );
+    
     s = s.replace( /&nbsp;/g , " " );
     s = s.replace( /&rsquo;/g , "'" );
     s = s.replace( /&[mn]dash;/g , "-" );
