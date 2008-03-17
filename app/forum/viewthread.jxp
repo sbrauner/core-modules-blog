@@ -85,43 +85,47 @@ var showModerated = <%= request.show == "moderated" ? 'true' : 'false' %>
 
 var post;
 
-function deletePost() {
+function deletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Deleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=delete";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "deleted");
      if(showDeleted)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; undeletePost('+post+')" value="Undelete">';
+          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="undeletePost(\''+post+'\')" value="Undelete">';
      else
           document.getElementById("post"+post).style.display = "none";
      } );
 }
 
-function moderatePost() {
+function moderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Moderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=moderate";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "moderated");
      if(showModerated)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; unmoderatePost('+post+')" value="Unmoderate">';
+          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="unmoderatePost(\''+post+'\')" value="Unmoderate">';
      else
           document.getElementById("post"+post).style.display = "none";
      } );
 }
 
-function unmoderatePost() {
+function unmoderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Unmoderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=unmoderate";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         addCaptionBtns(post, reply);
+     });
 }
 
-function undeletePost() {
+function undeletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Undeleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=undelete";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         addCaptionBtns(post, reply);
+     });
 }
 
-function addCaptionBtns(reply) {
+function addCaptionBtns(post, reply) {
      YAHOO.util.Dom.removeClass("post"+post, "deleted");
      YAHOO.util.Dom.removeClass("post"+post, "moderated");
      document.getElementById("actions"+post).innerHTML = reply;
@@ -129,7 +133,7 @@ function addCaptionBtns(reply) {
 
 
 var handleSubmit = function() {
-    document.getElementById("split_select").value=post;
+    document.getElementById("split_select").value=splitter_d.post;
     this.submit();
 }
 
