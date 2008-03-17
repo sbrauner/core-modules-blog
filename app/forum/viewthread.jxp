@@ -263,11 +263,10 @@ else { %>
 }
 
 var even = false;
+var opts = app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread);
+opts.even = even;
 replies.forEach(function(reply){
-     var opts = app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread);
-     opts.even = even;
      reply.render(opts, thread.threaded_pieces);
-     even = !even;
 });
 %>
 <div id="newpostbox">

@@ -6,8 +6,9 @@ var options = arguments[1] || {};
 var actions = (options.actions == null)? [] : options.actions;
 var replyable = (options.replyable == null)? true : options.replyable;
 var filter = (options.filter == null)? function(){return true;} : options.filter;
-var even = (options.even) ? "postbox postboxEven" : "postbox";
 if(! filter(t)) return;
+var even = (options.even) ? "postbox postboxEven" : "postbox";
+options.even = ! options.even;
 var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
 
 var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.format("a").toLowerCase() +"</span>";
