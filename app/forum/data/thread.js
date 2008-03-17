@@ -16,7 +16,7 @@ app.Forum.data.Thread = function(){
     this.topic = null;
 };
 
-app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
+app.Forum.data.Thread.prototype.SEARCH_WEIGHTS = {
     title: 1,
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
@@ -26,8 +26,16 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
     }
 };
 
+app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
+    title: {stripHTML: true},
+    threaded_children: {
+        title: {stripHTML: true},
+        content: {stripHTML: true}
+    }
+};
+
 app.Forum.data.Thread.prototype.presave = function() {
-    Search.index( this , this.SEARCH_OPTIONS );
+    Search.index( this , this.SEARCH_WEIGHTS, this.SEARCH_OPTIONS );
 };
 
 app.Forum.data.Thread.prototype.getTitle = function() {
