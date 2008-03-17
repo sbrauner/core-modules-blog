@@ -39,8 +39,9 @@ td {
 
 .caption {
 	padding: 0 0 5px 0;
-		font-size: 12px;
-		text-align: right;
+	font-size: 12px;
+	text-align: right;
+        float: right;
 }
 
 table#style1, table.style1 {
@@ -258,6 +259,7 @@ div.threadFooter div.button {
 }
 div.caption div.button {
            display: inline;
+           margin-top: -5px;
 }
 
 div.caption input.submit {
@@ -318,6 +320,8 @@ td select {
 form.search {
      width: 100%;
      text-align: right;
+     padding-bottom: 0px;
+     margin-bottom: 6px;
 }
 
 table.search div {
@@ -375,6 +379,7 @@ h1 {
 }
 img.feed {
      padding: 3px 3px 0px 3px;
+     margin-bottom: -2px;
 }
 
 
@@ -391,10 +396,22 @@ div.topic_desc {
 div.subtopic_link a {
      cursor: pointer;
 }
-h1#threadtitle {
-     padding-top: 10px;
+h1#forumtitle {
      display: block;
+     padding-bottom: 10px;
+     padding-top: 20px;
+     margin-bottom: 0px;
+}
+h2#threadtitle {
+     display: block;
+     font-size: 16px;
+     padding-top: 15px;
+     padding-bottom: 0px;
+     margin-bottom: 4px;
 }
 textarea#ncontent {
      width: 100%;
+}
+div.paging {
+     float: right;
 }
