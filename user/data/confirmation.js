@@ -22,9 +22,17 @@ User.Confirmation.prototype.send = function(){
     link.hostname = request.getHost();
     link.port = request.getPort();
     link = link.toString();
-
-    var body = "This email is meant to confirm your email address on "+siteName+".\n\n" +
-        "Please click the link below.\n\n" + link;
+    var body = "Dear "+this.user.nickname+
+        "\n"+
+        "Thanks for registering with "+siteName+". Before your user account is activated, you must verify your email address. Please click the link below or copy and past it into your browser.\n"+
+        "\n"+
+        "Your username: "+this.user.name+"\n"+
+        "\n"+
+        link+"\n"+
+        "\n"+
+        "Regards,\n"+
+        "\n"+
+        siteName;
 
     m = new Mail.Message( subj, body );
     m.addRecipient(  this.user.email  );
