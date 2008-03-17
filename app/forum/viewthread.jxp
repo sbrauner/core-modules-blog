@@ -49,7 +49,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 %>
 
 
-<div id="splitterDiv">
+<div id="splitterDiv" style="display: none;">
 <div class="hd">Split Thread</div>
 <div class="bd">
 <form id="splitterForm" action="thread_action">
@@ -63,7 +63,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 </div>
 </div>
 
-<div id="editThreadDiv">
+<div id="editThreadDiv" style="display: none;">
 <div class="hd">Edit Thread</div>
 <div class="bd">
 <form id="editThreadForm" action="thread_action">
