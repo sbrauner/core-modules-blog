@@ -24,8 +24,15 @@ if(thread.topic._id == topic._id){
         return;
 }
 
+var oldtopic = thread.topic;
 thread.setTopic( topic );
 
 thread.save();
 
-%><response>successs</response>
+while(topic && topic.parent._id != oldtopic._id){
+    topic = topic.parent;
+}
+
+log("found intersection: "+ tojson(topic));
+
+%><response><%= topic ? topic._id : "null" %>:<%= thread.count %></response>
