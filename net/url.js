@@ -66,7 +66,8 @@ URL.prototype.toString = function(){
         str += '?';
 
         str += this.args.map(function(a){
-            if(typeof a.key != "string" || typeof a.value != "string") throw "bad args " + tojson(this.args);
+            if(a.key == null || a.value == null)
+                throw "bad args " + tojson(this.args);
             return encodeURIComponent(a.key)+'='+encodeURIComponent(a.value);
         }).join('&');
     }
