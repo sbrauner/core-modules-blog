@@ -32,6 +32,13 @@ content.HTML.unescape_html = function(str){
     return str;
 };
 
+content.HTML.strip = function(s){
+    s = s.replace(/<.+?>/g, "");
+    s = s.replace(/&\w+;/g, "");
+    s = s.replace(/&#\d+;/g, "");
+    return s;
+};
+
 RSS = {};
 
 RSS.clean = function( s ){
