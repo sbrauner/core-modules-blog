@@ -1,38 +1,88 @@
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+	font-family: helvetica, arial, sans-serif;
+	background-color: #ded5b3;
+	color: #333333;
+	text-align: left;
+}
+
+h1, h2, h3, h4, p, ul, ol, dl {
+	padding-bottom: .5em;
+}
+
+h1 {
+	font-size: 167%;
+	color: #fe6001;
+    font-weight: bold;
+}  
+
+hr {
+	margin: 1em 0;
+	border: 0;
+	width: 100%;
+	color: #ded5b3;
+	background-color: #ded5b3;
+	height: 1px;
+}
+
 table {
-       	border-collapse: collapse;
-	border: #000;
+	text-align: left;
 }
 
-td.field {
-	border: 1px solid #ddd;
-	padding: 3px;
-}
-
-th {
-   color: #fff;
-   background: #333;
+td {
+	padding: .3em;
 }
 
 textarea {
 	width: 450px;
 }
+
+div#yui-main {
+	border: 1px solid #1f4785;
+    background: #fff;
+    padding: 1em;
+}
+
 .errormsg {
 	color: red;
 }
 
-div.field {
-	float:  left;
-	clear: both;
-	padding: 5px 5px 5px 0;
+td.label {
+    text-align: right;
+    font-weight: bold;
 }
 
-.field_name {
-	float: left;
-	width: 120px;
-	font-weight: bold;
+td.description {
+    vertical-align: top;
 }
 
-.field_value {
-	float: left;
-	width: 500px;
+td.value {
+    width: 300px;
+}
+
+.case_title {
+    font-size: 150%;
+    font-weight: bold;
+}
+
+div.yui-b p {
+    margin: 0 0 .5em 0;
+    color: #999;
+}
+
+div.yui-b p strong {
+    font-weight: bold;
+    color: #000;
+}
+
+div.yui-b p em {
+    color: #000;
+}            
+
+#top_menu {
+    margin: 0;
 }
