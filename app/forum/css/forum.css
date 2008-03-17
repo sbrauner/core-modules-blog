@@ -415,3 +415,8 @@ textarea#ncontent {
 div.paging {
      float: right;
 }
+
+table select {
+      width: 10em;
+}
+
