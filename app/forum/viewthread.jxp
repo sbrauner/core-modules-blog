@@ -38,6 +38,7 @@ var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
 var page = request.page;
 
+var threadClosed = thread.getClosed();
 
 var url = new URL(request.getURL());
 
@@ -70,7 +71,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <input type="hidden" name="select" id="edit_select">
 <input type="hidden" name="action" value="edit">
 <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed"' + (threadClosed ? '"CHECKED"' : "") + '></div>
+<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>></div>
 </form>
 </div>
 </div>
@@ -129,7 +130,6 @@ function addCaptionBtns(reply) {
 
 var handleSubmit = function() {
     document.getElementById("split_select").value=post;
-    document.getElementById("edit_select").value=post;
     this.submit();
 }
 
