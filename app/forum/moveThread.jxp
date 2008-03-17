@@ -33,6 +33,4 @@ while(topic && topic.parent._id != oldtopic._id){
     topic = topic.parent;
 }
 
-log("found intersection: "+ tojson(topic));
-
 %><response><%= topic ? topic._id : "null" %>:<%= thread.count %></response>
