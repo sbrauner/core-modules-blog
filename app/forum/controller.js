@@ -6,7 +6,7 @@ app.Forum.Controller.bannedUser = function(user, request){
     return false;
 };
 
-app.Forum.Controller.anonymousPermissions = function(){
+app.Forum.Controller.unknownPermissions = function(){
     return {viewTopicNonHidden: true, viewThreadNonHidden: true};
 };
 
@@ -15,7 +15,7 @@ app.Forum.Controller.memberPermissions = function(){
         makePost: true
             };
     // add anonymousPermissions
-    return Object.extend(p, app.Forum.Controller.anonymousPermissions());
+    return Object.extend(p, app.Forum.Controller.unknownPermissions());
 };
 
 app.Forum.Controller.moderatorPermissions = function(){
@@ -71,7 +71,7 @@ app.Forum.Controller.hasPermission = function(user, perm){
     // handling all of these at the page level.
     if(user == null || app.Forum.Controller.bannedUser(user, request)){
         // treat user as anonymous
-        return (perm in app.Forum.Controller.anonymousPermissions());
+        return (perm in app.Forum.Controller.unknownPermissions());
     }
 
     var type = app.Forum.Controller.userPermissionType(user);
@@ -95,21 +95,36 @@ app.Forum.Controller.specialModeratedID = ObjectId("00000000000000000000002");
 app.Forum.Controller.permissions = {
     ADMIN: "core.app.forum.admin",
     MODERATOR: "core.app.forum.moderator",
-    MEMBER: "core.app.forum.member"
+    MEMBER: "core.app.forum.member",
+    UNKNOWN: "core.app.forum.unknown",
+
+};
+
+app.Forum.Controller.missingPermission = function(user){
+    if(! user) return "account";
+
+    statuses = Ext.getlist(allowModule, "forum", "needStatuses");
+    if(statuses){
+        for(var i in statuses){
+            if(! user.hasPermission(statuses[i]))
+                return statuses[i];
+        }
+    }
+    return false;
 };
 
 app.Forum.Controller.userPermissionType = function(user){
-    if(! user) return null;
+    if(! user) return "UNKNOWN";
 
-    if(user.hasPermission(app.Forum.Controller.permissions.ADMIN))
-        return "ADMIN";
-    if(user.hasPermission(app.Forum.Controller.permissions.MODERATOR))
-        return "MODERATOR";
-    if(user.hasPermission(app.Forum.Controller.permissions.MEMBER))
-        return "MEMBER";
+    for(var key in app.Forum.Controller.permissions){
+        if(user.hasPermission(app.Forum.Controller.permissions[key]))
+            return key;
+    }
 
     // OK, we better guess
     if(user.isAdmin())
         return "ADMIN";
+    if(app.Forum.Controller.missingPermission(user))
+        return "UNKNOWN";
     return "MEMBER";
 };

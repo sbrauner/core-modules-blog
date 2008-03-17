@@ -88,3 +88,14 @@ if ( db ){
     db.users.ensureIndex( { name : 1 } );
     db.users.ensureIndex( { permissions : 1 } );
 }
+
+User.statusName = function(status){
+    if(status == "confirmed_email")
+        return "confirming your email";
+
+};
+
+User.statusLink = function(status){
+    if(status == "confirmed_email")
+        return new URL("/~~/user/confirm_send").toString()
+};
