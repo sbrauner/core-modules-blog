@@ -45,7 +45,11 @@ db.users.save( u );
 // log in
 Auth.cookie.login( request , response , u );
 
+if(User.requirements.confirmed_email){
+    core.user.confirm_send();
+}
+
 // re-direct back
 response.setResponseCode( 301 );
-response.setHeader( "Location" ,  to || "/" );
+response.setHeader( "Location" ,  to || "/?notice="+notice );
 %>
