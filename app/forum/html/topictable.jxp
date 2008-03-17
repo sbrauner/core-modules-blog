@@ -204,7 +204,7 @@ function move(threadId) {
         var id = results[0];
         if(id == "null") return;
         var count = results[1];
-        var idnode = document.getElementById(id);
+        var idnode = document.getElementById(id+"_row_anchor");
         var tr = idnode.parentNode.parentNode;
         var tds = YAHOO.util.Dom.getChildren(tr);
         tds[1].innerHTML = parseInt(tds[1].innerHTML, 10)+1;
