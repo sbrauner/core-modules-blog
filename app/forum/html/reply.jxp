@@ -38,7 +38,7 @@ moderator
               print(app.Forum.html.highlight(HTML.decodeBr(t.content), options.highlight));
           }
           else {
-              print(HTML.decodeBr(t.content));
+              print(t.content);
           }
        %>
     </div>

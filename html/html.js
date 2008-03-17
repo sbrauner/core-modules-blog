@@ -14,9 +14,5 @@ if (!HTML.__init) {
         return s ? s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : s;
     };
 
-    HTML.decodeBr = function(s) {
-        return s.replace(/&lt;br \/&gt;/g, "<br />");
-    }
-
     HTML.__init = true;
 }
