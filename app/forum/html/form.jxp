@@ -111,7 +111,7 @@ app.Forum.html.search = function(location) {
          %>
          <form action="search.jxp" class="search">
                 <script type="text/javascript"> function clearBox() { document.getElementById("search").value = ""; } </script>
-                <input type="text" class="text" name="query" value="search all posts in forum" id="search" onclick="clearBox()">
+                <input type="text" class="text" name="query" value="search posts in forum" id="search" onclick="clearBox()">
                 <input type="submit" class="submit" value="Go">
          </form>
          <%
