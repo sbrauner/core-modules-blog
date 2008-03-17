@@ -60,11 +60,15 @@ URL.prototype.toString = function(){
     }
     else
         var str = this.path;
+
     var encodeURIComponent = URL.escape_queryargs;
     if(this.args.length > 0){
         str += '?';
 
-        str += this.args.map(function(a){return encodeURIComponent(a.key)+'='+encodeURIComponent(a.value);}).join('&');
+        str += this.args.map(function(a){
+            if(typeof a.key != "string" || typeof a.value != "string") throw "bad args " + tojson(this.args);
+            return encodeURIComponent(a.key)+'='+encodeURIComponent(a.value);
+        }).join('&');
     }
     if(this.anchor) str += "#"+encodeURIComponent(this.anchor);
     return str;
