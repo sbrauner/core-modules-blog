@@ -6,7 +6,8 @@
  * for all matching similar words in each result and put them in a highlighted <span> element.
  *
  * An alternative way of doing this would be to take each word of the result and "stem" it, then compare it
- * to each search term, but this was rejected because it is a) uglier than this and b) would take forever.
+ * to each search term, but this was rejected because it is a) uglier than this (if that's even possible) and
+ * b) would take forever.
  *
  */
 
@@ -56,7 +57,14 @@ function summarize(result, searchterm) {
 core.app.forum.controller();
 core.app.forum.html.forumheader("Forum | Search Results for \""+request.query+"\"");
 core.app.forum.data.thread();
+core.app.forum.html.form();
+
+// Search bar
+app.Forum.html.search();
 %>
+
+
+<h1>Forum</h1>
 
 <script type="text/javascript">
 var color = "none";
@@ -75,21 +83,18 @@ function toggleHighlight() {
 
 var query = request.query;
 
-print("<div>Search results for \""+request.query+"\":</div>");
-print('<div><input type="checkbox" value="highlight" onclick="toggleHighlight()" checked>Highlight</div>');
+print("<div>Search results for \""+request.query+"\" <input type=\"checkbox\" value=\"highlight\" onclick=\"toggleHighlight()\" checked>Highlight</div>");
 
 cursor = Search.search(db.forum.topics, query );
-if(cursor.length > 0) {
-    core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, thisid: null});
-}
-else {
-    %>
-    <h1>Matching topics:</h1>
-    No matching topics.
+if(cursor.length > 0) { %>
+    <div class="match_div">
+    <%
+    core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, editUser: false, createTopic: false, thisid: null}); %>
+    </div>
     <%
 }
 %>
-</div>
+
 <div class="match_div">
 <h1>Matching threads:</h1>
 
@@ -108,25 +113,28 @@ if(threads.length > 0){
        <div class="threadbox">
        <div class="title">
             <%
-            app.Forum.html.startBreadcrumbTable();
-            app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(threads[i].topic));
+            var tops = app.Forum.html.topicStack(threads[i].topic);
+            for(var j=0; j<tops.length; j++) {
+                 print('<a href="viewtopic?name='+URL.escape_queryargs(tops[j])+'">'+tops[j]+'</a> &gt; ');
+            }
             %>
-            <div class="second_level"><a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(content.HTML.escape(threads[i].getTitle()), query) %></a></div>
-            <%
-            app.Forum.html.endBreadcrumbTable();
-            %>
+            <a href="viewtopic?name=<%= URL.escape_queryargs(threads[i].topic.name) %>"><%= threads[i].topic.name %></a> &gt;
+            <a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(content.HTML.escape(threads[i].getTitle()), query) %></a>
        </div>
        <%
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
             for(var j=0; snippets != null && j < 4 && j < snippets.length; j++) {
+                var prettyDate = snippets[j].object.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+snippets[j].object.ts.format("a").toLowerCase() +"</span>";
                 %>
-                <div class="author">by <%= snippets[j].object.author.name %> on <%= snippets[j].object.ts %></div>
                 <div class="content">
+                <div class="author"><%= snippets[j].object.author.name %><span class="pipe">|</span><div class="ts"><%= prettyDate %></div></div>
+                <div class="snips">
                 <%
                 summary = summarize(snippets[j].text, query);
                 for(var k=0; k<summary.length; k++)
                      print(app.Forum.html.highlight(summary[k], query)+"<br />");
                 %>
+                </div>
                 </div>
                 <%
             }
