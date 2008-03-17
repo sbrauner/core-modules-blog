@@ -1,3 +1,4 @@
+<p>
 <%
 core.db.db();
 core.content.table();
