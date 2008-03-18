@@ -69,8 +69,17 @@ if(app.Forum.Controller.hasPermission(user, "stickyThread")){
       }});
 }
 
-app.Forum.html.topicBreadcrumb(t);
+
 app.Forum.html.search(t.name);
+
+var createThread = t.allowPosts;
+var createTopic = true;
+var editUser = true;
+core.app.forum.html.caption();
+app.Forum.html.showCaption(createThread, createTopic, t._id, editUser);
+
+print("<h1>Forum</h1>");
+app.Forum.html.topicBreadcrumb(t);
 head.push('<link rel="alternate" type="application/rss+xml" title="'+name+'" href="topic_rss.jxp?id='+t._id+'" />');
 core.app.forum.html.topictable(name, description, subs, threadList.toArray(), actions, tableOptions);
 
