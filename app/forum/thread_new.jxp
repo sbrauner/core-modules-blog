@@ -9,15 +9,13 @@ core.app.forum.html.forumheader("Forum | New Thread");
 core.app.forum.data.thread();
 core.content.forms();
 var topic = db.forum.topics.findOne({_id: request.top_id});
-if(topic.allowPosts == false){
-%>
-Thread creation is disabled in this topic.
-<%
+if(topic.allowPosts == false){ %>
+     Thread creation is disabled in this topic.
+     <%
 }
 else {
     if(request.getMethod() == "POST"){
         var thread = new app.Forum.data.Thread();
-        thread.save();
         var rep = thread.decoratorsHandle();
 
         if(rep){
@@ -34,19 +32,30 @@ else {
             response.setHeader("Location", "viewthread?id="+thread._id);
             return;
         }
-        else {
-            Forum.data.Thread.remove(thread);
-        }
     }
-%>
 
-<h3>New thread</h3>
+    core.app.forum.html.form();
+    app.Forum.html.search();
+    %>
 
-<%
-    opts = {};
-    opts.newThread = true;
-    app.Forum.data.Thread.prototype.decoratorsRender("threaded.replyform", opts);
+    <h2>New Thread</h2>
 
+        <% app.Forum.html.breadcrumb({topic: topic, getTitle: function(){ return "New thread"; } }); %>
+
+    <div id="threadFooter" class="threadFooter" style="clear:right">
+         <div class="postForm" id="postForm">
+             <form id="replyform" method="POST">
+             <input type="hidden" name="reply_target" value="<%=arguments[0]%>"/>
+             <input type="hidden" name="nauthor" value="<%= user._id %>"/>
+             <div class="field"><label>Title: </label><input type="text" class="text" name="ntitle"></div>
+             <div class="field">Content: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
+             <div class="field"><input type="submit" class="button" value="Create New Thread"></div>
+             </form>
+         </div>
+    </div>
+
+
+    <%
     var backurl = "viewtopic?name="+URL.escape_queryargs(topic.name);
 }
 %>
