@@ -59,8 +59,21 @@ core.app.forum.html.forumheader("Forum | Search Results for \""+request.query+"\
 core.app.forum.data.thread();
 core.app.forum.html.form();
 
+var query = request.query;
+
+threads = Search.search(db.forum.threads, query);
+core.app.forum.data.paging();
+paging = new app.Forum.data.Paging(threads, {pageSize: 20, minWindow: 5},
+                                   request);
+threads = paging.slice();
+core.app.forum.html.paging(paging);
+
+cursor = Search.search(db.forum.topics, query );
+
 // Search bar
 app.Forum.html.search();
+
+
 %>
 
 
@@ -81,11 +94,14 @@ function toggleHighlight() {
 <div class="match_div">
 <%
 
-var query = request.query;
+// FIXME: XSS??
 
-print("<div>Search results for \""+request.query+"\" <input type=\"checkbox\" value=\"highlight\" onclick=\"toggleHighlight()\" checked>Highlight</div>");
-
-cursor = Search.search(db.forum.topics, query );
+if(threads.length == 0 && cursor.length == 0){
+%>
+    <div>No search results for "<%= query %>".</div>
+<%
+}
+else{
 if(cursor.length > 0) { %>
     <div class="match_div">
     <%
@@ -96,17 +112,11 @@ if(cursor.length > 0) { %>
 %>
 
 <div class="match_div">
-<h1>Matching threads:</h1>
 
 <%
-threads = Search.search(db.forum.threads, query);
-core.app.forum.data.paging();
-paging = new app.Forum.data.Paging(threads, {pageSize: 20, minWindow: 5},
-                                   request);
-threads = paging.slice();
-core.app.forum.html.paging(paging);
-
-if(threads.length > 0){
+if(threads.length > 0){ %>
+        <h1>Matching threads:</h1>
+        <%
     for(var i = 0; i < threads.length; i++){
        var starti = i;
        %>
@@ -152,6 +162,8 @@ else {
      No matches in threads.
      <%
 }
+}
+
 %>
 </div>
 <div class="button" onclick="history.back()">Back</div>
