@@ -124,6 +124,8 @@ if(threads.length > 0){
        <%
             var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_WEIGHTS);
             for(var j=0; snippets != null && j < 4 && j < snippets.length; j++) {
+                if(snippets[j].text == snippets[j].object.title)
+                     continue;
                 var prettyDate = snippets[j].object.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+snippets[j].object.ts.format("a").toLowerCase() +"</span>";
                 %>
                 <div class="content">
@@ -153,6 +155,7 @@ else {
 %>
 </div>
 <div class="button" onclick="history.back()">Back</div>
+</div>
 <%
 
 core.app.forum.html.paging(paging);
