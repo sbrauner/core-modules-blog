@@ -119,13 +119,12 @@ var yes = { newtopic : function() {
      },
      move : function() {
           dialog.hide();
-          dialog.target(this.targetId);
+          dialog.target(dialog.targetId);
      },
      confirm : function() {
           dialog.hide();
      },
      edittopic : function() {
-//          dialog.submit();
           dialog.hide();
           var ntForm = document.getElementById("edittopic");
           var passData = "id="+encodeURIComponent(ntForm.elements.item(0).value);
@@ -136,14 +135,6 @@ var yes = { newtopic : function() {
                passData += "&closed=on";
           else
                passData += "&closed=off";
-
-/*          for(var i=0; i<ntForm.elements.length; i++) {
-              passData += "&"+ntForm.elements.item(i).name + "="+encodeURIComponent(ntForm.elements.item(i).value);
-              alert(passData);
-          }
-
-          passData = passData.substring(1);
-*/
 
           ajax(passData, "topic_edit.jxp", changeTagline);
      },
@@ -174,6 +165,7 @@ function moveDlg(label, target, targetId) {
 
     if(! document.getElementById(targetId).value) return;
     toTopicId = document.getElementById(targetId).value;
+    dialog.toId = toTopicId;
 
     var fromTopic = targetId;
     var toTopic = "the home page";
@@ -258,8 +250,7 @@ function move(threadId) {
 }
 
 function moveTopic(topicId) {
-         targetId = document.getElementById(topicId).value;
-         var passData = "topic="+topicId+"&to="+targetId;
+         var passData = "topic="+topicId+"&to="+dialog.toId;
          ajax(passData, "topic_move.jxp", reload, "POST");
 }
 
