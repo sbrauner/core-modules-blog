@@ -229,7 +229,7 @@ function changeTagline(response) {
 
 function move(threadId) {
          topicId = document.getElementById(threadId).value;
-         var passData = "thread="+threadId+"&to="+topicId;
+         var passData = "thread="+threadId+"&to="+dialog.toId;
     ajax(passData, "moveThread.jxp", function(text){
         // If we move it into this thread, don't hide it.
         if(text.match("fail")){
