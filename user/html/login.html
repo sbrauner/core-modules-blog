@@ -1,10 +1,11 @@
 <%
 var conf = arguments[0] || {};
+   conf.login = conf.login || "/~~/user";
 %>
 <script src="/~~/ui/js/md5.js"></script>
 <script>
 
-  var url = "/~~/user/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
+  var url = "<%= conf.login %>/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
   var area = "<%= db.getName() %>";
 

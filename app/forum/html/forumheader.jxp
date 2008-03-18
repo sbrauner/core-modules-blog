@@ -10,8 +10,8 @@ core.user.html.topCorner();
 if(user &&
    app.Forum.Controller.userPermissionType(user) == "UNKNOWN" &&
    app.Forum.Controller.missingPermission(user)){
-    notice.warning = "You must validate your email to become a member of this forum. "+
-        '<a href="'+ User.statusLink(app.Forum.Controller.missingPermission(user)) + '">Send another validation email</a>.';
+    addToNotice(warning, "You must validate your email to become a member of this forum. "+
+                '<a href="'+ User.statusLink(app.Forum.Controller.missingPermission(user)) + '">Send another validation email</a>.');
 }
 
 htmlheader(title);

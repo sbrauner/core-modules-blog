@@ -1,10 +1,11 @@
 <% processArgs("opts");
    opts = opts || {};
+   opts.login = opts.login || "/~~/user";
 %>
 <div id="register">
 
 
-  <form method="post" action="/login/register" onSubmit="return checkRegister( this )" class="edit register">
+  <form method="post" action="<%= opts.login %>/register" onSubmit="return checkRegister( this )" class="edit register">
 
     <fieldset class="edit register">
     <legend>Register</legend>
