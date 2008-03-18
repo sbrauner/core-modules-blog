@@ -439,7 +439,7 @@ if (threads){
     }
     %>
      <table id="style1" >
-          <tr><th>Thread</th><th>Replies</th><th>Last post</th>
+          <tr><th>Thread</th><th>Posts</th><th>Last post</th>
           <%
           for(i=0; i < actions.length; i++) {
                 print("<th>"+ actions[i].title+"</th>");
