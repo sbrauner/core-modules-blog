@@ -26,7 +26,7 @@ User.Confirmation.prototype.send = function(){
     link = link.toString();
     var body = "Dear "+(this.user.nickname || this.user.name)+ "\n" +
         "\n"+
-        "Thanks for registering with "+siteName+". Before your user account is activated, you must verify your email address. Please click the link below or copy and past it into your browser.\n"+
+        "Thanks for registering with "+siteName+". Before your user account is activated, you must verify your email address. Please click the link below or copy and paste it into your browser.\n"+
         "\n"+
         "Your username: "+this.user.name+"\n"+
         "\n"+
