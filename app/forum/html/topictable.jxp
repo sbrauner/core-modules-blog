@@ -150,19 +150,24 @@ var no = { newtopic : function() { dialog.hide(); },
 var fromTopic = "";
 
 function moveDlg(label, target, targetId) {
-         alert(targetId);
     dialog.target = target;
     dialog.targetId = targetId;
 
-    toTopic = document.getElementById(targetId).value != '(Top Level)' ? 'the topic "'+document.getElementById(targetId).value+'"' : 'the home page';
+    if(! document.getElementById(targetId).value) return;
+
+    toTopicId = document.getElementById(targetId).value;
+    if(toTopicId == null)
+        toTopic = 'the home page';
+    else {
+        toTopic = document.getElementById(toTopicId+"_row_anchor").innerHTML;
+        toTopic = toTopic != '(Top Level)' ? 'the topic "'+toTopic+'"' : 'the home page';
+    }
     message = '<fieldset class="dlg"><legend>Move Topic to '+toTopic+'</legend>'
              +'<div class="field">Are you sure you want to move "'+fromTopic+'" to '+toTopic+'?</div>'
              +'<div class="btns"><input type="button" class="button" value="Move" onclick="yes[\'move\']()">'
              +'<input type="button" class="button" value="Cancel" onclick="no[\'move\']()"></div>'
              +'</fieldset>';
 
-    if(! document.getElementById(targetId).value) return;
-//    dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
     makeDialog("", message);
 }
 
@@ -430,7 +435,9 @@ if (threads){
                                            request);
         threads = paging.slice();
 
+        print('<div class="paging">');
         core.app.forum.html.paging(paging);
+        print('</div>');
     }
     %>
      <table id="style1" >
@@ -452,6 +459,8 @@ if (threads){
      </table>
 <%
     if(paging){
+        print('<div class="paging">');
         core.app.forum.html.paging(paging);
+        print('</div>');
     }
 }%>
