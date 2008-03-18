@@ -118,12 +118,17 @@ function moderatePost(post) {
      } );
 }
 
+var postArrived = function(post, reply){
+    reply = reply.split('&');
+    addCaptionBtns(post, reply[2]);
+    showOnlyPostButtons();
+};
+
 function unmoderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Unmoderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=unmoderate";
      ajax(passData, "thread_action", function(reply){
-         addCaptionBtns(post, reply);
-         showOnlyPostButtons();
+         postArrived(post, reply);
      });
 }
 
@@ -131,8 +136,7 @@ function undeletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Undeleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=undelete";
      ajax(passData, "thread_action", function(reply){
-         addCaptionBtns(post, reply);
-         showOnlyPostButtons();
+         postArrived(post, reply);
      });
 }
 

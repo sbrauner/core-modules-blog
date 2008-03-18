@@ -171,15 +171,15 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     postoptions.highlight = request.highlight;
     postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 
-    var notdeleted = function(p) { if (p.deleted) return false; return true; };
     if(request.show) {
         postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
     }
     else {
-        postoptions.filter = notdeleted;
+        postoptions.filter = function(p) { if (p.deleted) return false; return true; };
+;
     }
     var reps = thread.getReplies();
-    var firstPost;
+    var firstPost = thread.getFirstNotDeleted();
 
     for(var i = 0; i < reps.length; i++){
         if(notdeleted(reps[i])){ firstPost = reps[i]; break; }
