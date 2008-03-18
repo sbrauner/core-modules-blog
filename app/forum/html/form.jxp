@@ -171,48 +171,81 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     postoptions.highlight = request.highlight;
     postoptions.htmlclass = function(t){ return t.deleted? t.deleted: ""; };
 
-    var notdeleted = function(p) { if (p.deleted) return false; return true; };
     if(request.show) {
         postoptions.filter = function(p) { if (! p.deleted || p.deleted == request.show) return true;  return false; };
     }
     else {
-        postoptions.filter = notdeleted;
+        postoptions.filter = function(p) { if (p.deleted) return false; return true; };
+;
     }
     var reps = thread.getReplies();
-    var firstPost;
-
-    for(var i = 0; i < reps.length; i++){
-        if(notdeleted(reps[i])){ firstPost = reps[i]; break; }
-    }
+    var firstPost = thread.getFirstNotDeleted();
 
     postoptions.actions = [];
     postoptions.actions.push(function(post) {
-        // Don't show split button whenever:
-        // 1. the post is deleted
-        // 2. the post is the first non-deleted post in the thread
-     var action_ar = [];
-     if(canSplit && notdeleted(post) && post.getID() != firstPost.getID()){
-           action_ar.push('<div class="button" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()">Split</div>');
-     }
-     if(post.deleted == "deleted" && canDelete) {
-           action_ar.push('<div class="button" onclick="undeletePost(\''+ post.getID() +'\')">Undelete</div>');
-     }
-     if(post.deleted == "moderated" && canModerate){
-           action_ar.push('<div class="button" onclick="unmoderatePost(\''+post.getID()+'\')">Unmoderate</div>');
-     }
-     if(thread.count > 1 && !post.deleted && canDelete){
-            action_ar.push('<div class="button" onclick="deletePost(\''+post.getID()+'\')">Delete</div>');
-     }
-     if(thread.count > 1 && !post.deleted && canModerate){
-           action_ar.push('<div class="button" onclick="moderatePost(\''+post.getID()+'\')">Moderate</div>');
-     }
+        var action_ar = [];
+        // If a post is deleted, only show an "undelete" button.
+        if(canDelete && post.deleted == "deleted"){
+            action_ar.push('<div class="button" onclick="undeletePost(\''+ post.getID() + '\')">Undelete</div>');
+        }
+        else if(canModerate && post.deleted == "moderated"){
+            action_ar.push('<div class="button" onclick="unmoderatePost(\''+post.getID()+'\')">Unmoderate</div>');
+        }
+        else {
+            // Show Split, Delete, Moderate buttons.
+
+            // For each of these buttons, we have various criteria for displaying them
+            // which sometimes become invalid as a result of AJAX events, so even
+            // if we don't want to display them now, we still send them to the client
+            // with style="display: none" and special htmlclasses so that they can be
+            // displayed later.
+            if(canSplit){
+                // For the split button, don't show it if:
+                // 1. the post is deleted (htmlclass="postdeleted")
+                // 2. the post is the first non-deleted post in the thread (htmlclass="firstpost").
+
+                // If a post more firstly than this one is undeleted or something,
+                // tell the client, and they'll show the "firstpost" class.
+                // If this post is undeleted, the buttons are refreshed anyhow, so don't worry about it.
+
+                var htmlclass = "";
+                if(post.deleted)
+                    htmlclass = "postdeleted";
+                if(post.getID() == firstPost.getID())
+                    htmlclass = "firstpost";
+                txt = '<div class="button split' + (htmlclass? (" " + htmlclass) : "") + '" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()"'+
+
+                    (htmlclass? ' style="display: none;"' : '') + '>Split</div>';
+                action_ar.push(txt);
+            }
+            if(canDelete){
+                // For the delete button, don't show it if:
+                // 1. this is the only post in the thread (htmlclass = "onlypost")
+
+                // If any other post is undeleted or unmoderated, show all
+                // "onlypost" nodes.
+                // Note that this doesn't deal well with "two admins are
+                // deleting/undeleting posts at the same time"!
+                var htmlclass = "";
+                if(thread.count <= 1)
+                    htmlclass = "onlypost";
+                txt = '<div class="button delete'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="deletePost(\''+post.getID()+'\')">Delete</div>';
+                action_ar.push(txt);
+            }
+            if(canModerate){
+                // The same as the "delete" button.
+                var htmlclass = "";
+                if(thread.count <= 1)
+                    htmlclass = "onlypost";
+                txt = '<div class="button moderate'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="moderatePost(\''+post.getID()+'\')">Moderate</div>';
+                action_ar.push(txt);
+            }
+        }
 
     %>
     <div class="caption">
     <%
-    for(var i=0; i<action_ar.length-1; i++)
-         print(action_ar[i]+" | ");
-    print(action_ar.length > 0 ? action_ar[action_ar.length-1] : '');
+         print(action_ar.join(""));
     %>
     </div>
     <%

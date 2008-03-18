@@ -8,6 +8,7 @@
 print = function(){};
 
 core.app.forum.html.check_ban();
+core.app.forum.data.thread();
 core.net.url();
 
 print = oldprint;
@@ -49,10 +50,16 @@ var addPost = function(attr){
     }
 };
 
+
+// FIXME: be sure to ensure that all the requirements are correct!
+// i.e. Check that count > 1 if deleting, moderating, or splitting,
+// check that you aren't splitting on the first post, etc.
+
 if(request.action == "delete"){
     if(! app.Forum.Controller.hasPermission(user, "deletePost"))
         return Auth.cookie.reject(request, response);
     subtPost("deleted");
+    print([thread.count, thread.getFirstNotDeleted().getID()].join('&'));
     return;
 }
 
@@ -63,6 +70,8 @@ if(request.action == "undelete"){
     var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
     var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
     var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    print([thread.count, thread.getFirstNotDeleted().getID()].join('&'));
+    print('&');
     app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
     return;
 }
@@ -71,6 +80,7 @@ if(request.action == "moderate"){
     if(! app.Forum.Controller.hasPermission(user, "moderatePost"))
         return Auth.cookie.reject(request, response);
     subtPost("moderated");
+    print([thread.count, thread.getFirstNotDeleted().getID()].join('&'));
     return;
 }
 
@@ -81,6 +91,8 @@ if(request.action == "unmoderate"){
     var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
     var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
     var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
+    print([thread.count, thread.getFirstNotDeleted().getID()].join('&'));
+    print('&');
     app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread).actions[0](thread.getDescendant(selected[0]));
     return;
 }

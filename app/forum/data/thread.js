@@ -62,6 +62,16 @@ app.Forum.data.Thread.prototype.getFirstPost = function(){
     return this.getReplies()[0];
 };
 
+app.Forum.data.Thread.prototype.getFirstNotDeleted = function(){
+    var notdeleted = function(p) { if (p.deleted) return false; return true; };
+    var reps = thread.getReplies();
+
+    for(var i = 0; i < reps.length; i++){
+        if(notdeleted(reps[i])){ return reps[i]; }
+    }
+    return null;
+};
+
 app.Forum.data.Thread.prototype.setTopic = function(newTopic) {
     var oldTopic = this.topic;
     if(oldTopic != app.Forum.Controller.specialDeletedID &&

@@ -97,7 +97,14 @@ function deletePost(post) {
           document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="undeletePost(\''+post+'\')">Undelete</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
+         postDisappeared(post, reply);
      } );
+}
+
+function showOnlyPostButtons(){
+    YAHOO.util.Dom.getElementsByClassName("onlypost", "div", null, function(button){
+        button.style.display = 'inline';
+    });
 }
 
 function moderatePost(post) {
@@ -109,14 +116,49 @@ function moderatePost(post) {
           document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="unmoderatePost(\''+post+'\')">Unmoderate</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
+         postDisappeared(post, reply);
      } );
 }
+
+var updateSplitButton = function(reply){
+    // At most one split button is hid because it is on the first post.
+    YAHOO.util.Dom.getElementsByClassName("firstpost", "div", null, function(button){
+        button.style.display = 'inline';
+    });
+
+    // Find the new first post and hide its split button
+    YAHOO.util.Dom.getElementsByClassName('split', 'div', 'post'+reply[1], function(button){
+        button.style.display = 'none';
+        YAHOO.util.Dom.addClass(button, 'firstpost');
+    });
+};
+
+var postDisappeared = function(post, reply){
+    reply = reply.split('&');
+    if(parseInt(reply[0], 10) == 1){
+        var hide = function(button){
+            YAHOO.util.Dom.addClass(button, "onlypost");
+            button.style.display = 'none';
+        };
+        YAHOO.util.Dom.getElementsByClassName("delete", "div", null, hide);
+        YAHOO.util.Dom.getElementsByClassName("moderate", "div", null, hide);
+    }
+
+    updateSplitButton(reply);
+};
+var postArrived = function(post, reply){
+    reply = reply.split('&');
+    addCaptionBtns(post, reply[2]);
+    showOnlyPostButtons();
+
+    updateSplitButton(reply);
+};
 
 function unmoderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Unmoderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=unmoderate";
      ajax(passData, "thread_action", function(reply){
-         addCaptionBtns(post, reply);
+         postArrived(post, reply);
      });
 }
 
@@ -124,7 +166,7 @@ function undeletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Undeleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=undelete";
      ajax(passData, "thread_action", function(reply){
-         addCaptionBtns(post, reply);
+         postArrived(post, reply);
      });
 }
 
