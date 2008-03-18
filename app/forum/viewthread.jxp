@@ -72,7 +72,7 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 <input type="hidden" name="action" value="edit">
 <div class="field">Closing a thread prevents users from posting replies.</div>
 <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>></div>
+<div class="field"><label></label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>>Closed</div>
 <div class="btns"><input type="button" value="Edit" onclick="handleEditSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
 </form>
 </fieldset>
