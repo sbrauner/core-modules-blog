@@ -2,8 +2,15 @@
 // Form handler to deal with actions on posts in threads, or sometimes
 // the thread themselves.
 // Doesn't actually render; just redirect.
+
+// Silence during the imports!
+    oldprint = print;
+print = function(){};
+
 core.app.forum.html.check_ban();
 core.net.url();
+
+print = oldprint;
 
 if(request.threadId)
     var thread = app.Forum.data.Thread.findOne({_id: request.threadId});
@@ -154,7 +161,8 @@ if(request.action == "edit") {
     }
     closed = (request.closed == "on") ? true : false;
     thread.setClosed(closed);
-    print(thread.getTitle()+"&"+closed);
+    print(app.Forum.Controller.canPost(thread) + "&" + app.Forum.html.form.postForm(true) + "&" + thread.getTitle());
+
     thread.save();
     return;
 }

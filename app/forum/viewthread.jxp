@@ -31,8 +31,8 @@ core.app.forum.html.forumheader("Forum | "+titleStr + content.HTML.escape(thread
 // PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-var canPost = app.Forum.Controller.hasPermission(user, "makePost")
-    && ! request.deleted && thread.commentsEnabled && thread.postable();
+var canPost = app.Forum.Controller.canPost(thread)
+    && ! request.show && thread.commentsEnabled && thread.postable();
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
@@ -151,15 +151,22 @@ var handleCancel = function() {
 
 var handleSuccess = function(o) {
     var response = o.responseText;
-    var r = response.split("&");
-    document.getElementById("threadtitle").innerHTML = r[0];
-    if(r[1] == "true"){
-        threadClosed = true;
-        document.getElementById("threadFooter").style.display = "none";
+    var r1 = response.substring(0, response.indexOf('&')).trim();
+    response = response.substring(response.indexOf('&')+1);
+    var r2 = response.substring(0, response.indexOf('&'));
+    response = response.substring(response.indexOf('&')+1);
+    var title = response;
+    document.getElementById("threadtitle").innerHTML = title;
+    if((r1 == "true") && ! showDeleted && ! showModerated){
+        if(document.getElementById("postForm"))
+            document.getElementById("postForm").style.display = "block";
+        else {
+            document.getElementById("threadFooter").innerHTML = r2;
+        }
     }
     else {
-        threadClosed = false;
-        document.getElementById("threadFooter").style.display = "block";
+        if(document.getElementById("postForm"))
+            document.getElementById("postForm").style.display = "none";
     }
 }
 
@@ -312,12 +319,8 @@ function goToNewPost(response) {
 
 <div id="threadFooter" class="threadFooter" style="clear:right">
     <%
-    if(canPost){ %>
-         <form id="replyform">
-         <div class="field">Your Reply: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
-         <div class="field"><input type="button" class="button" onclick="post()" value="Submit Your Reply"></div>
-         </form>
-         <%
+    if(canPost){
+        app.Forum.html.form.postForm();
     }
     %>
 </div>
