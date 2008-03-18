@@ -44,14 +44,14 @@ var topics = app.Forum.data.Topic.list(null, showHidden).toArray();
 if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Deleted")){
     var delthreads = db.forum.threads.find({topic: app.Forum.Controller.specialDeletedID}).length();
     topics.push({_id: app.Forum.Controller.specialDeletedID, name: "Deleted posts",
-                 description: "Manage posts which you have deleted",
+                 description: "Manage topics which have been deleted",
                  threadCount: delthreads, postCount: 0});
 }
 
 if(app.Forum.Controller.hasPermission(user, "viewSpecialTopic_Moderated")){
     var modthreads = db.forum.threads.find({topic: app.Forum.Controller.specialModeratedID}).length();
     topics.push({_id: app.Forum.Controller.specialModeratedID, name: "Moderated posts",
-                              description: "Manage posts you have moderated",
+                              description: "Manage topics which have been moderated",
                               threadCount: modthreads, postCount: 0});
    }
 
