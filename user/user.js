@@ -4,6 +4,8 @@
  *   url
  *   name
  *   nickname
+ * FIXME: use better names for these fields?
+ * name -> username, nickname -> displayname
  */
 
 User.prototype.setPassword = function( pass , name ){

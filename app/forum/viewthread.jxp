@@ -31,8 +31,7 @@ core.app.forum.html.forumheader("Forum | "+titleStr + content.HTML.escape(thread
 // PERMISSIONS
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
-var canPost = app.Forum.Controller.hasPermission(user, "makePost")
-    && ! request.deleted && thread.commentsEnabled && thread.postable();
+var canPost = app.Forum.Controller.canPost(thread) && thread.commentsEnabled && thread.postable();
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
@@ -49,31 +48,34 @@ head.push('<link rel="alternate" type="application/rss+xml" title="'+content.HTM
 %>
 
 
-<div id="splitterDiv">
-<div class="hd">Split Thread</div>
-<div class="bd">
+<div id="splitterDiv" style="display: none;">
+<fieldset class="dlg"><legend>Create New Thread From Split Posts</legend>
 <form id="splitterForm" action="thread_action">
 <input type="hidden" id="split_select" name="select">
 <input type="hidden" name="action" value="split">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
-<div class="field"><label>New Subject:</label><input type="text" name="subject" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
-<div class="field"><label>Topic:</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
+<div class="field">Splitting a thread will move the select and all subsequent posts to a new thread in the chosen topic.</div>
+<div class="field"><label>New Subject</label><input type="text" name="subject" class="text" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
+<div class="field"><label>Topic</label><%= app.Forum.html.selectify(choices, function(x){ return {name: "topic"}; },
      {select: function(thread, o){ return o._id == thread.topic._id }})(thread) %>
-</div></form>
 </div>
+<div class="btns"><input type="button" value="Split" onclick="handleSplitSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
+</form>
+</fieldset>
 </div>
 
-<div id="editThreadDiv">
-<div class="hd">Edit Thread</div>
-<div class="bd">
+<div id="editThreadDiv" style="display: none;">
+<fieldset class="dlg"><legend>Edit Thread</legend>
 <form id="editThreadForm" action="thread_action">
 <input type="hidden" name="threadId" value="<%= thread._id %>">
 <input type="hidden" name="select" id="edit_select">
 <input type="hidden" name="action" value="edit">
+<div class="field">Closing a thread prevents users from posting replies.</div>
 <div class="field"><label>Subject:</label><input type="text" name="ttl" value="<%= content.HTML.escape(thread.getTitle()) %>"></div>
 <div class="field"><label for="closed">Closed</label><input type="checkbox" name="closed" <%= (threadClosed ? '"CHECKED"' : "") %>></div>
+<div class="btns"><input type="button" value="Edit" onclick="handleEditSubmit()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
 </form>
-</div>
+</fieldset>
 </div>
 
 
@@ -85,98 +87,158 @@ var showModerated = <%= request.show == "moderated" ? 'true' : 'false' %>
 
 var post;
 
-function deletePost() {
+function deletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Deleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=delete";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "deleted");
      if(showDeleted)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; undeletePost('+post+')" value="Undelete">';
+          document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="undeletePost(\''+post+'\')">Undelete</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
+         postDisappeared(post, reply);
      } );
 }
 
-function moderatePost() {
+function showOnlyPostButtons(){
+    YAHOO.util.Dom.getElementsByClassName("onlypost", "div", null, function(button){
+        button.style.display = 'inline';
+    });
+}
+
+function moderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Moderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=moderate";
      ajax(passData, "thread_action", function(reply) {
      YAHOO.util.Dom.addClass("post"+post, "moderated");
      if(showModerated)
-          document.getElementById("actions"+post).innerHTML = '<input type="button" class="button" onclick="post='+post+'; unmoderatePost('+post+')" value="Unmoderate">';
+          document.getElementById("actions"+post).innerHTML = '<div class="caption"><div class="button" onclick="unmoderatePost(\''+post+'\')">Unmoderate</div></div>';
      else
           document.getElementById("post"+post).style.display = "none";
+         postDisappeared(post, reply);
      } );
 }
 
-function unmoderatePost() {
+var updateSplitButton = function(reply){
+    // At most one split button is hid because it is on the first post.
+    YAHOO.util.Dom.getElementsByClassName("firstpost", "div", null, function(button){
+        button.style.display = 'inline';
+    });
+
+    // Find the new first post and hide its split button
+    YAHOO.util.Dom.getElementsByClassName('split', 'div', 'post'+reply[1], function(button){
+        button.style.display = 'none';
+        YAHOO.util.Dom.addClass(button, 'firstpost');
+    });
+};
+
+var postDisappeared = function(post, reply){
+    reply = reply.split('&');
+    if(parseInt(reply[0], 10) == 1){
+        var hide = function(button){
+            YAHOO.util.Dom.addClass(button, "onlypost");
+            button.style.display = 'none';
+        };
+        YAHOO.util.Dom.getElementsByClassName("delete", "div", null, hide);
+        YAHOO.util.Dom.getElementsByClassName("moderate", "div", null, hide);
+    }
+
+    updateSplitButton(reply);
+};
+var postArrived = function(post, reply){
+    reply = reply.split('&');
+    addCaptionBtns(post, reply[2]);
+    showOnlyPostButtons();
+
+    updateSplitButton(reply);
+};
+
+function unmoderatePost(post) {
      document.getElementById("actions"+post).innerHTML = "Unmoderating...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=unmoderate";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         postArrived(post, reply);
+     });
 }
 
-function undeletePost() {
+function undeletePost(post) {
      document.getElementById("actions"+post).innerHTML = "Undeleting...";
      passData="threadId=<%= thread._id %>&select="+post+"&action=undelete";
-     ajax(passData, "thread_action", addCaptionBtns);
+     ajax(passData, "thread_action", function(reply){
+         postArrived(post, reply);
+     });
 }
 
-function addCaptionBtns(reply) {
+function addCaptionBtns(post, reply) {
      YAHOO.util.Dom.removeClass("post"+post, "deleted");
      YAHOO.util.Dom.removeClass("post"+post, "moderated");
      document.getElementById("actions"+post).innerHTML = reply;
 }
 
 
-var handleSubmit = function() {
+var handleEditSubmit = function() {
+    edit_d.submit();
+}
+
+var handleSplitSubmit = function() {
     document.getElementById("split_select").value=post;
-    this.submit();
+    splitter_d.submit();
 }
 
 var handleCancel = function() {
-    this.hide();
+    splitter_d.hide();
+    edit_d.hide();
 }
 
 var handleSuccess = function(o) {
     var response = o.responseText;
-    var r = response.split("&");
-    document.getElementById("threadtitle").innerHTML = r[0];
-    if(r[1] == "true"){
-        threadClosed = true;
-        document.getElementById("threadFooter").style.display = "none";
+    var r1 = response.substring(0, response.indexOf('&')).trim();
+    response = response.substring(response.indexOf('&')+1);
+    var r2 = response.substring(0, response.indexOf('&'));
+    response = response.substring(response.indexOf('&')+1);
+    var title = response;
+    document.getElementById("threadtitle").innerHTML = title;
+    if((r1 == "true") && ! showDeleted && ! showModerated){
+        if(document.getElementById("postForm"))
+            document.getElementById("postForm").style.display = "block";
+        else {
+            document.getElementById("threadFooter").innerHTML = r2;
+        }
     }
     else {
-        threadClosed = false;
-        document.getElementById("threadFooter").style.display = "block";
+        if(document.getElementById("postForm"))
+            document.getElementById("postForm").style.display = "none";
     }
 }
+
+var edit_d, splitter_d;
 
 var loader = new YAHOO.util.YUILoader({
     require: ["container"],
     loadOptional: true,
     onSuccess: function() {
          splitter_d = new YAHOO.widget.Dialog("splitterDiv", {
-              width: "300px",
+              width: "400px",
               fixedcenter: true,
               modal:true,
               visible:false,
               draggable:true,
               postmethod: "form"
          });
-         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]);
+/*         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSplitSubmit},
+                        {text: "Cancel", handler:handleCancel}]);*/
          splitter_d.render(document.body);
 
 
          edit_d = new YAHOO.widget.Dialog("editThreadDiv", {
-              width: "300px",
+              width: "400px",
               fixedcenter: true,
               modal:true,
               visible:false,
               draggable:true,
          });
-         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]);
+/*         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
+                        {text: "Cancel", handler:handleCancel}]);*/
          edit_d.callback = { success: handleSuccess };
          edit_d.render(document.body);
     }
@@ -203,7 +265,7 @@ function toggleHighlight() {
 app.Forum.html.search(thread.topic.name);
 var caption_ar = [];
 if(app.Forum.Controller.hasPermission(user, "editThread")) {
-     caption_ar.push('<a href="#"><div class="button" onclick="edit_d.show()">Edit Thread</div></a>');
+     caption_ar.push('<a href="#"><div class="button" onclick="document.getElementById(\'editThreadDiv\').style.display=\'block\';edit_d.show()">Edit Thread</div></a>');
 }
 if(request.show == "deleted"){
      caption_ar.push('<a href="'+url.removeArg("show")+'"><div class="button">Hide deleted</div></a>');
@@ -250,15 +312,13 @@ print('</div>');
 if(request.highlight) { %>
      <div><input type="checkbox" value="highlight" onclick="toggleHighlight()" checked>Highlight</div>
 
-     <h2 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %>
-     <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
-     </h2>
+     <h2 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h2>
+     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
      <%
 }
 else { %>
-     <h2 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %>
-     <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
-     </h2>
+     <h2 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %></h2>
+     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
      <%
 }
 
@@ -271,19 +331,34 @@ replies.forEach(function(reply){
 %>
 <div id="newpostbox">
 </div>
-<%
-core.app.forum.html.paging(paging);
 
+<%
+print('<div class="paging">');
+core.app.forum.html.paging(paging);
+print('</div>');
 %>
 
 <script type="text/javascript">
+var even = <%= opts.even %>;
+
 function post() {
      var content = encodeURIComponent(document.getElementById("ncontent").value);
-     var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>";
-     ajax(passData, "post_new.jxp", goToNewPost);
+     if(content == "") {
+          alert("You must enter some text to reply.");
+          return;
+     }
+     else {
+          var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>&even="+even;
+          ajax(passData, "post_new.jxp", goToNewPost);
+          even = !even;
+     }
 }
 
 function goToNewPost(response) {
+     if(response == "") {
+         alert("Post failed!");
+
+     }
      var page = response.substring(0, response.indexOf('&'));
      var html = response.substring(response.indexOf('&')+1);
      if(page != <%= paging.pageNumber() %>)
@@ -296,16 +371,13 @@ function goToNewPost(response) {
 
 </script>
 
-<div id="threadFooter" class="threadFooter">
-    <%
-    if(canPost){ %>
-         <form id="replyform">
-         <div class="field">Your Reply: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
-         <div class="field"><input type="button" class="button" onclick="post()" value="Submit Your Reply"></div>
-         </form>
-         <%
-    }
-    %>
+<div id="threadFooter" class="threadFooter" style="clear:right">
+<%
+if(canPost){ %>
+     <% app.Forum.html.form.postForm(); %>
+     <%
+}
+%>
 </div>
 
 

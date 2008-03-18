@@ -15,14 +15,7 @@ confirm.send();
 
 htmlheader("Confirmation sent");
 
-%>
-<h1>Confirmation sent.</h1>
+notice = "We have sent a validation email to "+ confirm.user.email +". Please check your email account and follow the instructions contained in the validation email."
 
-<p>
-  An email was sent to <%= confirm.user.email %>. Please click the link in order to
-  confirm your email address.
-</p>
-
-<%
-    htmlfooter();
+htmlfooter();
 %>

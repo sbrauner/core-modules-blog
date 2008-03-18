@@ -1,8 +1,10 @@
-
+<%
+var conf = arguments[0] || {};
+%>
 <script src="/~~/ui/js/md5.js"></script>
 <script>
   
-  var url = "/~~/user/doLogin?to=<%= escape( request.getURL() ) %>";
+  var url = "/~~/user/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
   var area = "<%= db.getName() %>";
 
@@ -33,16 +35,18 @@
 
 <div ? ( ! user ) id="login" >
 
-  <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" >
+  <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit">
+    <fieldset>
+      <legend>Login</legend>
 
     <div>
       <label for="login_user">Username:</label>
-      <input name="login_user">
+      <input name="login_user" class="text">
     </div>
 
     <div>
       <label for="login_password">Password:</label>
-      <input type="password" name="login_pass">
+      <input type="password" name="login_pass" class="text">
     </div>
 
     <div>
@@ -50,9 +54,9 @@
       <input type="checkbox" name="login_remember" value="yes" >
     </div>
     
-    <input type="submit" name="action" value="Login">
+    <input type="submit" name="action" value="Login" class="button">
     <b ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</b>
-    
+    </fieldset>    
   </form>
 
 </div>

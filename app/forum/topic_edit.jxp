@@ -11,8 +11,7 @@ if(request.name){
     topic.name = request.name;
     topic.description = request.description;
     print(URL.escape_queryargs(content.HTML.escape(topic.name), true) +"&"+ URL.escape_queryargs(content.HTML.escape(topic.description), true));
-    if(request.closed == "closed") topic.allowPosts = false;
-    else topic.allowPosts = true;
+    topic.allowPosts = (request.closed == "off") ? true : false;
     db.forum.topics.save(topic);
 }
 

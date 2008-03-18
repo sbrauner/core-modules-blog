@@ -3,7 +3,7 @@
 
 if(!request.username){
     htmlheader("Register");
-    core.user.html.register();
+    core.user.html.register({to: request.getHeader('Referer')});
     htmlfooter();
     return;
 
@@ -12,7 +12,8 @@ var username = request.username;
 var email = request.email;
 var password = request.password;
 
-var to = request.getHeader( "Referer" );
+var to = request.to;
+to = to || '/';
 
 // validate
 if ( ! ( username && username.trim().length >= 5 ) )
@@ -45,7 +46,16 @@ db.users.save( u );
 // log in
 Auth.cookie.login( request , response , u );
 
+user = u;
+
+if(User.requirements.confirmed_email){
+    core.user.confirm_send();
+}
+
+if(notice)
+    to = new URL(to).addArg("notice", notice).toString();
+
 // re-direct back
 response.setResponseCode( 301 );
-response.setHeader( "Location" ,  to || "/" );
+response.setHeader( "Location" , to);
 %>

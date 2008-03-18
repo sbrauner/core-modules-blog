@@ -1,44 +1,56 @@
+<% processArgs("opts");
+   opts = opts || {};
+%>
 <div id="register">
 
-  <h3>Register</h3>
-  
-  <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" >
 
+  <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" class="edit register">
+    <legend>Register</legend>
+
+    <fieldset class="edit register">
     <div>
       <label for="login_user">Username</label>
-      <input name="login_user">
+      <input name="login_user" class="text">
     </div>
 
     <div>
       <label for="login_pass1">Password</label>
-      <input type="password" name="login_pass1">
+      <input type="password" name="login_pass1" class="text">
     </div>
 
     <div>
       <label for="login_pass2">Password Again</label>
-      <input type="password" name="login_pass2">
+      <input type="password" name="login_pass2" class="text">
     </div>
 
     <div>
       <label for="login_email">Email</label>
-      <input name="login_email" size=35 >
+      <input name="login_email" class="text">
     </div>
 
-    <div ? User.config.useCaptcha id="comments-open-captcha">
-      <img src="NOCDN/~~/user/captchaIMG.jxp" /><br/>
-      Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/>
-      <input name="login_captcha">    
+    <% if(User.config.useCaptcha){ %>
+    <div id="comments-open-captcha">
+      <label>&nbsp;</label>
+      <img src="NOCDN/~~/user/captchaIMG.jxp" id="captcha"/>
     </div>
+    <div>
+      <label>Type the characters you see in the picture above (just to make sure you&apos;re a human).</label>
+      <input name="login_captcha" class="text">
+    </div>
+    <% } %>
 
-    <input type="submit" value="register">
-    
+    <input type="submit" value="Register" class="button" style="">
+    <% if(opts.to){ %>
+    <input type="hidden" name="login_to" value="<%= opts.to %>"/>
+    <% } %>
+    </fieldset>
   </form>
-  
+
 </div>
 <% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <script>
-  
-  
+
+
   function checkRegister( frm ){
     var u = frm.login_user.value;
     var e = frm.login_email.value;
@@ -47,17 +59,19 @@
     var p2 = frm.login_pass2.value;
 
     var c = frm.login_captcha.value;
+    if(frm.login_to)
+      var to = frm.login_to.value;
 
     if ( ! ( u && u.trim().length != 0 ) ){
       window.alert( "need a username" );
       return false;
     }
-  
+
     if ( u.length < 6 ){
       window.alert( "username is too short" );
       return false;
     }
-  
+
     if ( ! ( e && e.trim().length != 0 ) ){
       window.alert( "need an email address" );
       return false;
@@ -67,11 +81,11 @@
       window.alert( "real email address please" );
       return false;
     }
-  
+
     if ( p1 != p2 ){
       window.alert( "passwords don't match" );
       return false;
-    } 
+    }
 
     if ( ! ( p1 && p1.trim().length >= 6 ) ){
       window.alert( "password too short" );
@@ -82,9 +96,10 @@
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
-    } 
-    
+    }
+
     var u = "/~~/user/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
+    if(to) u = u + "&to=" + to;
     location.href = u;
     return false;
   }

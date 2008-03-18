@@ -28,9 +28,13 @@ div.deleted {
 div.moderated {
     background: #FFFAAA;
 }
+div#tagline {
+     padding-bottom: 7px;
+}
 
 table {
     width: 100%;
+    clear: right;
 }
 
 td {
@@ -169,7 +173,7 @@ div.postbox div.selectThread {
         text-align: left;
         padding: 0px 10px 0px 0px;;
 }
-div.threadFooter {
+div.postForm {
         background: #F0EFEF;
         border: 1px dotted #157491;
         padding: 20px 30px;
@@ -265,6 +269,15 @@ div.caption div.button {
 div.caption input.submit {
             cursor: pointer;
             border: 1px solid #369fbf;
+}
+
+div.caption div.delete, div.caption div.split {
+            border-right: 1px solid #000;
+}
+div.caption div.delete, div.caption div.split, div.caption div.moderate {
+            margin: 0px 0px 0px 0px;
+            padding-left: 6px;
+            padding-right: 6px;
 }
 
 span.highlight {
@@ -389,6 +402,7 @@ h1 {
 img.feed {
      padding: 3px 3px 0px 3px;
      margin-bottom: -2px;
+     display: inline;
 }
 
 
@@ -412,10 +426,10 @@ h1#forumtitle {
      margin-bottom: 0px;
 }
 h2#threadtitle {
-     display: block;
+     display: inline;
      font-size: 16px;
      padding-top: 15px;
-     padding-bottom: 0px;
+     padding-bottom: 10px;
      margin-bottom: 4px;
 }
 textarea#ncontent {
@@ -437,14 +451,14 @@ input#search {
 
 /* Dialog */
 
-div#dlg div#dlg_h {
+div#dlg div#dlg_h, div#editThreadDiv_h, div#splitterDiv_h {
      background: white;
      border-top: 1px dotted #157491;
      border-left: 1px dotted #157491;
      border-right: 1px dotted #157491;
      border-bottom: none;
 }
-div#dlg div.bd {
+div#dlg div.bd, div#editThreadDiv, div#splitterDiv {
      background: white;
      border-top: none;
      border-left: 1px dotted #157491;
@@ -459,11 +473,14 @@ fieldset.dlg {
      margin: 10px;
      padding: 20px 10px;
 }
-div#dlg div.field {
+legend {
+       font-size: 1.1 em;
+}
+div#dlg div.field, div#editThreadDiv div.field, div#splitterDiv div.field {
      padding-top: 5px;
      vertical-align: middle;
 }
-div#dlg label {
+div#dlg label, div#editThreadDiv label, div#splitterDiv label {
      display: block;
      width: 100px;
      margin: 5px 0px 0px;
@@ -471,12 +488,17 @@ div#dlg label {
      text-align: right;
      float: left;
 }
-div#dlg input.text {
+div#dlg input.text, div#editThreadDiv input.text, div#splitterDiv input.text, div#splitterDiv select {
      border: 1px solid #157491;
      margin: 0px 0px 0px 10px;
      width: auto;
 }
-div#dlg div.btns {
+div#dlg input.check, div#editThreadDiv input.check, div#splitterDiv input.check {
+     margin: 0px 10px 0px 10px;
+     width: auto;
+}
+div#dlg div.btns, div#editThreadDiv div.btns, div#splitterDiv div.btns {
      padding-top: 10px;
      float: right;
 }
+

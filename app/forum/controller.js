@@ -128,3 +128,8 @@ app.Forum.Controller.userPermissionType = function(user){
         return "UNKNOWN";
     return "MEMBER";
 };
+
+app.Forum.Controller.canPost = function(thread){
+    return app.Forum.Controller.hasPermission(user, "makePost")
+        && thread.commentsEnabled && thread.postable();
+};
