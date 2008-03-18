@@ -1,3 +1,6 @@
+<% processArgs("opts");
+   opts = opts || {};
+%>
 <div id="register">
 
   <h3>Register</h3>
@@ -31,7 +34,10 @@
     </div>
 
     <input type="submit" value="register">
-    
+    <% if(opts.to){ %>
+    <input type="hidden" name="login_to" value="<%= opts.to %>"/>
+    <% } %>
+
   </form>
   
 </div>
@@ -47,6 +53,8 @@
     var p2 = frm.login_pass2.value;
 
     var c = frm.login_captcha.value;
+    if(frm.login_to)
+      var to = frm.login_to.value;
 
     if ( ! ( u && u.trim().length != 0 ) ){
       window.alert( "need a username" );
@@ -85,6 +93,7 @@
     } 
     
     var u = "/~~/user/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
+    if(to) u = u + "&to=" + to;
     location.href = u;
     return false;
   }
