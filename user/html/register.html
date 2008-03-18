@@ -4,7 +4,7 @@
 <div id="register">
 
   <h1>Register</h1>
-  
+
   <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" class="edit register">
 
     <fieldset class="edit register">
@@ -39,18 +39,18 @@
     </div>
     <% } %>
 
-    <input type="submit" value="register" class="button">
+    <input type="submit" value="Register" class="button" style="margin: 0px;background-color: #369fbf;color: #ffffff;border: 1px solid white;margin-left:10px;margin-top:30px">
     <% if(opts.to){ %>
     <input type="hidden" name="login_to" value="<%= opts.to %>"/>
     <% } %>
     </fieldset>
   </form>
-  
+
 </div>
 <% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <script>
-  
-  
+
+
   function checkRegister( frm ){
     var u = frm.login_user.value;
     var e = frm.login_email.value;
@@ -66,12 +66,12 @@
       window.alert( "need a username" );
       return false;
     }
-  
+
     if ( u.length < 6 ){
       window.alert( "username is too short" );
       return false;
     }
-  
+
     if ( ! ( e && e.trim().length != 0 ) ){
       window.alert( "need an email address" );
       return false;
@@ -81,11 +81,11 @@
       window.alert( "real email address please" );
       return false;
     }
-  
+
     if ( p1 != p2 ){
       window.alert( "passwords don't match" );
       return false;
-    } 
+    }
 
     if ( ! ( p1 && p1.trim().length >= 6 ) ){
       window.alert( "password too short" );
@@ -96,8 +96,8 @@
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
-    } 
-    
+    }
+
     var u = "/~~/user/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
     if(to) u = u + "&to=" + to;
     location.href = u;
