@@ -18,10 +18,10 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
 
 <div id="post<%= t.getID() %>" class="postbox<%= even +" "+ htmlclass %>">
   <a name="<%= t.getID() %>"></a>
-    <span class="titlebar">
       <div id="actions<%= t.getID() %>" class="actions">
            <% for(var i in actions){ actions[i](t); } %>
       </div>
+
       <div class="author">
         <%= t.author.name %>
         <%
@@ -32,11 +32,10 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
              print("(moderator)");
         }
         %>
+        <span class="pipe">|</span>
+        <span class="ts"><%= prettyDate %></span>
       </div>
-      <span class="pipe">|</span>
-      <div class="ts"><%= prettyDate %></div>
-        <!--(<a href="#<%= t.getID() %>">#</a>)</div>-->
-    </span>
+
 
     <div class="content">
       <% if(options.highlight) {

@@ -142,26 +142,27 @@ table#style1, table.style1 {
 	background-color: #f4f8f9;
 }
 
-div.postbox span.titlebar {
-          padding-bottom: 10px;
+div.postbox {
+          padding: 10px;
 }
 
-div.postbox span.titlebar div.title {
+div.postbox div.title {
        padding-bottom: 8px;
        font-size: 18px;
 }
-div.postbox span.titlebar div.author {
-        display: inline;
+div.postbox div.author {
+        diplay: block;
         padding: 0px 0px 0px 0px;
+        margin-top: 5px;
 }
 span.pipe {
       padding-left: 5px;
       padding-right: 5px;
 }
-div.postbox span.titlebar div.ts {
+div.postbox span.ts {
       display: inline;
 }
-div.postbox span.titlebar div.ts span.time {
+div.postbox span.ts span.time {
       color: #A81817;
 }
 div.postbox div.content {
@@ -286,10 +287,10 @@ span.highlight {
 
 
 div.actions {
-            width: 100%;
-            height: 20px;
+           /* width: 100%;
+            height: 20px;*/
             text-align: right;
-            float: right;
+/*            float: right;*/
 }
 
 div.popup {
@@ -358,7 +359,6 @@ div.threadbox {
 div.threadbox div.author {
      color: #082D38;
      font-size: 10pt;
-     padding-top: 10px;
      padding-bottom: 20px;
      display: block;
 }
