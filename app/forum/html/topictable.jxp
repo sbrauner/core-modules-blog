@@ -10,6 +10,7 @@
 processArgs("name", "description", "subs", "threads", "actions", "opts");
 core.ext.getdefault();
 core.app.forum.js.yui();
+core.app.forum.html.form();
 
 opts = opts || {};
 var createThread = true;
@@ -55,7 +56,7 @@ if(hideTopic){
 if(moveTopic){
     topicActions.push({title : "Move Topic",
                        func : app.Forum.html.selectify(topics,
-                                                       function(t){ return {onChange: "fromTopic='"+t.name+"';moveDlg('topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
+                                                       function(t){ return {onChange: "moveDlg('Topic', moveTopic, '"+t._id+"')", id: t._id.toString()}; },
                                         {filter: function(t, option) { return t._id != option._id; } } ).wrap(function(proceed, t){
                                             // We wrap the function so that when we get the Special Topics,
                                             // we don't generate a <select> for you to move them.
@@ -96,7 +97,7 @@ if(moderateThread)
 if(addActions && movetargets.length > 0) {
     actions.push({title : "Move Thread",
                   func : app.Forum.html.selectify(movetargets, function(thread){ return {onChange:
-                                                                                         "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
+                                                                                         "if(this.value != '"+ (topic ? topic._id : "") +"') moveDlg('Thread', move, '"+thread._id+"'); else { alert('You are already in that topic!'); this.value = ''; }", id: thread._id.toString() }; } )
                  });
 }
 
@@ -142,32 +143,49 @@ var yes = { newtopic : function() {
 
 
 var no = { newtopic : function() { dialog.hide(); },
-     move : function() { dialog.hide();
-                         document.getElementById(this.targetId).value = ""; },
+     move : function() { dialog.hide(); },
      edittopic : function() { dialog.hide(); },
      newuser: function() { dialog.hide(); } };
 
-var fromTopic = "";
+
+// when a topic name is found using the dropdown, it may have some &nbsp proceeding it
+function trimTopicName(str) {
+     while(str.substring(0,6) == "&nbsp;")
+          str = str.substring(6);
+     return str;
+}
 
 function moveDlg(label, target, targetId) {
     dialog.target = target;
     dialog.targetId = targetId;
 
     if(! document.getElementById(targetId).value) return;
-
     toTopicId = document.getElementById(targetId).value;
-    if(toTopicId == null)
-        toTopic = 'the home page';
-    else {
-        toTopic = document.getElementById(toTopicId+"_row_anchor").innerHTML;
-        toTopic = toTopic != '(Top Level)' ? 'the topic "'+toTopic+'"' : 'the home page';
+
+    var fromTopic = targetId;
+    var toTopic = "the home page";
+    var children = YAHOO.util.Dom.getChildren(fromTopic);
+    for(var i=0; i<children.length; i++) {
+         if(children[i].value == toTopicId) {
+              toTopic = trimTopicName(children[i].innerHTML);
+              break;
+         }
     }
-    message = '<fieldset class="dlg"><legend>Move Topic to '+toTopic+'</legend>'
-             +'<div class="field">Are you sure you want to move "'+fromTopic+'" to '+toTopic+'?</div>'
+    if(label == "Topic")
+        fromTopic = document.getElementById(fromTopic+"_row_anchor").innerHTML;
+    else {//moving thread
+        child = YAHOO.util.Dom.getElementsByClassName("title", "div", "thread_"+fromTopic);
+        x = child[0].innerHTML;
+        fromTopic = x.substring(x.indexOf(">")+1, x.lastIndexOf("<"));
+    }
+
+    message = '<fieldset class="dlg"><legend>Move '+label+' to '+toTopic+'</legend>'
+             +'<div class="field">Are you sure you want to move "'+fromTopic+'" to "'+toTopic+'"?</div>'
              +'<div class="btns"><input type="button" class="button" value="Move" onclick="yes[\'move\']()">'
              +'<input type="button" class="button" value="Cancel" onclick="no[\'move\']()"></div>'
              +'</fieldset>';
 
+    document.getElementById(targetId).value = "";
     makeDialog("", message);
 }
 
@@ -368,30 +386,6 @@ function addTopicToTable(txt) {
 
 
 </script>
-
-
-<div class="caption">
-    <%
-    var caption_ar = [];
-    if(createThread && app.Forum.Controller.hasPermission(user, "createThread")){
-        caption_ar.push('<div class="button" onclick="location=\'thread_new?top_id='+opts.thisid+'&reply=true\'">New Thread</div>');
-    }
-    if(createTopic && app.Forum.Controller.hasPermission(user, "createTopic")) {
-      caption_ar.push('<div class="button" onclick="newTopic('+((opts.thisid) ? "'"+ opts.thisid+"'" : '') + ')">New Topic</div>');
-      if(opts.thisid){
-        caption_ar.push('<div class="button" onclick="editTopic(\''+opts.thisid+'\')">Edit Topic</div>');
-      }
-    }
-    if (editUser && app.Forum.Controller.hasPermission(user, "editUser")){
-        caption_ar.push('<div class="button" onclick="location=\'user_edit\'">Edit user</div>');
-    }
-    for(var i=0; i<caption_ar.length-1; i++)
-        print(caption_ar[i]+" | ");
-    print(caption_ar.length > 0 ? caption_ar[caption_ar.length-1] : '');
-
-    app.Forum.js.addYesNoDialog();
-    %>
-</div>
 
 <h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
 <div id="tagline"><%= description || "" %></div>

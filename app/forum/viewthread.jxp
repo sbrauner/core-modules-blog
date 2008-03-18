@@ -283,15 +283,13 @@ print('</div>');
 if(request.highlight) { %>
      <div><input type="checkbox" value="highlight" onclick="toggleHighlight()" checked>Highlight</div>
 
-     <h2 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %>
-     <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
-     </h2>
+     <h2 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h2>
+     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
      <%
 }
 else { %>
-     <h2 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %>
-     <a href="thread_rss.jxp?id=<%= thread._id %>"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
-     </h2>
+     <h2 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %></h2>
+     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
      <%
 }
 
