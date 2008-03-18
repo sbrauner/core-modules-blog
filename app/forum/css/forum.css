@@ -364,14 +364,14 @@ div.threadbox div.author {
 }
 
 div.threadbox div.title {
-      padding: 15px 0px 0px 10px;
+      padding: 15px 0px 10px 10px;
       font-size: 14px;
 }
 
 div.threadbox div.content {
       background: white;
       border: 1px solid #157491;
-      margin: 5px 15px 15px 10px;
+      margin: -5px 15px 20px 10px;
       padding: 10px 5px 0px 5px;
 }
 div.threadbox div.ts {
