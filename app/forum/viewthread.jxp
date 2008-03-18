@@ -340,13 +340,26 @@ print('</div>');
 %>
 
 <script type="text/javascript">
+var even = <%= opts.even %>;
+
 function post() {
      var content = encodeURIComponent(document.getElementById("ncontent").value);
-     var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>";
-     ajax(passData, "post_new.jxp", goToNewPost);
+     if(content == "") {
+          alert("You must enter some text to reply.");
+          return;
+     }
+     else {
+          var passData = "ncontent="+content+"&reply_target=true&reply=true&id=<%= thread._id %>&even="+even;
+          ajax(passData, "post_new.jxp", goToNewPost);
+          even = !even;
+     }
 }
 
 function goToNewPost(response) {
+     if(response == "") {
+         alert("Post failed!");
+
+     }
      var page = response.substring(0, response.indexOf('&'));
      var html = response.substring(response.indexOf('&')+1);
      if(page != <%= paging.pageNumber() %>)
@@ -360,11 +373,12 @@ function goToNewPost(response) {
 </script>
 
 <div id="threadFooter" class="threadFooter" style="clear:right">
-    <%
-    if(canPost){
-        app.Forum.html.form.postForm();
-    }
-    %>
+<%
+if(canPost){ %>
+     <% app.Forum.html.form.postForm(); %>
+     <%
+}
+%>
 </div>
 
 

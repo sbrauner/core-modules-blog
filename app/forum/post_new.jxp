@@ -3,6 +3,8 @@ core.app.forum.controller();
 core.app.forum.data.thread();
 core.html.html();
 
+if (request.ncontent == "") return;
+
 var thread = app.Forum.data.Thread.findOne({_id: request.id});
 var canPost = app.Forum.Controller.hasPermission(user, "makePost")
     && ! request.deleted && thread.commentsEnabled && thread.postable();
@@ -25,7 +27,9 @@ if(canPost){
         var newnumpages = page.numPages();
 
         print(newnumpages+"&");
-        p.render(app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread), thread.threaded_pieces);
+        opts = app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread);
+        opts.even = (request.even == "true") ? true : false;
+        p.render(opts, thread.threaded_pieces);
     }
 }
 %>
