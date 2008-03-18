@@ -217,8 +217,9 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
                     htmlclass = "postdeleted";
                 if(post.getID() == firstPost.getID())
                     htmlclass = "firstpost";
-                txt = '<div class="button' + (htmlclass? (" " + htmlclass) : "") + '" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()"'+
-                    (htmlclass? ' style="display: none"' : '') + '>Split</div>';
+                txt = '<div class="button split' + (htmlclass? (" " + htmlclass) : "") + '" onclick="post='+post.getID()+'; document.getElementById(\'splitterDiv\').style.display=\'block\'; splitter_d.show()"'+
+
+                    (htmlclass? ' style="display: none;"' : '') + '>Split</div>';
                 action_ar.push(txt);
             }
             if(canDelete){
@@ -232,7 +233,7 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
                 var htmlclass = "";
                 if(thread.count <= 1)
                     htmlclass = "onlypost";
-                txt = '<div class="button'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="deletePost(\''+post.getID()+'\')">Delete</div>';
+                txt = '<div class="button delete'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="deletePost(\''+post.getID()+'\')">Delete</div>';
                 action_ar.push(txt);
             }
             if(canModerate){
@@ -240,7 +241,7 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
                 var htmlclass = "";
                 if(thread.count <= 1)
                     htmlclass = "onlypost";
-                txt = '<div class="button'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="moderatePost(\''+post.getID()+'\')">Moderate</div>';
+                txt = '<div class="button moderate'+(htmlclass?(" "+htmlclass):"")+'" '+(htmlclass?'style="display: none"':"") +' onclick="moderatePost(\''+post.getID()+'\')">Moderate</div>';
                 action_ar.push(txt);
             }
         }
@@ -248,7 +249,7 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     %>
     <div class="caption">
     <%
-         print(action_ar.join(" | "));
+         print(action_ar.join(""));
     %>
     </div>
     <%
