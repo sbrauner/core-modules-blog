@@ -40,6 +40,8 @@ else {
 
     <h2>New Thread</h2>
 
+        <% app.Forum.html.breadcrumb({topic: topic, getTitle: function(){ return "New thread"; } }); %>
+
     <div id="threadFooter" class="threadFooter" style="clear:right">
          <div class="postForm" id="postForm">
              <form id="replyform" method="POST">
