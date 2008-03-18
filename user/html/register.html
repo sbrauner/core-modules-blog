@@ -3,41 +3,47 @@
 %>
 <div id="register">
 
-  <h3>Register</h3>
+  <h1>Register</h1>
   
-  <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" >
+  <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" class="edit register">
 
+    <fieldset class="edit register">
     <div>
       <label for="login_user">Username</label>
-      <input name="login_user">
+      <input name="login_user" class="text">
     </div>
 
     <div>
       <label for="login_pass1">Password</label>
-      <input type="password" name="login_pass1">
+      <input type="password" name="login_pass1" class="text">
     </div>
 
     <div>
       <label for="login_pass2">Password Again</label>
-      <input type="password" name="login_pass2">
+      <input type="password" name="login_pass2" class="text">
     </div>
 
     <div>
       <label for="login_email">Email</label>
-      <input name="login_email" size=35 >
+      <input name="login_email" class="text">
     </div>
 
-    <div ? User.config.useCaptcha id="comments-open-captcha">
-      <img src="NOCDN/~~/user/captchaIMG.jxp" /><br/>
-      Type the characters you see in the picture above (just to make sure you&apos;re a human).<br/>
-      <input name="login_captcha">    
+    <% if(User.config.useCaptcha){ %>
+    <div id="comments-open-captcha">
+      <label>&nbsp;</label>
+      <img src="NOCDN/~~/user/captchaIMG.jxp" id="captcha"/>
     </div>
+    <div>
+      <label>Type the characters you see in the picture above (just to make sure you&apos;re a human).</label>
+      <input name="login_captcha" class="text">
+    </div>
+    <% } %>
 
-    <input type="submit" value="register">
+    <input type="submit" value="register" class="button">
     <% if(opts.to){ %>
     <input type="hidden" name="login_to" value="<%= opts.to %>"/>
     <% } %>
-
+    </fieldset>
   </form>
   
 </div>
