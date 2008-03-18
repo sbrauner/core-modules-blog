@@ -7,6 +7,8 @@ core.db.db();
 dbutil.associate(User.Confirmation, db.users.confirmations);
 db.users.confirmations.setConstructor(User.Confirmation);
 
+core.net.url();
+
 core.core.mail();
 
 User.Confirmation.prototype.send = function(){

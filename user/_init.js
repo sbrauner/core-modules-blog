@@ -8,3 +8,6 @@ User.config = {
     useCaptcha : false
 };
 
+User.requirements = {
+    confirmed_email: [],
+};
