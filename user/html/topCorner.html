@@ -2,11 +2,11 @@
 <div id="login_status">
 
   <if user >
-    Logged in as <%= user.name %> &mdash; <a href="/~~/user/logout?to=<%= request.getURL() %>">logout</a>
+    Logged in as <%= user.name %> &mdash; <a href="/login/logout?to=<%= request.getURL() %>">logout</a>
   </if>
   
   <if ( ! user )  >
-    <a href="/~~/user/login">login</a> &mdash; <a href="/~~/user/register">signup</a>
+    <a href="/login/login">login</a> &mdash; <a href="/login/register">signup</a>
 
     <div id="login_login" 
          style="position: absolute; display:none; width: 250px; height: 150px; right: 40px; top:20px; background-color: white; border:1px solid black; color: black; ">

@@ -235,6 +235,7 @@ function move(threadId) {
         if(text.match("fail")){
             return;
         }
+        document.getElementById("thread_"+threadId).style.display = "none";
         text = text.replace(/<\/?response>/g, '').replace(/\s/g, '');
         var results = text.split(":");
         var id = results[0];
@@ -245,7 +246,6 @@ function move(threadId) {
         var tds = YAHOO.util.Dom.getChildren(tr);
         tds[1].innerHTML = parseInt(tds[1].innerHTML, 10)+1;
         tds[2].innerHTML = parseInt(tds[2].innerHTML, 10)+parseInt(count, 10);
-        document.getElementById("thread_"+threadId).style.display = "none";
     }, "POST");
 }
 
