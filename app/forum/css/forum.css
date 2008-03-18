@@ -28,6 +28,9 @@ div.deleted {
 div.moderated {
     background: #FFFAAA;
 }
+div#tagline {
+     padding-bottom: 7px;
+}
 
 table {
     width: 100%;
