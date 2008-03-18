@@ -221,4 +221,21 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     return postoptions;
 };
 
+app.Forum.html.form.postForm = function(shouldReturn){
+    var oldprint = print;
+    var s = "";
+    if (shouldReturn){
+        print = function(text) { s = s + text; };
+    }
+%>
+    <div class="postForm" id="postForm">
+         <form id="replyform">
+         <div class="field">Your Reply: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
+         <div class="field"><input type="button" class="button" onclick="post()" value="Submit Your Reply"></div>
+         </form>
+    </div>
+<%
+    print = oldprint;
+    return s;
+};
 %>
