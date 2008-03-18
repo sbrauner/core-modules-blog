@@ -473,6 +473,11 @@ fieldset.dlg {
      margin: 10px;
      padding: 20px 10px;
 }
+fieldset.dlg2 {
+     border: 1px solid #157491;
+     margin: 0px 20px 20px 20px;
+     padding: 20px;
+}
 legend {
        font-size: 1.1 em;
 }
