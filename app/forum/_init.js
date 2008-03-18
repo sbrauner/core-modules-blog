@@ -9,3 +9,4 @@ core.app.forum.controller();
 core.app.forum.data.thread();
 core.app.forum.data.topic();
 core.content.search();
+core.content.html();
