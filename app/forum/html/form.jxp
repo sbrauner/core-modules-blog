@@ -200,7 +200,7 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
      if(post.deleted == "moderated" && canModerate){
            action_ar.push('<div class="button" onclick="unmoderatePost(\''+post.getID()+'\')">Unmoderate</div>');
      }
-     if (thread.count > 1 && !post.deleted && canDelete){
+     if(thread.count > 1 && !post.deleted && canDelete){
             action_ar.push('<div class="button" onclick="deletePost(\''+post.getID()+'\')">Delete</div>');
      }
      if(thread.count > 1 && !post.deleted && canModerate){
