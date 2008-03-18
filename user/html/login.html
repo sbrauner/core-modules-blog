@@ -3,7 +3,7 @@ var conf = arguments[0] || {};
 %>
 <script src="/~~/ui/js/md5.js"></script>
 <script>
-  
+
   var url = "/~~/user/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
   var area = "<%= db.getName() %>";
@@ -19,7 +19,7 @@ var conf = arguments[0] || {};
     u += "&hash=" + hex_md5( prefix + ":" + hex_md5( frm.login_user.value + ":" + area + ":" + frm.login_pass  ) );
 
     if ( frm.login_remember.value == "yes" ) u += "&remember=t";
-    
+
 
     location.href = u;
     return false;
@@ -33,10 +33,10 @@ var conf = arguments[0] || {};
   Logged in as : <b><%= user.name %></b><br>
 </div>
 
-<div ? ( ! user ) id="login" >
+<div ? ( ! user ) id="login">
 
   <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit">
-    <fieldset>
+    <fieldset class="login">
       <legend>Login</legend>
 
     <div>
@@ -53,10 +53,10 @@ var conf = arguments[0] || {};
       <label for="login_remember">Remember Me:</label>
       <input type="checkbox" name="login_remember" value="yes" >
     </div>
-    
+
     <input type="submit" name="action" value="Login" class="button">
     <b ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</b>
-    </fieldset>    
+    </fieldset>
   </form>
 
 </div>
