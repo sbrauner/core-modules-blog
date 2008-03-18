@@ -3,9 +3,9 @@
 %>
 <div id="register">
 
-  <h1>Register</h1>
 
   <form method="post" action="/~~/user/register" onSubmit="return checkRegister( this )" class="edit register">
+    <legend>Register</legend>
 
     <fieldset class="edit register">
     <div>
@@ -39,7 +39,7 @@
     </div>
     <% } %>
 
-    <input type="submit" value="Register" class="button" style="margin: 0px;background-color: #369fbf;color: #ffffff;border: 1px solid white;margin-left:10px;margin-top:30px">
+    <input type="submit" value="Register" class="button" style="">
     <% if(opts.to){ %>
     <input type="hidden" name="login_to" value="<%= opts.to %>"/>
     <% } %>
