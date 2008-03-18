@@ -27,8 +27,14 @@ app.Forum.data.Thread.prototype.SEARCH_WEIGHTS = {
 };
 
 app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
-    title: {stripHTML: true},
+    title: {
+        stripHTML: true
+    },
     threaded_children: {
+        filter: function(field, obj) {
+            if(obj.deleted) return false;
+            return true;
+        },
         title: {stripHTML: true},
         content: {stripHTML: true}
     }

@@ -77,7 +77,29 @@ Search = {
 
     } ,
 
+    addToIndex : function( obj, str, weight){
+        var idx = Search.getIndexName( weight );
+
+        var words = obj[idx];
+        if ( !words ){
+            words = [];
+            obj[idx] = words;
+        }
+
+        str.split( Search.wordRegex ).forEach( function( z ){
+            z = Search.cleanString( z );
+            if ( z.length == 0 )
+                return;
+            if ( ! words.contains( z ) )
+                words.add( z );
+        });
+    },
+
     index : function( obj, weights, options ){
+        var keys = Object.keys(obj);
+        for(var i = 0; i < keys.length; i ++){
+            if(keys[i].match(/searchIndex/)) delete obj[keys[i]];
+        }
         return Search.indexSub(obj, obj, weights, options);
     },
 
@@ -86,10 +108,13 @@ Search = {
         if ( weights == null )
             throw "weights can't be null";
 
+
         if( obj instanceof Array ){
             for(var i = 0; i < obj.length; i++){
-                if(obj[i])
+                if(obj[i]){
+                    if( ! (Ext.getdefault(options, 'filter', function(){return true}))(i, obj[i])) continue;
                     Search.indexSub(top, obj[i], weights, options);
+                }
             }
         }
 
@@ -99,30 +124,19 @@ Search = {
             var o = Ext.getdefault(options, field, {});
 
             if ( typeof w == "number" ){
-                var idx = Search.getIndexName( weights[field] );
-
-                var words = top[idx];
-                if ( !words ){
-                    words = [];
-                    top[idx] = words;
-                }
                 var s = obj[field];
                 if ( ! s )
                     continue;
-
                 if(o.stripHTML){
                     s = content.HTML.strip(s);
                 }
+                if ( ! s )
+                    continue;
 
-                s.split( Search.wordRegex ).forEach( function( z ){
-                    z = Search.cleanString( z );
-                    if ( z.length == 0 )
-                        return;
-                    if ( ! words.contains( z ) )
-                        words.add( z );
-                });
+                Search.addToIndex(top, s, w);
             }
             else {
+                if( ! (Ext.getdefault(options, 'filter', function(){return true}))(field, obj[field])) return;
                 Search.indexSub(top, obj[field], w, o);
             }
 
