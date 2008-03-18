@@ -28,7 +28,8 @@ if(request.id){
         threadList = app.Forum.data.Thread.list(app.Forum.Controller.specialModeratedID);
         name = "Moderated threads";
     }
-    t = {name: name, parent: null, getHidden: function(){ return false; } };
+    t = {name: name, parent: null, getHidden: function(){ return false; } ,
+         getAncestors: function(){ return []; } };
 }
 else {
     name = request.name;
