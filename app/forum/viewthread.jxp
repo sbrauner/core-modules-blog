@@ -32,7 +32,7 @@ core.app.forum.html.forumheader("Forum | "+titleStr + content.HTML.escape(thread
 // can't post if you don't have permissions, or if we're looking at
 // all the posts deleted from a thread.
 var canPost = app.Forum.Controller.hasPermission(user, "makePost")
-    && ! request.deleted && thread.commentsEnabled && thread.postable();
+    && ! request.show && thread.commentsEnabled && thread.postable();
 var canSplit = app.Forum.Controller.hasPermission(user, "splitPost");
 var canDelete = app.Forum.Controller.hasPermission(user, "deletePost");
 var canModerate = app.Forum.Controller.hasPermission(user, "moderatePost");
@@ -153,11 +153,11 @@ var handleSuccess = function(o) {
     document.getElementById("threadtitle").innerHTML = r[0];
     if(r[1] == "true"){
         threadClosed = true;
-        document.getElementById("threadFooter").style.display = "none";
+        document.getElementById("postForm").style.display = "none";
     }
     else {
         threadClosed = false;
-        document.getElementById("threadFooter").style.display = "block";
+        document.getElementById("postForm").style.display = "block";
     }
 }
 
@@ -313,10 +313,12 @@ function goToNewPost(response) {
 <div id="threadFooter" class="threadFooter" style="clear:right">
     <%
     if(canPost){ %>
+    <div class="postForm">
          <form id="replyform">
          <div class="field">Your Reply: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
          <div class="field"><input type="button" class="button" onclick="post()" value="Submit Your Reply"></div>
          </form>
+    </div>
          <%
     }
     %>
