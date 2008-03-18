@@ -39,7 +39,7 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
 
     <div class="content">
       <% if(options.highlight) {
-              print(app.Forum.html.highlight(HTML.decodeBr(t.content), options.highlight));
+              print(app.Forum.html.highlight(t.content, options.highlight));
           }
           else {
               print(t.content);
