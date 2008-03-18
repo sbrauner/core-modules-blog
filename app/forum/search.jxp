@@ -122,7 +122,7 @@ if(threads.length > 0){
             <a href="viewthread?id=<%= threads[i]._id+"&highlight="+query %>"><%= app.Forum.html.highlight(content.HTML.escape(threads[i].getTitle()), query) %></a>
        </div>
        <%
-            var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_OPTIONS);
+            var snippets = Search.snippet(threads[i], query, threads[i].SEARCH_WEIGHTS);
             for(var j=0; snippets != null && j < 4 && j < snippets.length; j++) {
                 var prettyDate = snippets[j].object.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+snippets[j].object.ts.format("a").toLowerCase() +"</span>";
                 %>
