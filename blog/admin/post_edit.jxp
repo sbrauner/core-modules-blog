@@ -145,7 +145,7 @@ categories.sort( function( a , b ){
 
 %>
 
-<script type="text/javascript" src="NOCDN/~~/tinymce/3.0/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/@@/tinymce/3.0.5/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",

@@ -229,13 +229,20 @@ Post.getMostPopular = function( num , articlesBack ){
 };
 
 Post.getMostCommented = function( num , articlesBack ){
-    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    
+    var key = "__mostCommented_" + num + "_" + articlesBack;
+    var all = Post[ key ];
+    if ( all )
+	return all;
+
+    all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort( function( a , b ){
 	return b.getNumComments() - a.getNumComments();
     } );
     
     all = all.slice( 0 , num );
     
+    Post[ key ] = all;
     return all;
 };
 
