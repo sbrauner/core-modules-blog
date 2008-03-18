@@ -94,14 +94,15 @@ function toggleHighlight() {
 <div class="match_div">
 <%
 
-// FIXME: XSS??
+    var query_enc = content.HTML.escape(query);
 
 if(threads.length == 0 && cursor.length == 0){
 %>
-    <div>No search results for "<%= query %>".</div>
+    <div>No search results for "<%= query_enc %>".</div>
 <%
 }
 else{
+    print("<div>Search results for \""+query_enc+"\" <input type=\"checkbox\" value=\"highlight\" onclick=\"toggleHighlight()\" checked>Highlight</div>");
 if(cursor.length > 0) { %>
     <div class="match_div">
     <%
