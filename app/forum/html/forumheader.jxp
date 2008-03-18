@@ -5,7 +5,7 @@ core.app.forum.html.check_ban();
 head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
 head.addScript("/@@/yui/current/yuiloader/yuiloader-beta.js");
-core.user.html.topCorner();
+htmlheader(title);
 
 if(user &&
    app.Forum.Controller.userPermissionType(user) == "UNKNOWN" &&
@@ -13,7 +13,4 @@ if(user &&
     addToNotice(warning, "You must validate your email to become a member of this forum. "+
                 '<a href="'+ User.statusLink(app.Forum.Controller.missingPermission(user)) + '">Send another validation email</a>.');
 }
-
-htmlheader(title);
-
 %>

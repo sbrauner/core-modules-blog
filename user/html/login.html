@@ -28,35 +28,36 @@ var conf = arguments[0] || {};
 </script>
 
 <div ? user >
-  error you are already logged in
-  have to <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">logout</a>
-  <br>
-  Logged in as : <b><%= user.name %></b><br>
+  <div class="notice">You are already logged in as <strong><%= user.name %> (<%= user.email %>)</strong>.<br/><br/>If you would like to log in as another user, please <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">log out</a> first.</div>
 </div>
 
 <div ? ( ! user ) id="login">
 
-  <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit">
-    <fieldset class="login">
-      <legend>Login</legend>
+    <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit login">
+        <fieldset class="login">
+            <legend>Login</legend>
 
-    <div>
-      <label for="login_user">Username:</label>
-      <input name="login_user" class="text">
-    </div>
-
-    <div>
-      <label for="login_password">Password:</label>
-      <input type="password" name="login_pass" class="text">
-    </div>
-
-    <div>
-      <label for="login_remember">Remember Me:</label>
-      <input type="checkbox" name="login_remember" value="yes" >
-    </div>
-
-    <input type="submit" name="action" value="Login" class="button">
-    <b ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</b>
+            <table>
+                <tr>
+                    <td><label for="login_user">Username</label></td>
+                    <td><input name="login_user" class="text"></td>
+                </tr>
+                <tr>
+                    <td><label for="login_password">Password</label></td>
+                    <td><input type="password" name="login_pass" class="text"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="checkbox" name="login_remember" value="yes" > Remember me</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" name="action" value="Login" class="button">
+                        <strong ? ( "11" == request.getCookie( "__sudo" ) ) style="color:red;">sudo</strong>
+                    </td>
+                </tr>
+            </table>
     </fieldset>
   </form>
 

@@ -9,41 +9,49 @@
 
     <fieldset class="edit register">
     <legend>Register</legend>
-    <div>
-      <label for="login_user">Username</label>
-      <input name="login_user" class="text">
-    </div>
+    <table>
+    <tr>
+        <td><label for="login_user">Username</label></td>
+        <td><input name="login_user" class="text"></td>
+    </tr>
 
-    <div>
-      <label for="login_pass1">Password</label>
-      <input type="password" name="login_pass1" class="text">
-    </div>
+    <tr>
+        <td><label for="login_pass1">Password</label></td>
+        <td><input type="password" name="login_pass1" class="text"></td>
+    </tr>
 
-    <div>
-      <label for="login_pass2">Password Again</label>
-      <input type="password" name="login_pass2" class="text">
-    </div>
+    <tr>
+        <td><label for="login_pass2">Password Again</label></td>
+        <td><input type="password" name="login_pass2" class="text"></td>
+    </tr>
 
-    <div>
-      <label for="login_email">Email</label>
-      <input name="login_email" class="text">
-    </div>
+    <tr>
+        <td><label for="login_email">Email</label></td>
+        <td><input name="login_email" class="text"></td>
+    </tr>
 
     <% if(User.config.useCaptcha){ %>
-    <div id="comments-open-captcha">
-      <label>&nbsp;</label>
-      <img src="NOCDN/~~/user/captchaIMG.jxp" id="captcha"/>
-    </div>
-    <div>
-      <label>Type the characters you see in the picture above (just to make sure you&apos;re a human).</label>
-      <input name="login_captcha" class="text">
-    </div>
+    <tr id="comments-open-captcha">
+        <td><label>&nbsp;</label></td>
+        <td><img src="NOCDN/~~/user/captchaIMG.jxp" id="captcha"/></td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <td>
+            <span class="small">Type the characters you see in the picture above (just to make sure you&apos;re a human).</span>
+            <input name="login_captcha" class="text">
+        </td>
+    </tr>
     <% } %>
 
-    <input type="submit" value="Register" class="button" style="">
-    <% if(opts.to){ %>
-    <input type="hidden" name="login_to" value="<%= opts.to %>"/>
-    <% } %>
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Register" class="button" style="">
+            <% if (opts.to) { %><input type="hidden" name="login_to" value="<%= opts.to %>"/><% } %>
+        </td>
+    </tr>
+    </table>
     </fieldset>
   </form>
 
