@@ -21,7 +21,7 @@ app.Forum.data.Thread.prototype.SEARCH_WEIGHTS = {
     threaded_children: {
         // THREADED: this would have to change, of course, if we changed
         // reply styles
-        title: .2,
+        //title: .2,
         content: .2
     }
 };
@@ -35,13 +35,14 @@ app.Forum.data.Thread.prototype.SEARCH_OPTIONS = {
             if(obj.deleted) return false;
             return true;
         },
-        title: {stripHTML: true},
+//        title: {stripHTML: true},
         content: {stripHTML: true}
     }
 };
 
 app.Forum.data.Thread.prototype.presave = function() {
     Search.index( this , this.SEARCH_WEIGHTS, this.SEARCH_OPTIONS );
+    Search.addToIndex( this, content.HTML.strip(this.getReplies()[0].title), 0.2);
 };
 
 app.Forum.data.Thread.prototype.getTitle = function() {
