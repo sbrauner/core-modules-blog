@@ -181,10 +181,6 @@ app.Forum.html.form.makePostOptions = function(canSplit, canDelete, canModerate,
     var reps = thread.getReplies();
     var firstPost = thread.getFirstNotDeleted();
 
-    for(var i = 0; i < reps.length; i++){
-        if(notdeleted(reps[i])){ firstPost = reps[i]; break; }
-    }
-
     postoptions.actions = [];
     postoptions.actions.push(function(post) {
         var action_ar = [];

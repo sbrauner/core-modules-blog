@@ -122,6 +122,16 @@ var postArrived = function(post, reply){
     reply = reply.split('&');
     addCaptionBtns(post, reply[2]);
     showOnlyPostButtons();
+
+    // Find the id of the currently displayed first post and check it against
+    // what we got from the server
+    YAHOO.util.Dom.getElementsByClassName("firstpost", "div", null, function(button){
+        button.style.display = 'inline';
+    });
+    YAHOO.util.Dom.getElementsByClassName('split', 'div', 'post'+reply[1], function(button){
+        button.style.display = 'none';
+        YAHOO.util.Dom.addClass(button, 'firstpost');
+    });
 };
 
 function unmoderatePost(post) {

@@ -8,6 +8,7 @@
 print = function(){};
 
 core.app.forum.html.check_ban();
+core.app.forum.data.thread();
 core.net.url();
 
 print = oldprint;
