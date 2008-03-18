@@ -6,7 +6,6 @@ head.addScript( "/~~/ui/js/common.js" );
 head.addCSS( "/~~/app/forum/css/forum.css" );
 head.addScript("/@@/yui/current/yuiloader/yuiloader-beta.js");
 htmlheader(title);
-core.user.html.topCorner();
 
 if(user &&
    app.Forum.Controller.userPermissionType(user) == "UNKNOWN" &&
