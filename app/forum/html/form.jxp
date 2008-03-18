@@ -97,9 +97,9 @@ app.Forum.html.highlight = function(result, searchterm) {
 app.Forum.html.form.hidden = function(topic, filter){
          if(filter == null || !filter(topic)) {
          if(topic.hidden) { %>
-                <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" checked>
+                <input type="button" class="button hidden" id="but<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" value="Unhide">
          <% } else { %>
-                <input type="checkbox" class="edPick" id="check<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')">
+                <input type="button" class="button hidden" id="but<%= topic._id %>" onclick="toggleHide('<%= topic._id %>')" value="Hide">
          <% }
          }
          else {
