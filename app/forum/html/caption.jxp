@@ -1,5 +1,6 @@
 <%
 // "caption" is the idiotic name someone gave to all right-aligned buttons and links
+    core.app.forum.js.yui();
 app.Forum.html.showCaption = function(createThread, createTopic, parent, editUser) {
      %>
 
