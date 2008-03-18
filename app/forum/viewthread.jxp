@@ -197,6 +197,9 @@ var handleSuccess = function(o) {
     var r2 = response.substring(0, response.indexOf('&'));
     response = response.substring(response.indexOf('&')+1);
     var title = response;
+    if(r1 == "false")
+        title = '<img src="css/lock-icon.gif">'+title;
+
     document.getElementById("threadtitle").innerHTML = title;
     if((r1 == "true") && ! showDeleted && ! showModerated){
         if(document.getElementById("postForm"))
@@ -225,8 +228,6 @@ var loader = new YAHOO.util.YUILoader({
               draggable:true,
               postmethod: "form"
          });
-/*         splitter_d.cfg.queueProperty("buttons", [{text: "Split", handler:handleSplitSubmit},
-                        {text: "Cancel", handler:handleCancel}]);*/
          splitter_d.render(document.body);
 
 
@@ -237,8 +238,6 @@ var loader = new YAHOO.util.YUILoader({
               visible:false,
               draggable:true,
          });
-/*         edit_d.cfg.queueProperty("buttons", [{text: "Edit", handler:handleSubmit},
-                        {text: "Cancel", handler:handleCancel}]);*/
          edit_d.callback = { success: handleSuccess };
          edit_d.render(document.body);
     }
@@ -309,19 +308,35 @@ print('<div class="paging">');
 core.app.forum.html.paging(paging);
 print('</div>');
 
+
 if(request.highlight) { %>
      <div><input type="checkbox" value="highlight" onclick="toggleHighlight()" checked>Highlight</div>
-
-     <h2 id="threadtitle"><%= app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight) %></h2>
-     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
-     <%
-}
-else { %>
-     <h2 id="threadtitle"><%= content.HTML.escape(thread.getTitle()) %></h2>
-     <a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
      <%
 }
 
+
+if(thread.getClosed()) {  %>
+     <img src="css/lock-icon.gif">
+     <%
+}
+%>
+
+<h2 id="threadtitle">
+
+<%
+if(request.highlight) {
+     app.Forum.html.highlight(content.HTML.escape(thread.getTitle()), request.highlight);
+}
+else {
+     print(content.HTML.escape(thread.getTitle()));
+}
+%>
+
+</h2>
+
+<a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
+
+<%
 var even = false;
 var opts = app.Forum.html.form.makePostOptions(canSplit, canDelete, canModerate, thread);
 opts.even = even;

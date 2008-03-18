@@ -390,7 +390,11 @@ function addTopicToTable(txt) {
 
 
 </script>
-
+<%
+if(topic && !topic.allowPosts) {
+     print('<img src="css/lock-icon.gif">');
+}
+%>
 <h1 id="topicName"><%= name %></h1><%= (opts.noRSS || !topic) ? '' : '<a href="topic_rss.jxp?id='+t._id+'"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>' %>
 <div id="tagline"><%= description || "" %></div>
 
