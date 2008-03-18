@@ -29,8 +29,8 @@ thread.setTopic( topic );
 
 thread.save();
 
-while(topic && topic.parent._id != oldtopic._id){
+while(topic && topic.parent && topic.parent._id != oldtopic._id){
     topic = topic.parent;
 }
 
-%><response><%= topic ? topic._id : "null" %>:<%= thread.count %></response>
+%><response><%= (topic && topic.parent) ? topic._id : "null" %>:<%= thread.count %></response>
