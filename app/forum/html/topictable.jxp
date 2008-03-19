@@ -28,6 +28,7 @@ var topicActions = (opts.topicActions == null)? [] : opts.topicActions;
 var buttons = (opts.buttons == null)? true : opts.buttons;
 var addActions = (opts.addActions == null)? true : opts.addActions;
 
+
 var paging = Ext.getdefault(opts, "paging", true);
 
 // We implement some actions here because we use them in both index and
@@ -413,10 +414,11 @@ if(subs && subs.length > 0){
        </tr>
        <%
        var numrows = 0;
-       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, {actions: topicActions}, ++numrows); });
+       opts.actions = topicActions;
+       subs.forEach(function(topic){ app.Forum.renderer.topic(topic, opts, ++numrows); });
        if(numrows > 1) {
             var numcols = 3+topicActions.length-1;
-            if(subs[subs.length-1]._id < 5) {
+            if(!topic) {
                 numrows-=2;
             }
             app.Forum.js.addDragAndDrop(tableid, numrows, numcols);

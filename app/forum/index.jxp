@@ -16,14 +16,15 @@ head.push('<link rel="alternate" type="application/rss+xml" title="Editor\'s Pic
 edPicks = db.forum.threads.find( { editorPick : true } ).toArray();
 
 actions = [ { title : "Topic",
-        func : function(thread) {
-             var retStr = "";
-             stack = app.Forum.html.topicStack(thread.topic);
-             for(var i=0; i<stack.length; i++) {
-                  retStr += "<a href=\"viewtopic?name="+URL.escape_queryargs(stack[i])+"\">"+content.HTML.escape(stack[i])+"</a> &gt; ";
-             }
-             return retStr+"<a href=\"viewtopic?name="+URL.escape_queryargs(thread.topic.name)+"\">"+content.HTML.escape(thread.topic.name)+"</a>";
-        }
+              func : function(thread) {
+                  var retStr = "";
+                  stack = app.Forum.html.topicStack(thread.topic);
+                  for(var i=0; i<stack.length; i++) {
+                      retStr += "<a href=\"viewtopic?name="+URL.escape_queryargs(stack[i])+"\">"+content.HTML.escape(stack[i])+"</a> &gt; ";
+                  }
+                  return retStr+"<a href=\"viewtopic?name="+URL.escape_queryargs(thread.topic.name)+"\">"+content.HTML.escape(thread.topic.name)+"</a>";
+              },
+              htmlattr : function (thread) { return {"class": "edpickbreadcrumb"}; }
         } ];
 
 core.app.forum.html.topictable("Editor's Picks <a href=\"edpick_rss.jxp\"> <img src='/images/feed-icon16x16.png?lm=1203477029000'></a>", "", null, edPicks, actions, {addActions: false, noRSS: true, createThread: false, editUser: false, createTopic: false, thisid: null, paging: false});

@@ -60,8 +60,10 @@ if(deletedPosts) link += "&deleted=true";
 
  <%
   if (actions.length > 0){
-     for(var i in actions){ %>
-        <td><%= actions[i].func(t) %></td>
+     for(var i in actions){
+         var htmlattr = actions[i].htmlattr || function(){ return {}; };
+             %>
+        <td <%= Util.format_htmlattr(htmlattr(t)) %>><%= actions[i].func(t) %></td>
         <%
       }
   }

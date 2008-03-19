@@ -444,6 +444,10 @@ input#search {
      padding: 3px;
 }
 
+.edpickbreadcrumb {
+    width: 10em;
+}
+
 /* Dialog */
 
 div#dlg div#dlg_h, div#editThreadDiv_h, div#splitterDiv_h {
