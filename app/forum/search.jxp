@@ -87,7 +87,7 @@ function toggleHighlight() {
        for (var e = 0; e < all.length; e++)
            all[e].style.background = color;
 
-       color = color == "none" ? "yellow" : "none";
+       color = color == "none" ? "#FBFAAB" : "none";
 }
 </script>
 
@@ -106,7 +106,7 @@ else{
 if(cursor.length > 0) { %>
     <div class="match_div">
     <%
-    core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, editUser: false, createTopic: false, thisid: null}); %>
+    core.app.forum.html.topictable("Matching topics:", null, cursor, null, [], {createThread: false, editUser: false, createTopic: false, thisid: null, highlight: query}); %>
     </div>
     <%
 }
