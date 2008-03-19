@@ -168,7 +168,7 @@ else {
 
 %>
 </div>
-<div class="button" onclick="history.back()">Back</div>
+<input type="button" class="button" onclick="history.back()" value="Back">
 </div>
 <%
 

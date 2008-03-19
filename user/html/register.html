@@ -101,13 +101,13 @@
       return false;
     }
 
-    var check = loadDocSync( "/login/checkUsername?username=" + u + "&email=" + e );
+    var check = loadDocSync( "<%= opts.login %>/checkUsername?username=" + u + "&email=" + e );
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
     }
 
-    var u = "/login/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
+    var u = "<%= opts.login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;
