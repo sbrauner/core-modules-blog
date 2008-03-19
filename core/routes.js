@@ -180,10 +180,8 @@ Routes.prototype.find = function(submodule){
         if(this[key] == submodule){
             return '/' + key;
         }
-        if(isObject(this[key])){
-            var end = this[key];
-            if(end.isValue) end = end.end;
-            var f = end.find(submodule);
+        if(isObject(this.getEnd(this[key]))){
+            var f = this.getEnd(this[key]).find(submodule);
             if(f)
                 return '/' + key + f;
         }
@@ -198,3 +196,7 @@ Routes.prototype.find = function(submodule){
     return null;
 };
 
+Routes.prototype.getEnd = function(obj){
+    if(obj.isValue) return obj.end;
+    return obj;
+};
