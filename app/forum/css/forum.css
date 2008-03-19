@@ -42,8 +42,8 @@ td {
 }
 
 .caption {
-	padding: 0 0 5px 0;
-	font-size: 12px;
+/*  padding: 0 0 5px 0;*/
+/*  font-size: 12px;*/
 	text-align: right;
         float: right;
 }
@@ -150,10 +150,10 @@ div.postbox div.title {
        padding-bottom: 8px;
        font-size: 18px;
 }
-div.postbox div.author {
+div.postbox div.meta {
         diplay: block;
         padding: 0px 0px 0px 0px;
-        margin-top: 5px;
+/*        margin-top: 5px;*/
 }
 span.pipe {
       padding-left: 5px;
@@ -184,7 +184,7 @@ div.postForm {
         padding: 0px 20px 0px 0px;
 }
 
-#style1 td.threadhead div.author, td.threadhead div.ts {
+div.meta {
         color: grey;
         font-size: 11px;
 }
@@ -259,7 +259,7 @@ div.threadFooter div.button {
 }
 div.caption div.button {
            display: inline;
-           margin-top: -5px;
+/*           margin-top: -5px;*/
 }
 
 div.caption input.submit {
@@ -351,7 +351,7 @@ div.threadbox {
       padding-left: 5px;
       margin-bottom: 10px;
 }
-div.threadbox div.author {
+div.threadbox div.meta {
      color: #082D38;
      font-size: 10pt;
      padding-bottom: 20px;

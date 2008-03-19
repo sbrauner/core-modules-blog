@@ -12,7 +12,7 @@ var even = "";
 options.even = ! options.even;
 var htmlclass = (options.htmlclass == null)? "": options.htmlclass(t);
 
-var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.format("a").toLowerCase() +"</span>";
+var prettyDate = t.ts.format("MMM d, yyyy h:mm")+t.ts.format("a").toLowerCase();
 %>
 
 
@@ -22,7 +22,7 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
            <% for(var i in actions){ actions[i](t); } %>
       </div>
 
-      <div class="author">
+      <div class="meta">
         <%= t.author.name %>
         <%
         if(app.Forum.Controller.userPermissionType(t.author) == "ADMIN"){
@@ -32,8 +32,7 @@ var prettyDate = t.ts.format("MMM d, yyyy '<span class=''time''>' h:mm")+t.ts.fo
              print("(moderator)");
         }
         %>
-        <span class="pipe">|</span>
-        <span class="ts"><%= prettyDate %></span>
+        on <%= prettyDate %>
       </div>
 
 
