@@ -76,7 +76,7 @@ var prefix = "anti|de|dis|en|em|fore|in|im|il|ir|inter|mid|mis|non|over|pre|re|s
 core.text.stem();
 
 app.Forum.html.highlight = function(result, searchterm) {
-    if(result == null)
+    if(result == null || searchterm == null || searchterm == "")
         return;
 
     searchterm = Search.queryToArray(searchterm);
