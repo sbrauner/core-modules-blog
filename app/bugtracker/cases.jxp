@@ -8,6 +8,7 @@ core.net.url();
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
 
+
 <html>
     <head>
         <title>Cases List</title>
@@ -27,17 +28,20 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
                 </ul>
             </div>
         </div>
-        
+
         <div id="yui-main">
 
     <% if(request.msg){ %>
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
-{
+<div id="bugJar">
+<%
+/*
     var tab = new htmltable({
-        ns: db.bugtracker.cases,
-        cols: [
+         ns: db.bugtracker.cases,
+         id: "bug_table",
+         cols: [
             {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
             {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},
             {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
@@ -54,16 +58,67 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
             {name: "project", searchWidth: 10, heading: "Project", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
             queryForm: function(u) { return db.bugtracker.projects.findOne({name: new RegExp(u)});} },
             {name: "area", searchWidth: 10, heading: "Area", cssClassName: 'field'}
-//            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
-//            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
         ],
         detailUrl: "case_edit?id=",
-        searchable: true
     });
 
-    tab.dbview(tab.find(null, {number: 1}));
-}
+tab.dbview(tab.find(null, {number: 1}));
+*/
+%>
 
+</div>
+
+
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
+<script>
+
+var liveDataSource = [
+          <% var liveDataCursor = db.bugtracker.cases.find().toArray();
+     for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
+          print("{");
+               %>
+               number: "<%= liveDataCursor[i].number.toFixed(0) %>",
+          title: "<%= liveDataCursor[i].title %>",
+          owner: "<%= liveDataCursor[i].owner.name %>",
+          status: "<%= liveDataCursor[i].status %>",
+          severity: "<%= liveDataCursor[i].severity %>",
+          type: "<%= liveDataCursor[i].type %>",
+          project: "<%= liveDataCursor[i].project %>",
+          area: "<%= liveDataCursor[i].area %>"
+               <%
+          print("}");
+          if(i<liveDataCursor.length-1)
+               print(",");
+     }
+          %>
+] ;
+
+
+var loader = new YAHOO.util.YUILoader( {
+     require: ["datatable", "json"],
+     loadOptional: true,
+     onSuccess: function() {
+          var myColumnDefs = [
+               {key:  "number", label:"ID", sortable:true},
+               {key: "title", label:"Name", sortable:true},
+               {key: "owner", label:"Owner", sortable:true},
+               {key: "status",label:"Status", sortable:true},
+               {key: "severity",label:"Severity", sortable:true},
+               {key: "type",label:"Type", sortable:true},
+               {key: "project",label:"Project", sortable:true},
+               {key: "area",label:"Area", sortable:true}
+          ];
+          var myDataSource = new YAHOO.util.DataSource(liveDataSource);
+          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+          myDataSource.responseSchema = {
+               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
+          };
+          var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+     }
+});
+
+loader.insert();
+</script>
 
 </div>
 </body>
