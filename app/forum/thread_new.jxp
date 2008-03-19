@@ -47,7 +47,7 @@ else {
              <form id="replyform" method="POST">
              <input type="hidden" name="reply_target" value="<%=arguments[0]%>"/>
              <input type="hidden" name="nauthor" value="<%= user._id %>"/>
-             <div class="field"><label>Title: </label><input type="text" class="text" name="ntitle"></div>
+             <div class="field"><label>Title: </label><input type="text" class="text" name="ntitle" style="width:100%; margin-top:5px;"></div>
              <div class="field">Content: </div><textarea id="ncontent" rows=10 name="ncontent"></textarea>
              <div class="field"><input type="submit" class="button" value="Create New Thread"></div>
              </form>
