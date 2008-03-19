@@ -33,3 +33,12 @@ User.findMyLocation = function(){
 
     return f;
 };
+
+User.fullLink = function(path){
+    var login = User.findMyLocation();
+    var link = new URL(login+path);
+    link.hostname = request.getHost();
+    link.port = request.getPort();
+    return link;
+}
+

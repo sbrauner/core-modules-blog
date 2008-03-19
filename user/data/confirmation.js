@@ -22,10 +22,8 @@ User.Confirmation.prototype.send = function(){
 
     // Send a mail to the user
     var subj = "[" + siteName + "] Confirmation email";
-    var link = new URL(login+'/confirm_receive').addArg('id', this._id);
-    link.hostname = request.getHost();
-    link.port = request.getPort();
-    link = link.toString();
+    var link = User.fullLink('/confirm_receive').addArg('id', this._id).toString;
+
     var body = "Dear "+(this.user.nickname || this.user.name)+ "\n" +
         "\n"+
         "Thanks for registering with "+siteName+". Before your user account is activated, you must verify your email address. Please click the link below or copy and paste it into your browser.\n"+

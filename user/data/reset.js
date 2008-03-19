@@ -19,14 +19,9 @@ User.Reset.prototype.send = function(){
         throw "mail is not configured";
     }
 
-    var login = User.findMyLocation();
-
+    var link = User.fullLink('/reset_receive').addArg("hash", this.hash).toString();
     // Send a mail to the user
     var subj = "[" + siteName + "] Reset password";
-    var link = new URL(login+'/reset_receive').addArg('hash', this.hash);
-    link.hostname = request.getHost();
-    link.port = request.getPort();
-    link = link.toString();
     var body = "Dear "+(this.user.nickname || this.user.name)+ "\n" +
         "\n"+
         "Someone asked us to reset your password. If you really want that, please follow this link:"+
