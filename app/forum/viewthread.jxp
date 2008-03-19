@@ -220,6 +220,16 @@ var loader = new YAHOO.util.YUILoader({
     require: ["container"],
     loadOptional: true,
     onSuccess: function() {
+         edit_d = new YAHOO.widget.Dialog("editThreadDiv", {
+              width: "400px",
+              fixedcenter: true,
+              modal:true,
+              visible:false,
+              draggable:true,
+         });
+         edit_d.callback = { success: handleSuccess };
+         edit_d.render(document.body);
+
          splitter_d = new YAHOO.widget.Dialog("splitterDiv", {
               width: "400px",
               fixedcenter: true,
@@ -231,15 +241,6 @@ var loader = new YAHOO.util.YUILoader({
          splitter_d.render(document.body);
 
 
-         edit_d = new YAHOO.widget.Dialog("editThreadDiv", {
-              width: "400px",
-              fixedcenter: true,
-              modal:true,
-              visible:false,
-              draggable:true,
-         });
-         edit_d.callback = { success: handleSuccess };
-         edit_d.render(document.body);
     }
 });
 
@@ -264,7 +265,7 @@ function toggleHighlight() {
 app.Forum.html.search(thread.topic.name);
 var caption_ar = [];
 if(app.Forum.Controller.hasPermission(user, "editThread")) {
-     caption_ar.push('<a href="#"><div class="button" onclick="document.getElementById(\'editThreadDiv\').style.display=\'block\';edit_d.show()">Edit Thread</div></a>');
+     caption_ar.push('<div class="button" onclick="document.getElementById(\'editThreadDiv\').style.display=\'block\';edit_d.render(document.body);edit_d.show()">Edit Thread</div>');
 }
 if(request.show == "deleted"){
      caption_ar.push('<a href="'+url.removeArg("show")+'"><div class="button">Hide deleted</div></a>');
