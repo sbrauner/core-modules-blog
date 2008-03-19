@@ -158,3 +158,28 @@ Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
     throw "can't handle value: " + end;
 };
 
+Routes.prototype.find = function(submodule){
+    if(this == submodule) return '/';
+    for(var key in this){
+        if( key.startsWith( "_" ) )
+            continue;
+
+        if(this[key] == submodule){
+            return key;
+        }
+        if(isObject(this[key]) && this[key].isValue){
+            var f = this[key].end.find(submodule);
+            if(f)
+                return '/' + key + this[key].end.find(submodule);
+        }
+    }
+
+    // Regexps??  ---
+    for(var i = 0; i < this._regexp.length; i++){
+        var value = this._regexp[i];
+        if ( value.end.find(submodule) )
+            throw "find returned regex -- help!!";
+    }
+    return null;
+};
+

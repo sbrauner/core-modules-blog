@@ -74,3 +74,22 @@ assert( request.action == "do" );
 assert( request.getParameters( "value" ).length == 2 );
 assert( request.getParameters( "value" )[0] == "4" );
 assert( request.getParameters( "value" )[1] == "5" );
+
+// Testing the find function
+
+routes = new Routes();
+routes.wiki = new Routes();
+routes.wiki.page1 = new Routes();
+
+assert( '/wiki', routes.find( routes.wiki ) );
+assert( '/wiki/page1', routes.find( routes.wiki.page1 ) );
+
+var r1 = new Routes();
+routes.add(/.+/, r1);
+try {
+    routes.find(r1);
+    print("should never get here");
+} catch (e) {
+
+}
+
