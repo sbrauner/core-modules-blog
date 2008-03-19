@@ -190,7 +190,7 @@ Routes.prototype.find = function(submodule){
     // Regexps??  ---
     for(var i = 0; i < this._regexp.length; i++){
         var value = this._regexp[i];
-        if ( value.end.find(submodule) )
+        if ( isObject(value.end) && value.end.find(submodule) )
             throw "find returned regex -- help!!";
     }
     return null;
