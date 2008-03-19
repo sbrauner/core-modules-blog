@@ -18,8 +18,6 @@ User.Confirmation.prototype.send = function(){
         throw "mail is not configured";
     }
 
-    var login = User.findMyLocation();
-
     // Send a mail to the user
     var subj = "[" + siteName + "] Confirmation email";
     var link = User.fullLink('/confirm_receive').addArg('id', this._id).toString;
