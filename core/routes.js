@@ -42,6 +42,9 @@ Routes = function(){
     this._default = null;
 };
 
+Routes.log = log.routes;
+Routes.log.level = log.LEVEL.INFO;
+
 // setting up
 
 Routes.prototype.add = function( key , end , attachment){
@@ -83,6 +86,8 @@ Routes.prototype.currentRoot = function(){
 
 Routes.prototype.apply = function( uri , request ){
 
+    Routes.log.debug( "apply\t" + uri );
+
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
@@ -116,6 +121,7 @@ Routes.prototype.apply = function( uri , request ){
             return this.finish( uri , request , firstPiece , value.key , value );
     }
 
+    Routes.log.debug( "\t using default\t" + this._default );
     return this.finish( uri , request , firstPiece , null , this._default );
 };
 

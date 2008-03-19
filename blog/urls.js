@@ -147,8 +147,8 @@ Blog.handleRequest = function( request , arg ){
         // if the URL is empty, display the home page
         if (uri == '') {
             searchCriteria.cls = 'entry';
-            if ( ! searchCriteria.categories )
-                searchCriteria.categories = 'home'; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
+            if ( ! searchCriteria.categories && arg.homeCategory )
+                searchCriteria.categories = arg.homeCategory; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         } 
         else {

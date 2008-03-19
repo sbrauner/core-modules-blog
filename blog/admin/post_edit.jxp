@@ -36,10 +36,15 @@ if ( request.action == "save" ) {
         
         if ( ! thePost.name || ( request.name && ! thePost.live ) ) {
 
-	    if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+	    if ( thePost.cls == "entry" ){
+		if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+		    thePost.name = request.name;
+    		else
+		    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+	    }
+	    else {
 		thePost.name = request.name;
-    	    else
-		thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+	    }
     	}
     
         thePost.title = request.title;
@@ -48,35 +53,33 @@ if ( request.action == "save" ) {
         thePost.ts = new Date( request.ts );
         if ( request.author )
             thePost.author = request.author;
-        if (thePost.cls == 'entry'){
-            thePost.categories = request.getParameters('categories') || [];
-
-	    if (request.new_categories) {
-		request.new_categories.split('[,]').forEach( function( newName ){
-		    newName = newName.trim();
-		    if ( newName.length == 0 ) 
-			return;
-		    
-		    var found = false;
-		    thePost.categories.forEach( function( old ){
-			if ( old.toLowerCase() == newName.toLowerCase() )
-			    found = true;
-		    } );
-		    if ( found )
-			return;
-		    
-		    var cat = Category.find( newName );
-		    if ( ! cat ){
-			cat = new Category( newName , newName );
-			db.blog.categories.save( cat );
-		    }
-		    thePost.categories.push( cat.name );
+	
+        thePost.categories = request.getParameters('categories') || [];
+	
+	if (request.new_categories) {
+	    request.new_categories.split('[,]').forEach( function( newName ){
+		newName = newName.trim();
+		if ( newName.length == 0 ) 
+		    return;
+		
+		var found = false;
+		thePost.categories.forEach( function( old ){
+		    if ( old.toLowerCase() == newName.toLowerCase() )
+			found = true;
 		} );
-	    }
-
-	    
-	    thePost.categories = thePost.categories.unique().sort();
+		if ( found )
+		    return;
+		
+		var cat = Category.find( newName );
+		if ( ! cat ){
+		    cat = new Category( newName , newName );
+		    db.blog.categories.save( cat );
+		}
+		thePost.categories.push( cat.name );
+	    } );
 	}
+	
+	thePost.categories = thePost.categories.unique().sort();
 
         thePost.live = parseBool( request.live );
         thePost.commentsEnabled = parseBool(request.commentsEnabled);
