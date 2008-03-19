@@ -1,0 +1,30 @@
+<%
+core.user.data.reset();
+var hash = request.hash;
+
+var reset = User.Reset.findOne({hash: hash});
+
+if(request.newpw){
+    var user = reset.user;
+    user.setPassword(request.newpw);
+    db.users.save(user);
+    User.Reset.remove(reset);
+
+    htmlheader("Password changed");
+   %>
+<h1>Your password has been reset!</h1>
+
+<p>
+  Your password has been reset. Please log in with your new password.
+</p>
+
+<%
+     htmlfooter();
+}
+
+else {
+    htmlheader("Reset your password");
+    core.user.html.resetpassword({hash: hash});
+    htmlfooter();
+}
+%>

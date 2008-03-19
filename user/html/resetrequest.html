@@ -1,0 +1,27 @@
+<% processArgs("opts");
+   opts = opts || {};
+   var login = User.findMyLocation();
+%>
+<div id="resetgetusername">
+
+
+  <form method="post" action="<%= login %>/reset_send" onSubmit="return checkRegister( this )" class="edit resetgetusername">
+
+    <fieldset class="edit resetgetusername">
+    <legend>Reset</legend>
+    <table>
+    <tr>
+        <td><label for="username">Username</label></td>
+        <td><input name="username" class="text"></td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Submit" class="button" style="">
+        </td>
+    </tr>
+    </table>
+    </fieldset>
+  </form>
+
+</div>

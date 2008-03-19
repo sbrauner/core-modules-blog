@@ -16,7 +16,7 @@ User.requirements = {
 core.core.routes();
 User.routes = new Routes();
 var urls = ['login', 'doLogin', 'register', 'confirm_send', 'confirm_receive',
-    'checkUsername', 'captchaIMG', 'logout'];
+    'checkUsername', 'captchaIMG', 'logout', 'reset_send', 'reset_receive'];
 for(var i = 0; i < urls.length; i++){
     User.routes[urls[i]] = '/~~/user/'+urls[i];
 }
