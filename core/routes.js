@@ -172,12 +172,14 @@ Routes.prototype.find = function(submodule){
             continue;
 
         if(this[key] == submodule){
-            return key;
+            return '/' + key;
         }
-        if(isObject(this[key]) && this[key].isValue){
-            var f = this[key].end.find(submodule);
+        if(isObject(this[key])){
+            var end = this[key];
+            if(end.isValue) end = end.end;
+            var f = end.find(submodule);
             if(f)
-                return '/' + key + this[key].end.find(submodule);
+                return '/' + key + f;
         }
     }
 
