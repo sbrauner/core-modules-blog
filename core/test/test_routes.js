@@ -81,8 +81,8 @@ routes = new Routes();
 routes.wiki = new Routes();
 routes.wiki.page1 = new Routes();
 
-assert( '/wiki', routes.find( routes.wiki ) );
-assert( '/wiki/page1', routes.find( routes.wiki.page1 ) );
+assert( '/wiki' == routes.find( routes.wiki ) );
+assert( '/wiki/page1' == routes.find( routes.wiki.page1 ) );
 
 var r1 = new Routes();
 routes.add(/.+/, r1);
