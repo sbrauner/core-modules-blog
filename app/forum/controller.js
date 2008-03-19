@@ -73,7 +73,7 @@ app.Forum.Controller.hasPermission = function(user, perm){
     if(user == null)
         id = request.getRemoteIP();
     else
-        id = user._id;
+        id = user._id.toString();
 
     if(! globalCachedPermissions[id]){
         globalCachedPermissions[id] = app.Forum.Controller.getPermissions(user);
