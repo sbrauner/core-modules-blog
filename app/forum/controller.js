@@ -1,3 +1,4 @@
+log.app.forum.info("Running forum.controller"+app + app.Forum);
 app.Forum.Controller = {};
 
 app.Forum.Controller.bannedUser = function(user, request){

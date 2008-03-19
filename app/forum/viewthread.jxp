@@ -1,4 +1,6 @@
 <%
+log.app.forum.info("Running forum.viewthread");
+
 core.app.forum.controller();
 
 if(! app.Forum.Controller.hasPermission(user, "viewThreadNonHidden"))
