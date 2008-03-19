@@ -117,7 +117,7 @@ Blog.handleRequest = function( request , arg ){
         uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '').replace(/^.rss/ , "/" );
         uri = uri.replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
     
-        Blog.log.debug("base URI: " + uri);
+        Blog.log.debug("base URI: [" + uri + "]" );
         Blog.log.debug("pageNumber: " + pageNumber);
     
         // look for a page or post with name = URL, and display it if it exists.
@@ -149,6 +149,7 @@ Blog.handleRequest = function( request , arg ){
             searchCriteria.cls = 'entry';
             if ( ! searchCriteria.categories && arg.homeCategory )
                 searchCriteria.categories = arg.homeCategory; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
+	    Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         } 
         else {
