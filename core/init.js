@@ -29,16 +29,16 @@ function mapUrlToJxpFileCore( uri , request ){
 	 && ! uri.match(/assets/))
         return "~~/admin/index.jxp";
 
+    // these are special things which you can't override.
+    if ( uri.match( /^\/~~\// ) ||
+	 uri.match( /^\/@@\// ) )
+	return uri;
+
     if ( routes && routes.apply ){
         var res = routes.apply( uri , request );
         if ( res )
             return res;
     }
-
-    // these are special things which you can't override.
-    if ( uri.match( /^\/~~\// ) ||
-	 uri.match( /^\/@@\// ) )
-	return uri;
     
 };
 

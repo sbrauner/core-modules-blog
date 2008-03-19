@@ -1,3 +1,4 @@
+log.app.forum.info("Running forum.controller"+app + app.Forum);
 app.Forum.Controller = {};
 
 app.Forum.Controller.bannedUser = function(user, request){
@@ -66,22 +67,35 @@ app.Forum.Controller.adminPermissions = function(){
     return Object.extend(p, app.Forum.Controller.moderatorPermissions());
 };
 
+globalCachedPermissions = {};
 app.Forum.Controller.hasPermission = function(user, perm){
+    var id = null;
+    if(user == null)
+        id = request.getRemoteIP();
+    else
+        id = user._id;
+
+    if(! globalCachedPermissions[id]){
+        globalCachedPermissions[id] = app.Forum.Controller.getPermissions(user);
+    }
+
+    return (perm in globalCachedPermissions[id]);
+};
+
+app.Forum.Controller.getPermissions = function(user){
     // FIXME: throw an exception if we find a banned user? We should be
     // handling all of these at the page level.
     if(user == null || app.Forum.Controller.bannedUser(user, request)){
         // treat user as anonymous
-        return (perm in app.Forum.Controller.unknownPermissions());
+        return (app.Forum.Controller.unknownPermissions());
     }
-
-    var type = app.Forum.Controller.userPermissionType(user);
 
     // if type == "MEMBER" we go to app.Forum.Controller.memberPermissions,
     // if type == "MODERATOR" we go to ...moderatorPermissions,
     // etc. So we do a lookup; use the type to find the right function, and call
     // it. If the permission is in the returned object, return true.
-    return (perm in app.Forum.Controller[type.toLowerCase()+'Permissions']());
-
+    var type = app.Forum.Controller.userPermissionType(user);
+    return app.Forum.Controller[type.toLowerCase()+'Permissions']();
 };
 
 app.Forum.Controller.getAllPostsDeletedByUser_Query = function(user){

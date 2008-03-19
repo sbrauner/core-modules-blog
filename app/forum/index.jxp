@@ -38,6 +38,7 @@ core.app.forum.html.caption();
 app.Forum.html.showCaption(createThread, createTopic, null, editUser);
 
 var showHidden = app.Forum.Controller.hasPermission(user, "viewTopicHidden");
+
 var topics = app.Forum.data.Topic.list(null, showHidden).toArray();
 
 // Deal with the "virtual" topics for Deleted and Moderated posts by adding
