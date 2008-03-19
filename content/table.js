@@ -1,14 +1,13 @@
 /* table.js
 
-htmltable provides a means to display data from the database in table format automatically, 
-with some additional functionality automatically provided such as a simple search user 
+htmltable provides a means to display data from the database in table format automatically,
+with some additional functionality automatically provided such as a simple search user
 interface.
 
-Fields in the constructor specification object listed below.  Most fields are optional and 
+Fields in the constructor specification object listed below.  Most fields are optional and
 have reasonable defaults.
 
-tableName:      name of the table.  used in the html etc. optional if only one table on the page.
-                Not yet supported/used.
+id:             name of the table.  used in the html etc. optional if only one table on the page.
 ns:             database collection object to query
 searchable:     if true, search header provided and supported
 cols:           array of column specifications
@@ -17,7 +16,7 @@ cols:           array of column specifications
   heading:      prettier name than 'name' for col heading
   view:         function that makes the value for the column pretty
   type:         "boolean" for bool columns.  used by search.
-  queryForm:    user specified function to translate, on a search, what the user typed in the 
+  queryForm:    user specified function to translate, on a search, what the user typed in the
                 column input field  into db query format.
                 Optional; by default most things entered are converted into a case insensitive
 		regular expression.
@@ -26,10 +25,10 @@ cols:           array of column specifications
   searchable:   specifies if specific column is searchable.  defaults to true if table overall
                 is searchable.
 detailUrl:      drill down url prefix.  uses obj id (_id)
-detail:         function which takes object and returns detail url.  when specified, detailUrl 
+detail:         function which takes object and returns detail url.  when specified, detailUrl
                 is not used.
-filter:         a function, which if specified, returns true if the row from the db should be 
-                displayed.  You are generally better off including the condition in the query 
+filter:         a function, which if specified, returns true if the row from the db should be
+                displayed.  You are generally better off including the condition in the query
 		rather than using this client-side facility.
 
 Example:
@@ -237,7 +236,8 @@ function htmltable(specs) {
     };
 
     this.dbview = function(cursor) {
-        print("<table>\n");
+        var idStr = (this.specs.id && this.specs.id !=null && this.specs.id != "null") ? "id='"+this.specs.id+"'" : "";
+        print("<table "+idStr+">\n");
         this._rows(cursor );
         if( cursor.numSeen() == 300 )
             print( tr(["Only first 300 results displayed."]) );
