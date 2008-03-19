@@ -68,14 +68,17 @@ app.Forum.Controller.adminPermissions = function(){
 
 globalCachedPermissions = {};
 app.Forum.Controller.hasPermission = function(user, perm){
+    var id = null;
     if(user == null)
-        return (perm in app.Forum.Controller.unknownPermissions());
+        id = request.getRemoteIP();
+    else
+        id = user._id;
 
-    if(! globalCachedPermissions[user._id]){
-        globalCachedPermissions[user._id] = app.Forum.Controller.getPermissions(user);
+    if(! globalCachedPermissions[id]){
+        globalCachedPermissions[id] = app.Forum.Controller.getPermissions(user);
     }
 
-    return (perm in globalCachedPermissions[user._id]);
+    return (perm in globalCachedPermissions[id]);
 };
 
 app.Forum.Controller.getPermissions = function(user){
