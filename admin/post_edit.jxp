@@ -36,10 +36,15 @@ if ( request.action == "save" ) {
         
         if ( ! thePost.name || ( request.name && ! thePost.live ) ) {
 
-	    if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+	    if ( thePost.cls == "entry" ){
+		if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+		    thePost.name = request.name;
+    		else
+		    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+	    }
+	    else {
 		thePost.name = request.name;
-    	    else
-		thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+	    }
     	}
     
         thePost.title = request.title;
