@@ -2,6 +2,7 @@
 core.content.search();
 core.text.text();
 core.media.image();
+core.util.cache();
 
 function Post(name, title) {
     this.name = name;
@@ -217,21 +218,30 @@ Post.getNoResults = function() {
     return noResultsPage;
 };
 
+Post.cache = new TimeOutCache();
+
 Post.getMostPopular = function( num , articlesBack ){
-    var all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
+    
+    var key = "__mostPopular_" + num + "_" + articlesBack;
+    var all = Post.cache.get( key );
+    if ( all )
+	return all;
+    
+    all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort( function( a , b ){
 	return b.views - a.views;
     } );
     
     all = all.slice( 0 , num );
     
+    Post.cache.add( key , all );
     return all;
 };
 
 Post.getMostCommented = function( num , articlesBack ){
     
     var key = "__mostCommented_" + num + "_" + articlesBack;
-    var all = Post[ key ];
+    var all = Post.cache.get( key );
     if ( all )
 	return all;
 
@@ -242,7 +252,7 @@ Post.getMostCommented = function( num , articlesBack ){
     
     all = all.slice( 0 , num );
     
-    Post[ key ] = all;
+    Post.cache.add( key , all );
     return all;
 };
 
