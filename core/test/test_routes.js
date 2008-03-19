@@ -93,3 +93,10 @@ try {
 
 }
 
+assert(null == routes.find( new Routes() ));
+
+routes.wiki2 = "hi";
+assert(null == routes.find( new Routes() ));
+
+routes.add(/.+/, "yo");
+assert(null == routes.find( new Routes() ));
