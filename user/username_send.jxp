@@ -1,20 +1,12 @@
 <%
-
-    var abort = function(msg){
-        addToNotice('abort', msg);
-        htmlheader("Error");
-        htmlfooter();
-        throw Exception.Quiet(msg);
-    }
-
 core.user.data.reset();
 if(request.email){
     u = User.find(request.email);
     if(! u)
-        abort("Couldn't find username");
+        User.abort("Couldn't find username");
 
     if(! mail){
-        abort("mail is not configured");
+        User.abort("mail is not configured");
     }
 
     // Send a mail to the user

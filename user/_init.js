@@ -43,3 +43,9 @@ User.fullLink = function(path){
     return link;
 }
 
+User.abort = function(msg){
+    addToNotice('abort', msg);
+    htmlheader("Error");
+    htmlfooter();
+    throw Exception.Quiet(msg);
+}
