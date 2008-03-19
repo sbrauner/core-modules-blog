@@ -12,18 +12,24 @@ User.requirements = {
     confirmed_email: [],
 };
 
+User.defaultRoot = "/~~/user";
 
 core.core.routes();
 User.routes = new Routes();
 var urls = ['login', 'doLogin', 'register', 'confirm_send', 'confirm_receive',
     'checkUsername', 'captchaIMG', 'logout', 'reset_send', 'reset_receive'];
+
 for(var i = 0; i < urls.length; i++){
-    User.routes[urls[i]] = '/~~/user/'+urls[i];
+    User.routes[urls[i]] = User.defaultRoot + '/' + urls[i];
 }
 
 User.findMyLocation = function(){
-    if(routes && routes.find(User.routes)){
-        return routes.find(User.routes);
-    }
-    return "/~~/user";
+    if ( ! routes )
+        return User.defaultRoot;
+
+    var f = routes.find( User.routes );
+    if ( ! f )
+        return User.defaultRoot;
+
+    return f;
 };
