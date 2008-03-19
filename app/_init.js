@@ -1,3 +1,3 @@
 
-log.core.app( "resetting app" );
+log.app.info("Running app._init");
 app = Object();

@@ -1,3 +1,5 @@
+log.app.forum.info("Running forum._init");
+
 app.Forum = {
     renderer: (allowModule && allowModule.forum && allowModule.forum.renderer) || core.app.forum.html,
 };
