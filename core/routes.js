@@ -32,6 +32,11 @@ routes.wiki.search = "doSearch";
 
 
 */
+
+// FIXME: add an setBase method, which means, "all my children live at (e.g.)
+//    /~~/user, so if you got to one of my children, replace how you got to me
+// with /~~/user".
+
 Routes = function(){
     this._regexp = [];
     this._default = null;
