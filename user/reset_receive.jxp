@@ -4,10 +4,15 @@ var hash = request.hash;
 
 var reset = User.Reset.findOne({hash: hash});
 
+if(reset == null){
+    response.sendRedirectTemporary("/");
+    return;
+}
+
 if(request.newpw){
-    var user = reset.user;
-    user.setPassword(request.newpw);
-    db.users.save(user);
+    var u = reset.user;
+    u.setPassword(request.newpw);
+    db.users.save(u);
     User.Reset.remove(reset);
 
     htmlheader("Password changed");
@@ -19,6 +24,7 @@ if(request.newpw){
 </p>
 
 <%
+     core.user.html.login();
      htmlfooter();
 }
 
