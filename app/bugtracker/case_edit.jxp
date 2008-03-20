@@ -34,6 +34,7 @@ Forms.fillInObject( "f", feature );
 print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
+if(feature.project == "null") feature.project = null;
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
@@ -43,12 +44,11 @@ if(request.fstatus){
             feature.owner = db.users.findOne({_id: feature.owner});
         var props = ["project", "OS", "release"];
         p = "project";
-        if(feature.project == "null"){
+        if(feature.project == null){
             if(request["extra_fproject"]){
                 feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
                 db.bugtracker.projects.save(feature.project);
             }
-            else feature.project = null;
         }
         else{
             feature.project = db.bugtracker.projects.findOne({_id: feature.project});
