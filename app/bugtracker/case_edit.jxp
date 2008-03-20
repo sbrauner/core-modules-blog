@@ -28,10 +28,11 @@ if (request.action == "Delete"){
     response.setHeader("Location", "./");
     return;
 }
+var postTarget = new URL(request.getURL());
+
 feature.number = parseInt(feature.number).toFixed();
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
-print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(feature.project == "null") feature.project = null;
@@ -99,10 +100,20 @@ if(request.fstatus){
         }
 
         // Redirect back to bugs/ or whatever
-         if(request.action != "Save and Add Another") {
-              response.setResponseCode(301);
-              response.setHeader("Location", "./"+append);
-         }
+        if(request.action != "Save and Add Another") {
+            response.setResponseCode(301);
+            response.setHeader("Location", "./"+append);
+        }
+        else {
+            var oldfeature = feature;
+            feature = new app.bugtracker.data.Feature();
+            ["owner", "status", "severity", "type", "os",
+             "project", "area", "release"].forEach(function(field){
+                feature[field] = oldfeature[field];
+            });
+            feature.reporter = user;
+            postTarget = postTarget.removeArg("id");
+        }
     }
     else{
         timestamp = feature.lastModified;
@@ -112,6 +123,7 @@ if(request.fstatus){
 
 title = "New Case";
 if (feature.number > 0) title = "Case #" + feature.number;
+print.setFormObject( feature, "f" );
 %>
 <html>
   <head>
@@ -201,7 +213,7 @@ function ObjectId(){ return null; }
     </div>
     <% } %>
 
-    <form method="POST">
+    <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
     <table>
