@@ -61,7 +61,7 @@ if(request.fstatus){
             feature.area = "";
         }
 
-        if(feature.project && !app.App.findArray(feature.project.areas, feature.area)){
+        if(feature.project && feature.project.areas.filter(function(area){return area.name == feature.area;}).length == 0){
             feature.project.areas.push(new app.bugtracker.data.Area(request["extra_farea"], null));
         }
 
