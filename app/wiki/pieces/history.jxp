@@ -6,7 +6,9 @@
     while (wikiPageHistory.hasNext()) {
         var historicalPage = wikiPageHistory.next();
 %>
-        <li><a href="?version=<%=historicalPage._id%>"><%= historicalPage.ts %></a> <a href="?version=<%= historicalPage._id %>&diff=true">diff</a></li>
+            <li><a href="?version=<%=historicalPage._id%>"><%= historicalPage.ts %></a> 
+              <%= (historicalPage.user) ? "by "+historicalPage.user.name : "by (unknown)" %>
+              <a href="?version=<%= historicalPage._id %>&diff=true">diff</a></li>
     <% } %>
 </ul>
 
