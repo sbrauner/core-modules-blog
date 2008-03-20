@@ -406,7 +406,7 @@ if(subs && subs.length > 0){
     var tableid = "table1";
     %>
     <table id="<%= tableid %>" class="style1">
-       <tr id="tr_header"><th><%= (opts.thisid == null ? "Topic" : "Subtopic") %></th><th>Threads</th><th>Posts</th>
+       <tr id="tr_header"><th class="alignleft"><%= (opts.thisid == null ? "Topic" : "Subtopic") %></th><th>Threads</th><th>Posts</th>
        <%
        for(i=0; i < topicActions.length; i++) {
             print("<th>"+ topicActions[i].title +"</th>");
@@ -445,7 +445,7 @@ if (threads){
     }
     %>
      <table id="style1" >
-          <tr><th>Thread</th><th>Posts</th><th>Last post</th>
+          <tr><th class="alignleft">Thread</th><th>Posts</th><th class="alignleft">Last post</th>
           <%
           for(i=0; i < actions.length; i++) {
                 print("<th>"+ actions[i].title+"</th>");
