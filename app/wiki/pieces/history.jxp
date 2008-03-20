@@ -1,14 +1,19 @@
 <% core.app.wiki.pieces.header_wikipage(); %>
 
+<form>
 <ul id="wiki_history" class="content">
 <%
     wikiPageHistory = wikiPage.getWikiPageHistories();
     while (wikiPageHistory.hasNext()) {
         var historicalPage = wikiPageHistory.next();
 %>
-        <li><a href="?version=<%=historicalPage._id%>"><%= historicalPage.ts %></a> <a href="?version=<%= historicalPage._id %>&diff=true">diff</a></li>
+            <li><input type="checkbox" name="compare" value="<%= historicalPage._id%>"/>
+              <a href="?version=<%=historicalPage._id%>"><%= historicalPage.ts %></a>
+              <%= (historicalPage.user) ? "by "+historicalPage.user.name : "by (unknown)" %>
+              <a href="?version=<%= historicalPage._id %>&diff=true">diff</a></li>
     <% } %>
 </ul>
-
+<input type="submit">
+</form>
 <% core.app.wiki.pieces.footer_wikipage(); %>
 
