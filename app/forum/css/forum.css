@@ -71,6 +71,10 @@ table#style1, table.style1 {
 	line-height: 1.2em;
 }
 
+#style1 img, .style img {
+        float: left;
+}
+
 #style1 nobr, .style1 nobr {
 	font-size:11px;
 	color: #AAAAAA;
@@ -110,9 +114,8 @@ table#style1, table.style1 {
 
 #style1 th.article div.second_level, .style1 th.article div.second_level {
 	float: left;
-	padding: 6px 6px 0px 18px;
+	padding: 6px 6px 0px 12px;
 	height: 17px;
-	background-image: url(th_arrow2.gif);
 	background-repeat: no-repeat;
 }
 #style1 th.article div.second_level a, .style1 th.article div.second_level a {

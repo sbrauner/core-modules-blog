@@ -1,0 +1,43 @@
+<%
+core.user.data.reset();
+if(request.email){
+    u = User.find(request.email);
+    if(! u)
+        User.abort("Couldn't find username");
+
+    if(! mail){
+        User.abort("mail is not configured");
+    }
+
+    // Send a mail to the user
+    var subj = "[" + siteName + "] Your username";
+
+    var body = "Dear "+(u.nickname || u.name)+ "\n" +
+        "\n"+
+        "Someone requested that we send your username to you. It is:\n"+
+        "\n"+
+        u.name+"\n"+
+        "\n"+
+        "Regards,\n"+
+        "\n"+
+        siteName;
+
+    m = new Mail.Message( subj, body );
+    m.addRecipient(  u.email  );
+    m.send( mail );
+
+    addToNotice('forgotten', "We have sent an email to "+ u.email +" with your username. Please check your email.");
+
+    htmlheader("Username sent");
+
+    htmlfooter();
+}
+else{
+    htmlheader("Request your username");
+
+    core.user.html.email();
+
+    htmlfooter();
+
+}
+%>
