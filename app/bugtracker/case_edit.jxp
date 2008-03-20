@@ -6,6 +6,7 @@ core.user.user();
 core.user.auth();
 core.net.url();
 core.content.forms();
+core.ext.stringcompare();
 if (! user ){
     user = Auth.getUser(request);
 }
@@ -61,7 +62,7 @@ if(request.fstatus){
         }
 
         if(feature.project && !app.App.findArray(feature.project.areas, feature.area)){
-            feature.project.areas.push(feature.area);
+            feature.project.areas.push(new app.bugtracker.data.Area(request["extra_farea"], null));
         }
 
         if(feature.number == 0)
@@ -265,14 +266,15 @@ function ObjectId(){ return null; }
             <td class="value">
             <%
             var project = feature.project || choices[0];
-var pchoices = ["None"].concat(project.areas);
+var pchoices = [{name: "None"}].concat(project.areas.sort(function(x, y){ return Ext.stringCompare(x.name, y.name);}));
 if(project.areas.length > 0){
-        pchoices = pchoices.concat(["New area"]);
+    pchoices = pchoices.concat([{name: "New area"}]);
 }
                        %>
             <%=
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
-                                                 {onchange: "enableInput('farea')"})%>
+                                                 { view: function(a) { return a.name; },
+                                                     onchange: "enableInput('farea')"})%>
             <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
           </td>
         </tr>
