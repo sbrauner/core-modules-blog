@@ -154,7 +154,7 @@ app.Forum.html.endBreadcrumbTable = function() {
 app.Forum.html.topicBreadcrumb = function(topic) {
     app.Forum.html.startBreadcrumbTable();
     app.Forum.html.decorateBreadcrumb(app.Forum.html.topicStack(topic)); %>
-    <div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
+    <img src="css/th_arrow2.gif"><div class="second_level"><%= content.HTML.escape(topic.name) %></div><%
     app.Forum.html.endBreadcrumbTable();
 }
 
