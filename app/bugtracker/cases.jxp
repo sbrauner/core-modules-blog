@@ -50,7 +50,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
-var liveDataSource = [ { number: '<form><input type="text" size="3" name="number"><input type="submit" value="?"></form>',
+var liveDataSource = [ /*{ number: ,
      title: '<form><input type="text" name="title"><input type="submit" value="?"></form>',
      owner: '<form><input type="text" size="4" name="owner"><input type="submit" value="?"></form>',
      status: '<form><input type="text" size="4" name="status"><input type="submit" value="?"></form>',
@@ -58,7 +58,7 @@ var liveDataSource = [ { number: '<form><input type="text" size="3" name="number
      type: '<form><input type="text" size="4" name="type"><input type="submit" value="?"></form>',
      project: '<form><input type="text" size="4" name="project"><input type="submit" value="?"></form>',
      area: '<form><input type="text" size="3" name="area"><input type="submit" value="?"></form>',
-     },
+     },*/
 <%
 
 var liveDataCursor, query;
@@ -96,27 +96,31 @@ for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
           %>
 ] ;
 
+function addForm(name, x) {
+     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" value="?"></form>';
+}
+
 
 var loader = new YAHOO.util.YUILoader( {
      require: ["datatable", "json"],
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
-               {key:  "number", label:"ID", sortable:true},
-               {key: "title", label:"Name", sortable:true},
-               {key: "owner", label:"Owner", sortable:true},
-               {key: "status",label:"Status", sortable:true},
-               {key: "severity",label:"Severity", sortable:true},
-               {key: "type",label:"Type", sortable:true},
-               {key: "project",label:"Project", sortable:true},
-               {key: "area",label:"Area", sortable:true}
+               {label:"ID", sortable:true, children: [{ key: "number", label: addForm("number", 3) }]},
+               { label:"Name", sortable:true, children: [{ key: "title", label: addForm("title") }]},
+               { label:"Owner", sortable:true, children: [{ key: "owner", label: addForm("owner", 3) }]},
+               {label:"Status", sortable:true, children: [{ key: "status", label: addForm("status", 3) }]},
+               {label:"Severity", sortable:true, children: [{ key: "severity", label: addForm("severity", 3) }]},
+               {label:"Type", sortable:true, children: [{ key: "type", label: addForm("type", 3) }]},
+               {label:"Project", sortable:true, children: [{ key: "project", label: addForm("project", 3) }]},
+               {label:"Area", sortable:true, children: [{ key: "area", label: addForm("area", 3) }]}
           ];
           var myDataSource = new YAHOO.util.DataSource(liveDataSource);
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
           myDataSource.responseSchema = {
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
-          var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource);//, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
           myDataTable.onEventSelectRow = function(e) {
                if(myDataTable.getTrIndex(e.target) == 0)
