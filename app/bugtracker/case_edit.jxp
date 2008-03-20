@@ -28,6 +28,8 @@ if (request.action == "Delete"){
     response.setHeader("Location", "./");
     return;
 }
+log(request);
+
 feature.number = parseInt(feature.number).toFixed();
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
@@ -98,10 +100,23 @@ if(request.fstatus){
             append = "?msg=No+mail+sent";
         }
 
-        // Redirect back to bugs/ or whatever
+%>
+<html>
+  <head>
+<%
+
+         var oldfeature;
+         // Redirect back to bugs/ or whatever
          if(request.action != "Save and Add Another") {
               response.setResponseCode(301);
-              response.setHeader("Location", "./"+append);
+              response.setHeader("Location", request.referer);
+         }
+         // make a new feature
+         else {
+              oldfeature = feature;
+              feature = new app.bugtracker.data.Feature();
+              feature.reporter = user;
+              feature.number = parseInt(feature.number).toFixed();
          }
     }
     else{
@@ -113,8 +128,6 @@ if(request.fstatus){
 title = "New Case";
 if (feature.number > 0) title = "Case #" + feature.number;
 %>
-<html>
-  <head>
     <title><%= title %></title>
     <!-- <link rel="stylesheet" type="text/css" href="/@@/yui/current/reset-fonts-grids/reset-fonts-grids.css"> -->
     <link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">
@@ -204,6 +217,7 @@ function ObjectId(){ return null; }
     <form method="POST">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
+<input type="hidden" name="referer" value="<%= (request.referer) ? request.referer : request.getHeader("Referer") %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>

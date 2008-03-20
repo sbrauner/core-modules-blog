@@ -106,14 +106,14 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
-               {label:"ID", sortable:true, children: [{ key: "number", label: addForm("number", 3) }]},
-               { label:"Name", sortable:true, children: [{ key: "title", label: addForm("title") }]},
-               { label:"Owner", sortable:true, children: [{ key: "owner", label: addForm("owner", 3) }]},
-               {label:"Status", sortable:true, children: [{ key: "status", label: addForm("status", 3) }]},
-               {label:"Severity", sortable:true, children: [{ key: "severity", label: addForm("severity", 3) }]},
-               {label:"Type", sortable:true, children: [{ key: "type", label: addForm("type", 3) }]},
-               {label:"Project", sortable:true, children: [{ key: "project", label: addForm("project", 3) }]},
-               {label:"Area", sortable:true, children: [{ key: "area", label: addForm("area", 3) }]}
+               {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
+               {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+               {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
+               {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
+               {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
+               {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
+               {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
+               {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
           var myDataSource = new YAHOO.util.DataSource(liveDataSource);
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
@@ -123,9 +123,6 @@ var loader = new YAHOO.util.YUILoader( {
           var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
           myDataTable.onEventSelectRow = function(e) {
-               if(myDataTable.getTrIndex(e.target) == 0)
-                    return;
-
                location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
