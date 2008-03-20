@@ -76,7 +76,7 @@ if(!liveDataCursor) {
 }
 
 for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
-     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "";
+     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "none";
           print("{");
                %>
      id: '<%= liveDataCursor[i]._id %>',
