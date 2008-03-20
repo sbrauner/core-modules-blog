@@ -73,6 +73,7 @@ table#style1, table.style1 {
 
 #style1 img, .style img {
         float: left;
+        margin-right: -6px;
 }
 
 #style1 nobr, .style1 nobr {
