@@ -15,7 +15,7 @@ confirm.send();
 
 htmlheader("Confirmation sent");
 
-notice = "We have sent a validation email to "+ confirm.user.email +". Please check your email account and follow the instructions contained in the validation email."
+notice = "We have sent a validation email to "+ confirm.user.email +". Please check your email account and follow the instructions contained in the validation email.";
 
 htmlfooter();
 %>

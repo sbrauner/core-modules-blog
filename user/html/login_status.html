@@ -1,9 +1,9 @@
 <% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <% processArgs("opts");
    opts = opts || {};
-   opts.login = opts.login || "/~~/user";
+   var login = User.findMyLocation();
 %>
 <div id="login_status">
-    <if user>Welcome, <strong><%= user.name %></strong>. <a href="<%= opts.login %>/logout?to=<%= request.getURL() %>">Log out</a></if>
-    <if (!user)><a href="<%= opts.login %>/login">Login</a> or <a href="<%= opts.login %>/register">Register</a></if>
+    <if user>Welcome, <strong><%= user.name %></strong>. <a href="<%= login %>/logout?to=<%= request.getURL() %>">Log out</a></if>
+    <if (!user)><a href="<%= login %>/login">Login</a> or <a href="<%= login %>/register">Register</a></if>
 </div>

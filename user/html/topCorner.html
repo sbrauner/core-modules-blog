@@ -1,16 +1,16 @@
 <%
 var conf = arguments[0] || {};
-conf.login = conf.login || "/~~/user";
+var login = User.findMyLocation();
 %>
 <% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <div id="login_status">
 
   <if user >
-    Logged in as <%= user.name %> &mdash; <a href="<%= conf.login %>/logout?to=<%= request.getURL() %>">logout</a>
+    Logged in as <%= user.name %> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
   </if>
   
   <if ( ! user )  >
-    <a href="<%= conf.login %>/login">login</a> &mdash; <a href="<%= conf.login %>/register">signup</a>
+    <a href="<%= login %>/login">login</a> &mdash; <a href="<%= login %>/register">signup</a>
 
     <div id="login_login" 
          style="position: absolute; display:none; width: 250px; height: 150px; right: 40px; top:20px; background-color: white; border:1px solid black; color: black; ">

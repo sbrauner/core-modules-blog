@@ -1,11 +1,11 @@
 <% processArgs("opts");
    opts = opts || {};
-   opts.login = opts.login || "/~~/user";
+   var login = User.findMyLocation();
 %>
 <div id="register">
 
 
-  <form method="post" action="<%= opts.login %>/register" onSubmit="return checkRegister( this )" class="edit register">
+  <form method="post" action="<%= login %>/register" onSubmit="return checkRegister( this )" class="edit register">
 
     <fieldset class="edit register">
     <legend>Register</legend>
@@ -33,7 +33,7 @@
     <% if(User.config.useCaptcha){ %>
     <tr id="comments-open-captcha">
         <td><label>&nbsp;</label></td>
-        <td><img src="NOCDN/~~/user/captchaIMG.jxp" id="captcha"/></td>
+        <td><img src="NOCDN<%= login %>/captchaIMG" id="captcha"/></td>
     </tr>
     
     <tr>
@@ -101,13 +101,13 @@
       return false;
     }
 
-    var check = loadDocSync( "<%= opts.login %>/checkUsername?username=" + u + "&email=" + e );
+    var check = loadDocSync( "<%= login %>/checkUsername?username=" + u + "&email=" + e );
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
     }
 
-    var u = "<%= opts.login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
+    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;

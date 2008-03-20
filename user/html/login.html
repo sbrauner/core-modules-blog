@@ -1,11 +1,11 @@
 <%
 var conf = arguments[0] || {};
-   conf.login = conf.login || "/~~/user";
+var login = User.findMyLocation();
 %>
 <script src="/~~/ui/js/md5.js"></script>
 <script>
 
-  var url = "<%= conf.login %>/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
+  var url = "<%= login %>/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
   var area = "<%= db.getName() %>";
 
@@ -28,7 +28,7 @@ var conf = arguments[0] || {};
 </script>
 
 <div ? user >
-  <div class="notice">You are already logged in as <strong><%= user.name %> (<%= user.email %>)</strong>.<br/><br/>If you would like to log in as another user, please <a href="/~~/user/logout?to=<%= escape( request.getURL() ) %>">log out</a> first.</div>
+  <div class="notice">You are already logged in as <strong><%= user.name %> (<%= user.email %>)</strong>.<br/><br/>If you would like to log in as another user, please <a href="<%= login %>/logout?to=<%= escape( request.getURL() ) %>">log out</a> first.</div>
 </div>
 
 <div ? ( ! user ) id="login">
@@ -60,5 +60,7 @@ var conf = arguments[0] || {};
             </table>
     </fieldset>
   </form>
+    <a href="<%= login %>/username_send">Forgot your username?</a>
+    <a href="<%= login %>/reset_send">Forgot your password?</a>
 
 </div>

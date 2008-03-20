@@ -1,0 +1,30 @@
+<%
+
+core.user.data.reset();
+if(request.username){
+    user = User.find(request.username);
+    if(! user)
+        User.abort("Couldn't find username");
+    var reset = User.Reset.findOne({user: user});
+
+    if(! reset){
+        reset = new User.Reset(user);
+    }
+
+    reset.send();
+
+    addToNotice('reset', "We have sent an email to "+ reset.user.email +" with instructions on how to reset your password. Please check your email account and follow the instructions.");
+
+    htmlheader("Reset sent");
+
+    htmlfooter();
+}
+else{
+    htmlheader("Reset a password");
+
+    core.user.html.resetrequest();
+
+    htmlfooter();
+
+}
+%>

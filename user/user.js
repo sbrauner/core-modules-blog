@@ -99,5 +99,5 @@ User.statusName = function(status){
 
 User.statusLink = function(status){
     if(status == "confirmed_email")
-        return new URL("/~~/user/confirm_send").toString()
+        return new URL(User.findMyLocation()+"confirm_send").toString()
 };

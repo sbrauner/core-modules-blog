@@ -8,6 +8,22 @@
  * @updated Feb 06, 2008
 **/
 
+log.app.bugtracker.info("Running app.bugtracker.data.feature");
+var problem = "";
+if(app == null){
+    problem = "app";
+}
+else if(app.bugtracker == null){
+    problem = "app.bugtracker";
+}
+else if(app.bugtracker.data == null){
+    problem = "app.bugtracker.data";
+}
+
+if(problem){
+    log.app.bugtracker.debug("SOMETHING IS NULL!!!!! " + problem);
+}
+
 app.bugtracker.data.Feature = function() {
     // member variables
     this.status = this.STATUS.NEW;
