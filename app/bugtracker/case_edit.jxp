@@ -28,14 +28,15 @@ if (request.action == "Delete"){
     response.setHeader("Location", "./");
     return;
 }
-log(request);
+
+var postTarget = new URL(request.getURL());
 
 feature.number = parseInt(feature.number).toFixed();
 timestamp = feature.lastModified;
 Forms.fillInObject( "f", feature );
-print.setFormObject( feature, "f" );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
+if(feature.project == "null") feature.project = null;
 if(request.fstatus){
     if (feature.lastModified.toString() == request.starttime ||
         ! feature._id ){
@@ -45,12 +46,11 @@ if(request.fstatus){
             feature.owner = db.users.findOne({_id: feature.owner});
         var props = ["project", "OS", "release"];
         p = "project";
-        if(feature.project == "null"){
+        if(feature.project == null){
             if(request["extra_fproject"]){
                 feature.project = new app.bugtracker.data.Project(request["extra_fproject"]);
                 db.bugtracker.projects.save(feature.project);
             }
-            else feature.project = null;
         }
         else{
             feature.project = db.bugtracker.projects.findOne({_id: feature.project});
@@ -100,24 +100,22 @@ if(request.fstatus){
             append = "?msg=No+mail+sent";
         }
 
-%>
-<html>
-  <head>
-<%
-
-         var oldfeature;
          // Redirect back to bugs/ or whatever
          if(request.action != "Save and Add Another") {
               response.setResponseCode(301);
               response.setHeader("Location", request.referer);
          }
-         // make a new feature
-         else {
-              oldfeature = feature;
-              feature = new app.bugtracker.data.Feature();
-              feature.reporter = user;
-              feature.number = parseInt(feature.number).toFixed();
-         }
+        else {
+            var oldfeature = feature;
+            feature = new app.bugtracker.data.Feature();
+            ["owner", "status", "severity", "type", "os",
+             "project", "area", "release"].forEach(function(field){
+                feature[field] = oldfeature[field];
+            });
+            feature.reporter = user;
+            postTarget = postTarget.removeArg("id");
+        }
+
     }
     else{
         timestamp = feature.lastModified;
@@ -127,7 +125,10 @@ if(request.fstatus){
 
 title = "New Case";
 if (feature.number > 0) title = "Case #" + feature.number;
+print.setFormObject( feature, "f" );
 %>
+<html>
+<head>
     <title><%= title %></title>
     <!-- <link rel="stylesheet" type="text/css" href="/@@/yui/current/reset-fonts-grids/reset-fonts-grids.css"> -->
     <link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">
@@ -214,7 +215,7 @@ function ObjectId(){ return null; }
     </div>
     <% } %>
 
-    <form method="POST">
+    <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
 <input type="hidden" name="referer" value="<%= (request.referer) ? request.referer : request.getHeader("Referer") %>"/>
@@ -265,7 +266,7 @@ function ObjectId(){ return null; }
             <td class="label">Project</td>
             <td class="value">
                 <%
-                var choices = app.bugtracker.app.list_projects();
+    var choices = app.bugtracker.app.list_projects().sort(function(x, y){ return Ext.stringCompare(x.name, y.name);});
                 choices = [new app.bugtracker.data.Project("None")].concat(choices);
                 var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
                 %>
@@ -288,6 +289,7 @@ if(project.areas.length > 0){
             <%=
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
                                                  { view: function(a) { return a.name; },
+                                                   compare: function(a, orig) { return a.name == orig; },
                                                      onchange: "enableInput('farea')"})%>
             <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
           </td>
