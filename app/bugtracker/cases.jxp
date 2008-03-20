@@ -72,7 +72,7 @@ for(var q in request) {
      }
 }
 if(!liveDataCursor) {
-     liveDataCursor = db.bugtracker.cases.find().toArray();
+    liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
 }
 
 for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
