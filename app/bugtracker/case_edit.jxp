@@ -251,7 +251,7 @@ function ObjectId(){ return null; }
             <td class="label">Project</td>
             <td class="value">
                 <%
-                var choices = app.bugtracker.app.list_projects();
+    var choices = app.bugtracker.app.list_projects().sort(function(x, y){ return Ext.stringCompare(x.name, y.name);});
                 choices = [new app.bugtracker.data.Project("None")].concat(choices);
                 var pchoices = choices.concat([new app.bugtracker.data.Project("New project")]);
                 %>
