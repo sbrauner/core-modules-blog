@@ -47,7 +47,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <!--detailUrl: "case_edit?id="-->
 
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
+<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
 var liveDataSource = [ { number: '<form><input type="text" size="3" name="number"><input type="submit" value="?"></form>',
@@ -98,6 +98,7 @@ for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
 
 
 var loader = new YAHOO.util.YUILoader( {
+     base: "/@@/yui/current/",
      require: ["datatable", "json"],
      loadOptional: true,
      onSuccess: function() {
