@@ -43,9 +43,15 @@ URL = function(s){
         this.path = s.substring(0, s.indexOf('?'));
         s = s.substring(s.indexOf('?')+1, s.length);
         var ary = s.split('&');
-        for(var i in ary){
-            var pair = ary[i].split('=');
-            this.args.push({key: pair[0], value: URL.unescape_queryargs(pair[1])});
+        if ( ary && ary.length > 0 ){
+            for(var i in ary){
+                var temp = ary[i];
+                var idx = temp.indexOf( "=" );
+                if ( idx < 0 )
+                    continue;
+                this.args.push( { key: temp.substring( 0 , idx ) ,
+                                  value: URL.unescape_queryargs( temp.substring( idx + 1 ) ) } );
+            }
         }
     }
 };
@@ -203,20 +209,7 @@ URL.unescape_queryargs = function(s, broken){
     // (rather than really as spaces). This doesn't usually come up, because
     // plus signs are usually encoded into %2b, so no "raw" plus signs come
     // through unless they were encoded from spaces.
-    if(! broken)
-        s = s.replace(/\+/g, ' ');
-    var re = /%([0123456789abcdef]{2})/;
-    var t = '';
-    while(true){
-        var exec = re.exec(s);
-        if(exec == null) break;
-        var i = exec.index;
-        t = t + s.substring(0, i);
-        var rep = exec[1];
-        var rep = String.fromCharCode(parseInt(rep, 16));
-        t = t + rep;
-        s = s.substring(i+3, s.length);
-    }
-    t = t + s;
-    return t;
+    if( ! broken ) s = s.replace( /\+/g , ' ');
+    
+    return unescape( s );
 };
