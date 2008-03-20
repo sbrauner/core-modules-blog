@@ -5,6 +5,8 @@ core.user.user();
 core.user.auth();
 core.app.bugtracker.data.feature();
 core.net.url();
+core.io.encode.javascript();
+
 head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
@@ -74,17 +76,18 @@ if(!liveDataCursor) {
 }
 
 for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
+     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "";
           print("{");
                %>
      id: '<%= liveDataCursor[i]._id %>',
      number: '<%= liveDataCursor[i].number.toFixed(0) %>',
-          title: "<%= liveDataCursor[i].title %>",
-          owner: "<%= liveDataCursor[i].owner.name %>",
-          status: "<%= liveDataCursor[i].status %>",
-          severity: "<%= liveDataCursor[i].severity %>",
-          type: "<%= liveDataCursor[i].type %>",
-          project: "<%= liveDataCursor[i].project %>",
-     area: "<%= liveDataCursor[i].area %>"
+     title: '<%= io.Encode.JavaScript.escape(liveDataCursor[i].title) %>',
+          owner: '<%= liveDataCursor[i].owner.name %>',
+          status: '<%= liveDataCursor[i].status %>',
+          severity: '<%= liveDataCursor[i].severity %>',
+          type: '<%= liveDataCursor[i].type %>',
+     project: '<%= project %>',
+     area: '<%= liveDataCursor[i].area %>'
                <%
           print("}");
           if(i<liveDataCursor.length-1)
@@ -119,7 +122,7 @@ var loader = new YAHOO.util.YUILoader( {
                if(myDataTable.getTrIndex(e.target) == 0)
                     return;
 
-               location="/bugs/case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
+               location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
           myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
