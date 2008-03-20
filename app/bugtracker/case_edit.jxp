@@ -274,6 +274,7 @@ if(project.areas.length > 0){
             <%=
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
                                                  { view: function(a) { return a.name; },
+                                                   compare: function(a, orig) { return a.name == orig; },
                                                      onchange: "enableInput('farea')"})%>
             <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
           </td>
