@@ -20,7 +20,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
         <script type="text/javascript" src="assets/menu.js"></script>
     </head>
-    <body class="yui-skin-sam">
+<body class="yui-skin-sam">
         <div id="top_menu" class="yuimenubar">
             <div class="bd">
                 <ul class="first-of-type">
@@ -39,7 +39,20 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <div id="toolbox" style="visibility:hidden">
 <input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
-<!--<input type="button" onclick="deleteSelected()" value="Delete Selected">-->
+<fieldset><legend>Edit Selected</legend>
+<div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
+<div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
+<option value="">&nbsp;</option>
+<option value="owner">Owner</option>
+<option value="status">Status</option>
+<option value="severity">Severity</option>
+<option value="type">Type</option>
+<option value="project">Project</option>
+</select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
+</select>
+</div>
+
+</fieldset>
 </div>
 
 <div id="bugJar">
@@ -52,6 +65,63 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
+
+var l2 = {};
+l2.owner = ["",
+     <%
+     var ownerCursor = db.users.find().toArray();
+     for(var i=0; i<ownerCursor.length; i++)
+          print("'"+ownerCursor[i].name+((i<ownerCursor.length-1) ? "'," : "'"));
+     %>
+];
+l2.status = ["", "new", "reviewed", "not reproducable", "fixed", "closed"];
+l2.severity = ["", "normal", "high", "low"];
+l2.type = ["", "bug", "feature", "inquiry"];
+l2.project = ["", "none",
+              <%
+              var projCursor = db.bugtracker.projects.find().toArray();
+              for(var i=0; i<projCursor.length; i++)
+                   print("'"+projCursor[i].name+((i<projCursor.length-1) ? "'," : "'"));
+              %>
+             ];
+
+function fillLevel2() {
+     document.getElementById("massChangeL2").options.length = 0;
+     l1 = document.getElementById("massChangeL1").value;
+     if(l1 == "") {
+          document.getElementById("massChangeL2").disabled = true;
+          return;
+     }
+     document.getElementById("massChangeL2").disabled = false;
+     for(var i=0; i<l2[l1].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
+     }
+}
+
+function commitChanges() {
+     var passData = "";
+     // figure out the column to change, and to what
+     var src = document.getElementById("massChangeL1").value;
+     var dest = document.getElementById("massChangeL2").value;
+     passData = "src="+src+"&dest="+dest+"&row=[";
+
+     // go through the table and find all selected rows
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     alert(YAHOO.lang.JSON.stringify(myDataTable.getRecord(row)));
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check").checked) {
+               passData += liveDataSource[i].id+",";
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     passData = passData.substring(0, passData.length()-1)+"]";
+     alert(passData);
+
+     // perform one big ajax call
+     // update the table
+}
 
 function toggleClosed() {
      var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
@@ -113,7 +183,9 @@ var loader = new YAHOO.util.YUILoader( {
      require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
+
           var myColumnDefs = [
+               {label: "", children: [{label: "", key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -126,19 +198,23 @@ var loader = new YAHOO.util.YUILoader( {
           var myDataSource = new YAHOO.util.DataSource(liveDataSource);
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
           myDataSource.responseSchema = {
-               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
+               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
           myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
-          myDataTable.onEventSelectRow = function(e) {
+          myDataTable.onEventSelectCell = function(e) {
+               if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
+                    return;
+
                location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
-          myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
-          myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-          myDataTable.subscribe("rowClickEvent", myDataTable.onEventSelectRow);
+          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
+          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
+          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
 
+          /* Toolbox */
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
           myPanel.setHeader("Toolbox");
           myPanel.render();
