@@ -7,6 +7,7 @@ core.app.bugtracker.data.feature();
 core.net.url();
 core.io.encode.javascript();
 
+head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
@@ -98,29 +99,40 @@ function fillLevel2() {
      }
 }
 
-function commitChanges() {
-     var passData = "";
-     // figure out the column to change, and to what
-     var src = document.getElementById("massChangeL1").value;
-     var dest = document.getElementById("massChangeL2").value;
-     passData = "src="+src+"&dest="+dest+"&row=[";
-
-     // go through the table and find all selected rows
+function getCheckedRows() {
      var i=0;
      var row = myDataTable.getTrEl(i);
-     alert(YAHOO.lang.JSON.stringify(myDataTable.getRecord(row)));
+     var passData = "";
      while(row) {
-          if(myDataTable.getRecord(row).getData("check").checked) {
+          if(myDataTable.getRecord(row).getData("check")) {
                passData += liveDataSource[i].id+",";
           }
           row = myDataTable.getNextTrEl(row);
           i++;
      }
-     passData = passData.substring(0, passData.length()-1)+"]";
-     alert(passData);
+     if(passData.length == 0) return "";
+     return passData.substring(0, passData.length-1);
+}
+
+
+function commitChanges() {
+     var passData = "";
+
+    // figure out the column to change, and to what
+     var src = document.getElementById("massChangeL1").value;
+     var dest = document.getElementById("massChangeL2").value;
+     passData = "action=change&src="+src+"&dest="+dest+"&row=";
+
+     // go through the table and find all selected rows
+     var rows = getCheckedRows();
+     if(rows.length == 0) {
+          alert("You must select at least one case to change.");
+          return;
+     }
+     passData += rows;
 
      // perform one big ajax call
-     // update the table
+     ajax(passData, "mass_change.jxp");
 }
 
 function toggleClosed() {
@@ -136,7 +148,7 @@ function toggleClosed() {
 }
 
 var myDataTable;
-var liveDataSource = [
+var liveDataSource;/* = [
 <%
 
 var liveDataCursor, query;
@@ -172,7 +184,7 @@ for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
                print(",");
      }
           %>
-] ;
+] ;*/
 
 function addForm(name, x) {
      return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" value="?"></form>';
@@ -184,7 +196,6 @@ var loader = new YAHOO.util.YUILoader( {
      require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
-
           var myColumnDefs = [
                {label: "", children: [{label: "", key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
@@ -196,24 +207,30 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
-          var myDataSource = new YAHOO.util.DataSource(liveDataSource);
-          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-          myDataSource.responseSchema = {
+          this.myDataSource = new YAHOO.util.DataSource("case_table?");
+          this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+          this.myDataSource.connXhrMode = "queueRequests";
+          this.myDataSource.responseSchema = {
+               resultsList: "rows",
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
-          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          this.myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, this.myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
-          myDataTable.onEventSelectCell = function(e) {
+          this.myDataTable.onEventSelectCell = function(e) {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
+               location="case_edit?id="+liveDataSource[this.myDataTable.getTrIndex(e.target)].id;
           }
 
-          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
-          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
-          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
+          this.myDataTable.subscribe("cellMouseoverEvent", this.myDataTable.onEventHighlightRow);
+          this.myDataTable.subscribe("cellMouseoutEvent", this.myDataTable.onEventUnhighlightRow);
+          this.myDataTable.subscribe("cellClickEvent", this.myDataTable.onEventSelectCell);
 
+          this.myDataTable.subscribe("checkboxClickEvent", function(oArgs){
+               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+               oRecord.setData("check",oArgs.target.checked);
+          });
 
           /* Toolbox */
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
