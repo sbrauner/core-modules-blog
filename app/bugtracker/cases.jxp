@@ -105,7 +105,7 @@ function getCheckedRows() {
      var passData = "";
      while(row) {
           if(myDataTable.getRecord(row).getData("check")) {
-               passData += liveDataSource[i].id+",";
+               passData += myDataTable.getRecord(row).getData("id")+",";
           }
           row = myDataTable.getNextTrEl(row);
           i++;
@@ -132,7 +132,12 @@ function commitChanges() {
      passData += rows;
 
      // perform one big ajax call
-     ajax(passData, "mass_change.jxp");
+     var massCommit = {
+          success : myDataTable.onDataReturnAppendRows,
+          failure : myDataTable.onDataReturnAppendRows,
+          scope : myDataTable
+     };
+     myDataSource.sendRequest(passData, massCommit);
 }
 
 function toggleClosed() {
@@ -147,7 +152,7 @@ function toggleClosed() {
      }
 }
 
-var myDataTable;
+var myDataTable, myDataSource;
 
 function addForm(name, x) {
      return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
@@ -201,7 +206,7 @@ var loader = new YAHOO.util.YUILoader( {
           myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
           myDataTable.subscribe("checkboxClickEvent", function(oArgs){
-               var oRecord = getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
                oRecord.setData("check",oArgs.target.checked);
           });
 
