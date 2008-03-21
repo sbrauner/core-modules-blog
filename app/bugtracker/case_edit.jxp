@@ -167,7 +167,7 @@ function ObjectId(){ return null; }
           if(options){
               for (var i in options){
                   var option = options[i];
-                  areasel.options[areasel.options.length] = new Option(option);
+                  areasel.options[areasel.options.length] = new Option(option.name);
               }
           }
           if(projname != "None")
