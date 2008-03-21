@@ -10,6 +10,7 @@ Ext.explore = function(obj, spec, endfunc, options){
     // returned.
     // An options argument can also be passed.
     options = options || {};
+
     return Ext.explore.helper(obj, spec, endfunc, options, null, obj);
 };
 
@@ -17,9 +18,10 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
     var results;
     var filter = Ext.getdefault(options, 'filter', function(){return true;});
     if(obj == null){
-        log.ext.explore.debug("recursing onto a null object! Broken weights spec??");
+        log.ext.explore.warning("recursing onto a null object! parent was " + tojson(parent) + " field was " + fieldname);
     }
-    else if(obj instanceof Array){
+
+    if(obj instanceof Array){
         results = [];
         for(var i = 0; i < obj.length; i++){
             if(! filter(i, obj[i])) continue;
@@ -29,6 +31,9 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
     else if(typeof spec == "number" || typeof spec == "string" || typeof spec == "boolean"){
         results = endfunc(obj, fieldname, spec, options, parent);
     }
+    else if(spec instanceof Function){
+        results = spec(obj, fieldname, spec, options, parent);
+    }
     else {
         results = {};
         for(var field in spec){
@@ -36,18 +41,12 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
             var opt = Ext.getdefault(options, field, options);
             var o = obj[field];
 
-            if(typeof s == "number" || typeof s == "string" || typeof s == "boolean"){
-                results[field] = endfunc(o, fieldname, s, options, parent);
-            }
-            else if(s instanceof Function){
-                results[field] = s(o, fieldname, spec, options, parent);
-            }
-            else {
-                if(! filter(i, obj[i])) continue;
-                results[field] = Ext.explore.helper(o, s, endfunc, opt, field, obj);
-            }
+            if(! filter(field, o)) continue;
+            results[field] = Ext.explore.helper(o, s, endfunc, opt, field, obj);
         }
     }
 
     return results;
 };
+
+log.ext.explore.level = log.ext.explore.LEVEL.WARNING;
