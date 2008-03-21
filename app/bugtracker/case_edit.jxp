@@ -93,6 +93,14 @@ if(request.fstatus){
                 m.addRecipient(  feature.owner.email , "cc" );
             if(feature && feature.project && feature.project.owner && feature.project.owner.email)
                 m.addRecipient(  feature.project.owner.email , "cc" );
+            if(feature && feature.project){
+                area = feature.project.areas.filter(function(a){ return a.name == feature.area; })[0];
+                if(area && area.owner && area.owner.email){
+                    m.addRecipient(  area.owner.email , "cc" );
+                }
+            }
+
+
             m.send( mail );
             append = "";
         }
@@ -167,7 +175,7 @@ function ObjectId(){ return null; }
           if(options){
               for (var i in options){
                   var option = options[i];
-                  areasel.options[areasel.options.length] = new Option(option);
+                  areasel.options[areasel.options.length] = new Option(option.name);
               }
           }
           if(projname != "None")

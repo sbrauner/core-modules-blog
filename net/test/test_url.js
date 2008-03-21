@@ -65,3 +65,10 @@ assert(u.toString() == "/bugs/?number=40&truth=&you=honey#anchor1");
 assert(URL.unescape_queryargs('%41+%45') == "A E");
 
 assert(URL.escape_queryargs('&') == '%26');
+
+assert( URL.escape_queryargs( " " ) == "+" );
+assert( URL.escape_queryargs( " " , true ) == "%20" );
+
+assert( URL.unescape_queryargs( "+" ) == " " );
+assert( URL.unescape_queryargs( "+" , true ) == "+" );
+

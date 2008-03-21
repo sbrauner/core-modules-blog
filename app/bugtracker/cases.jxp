@@ -63,7 +63,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
+<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
 var l2 = {};
@@ -180,6 +180,7 @@ function addForm(name, x) {
 
 
 var loader = new YAHOO.util.YUILoader( {
+     base: "/@@/yui/current/",
      require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
