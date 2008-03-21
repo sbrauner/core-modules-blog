@@ -70,3 +70,15 @@ options = {a: {b: {opt1: 4}}};
 result = Ext.explore(o, spec, endfunc, options);
 
 assert(result.a.b.c.d == 20);
+
+spec = {a: {b: function(b){ return b.c.d + 1; }}};
+
+result = Ext.explore(o, spec, endfunc, options);
+
+assert(result.a.b == 6);
+
+spec = {a: {foo: function(obj, fieldname, spec, options, parent){ return parent.b.c.d+2; }}};
+
+result = Ext.explore(o, spec, endfunc, options);
+assert(result.a.foo == 7);
+
