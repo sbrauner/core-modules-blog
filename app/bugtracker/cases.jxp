@@ -187,7 +187,7 @@ for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
 ] ;*/
 
 function addForm(name, x) {
-     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" value="?"></form>';
+     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
 }
 
 
@@ -207,7 +207,17 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
-          this.myDataSource = new YAHOO.util.DataSource("case_table?");
+
+          <%
+          var dsOpts = "";
+          for(var x in request) {
+               dsOpts += "&"+x+"="+request[x];
+          }
+          dsOpts = (dsOpts.length > 0) ? dsOpts.substring(1) : "";
+          log(dsOpts);
+          %>
+
+          this.myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
           this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
           this.myDataSource.connXhrMode = "queueRequests";
           this.myDataSource.responseSchema = {
