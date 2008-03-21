@@ -36,7 +36,7 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
             var opt = Ext.getdefault(options, field, options);
             var o = obj[field];
 
-            if(typeof w == "number" || typeof w == "string"){
+            if(typeof w == "number" || typeof w == "string" || typeof w == "boolean"){
                 results[field] = endfunc(o, fieldname, spec, options, parent);
             }
             else if(w instanceof Function){
