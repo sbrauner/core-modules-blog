@@ -105,7 +105,7 @@ function getCheckedRows() {
      var passData = "";
      while(row) {
           if(myDataTable.getRecord(row).getData("check")) {
-               passData += liveDataSource[i].id+",";
+               passData += myDataTable.getRecord(row).getData("id")+",";
           }
           row = myDataTable.getNextTrEl(row);
           i++;
@@ -132,7 +132,12 @@ function commitChanges() {
      passData += rows;
 
      // perform one big ajax call
-     ajax(passData, "mass_change.jxp");
+     var massCommit = {
+          success : myDataTable.onDataReturnAppendRows,
+          failure : myDataTable.onDataReturnAppendRows,
+          scope : myDataTable
+     };
+     myDataSource.sendRequest(passData, massCommit);
 }
 
 function toggleClosed() {
@@ -147,44 +152,7 @@ function toggleClosed() {
      }
 }
 
-var myDataTable;
-var liveDataSource;/* = [
-<%
-
-var liveDataCursor, query;
-for(var q in request) {
-     if(request[q] != "") {
-          query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-          searchobj = {};
-          searchobj[q] = query;
-          liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
-          break;
-     }
-}
-if(!liveDataCursor) {
-    liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
-}
-
-for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
-     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "none";
-          print("{");
-               %>
-     id: '<%= liveDataCursor[i]._id %>',
-     number: '<%= liveDataCursor[i].number.toFixed(0) %>',
-     title: '<%= io.Encode.JavaScript.escape(liveDataCursor[i].title) %>',
-          owner: '<%= liveDataCursor[i].owner.name %>',
-          status: '<%= liveDataCursor[i].status %>',
-          severity: '<%= liveDataCursor[i].severity %>',
-          type: '<%= liveDataCursor[i].type %>',
-     project: '<%= project %>',
-     area: '<%= liveDataCursor[i].area %>'
-               <%
-          print("}");
-          if(i<liveDataCursor.length-1)
-               print(",");
-     }
-          %>
-] ;*/
+var myDataTable, myDataSource;
 
 function addForm(name, x) {
      return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
@@ -217,36 +185,35 @@ var loader = new YAHOO.util.YUILoader( {
           log(dsOpts);
           %>
 
-          this.myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
-          this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-          this.myDataSource.connXhrMode = "queueRequests";
-          this.myDataSource.responseSchema = {
+          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+          myDataSource.connXhrMode = "queueRequests";
+          myDataSource.responseSchema = {
                resultsList: "rows",
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
-          this.myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, this.myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
-          this.myDataTable.onEventSelectCell = function(e) {
+          myDataTable.onEventSelectCell = function(e) {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+liveDataSource[this.myDataTable.getTrIndex(e.target)].id;
+               location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
-          this.myDataTable.subscribe("cellMouseoverEvent", this.myDataTable.onEventHighlightRow);
-          this.myDataTable.subscribe("cellMouseoutEvent", this.myDataTable.onEventUnhighlightRow);
-          this.myDataTable.subscribe("cellClickEvent", this.myDataTable.onEventSelectCell);
+          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
+          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
+          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
-          this.myDataTable.subscribe("checkboxClickEvent", function(oArgs){
+          myDataTable.subscribe("checkboxClickEvent", function(oArgs){
                var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
                oRecord.setData("check",oArgs.target.checked);
           });
 
           /* Toolbox */
-          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });
           myPanel.setHeader("Toolbox");
           myPanel.render();
-
      }
 });
 
