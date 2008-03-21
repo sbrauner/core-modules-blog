@@ -26,7 +26,7 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
             results.push(Ext.explore.helper(obj[i], spec, endfunc, options, fieldname, parent));
         }
     }
-    else if(typeof spec == "number" || typeof spec == "string"){
+    else if(typeof spec == "number" || typeof spec == "string" || typeof spec == "boolean"){
         results = endfunc(obj, fieldname, spec, options, parent);
     }
     else {
@@ -36,11 +36,11 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
             var opt = Ext.getdefault(options, field, options);
             var o = obj[field];
 
-            if(typeof w == "number" || typeof w == "string" || typeof w == "boolean"){
-                results[field] = endfunc(o, fieldname, spec, options, parent);
+            if(typeof s == "number" || typeof s == "string" || typeof s == "boolean"){
+                results[field] = endfunc(o, fieldname, s, options, parent);
             }
-            else if(w instanceof Function){
-                results[field] = w(o, fieldname, spec, options, parent);
+            else if(s instanceof Function){
+                results[field] = s(o, fieldname, spec, options, parent);
             }
             else {
                 if(! filter(i, obj[i])) continue;
