@@ -18,7 +18,7 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
     var results;
     var filter = Ext.getdefault(options, 'filter', function(){return true;});
     if(obj == null){
-        log.ext.explore.warning("recursing onto a null object! parent was " + tojson(parent) + " field was " + fieldname);
+        log.ext.explore.debug("recursing onto a null object! parent was " + tojson(parent) + " field was " + fieldname);
     }
 
     if(obj instanceof Array){
@@ -49,4 +49,4 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
     return results;
 };
 
-log.ext.explore.level = log.ext.explore.LEVEL.WARNING;
+log.ext.explore.level = log.ext.explore.LEVEL.INFO;
