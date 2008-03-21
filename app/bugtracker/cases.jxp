@@ -37,8 +37,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
-<div id="toolbox">
-<h4>Toolbox</h4>
+<div id="toolbox" style="visibility:hidden">
 <input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
 <!--<input type="button" onclick="deleteSelected()" value="Delete Selected">-->
 </div>
@@ -49,8 +48,6 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <div id="newCase">
 
 </div>
-
-<!--detailUrl: "case_edit?id="-->
 
 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
@@ -69,15 +66,7 @@ function toggleClosed() {
 }
 
 var myDataTable;
-var liveDataSource = [ /*{ number: ,
-     title: '<form><input type="text" name="title"><input type="submit" value="?"></form>',
-     owner: '<form><input type="text" size="4" name="owner"><input type="submit" value="?"></form>',
-     status: '<form><input type="text" size="4" name="status"><input type="submit" value="?"></form>',
-     severity: '<form><input type="text" size="4" name="severity"><input type="submit" value="?"></form>',
-     type: '<form><input type="text" size="4" name="type"><input type="submit" value="?"></form>',
-     project: '<form><input type="text" size="4" name="project"><input type="submit" value="?"></form>',
-     area: '<form><input type="text" size="3" name="area"><input type="submit" value="?"></form>',
-     },*/
+var liveDataSource = [
 <%
 
 var liveDataCursor, query;
@@ -121,7 +110,7 @@ function addForm(name, x) {
 
 
 var loader = new YAHOO.util.YUILoader( {
-     require: ["datatable", "json"],
+     require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
@@ -148,6 +137,12 @@ var loader = new YAHOO.util.YUILoader( {
           myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
           myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
           myDataTable.subscribe("rowClickEvent", myDataTable.onEventSelectRow);
+
+
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
+          myPanel.setHeader("Toolbox");
+          myPanel.render();
+
      }
 });
 
