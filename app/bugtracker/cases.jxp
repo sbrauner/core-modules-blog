@@ -37,6 +37,12 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
+<div id="toolbox">
+<h4>Toolbox</h4>
+<input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
+<!--<input type="button" onclick="deleteSelected()" value="Delete Selected">-->
+</div>
+
 <div id="bugJar">
 </div>
 
@@ -50,6 +56,19 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <script type="text/javascript" src="http://yui.yahooapis.com/2.5.0/build/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
+function toggleClosed() {
+     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
+
+     var row = myDataTable.getTrEl(0);
+     while(row) {
+          if(myDataTable.getRecord(row).getData("status") == "closed") {
+               row.style.display = disp;
+          }
+          row = myDataTable.getNextTrEl(row);
+     }
+}
+
+var myDataTable;
 var liveDataSource = [ /*{ number: ,
      title: '<form><input type="text" name="title"><input type="submit" value="?"></form>',
      owner: '<form><input type="text" size="4" name="owner"><input type="submit" value="?"></form>',
@@ -120,7 +139,7 @@ var loader = new YAHOO.util.YUILoader( {
           myDataSource.responseSchema = {
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
-          var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
           myDataTable.onEventSelectRow = function(e) {
                location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
