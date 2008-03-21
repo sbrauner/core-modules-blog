@@ -71,11 +71,15 @@ result = Ext.explore(o, spec, endfunc, options);
 
 assert(result.a.b.c.d == 20);
 
+// Using a function to pull a random field out.
+
 spec = {a: {b: function(b){ return b.c.d + 1; }}};
 
 result = Ext.explore(o, spec, endfunc, options);
 
 assert(result.a.b == 6);
+
+// Making up fields.
 
 spec = {a: {foo: function(obj, fieldname, spec, options, parent){ return parent.b.c.d+2; }}};
 
