@@ -1,0 +1,39 @@
+<%
+
+var liveDataCursor, query;
+/*for(var q in request) {
+     if(request[q] != "") {
+          query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+          searchobj = {};
+          searchobj[q] = query;
+          liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+          break;
+     }
+}*/
+
+if(!liveDataCursor) {
+    liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+}
+
+print('{ "rows": [');
+for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
+     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "none";
+     print("{");
+     %>
+     "id": "<%= liveDataCursor[i]._id %>",
+     "number": "<%= liveDataCursor[i].number.toFixed(0) %>",
+     "title": "<%= io.Encode.JavaScript.escape(liveDataCursor[i].title) %>",
+     "owner": "<%= liveDataCursor[i].owner.name %>",
+     "status": "<%= liveDataCursor[i].status %>",
+     "severity": "<%= liveDataCursor[i].severity %>",
+     "type": "<%= liveDataCursor[i].type %>",
+     "project": "<%= project %>",
+     "area": "<%= liveDataCursor[i].area %>"
+     <%
+     print("}");
+     if(i<liveDataCursor.length-1)
+        print(",");
+}
+print("] }");
+%>
+

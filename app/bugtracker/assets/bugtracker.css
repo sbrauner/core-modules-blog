@@ -86,3 +86,9 @@ div.yui-b p em {
 #top_menu {
     margin: 0;
 }
+div#toolbox {
+    background: #E0E0E0;
+}
+div#toolbox select {
+    width: 100px;
+}

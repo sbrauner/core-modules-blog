@@ -7,6 +7,7 @@ core.app.bugtracker.data.feature();
 core.net.url();
 core.io.encode.javascript();
 
+head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
@@ -20,7 +21,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
         <script type="text/javascript" src="assets/menu.js"></script>
     </head>
-    <body class="yui-skin-sam">
+<body class="yui-skin-sam">
         <div id="top_menu" class="yuimenubar">
             <div class="bd">
                 <ul class="first-of-type">
@@ -39,7 +40,20 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <div id="toolbox" style="visibility:hidden">
 <input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
-<!--<input type="button" onclick="deleteSelected()" value="Delete Selected">-->
+<fieldset><legend>Edit Selected</legend>
+<div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
+<div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
+<option value="">&nbsp;</option>
+<option value="owner">Owner</option>
+<option value="status">Status</option>
+<option value="severity">Severity</option>
+<option value="type">Type</option>
+<option value="project">Project</option>
+</select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
+</select>
+</div>
+
+</fieldset>
 </div>
 
 <div id="bugJar">
@@ -53,6 +67,79 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
+var l2 = {};
+l2.owner = ["",
+     <%
+     var ownerCursor = db.users.find().toArray();
+     for(var i=0; i<ownerCursor.length; i++)
+          print("'"+ownerCursor[i].name+((i<ownerCursor.length-1) ? "'," : "'"));
+     %>
+];
+l2.status = ["", "new", "reviewed", "not reproducable", "fixed", "closed"];
+l2.severity = ["", "normal", "high", "low"];
+l2.type = ["", "bug", "feature", "inquiry"];
+l2.project = ["", "none",
+              <%
+              var projCursor = db.bugtracker.projects.find().toArray();
+              for(var i=0; i<projCursor.length; i++)
+                   print("'"+projCursor[i].name+((i<projCursor.length-1) ? "'," : "'"));
+              %>
+             ];
+
+function fillLevel2() {
+     document.getElementById("massChangeL2").options.length = 0;
+     l1 = document.getElementById("massChangeL1").value;
+     if(l1 == "") {
+          document.getElementById("massChangeL2").disabled = true;
+          return;
+     }
+     document.getElementById("massChangeL2").disabled = false;
+     for(var i=0; i<l2[l1].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
+     }
+}
+
+function getCheckedRows() {
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     var passData = "";
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check")) {
+               passData += myDataTable.getRecord(row).getData("id")+",";
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     if(passData.length == 0) return "";
+     return passData.substring(0, passData.length-1);
+}
+
+
+function commitChanges() {
+     var passData = "";
+
+    // figure out the column to change, and to what
+     var src = document.getElementById("massChangeL1").value;
+     var dest = document.getElementById("massChangeL2").value;
+     passData = "action=change&src="+src+"&dest="+dest+"&row=";
+
+     // go through the table and find all selected rows
+     var rows = getCheckedRows();
+     if(rows.length == 0) {
+          alert("You must select at least one case to change.");
+          return;
+     }
+     passData += rows;
+
+     // perform one big ajax call
+     var massCommit = {
+          success : myDataTable.onDataReturnAppendRows,
+          failure : myDataTable.onDataReturnAppendRows,
+          scope : myDataTable
+     };
+     myDataSource.sendRequest(passData, massCommit);
+}
+
 function toggleClosed() {
      var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
 
@@ -65,47 +152,10 @@ function toggleClosed() {
      }
 }
 
-var myDataTable;
-var liveDataSource = [
-<%
-
-var liveDataCursor, query;
-for(var q in request) {
-     if(request[q] != "") {
-          query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-          searchobj = {};
-          searchobj[q] = query;
-          liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
-          break;
-     }
-}
-if(!liveDataCursor) {
-    liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
-}
-
-for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
-     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "none";
-          print("{");
-               %>
-     id: '<%= liveDataCursor[i]._id %>',
-     number: '<%= liveDataCursor[i].number.toFixed(0) %>',
-     title: '<%= io.Encode.JavaScript.escape(liveDataCursor[i].title) %>',
-          owner: '<%= liveDataCursor[i].owner.name %>',
-          status: '<%= liveDataCursor[i].status %>',
-          severity: '<%= liveDataCursor[i].severity %>',
-          type: '<%= liveDataCursor[i].type %>',
-     project: '<%= project %>',
-     area: '<%= liveDataCursor[i].area %>'
-               <%
-          print("}");
-          if(i<liveDataCursor.length-1)
-               print(",");
-     }
-          %>
-] ;
+var myDataTable, myDataSource;
 
 function addForm(name, x) {
-     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" value="?"></form>';
+     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
 }
 
 
@@ -115,6 +165,7 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
+               {label: "", children: [{label: "", key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -124,26 +175,45 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
-          var myDataSource = new YAHOO.util.DataSource(liveDataSource);
-          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-          myDataSource.responseSchema = {
-               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
-          };
-          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
-          myDataTable.onEventSelectRow = function(e) {
+          <%
+          var dsOpts = "";
+          for(var x in request) {
+               dsOpts += "&"+x+"="+request[x];
+          }
+          dsOpts = (dsOpts.length > 0) ? dsOpts.substring(1) : "";
+          log(dsOpts);
+          %>
+
+          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+          myDataSource.connXhrMode = "queueRequests";
+          myDataSource.responseSchema = {
+               resultsList: "rows",
+               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area" ]
+          };
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+
+          myDataTable.onEventSelectCell = function(e) {
+               if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
+                    return;
+
                location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
-          myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
-          myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
-          myDataTable.subscribe("rowClickEvent", myDataTable.onEventSelectRow);
+          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
+          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
+          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
+          myDataTable.subscribe("checkboxClickEvent", function(oArgs){
+               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+               oRecord.setData("check",oArgs.target.checked);
+          });
 
-          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
+          /* Toolbox */
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });
           myPanel.setHeader("Toolbox");
           myPanel.render();
-
      }
 });
 
