@@ -37,6 +37,11 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
+<div id="toolbox" style="visibility:hidden">
+<input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
+<!--<input type="button" onclick="deleteSelected()" value="Delete Selected">-->
+</div>
+
 <div id="bugJar">
 </div>
 
@@ -44,21 +49,24 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 </div>
 
-<!--detailUrl: "case_edit?id="-->
-
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
-var liveDataSource = [ { number: '<form><input type="text" size="3" name="number"><input type="submit" value="?"></form>',
-     title: '<form><input type="text" name="title"><input type="submit" value="?"></form>',
-     owner: '<form><input type="text" size="4" name="owner"><input type="submit" value="?"></form>',
-     status: '<form><input type="text" size="4" name="status"><input type="submit" value="?"></form>',
-     severity: '<form><input type="text" size="4" name="severity"><input type="submit" value="?"></form>',
-     type: '<form><input type="text" size="4" name="type"><input type="submit" value="?"></form>',
-     project: '<form><input type="text" size="4" name="project"><input type="submit" value="?"></form>',
-     area: '<form><input type="text" size="3" name="area"><input type="submit" value="?"></form>',
-     },
+function toggleClosed() {
+     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
+
+     var row = myDataTable.getTrEl(0);
+     while(row) {
+          if(myDataTable.getRecord(row).getData("status") == "closed") {
+               row.style.display = disp;
+          }
+          row = myDataTable.getNextTrEl(row);
+     }
+}
+
+var myDataTable;
+var liveDataSource = [
 <%
 
 var liveDataCursor, query;
@@ -96,39 +104,46 @@ for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
           %>
 ] ;
 
+function addForm(name, x) {
+     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" value="?"></form>';
+}
+
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
-     require: ["datatable", "json"],
+     require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
-               {key:  "number", label:"ID", sortable:true},
-               {key: "title", label:"Name", sortable:true},
-               {key: "owner", label:"Owner", sortable:true},
-               {key: "status",label:"Status", sortable:true},
-               {key: "severity",label:"Severity", sortable:true},
-               {key: "type",label:"Type", sortable:true},
-               {key: "project",label:"Project", sortable:true},
-               {key: "area",label:"Area", sortable:true}
+               {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
+               {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+               {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
+               {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
+               {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
+               {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
+               {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
+               {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
           var myDataSource = new YAHOO.util.DataSource(liveDataSource);
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
           myDataSource.responseSchema = {
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseString}, "title", "owner", "status", "severity", "type", "project", "area" ]
           };
-          var myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource);//, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
           myDataTable.onEventSelectRow = function(e) {
-               if(myDataTable.getTrIndex(e.target) == 0)
-                    return;
-
                location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
           }
 
           myDataTable.subscribe("rowMouseoverEvent", myDataTable.onEventHighlightRow);
           myDataTable.subscribe("rowMouseoutEvent", myDataTable.onEventUnhighlightRow);
           myDataTable.subscribe("rowClickEvent", myDataTable.onEventSelectRow);
+
+
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true } );
+          myPanel.setHeader("Toolbox");
+          myPanel.render();
+
      }
 });
 

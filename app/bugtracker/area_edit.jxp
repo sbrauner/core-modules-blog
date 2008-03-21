@@ -1,0 +1,44 @@
+<%
+var project;
+if(request.projectid){
+    project = db.bugtracker.projects.findOne({ _id: request.projectid });
+}
+var areaname = request.areaname;
+var area;
+project.areas.forEach(function(a){ if(a.name == areaname) area = a; });
+
+assert(area);
+
+if(request.a_owner){
+    area.owner = db.users.findOne({_id: request.a_owner});
+    if(request.a_name != areaname){
+        print("Setting a new name isn't supported right now!");
+    }
+    db.bugtracker.projects.save(project);
+}
+
+%>
+<form>
+  <input type="hidden" name="projectid" value="<%= request.projectid %>">
+  <input type="hidden" name="areaname" value="<%= request.areaname %>">
+  <div class="field">
+    <div class="field_name">Name</div>
+    <div class="field_value"><input name="a_name" value="<%= area.name %>"></div>
+  </div>
+  <div class="field">
+    <div class="field_name">Owner</div>
+          <div class="field_value">
+            <% // This doesn't set the None user if project.owner
+    // is null; that happens implicitly since None is first. %>
+    <%= app.bugtracker.data.helper.select(area, "owner", "a_",
+                                          [false].concat(db.users.find({}).toArray()),
+                                          {view: function(u){return u?u.name:"None";},
+                                           value: function(u){return u?u._id:"null"; },
+        }) %> </div>
+  </div>
+<div class="field">
+  <div class="field_name">&nbsp;</div>
+  <div class="field_value"><input type="submit" value="Save"></div>
+</div>
+</form>
+
