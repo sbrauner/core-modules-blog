@@ -1,1 +1,6 @@
-<% core.headers( "You tried to do something bad.  blocked by bad.jxp" ); %>
+<% 
+    if ( response.getResponseCode() == 200 ){
+        response.setResponseCode( 500 )
+    }
+core.headers( "You tried to do something bad.  blocked by bad.jxp" ); 
+%>
