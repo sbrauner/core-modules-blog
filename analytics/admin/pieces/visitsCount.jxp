@@ -7,7 +7,13 @@
     <% var u = arguments[1]; var p = arguments[2]; %>
     <% for ( var i=0; i<Math.min( u.length , p.length ); i++ ){ %>
     <tr>
-       <td><%= u[i].time %></td>
+<%
+// remove GMT-400 EDT
+var dtclean = "" + u[i].time;
+if( dtclean.length )
+    dtclean = dtclean.match(/(.*)...........E.T./);
+%>
+       <td><%= dtclean.length>1?dtclean[1]:"" %></td>
        <td><%= p[i].num.toFixed() %></td>
        <td><%= u[i].num.toFixed() %></td>
     </tr>	
