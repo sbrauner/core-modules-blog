@@ -1,1 +1,1 @@
-go away
+<% core.headers( "You tried to do something bad.  blocked by bad.jxp" ); %>

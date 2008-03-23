@@ -1,4 +1,5 @@
 <%
+    var msg = request.msg || arguments[0];
     if ( request.action == "delete" ){
 	response.removeCookie( request.name || "" );
 	response.setResponseCode( 301 );
@@ -8,6 +9,8 @@
 %>
 <html>
   <body>
+
+    <h2 ? msg ><%= msg %></h2>
   
     <h3>Special</h3>    
     <table border="1">
