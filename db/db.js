@@ -8,20 +8,16 @@
    gte = greater than or equal (>=)
    lte = less than or equal
 */
-
 function gt( x ){
     return { $gt : x };
 }
-
 function lt( x ){
     return { $lt : x };
 }
 
-
 function gte( x ){
     return { $gte : x };
 }
-
 function lte( x ){
     return { $lte : x };
 }
@@ -130,3 +126,32 @@ dbutil = {
     }
 };
 
+/* Evaluate a js expression at the database server.
+
+   Useful if you need to touch a lot of data lightly; in such a scenario
+   the network transfer of the data could be a bottleneck.  A good example
+   is "select count(*)" -- can be done server side via this mechanism.
+
+   Use _dbEval() if you would like a return code for the evaluation.  _dbEval returns
+   { retval: functionReturnValue, ok: num [, errno: num] [, errmsg: str] }
+
+   dbEval() simply returns the return value of the function that was invoked at the 
+   server.  If invocation fails (an exception occurs for example) null is returned.
+
+   Example:
+     print( "count(*): " + dbEval( function(){db.mycoll.find({},{_id:ObjId()}).length();} );
+*/
+function _dbEval(jsfunction) {
+    var cmd = { $eval: jsfunction };
+    if( arguments.length > 1 )
+	cmd.args = arguments.slice(1);
+    var res = _dbCommand( cmd );
+    return res;
+}
+function dbEval(jsfunction) {
+    var cmd = { $eval: jsfunction };
+    if( arguments.length > 1 )
+	cmd.args = arguments.slice(1);
+    var res = _dbCommand( cmd );
+    return res.retval;
+}
