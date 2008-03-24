@@ -131,13 +131,14 @@ function commitChanges() {
      }
      passData += rows;
 
-     // perform one big ajax call
-     var massCommit = {
-          success : myDataTable.onDataReturnAppendRows,
-          failure : myDataTable.onDataReturnAppendRows,
+     var updateCaseTable = {
+          success : myDataTable.onDataReturnReplaceRows,
+          failure : myDataTable.onDataReturnReplaceRows,
           scope : myDataTable
      };
-     myDataSource.sendRequest(passData, massCommit);
+
+     // perform one big ajax call
+     myDataSource.sendRequest(passData, updateCaseTable);
 }
 
 function toggleClosed() {
@@ -209,6 +210,15 @@ var loader = new YAHOO.util.YUILoader( {
                var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
                oRecord.setData("check",oArgs.target.checked);
           });
+
+          myDataTable.updateDataTable = function(newRows) {
+               // Go through each new row
+               // Find equivalent row in datatable
+               // replace old row with new one
+               for(var i=0; i<newRows.length; i++) {
+
+               }
+          }
 
           /* Toolbox */
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });
