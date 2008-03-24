@@ -75,7 +75,7 @@ l2.owner = ["",
      for(var i=0; i<ownerCursor.length; i++)
           print("'"+ownerCursor[i].name+((i<ownerCursor.length-1) ? "'," : "'"));
      %>
-];
+           ] ;
 
 l2.status = ["", <% for(var x in app.bugtracker.data.Feature.STATUS) {
                   print('"'+app.bugtracker.data.Feature.STATUS[x]+'",');
@@ -193,9 +193,11 @@ function fillLevel2() {
           return;
      }
      document.getElementById("massChangeL2").disabled = false;
-     if(l1 == "area") {
+     if(l1 == "area")
           fillLevel2Area();
-     }
+     else
+          document.getElementById("newarea_div").style.display = "none";
+
      for(var i=0; i<l2[l1].length; i++) {
           document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
      }
@@ -301,7 +303,7 @@ var loader = new YAHOO.util.YUILoader( {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+liveDataSource[myDataTable.getTrIndex(e.target)].id;
+               location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id");
           }
 
           myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
@@ -312,15 +314,6 @@ var loader = new YAHOO.util.YUILoader( {
                var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
                oRecord.setData("check",oArgs.target.checked);
           });
-
-          myDataTable.updateDataTable = function(newRows) {
-               // Go through each new row
-               // Find equivalent row in datatable
-               // replace old row with new one
-               for(var i=0; i<newRows.length; i++) {
-
-               }
-          }
 
           /* Toolbox */
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });
