@@ -36,7 +36,7 @@ for(var i = 0; i < objects.length; i++){
     o1 = objects[i];
     var s = io.Encode.JSON(o1);
     print(s);
-    //o2 = scope.eval(s.replace(/\n/g, ''));
-    //print(io.Encode.JSON(o2));
-    //assert(objEqual(o1, o2));
+    o2 = scope.eval("(" + s.replace(/\n/g, '') + ")");
+    print(io.Encode.JSON(o2));
+    assert(objEqual(o1, o2));
 }
