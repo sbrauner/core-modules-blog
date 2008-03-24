@@ -5,3 +5,4 @@ io.Encode.JavaScript.escape = function(s) {
     s = s.replace(/"/g, "\\\"");
     return s;
 }
+
