@@ -363,7 +363,7 @@ var loader = new YAHOO.util.YUILoader( {
           };
 
           /* Toolbox */
-          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"] });
           myPanel.setHeader("Toolbox");
           myPanel.render();
      }
@@ -374,5 +374,7 @@ loader.insert();
 
 </script>
 
+</div>
+<div id="wholething">
 </div>
 </body>
