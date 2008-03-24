@@ -55,6 +55,22 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
+  <fieldset class="dlg"><legend>Save this search</legend>
+    <form id="saveSearchForm" action="search_save">
+      <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
+      <div class="field"><label>Search name</label> <input type="text" name="name" class="text"></div>
+      <div class="btns"><input type="button" value="Search" onclick="handleSaveSearch()" class="button"></div>
+    </form>
+</fieldset>
+</div>
+
+<div id="savedSearches">
+    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
+        var u = new URL(request.getURL());
+        u.args = search.args;
+        %>
+    <a href="<%= u.toString() %>"><%= search.name %></a>
+    <% }); %>
 </div>
 
 <div id="bugJar">
