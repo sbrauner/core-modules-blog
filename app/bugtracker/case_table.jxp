@@ -1,6 +1,6 @@
 <%
 
-    core.ext.pluck();
+core.ext.pluck();
 core.io.marshal();
 core.io.encode.json();
 
@@ -25,8 +25,18 @@ if(request.action == "change") {
      var subcat = request.dest;
      for(var x in cases) {
           var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
-          c[cat] = subcat;
+
+          // Sooooo bad
+          if(cat == "owner" || cat == "project") {
+               if(!c[cat] || typeof c[cat] != "Object")
+                    c[cat]={};
+               c[cat].name = subcat;
+          }
+          else
+               c[cat] = subcat;
+
           db.bugtracker.cases.save(c);
+          log(tojson(c));
      }
 }
 else if(request.action == "delete") {
@@ -43,7 +53,7 @@ if(!liveDataCursor) {
 print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
                                                         title: true, owner: Ext.pluck("name"),
                                                         status: true, severity: true, type: true,
-                                                        project: function(p){ p? p.name: "none"},
+                                                        project: function(p){ return p? p.name: "none"},
                                                         area: true})}));
 %>
 
