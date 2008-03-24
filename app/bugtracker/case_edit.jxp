@@ -304,7 +304,11 @@ if(project.areas.length > 0){
         </tr>
         <tr>
             <td class="label">Target Release</td>
-            <td class="value" colspan="3"><input size="30" name="ftargetRelease"/></td>
+            <td class="value" colspan="3">
+<% var rels = db.bugtracker.releases.find().toArray();
+print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</option>" }).join(","));
+%>
+<input name="ftargetRelease"/></td>
         </tr>
         <tr><td colspan="4" class="section_divider"><hr /></td></tr>
         <tr>
