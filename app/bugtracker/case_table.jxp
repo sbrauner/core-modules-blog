@@ -1,5 +1,9 @@
 <%
 
+    core.ext.pluck();
+core.io.marshal();
+core.io.encode.json();
+
 var liveDataCursor, query;
 
 if(request.action && request.action == "?") {
@@ -36,25 +40,10 @@ if(!liveDataCursor) {
     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
 }
 
-print('{ "rows": [');
-for(var i=0; liveDataCursor && i<liveDataCursor.length; i++) {
-     var project = (liveDataCursor[i].project) ? liveDataCursor[i].project.name : "none";
-     print("{");
-     %>
-     "id": "<%= liveDataCursor[i]._id %>",
-     "number": "<%= liveDataCursor[i].number.toFixed(0) %>",
-     "title": "<%= io.Encode.JavaScript.escape(liveDataCursor[i].title) %>",
-     "owner": "<%= liveDataCursor[i].owner.name %>",
-     "status": "<%= liveDataCursor[i].status %>",
-     "severity": "<%= liveDataCursor[i].severity %>",
-     "type": "<%= liveDataCursor[i].type %>",
-     "project": "<%= project %>",
-     "area": "<%= liveDataCursor[i].area %>"
-     <%
-     print("}");
-     if(i<liveDataCursor.length-1)
-        print(",");
-}
-print("] }");
+print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
+                                                        title: true, owner: Ext.pluck("name"),
+                                                        status: true, severity: true, type: true,
+                                                        project: function(p){ p? p.name: "none"},
+                                                        area: true})}));
 %>
 

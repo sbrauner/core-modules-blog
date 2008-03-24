@@ -21,6 +21,9 @@ io.Encode.JSON.helper = function(obj, indent){
         if(obj == true) return "true";
         return "false";
     }
+    if(typeof obj == "native"){
+        return io.Encode.JSON.string(obj.toString());
+    }
     if(obj instanceof Array){
         var str = "[" + obj.map(function(o){ return io.Encode.indent(indent) + io.Encode.JSON.helper(o, indent+2); }).join(',\n' + io.Encode.indent(indent+1)) + "]";
         return str;
