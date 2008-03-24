@@ -309,7 +309,16 @@ var loader = new YAHOO.util.YUILoader( {
                resultsList: "rows",
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "id" ]
           };
-          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
+          var oConfigs = {
+               paginator: new YAHOO.widget.Paginator({
+                    rowsPerPage: 10
+               }),
+
+                // Show over 500 records
+               initialRequest:"",
+               sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
+          };
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
 
           myDataTable.onEventSelectCell = function(e) {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)

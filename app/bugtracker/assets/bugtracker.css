@@ -94,3 +94,6 @@ div#toolbox {
 div#toolbox select {
     width: 100px;
 }
+div.yui-dt-paginator {
+    text-align: center;
+}
