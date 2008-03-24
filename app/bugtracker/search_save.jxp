@@ -1,0 +1,12 @@
+<%
+log("Saving a search with " + tojson(request));
+o = Object.extend({}, request);
+var name = o.name;
+delete o.name;
+var args = [];
+for(var field in o){
+    args.push({key: field, value: o[field]});
+}
+
+db.bugtracker.searches.save({user: user, args: args, name: name});
+%>

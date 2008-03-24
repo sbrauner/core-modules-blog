@@ -58,7 +58,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
   <fieldset class="dlg"><legend>Save this search</legend>
     <form id="saveSearchForm" action="search_save">
       <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
-      <div class="field"><label>Search name</label> <input type="text" name="name" class="text"></div>
+      <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName"></div>
       <div class="btns"><input type="button" value="Search" onclick="handleSaveSearch()" class="button"></div>
     </form>
 </fieldset>
@@ -68,6 +68,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <% db.bugtracker.searches.find({user: user}).forEach(function(search){
         var u = new URL(request.getURL());
         u.args = search.args;
+        u = u.addArg("action", "?");
         %>
     <a href="<%= u.toString() %>"><%= search.name %></a>
     <% }); %>
@@ -278,6 +279,15 @@ var myDataTable, myDataSource;
 function addForm(name, x) {
      return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
 }
+
+handleSaveSearch = function(name){
+     <% searchOpts = Object.extend({}, request); delete searchOpts["action"]; %>
+     var u = <%= io.Encode.JSON(Util.format_queryargs(searchOpts)) %>;
+     var name = document.getElementById("saveSearchName").value;
+     ajax(u+"&name="+name, "search_save", function(response) {
+         location.reload(); // FIXME: actually use AJAX??? oh no!
+     });
+};
 
 
 var loader = new YAHOO.util.YUILoader( {
