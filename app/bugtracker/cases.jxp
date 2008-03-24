@@ -249,12 +249,6 @@ function commitChanges() {
      }
      passData += rows;
 
-     var updateCaseTable = {
-          success : myDataTable.onDataReturnReplaceRows,
-          failure : myDataTable.onDataReturnReplaceRows,
-          scope : myDataTable
-     };
-
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
 }
@@ -271,10 +265,28 @@ function toggleClosed() {
      }
 }
 
-var myDataTable, myDataSource;
+function doSearch() {
+     var passData = "";
+     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     for(var i=0; i<myarr.length; i++) {
+          if(myarr[i].value != "") {
+               passData += "&"+myarr[i].name+"="+myarr[i].value;
+          }
+     }
+     // If there are no search queries, don't bother
+     if(passData == "")
+          return;
+
+     var passData = "action=search"+passData;
+
+     // perform one big ajax call
+     myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
-     return '<form><input type="text" name="'+name+'" size="'+x+'"><input type="submit" name="action" value="?"></form>';
+     return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"><input type="submit" name="action" value="?"></form>';
 }
 
 handleSaveSearch = function(name){
@@ -295,7 +307,7 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
           var myColumnDefs = [
-               {label: "", children: [{label: "", key: "check", formatter: "checkbox" }]},
+               {label: '<form><input type="button" value="Search" onclick="doSearch()"></form>', children: [{label: "", key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -344,6 +356,11 @@ var loader = new YAHOO.util.YUILoader( {
                var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
                oRecord.setData("check",oArgs.target.checked);
           });
+          updateCaseTable = {
+               success : myDataTable.onDataReturnReplaceRows,
+               failure : myDataTable.onDataReturnReplaceRows,
+               scope : myDataTable
+          };
 
           /* Toolbox */
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["yui-main","br","br"] });

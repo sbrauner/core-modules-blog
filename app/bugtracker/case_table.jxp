@@ -15,27 +15,26 @@ var queryForms = {
         return -1;
     },
     project: function(u) {
-        log("Searching for Projects with name: " + u);
         var proj = db.bugtracker.projects.findOne({name: u});
         if(proj) return proj;
         return -1;
     }
 };
 
-if(request.action && request.action == "?") {
-    var searchobj = {};
+// Search across all fields
+if(request.action == "search" || request.action =="?") {
+     var searchobj = {};
+     var tempLive;
      for(var q in request) {
-          if(q != "action" && request[q] != "") {
+          if(q != "action") {
                query = new RegExp("(.*)"+request[q]+"(.*)", "i");
                if(queryForms[q]) query = queryForms[q](query);
                searchobj[q] = query;
           }
      }
-    liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+     liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
 }
-
-
-if(request.action == "change") {
+else if(request.action == "change") {
      var cases = request.row.split(",");
      var cat = request.src;
      var subcat = request.dest;
