@@ -1,7 +1,10 @@
 <%
 processArgs("search", "link");
-var u = new URL(link);
-u.args = search.args;
-u = u.addArg("action", "?");
+var perma = "";
+log(tojson(search.args[0]));
+for(x in search.args) {
+   perma += "&"+search.args[x].key+"="+search.args[x].value
+}
+log(perma);
 %>
-<a href="<%= u.toString() %>"><%= search.name %></a>
+<option value="<%= perma %>"><%= search.name %></option>

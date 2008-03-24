@@ -266,7 +266,7 @@ function toggleClosed() {
 }
 
 function doSavedSearch() {
-     var passData = "action=search&"+document.getElementById("savedSearch").value;
+     var passData = "action=search&"+document.getElementById("savedSearches").value;
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
