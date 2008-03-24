@@ -1,0 +1,12 @@
+<%
+if(! request.id){
+    throw Error("No id to delete");
+}
+
+var s = db.bugtracker.searches.findOne({_id: request.id});
+if(s.user._id != user._id){
+    throw Error("Can't delete other people's searches");
+}
+
+db.bugtracker.searches.remove(s);
+%>
