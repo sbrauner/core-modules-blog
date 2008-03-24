@@ -11,7 +11,7 @@ function deleteSearch(id) {
 
 function rename(id) {
      var newName = document.getElementById("name_"+id).value;
-     ajax("id="+id+"&name="+name, "search_rename");
+     ajax("id="+id+"&name="+newName, "search_rename");
 }
 
 </script>
