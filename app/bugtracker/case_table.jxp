@@ -1,15 +1,36 @@
 <%
 
 var liveDataCursor, query;
-/*for(var q in request) {
-     if(request[q] != "") {
-          query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-          searchobj = {};
-          searchobj[q] = query;
-          liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
-          break;
+
+if(request.action && request.action == "?") {
+     for(var q in request) {
+          if(q != "action" && request[q] != "") {
+               query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+               searchobj = {};
+               searchobj[q] = query;
+               liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+               break;
+          }
      }
-}*/
+}
+
+
+if(request.action == "change") {
+     var cases = request.row.split(",");
+     var cat = request.src;
+     var subcat = request.dest;
+     for(var x in cases) {
+          var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
+          c[cat] = subcat;
+          db.bugtracker.cases.save(c);
+     }
+}
+else if(request.action == "delete") {
+     var cases = request.row.split(",");
+     for(var x in cases)
+          db.bugtracker.cases.remove( { _id: cases[x] } );
+}
+
 
 if(!liveDataCursor) {
     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
