@@ -86,6 +86,24 @@ l2.project = ["", "none",
               %>
              ];
 
+function deleteSelected() {
+     var rows = getCheckedRows();
+     if(rows == "") {
+          alert("You must select at least one case to delete.");
+          return;
+     }
+
+     var passData = "action=delete&row="+rows;
+     var updateCaseTable = {
+          success : myDataTable.onDataReturnReplaceRows,
+          failure : myDataTable.onDataReturnReplaceRows,
+          scope : myDataTable
+     };
+
+     // perform one big ajax call
+     myDataSource.sendRequest(passData, updateCaseTable);
+}
+
 function fillLevel2() {
      document.getElementById("massChangeL2").options.length = 0;
      l1 = document.getElementById("massChangeL1").value;

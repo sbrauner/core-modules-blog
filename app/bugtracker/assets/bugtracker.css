@@ -88,6 +88,8 @@ div.yui-b p em {
 }
 div#toolbox {
     background: #E0E0E0;
+    bottom: 0px;
+    right: 0px;
 }
 div#toolbox select {
     width: 100px;
