@@ -30,7 +30,7 @@ app.bugtracker.data.Feature = function() {
     this.severity = this.SEVERITY.NORMAL;
     this.creationDate = new Date();
     this.lastModified = new Date();
-    this.project = null;
+    this.project = null; // db.bugtracker.projects
     this.area = "";
     this.type = '';
     this.OS = '';
@@ -38,7 +38,7 @@ app.bugtracker.data.Feature = function() {
     this.title = '';
     this.description = '';
     this.reporter = '';
-    this.owner = '';
+    this.owner = null;  // db.users
     this.number = 0;
 };
 
