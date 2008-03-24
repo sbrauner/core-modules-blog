@@ -58,7 +58,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
   <fieldset class="dlg"><legend>Save this search</legend>
     <form id="saveSearchForm" action="search_save">
       <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
-      <div class="field"><label>Search name</label> <input type="text" name="name" class="text"></div>
+      <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName"></div>
       <div class="btns"><input type="button" value="Search" onclick="handleSaveSearch()" class="button"></div>
     </form>
 </fieldset>
@@ -66,11 +66,9 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <div id="savedSearches">
     <% db.bugtracker.searches.find({user: user}).forEach(function(search){
-        var u = new URL(request.getURL());
-        u.args = search.args;
-        %>
-    <a href="<%= u.toString() %>"><%= search.name %></a>
-    <% }); %>
+        core.app.bugtracker.html.search(search, request.getURL());
+    }); %>
+
 </div>
 
 <div id="bugJar">
@@ -290,6 +288,17 @@ var myDataTable, myDataSource, updateCaseTable;
 function addForm(name, x) {
      return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"><input type="submit" name="action" value="?"></form>';
 }
+
+handleSaveSearch = function(name){
+     <% searchOpts = Object.extend({}, request); delete searchOpts["action"];
+    noSearchOpts = new URL(request.getURL()); noSearchOpts.args = [{key: "action", value: "?"}];
+        %>
+     var u = <%= io.Encode.JSON(Util.format_queryargs(searchOpts)) %>;
+     var name = document.getElementById("saveSearchName").value;
+     ajax(u+"&name="+name+"&link=<%= noSearchOpts.toString() %>", "search_save", function(response) {
+         document.getElementById("savedSearches").innerHTML += response;
+     });
+};
 
 
 var loader = new YAHOO.util.YUILoader( {

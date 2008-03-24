@@ -6,6 +6,21 @@ core.io.encode.json();
 
 var liveDataCursor, query;
 
+var queryForms = {
+    owner: function(name) {
+        // Search insensitively on the username. If we don't find one,
+        // just return some value that should never occur.
+        var user = db.users.findOne({name: name});
+        if(user) return user;
+        return -1;
+    },
+    project: function(u) {
+        var proj = db.bugtracker.projects.findOne({name: u});
+        if(proj) return proj;
+        return -1;
+    }
+};
+
 // Search across all fields
 if(request.action == "search" || request.action =="?") {
      var searchobj = {};
@@ -13,13 +28,7 @@ if(request.action == "search" || request.action =="?") {
      for(var q in request) {
           if(q != "action") {
                query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-
-               // Once the database supports array searches, change "findOne" to "find"
-               if(q == "owner")
-                    query = db.users.findOne({name : query});
-               else if(q == "project")
-                    query = db.bugtracker.projects.findOne({name: query});
-
+               if(queryForms[q]) query = queryForms[q](query);
                searchobj[q] = query;
           }
      }

@@ -1,0 +1,7 @@
+<%
+processArgs("search", "link");
+var u = new URL(link);
+u.args = search.args;
+u = u.addArg("action", "?");
+%>
+<a href="<%= u.toString() %>"><%= search.name %></a>
