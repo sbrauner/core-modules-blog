@@ -30,13 +30,12 @@ if(request.action == "change") {
                c.owner = db.users.findOne({ name: subcat } );
           }
           else if(cat == "project") {
-               c.project = db.bugtracker.project.findOne({ name: subcat});
+               c.project = db.bugtracker.projects.findOne({ name: subcat});
           }
           else
                c[cat] = subcat;
 
           db.bugtracker.cases.save(c);
-//          log(tojson(c));
      }
 }
 else if(request.action == "delete") {
