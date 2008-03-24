@@ -27,16 +27,17 @@ if(request.action == "change") {
           var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
 
           // Sooooo bad
-          if(cat == "owner" || cat == "project") {
-               if(!c[cat] || typeof c[cat] != "Object")
-                    c[cat]={};
-               c[cat].name = subcat;
+          if(cat == "owner") {
+               c.owner = db.users.findOne({ name: subcat } );
+          }
+          else if(cat == "project") {
+               c.project = db.bugtracker.project.findOne({ name: subcat});
           }
           else
                c[cat] = subcat;
 
           db.bugtracker.cases.save(c);
-          log(tojson(c));
+//          log(tojson(c));
      }
 }
 else if(request.action == "delete") {
@@ -51,7 +52,7 @@ if(!liveDataCursor) {
 }
 
 print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
-                                                        title: true, owner: Ext.pluck("name"),
+                                                        title: true, owner: function(p){ return p? p.name: "none"},
                                                         status: true, severity: true, type: true,
                                                         project: function(p){ return p? p.name: "none"},
                                                         area: true})}));
