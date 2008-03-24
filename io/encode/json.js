@@ -6,7 +6,7 @@ io.Encode.JSON = function(obj){
 };
 
 io.Encode.JSON.string = function(s) {
-    return '"' + io.Encode.JavaScript.escape(s) + '"'
+    return '"' + s.replace(/"/g, "\\\"") + '"'
 };
 
 io.Encode.JSON.helper = function(obj, indent){
