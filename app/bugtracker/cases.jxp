@@ -49,10 +49,11 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <option value="severity">Severity</option>
 <option value="type">Type</option>
 <option value="project">Project</option>
+<option value="area">Area</option>
 </select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
 </select>
 </div>
-
+<div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
 </div>
 
@@ -75,16 +76,35 @@ l2.owner = ["",
           print("'"+ownerCursor[i].name+((i<ownerCursor.length-1) ? "'," : "'"));
      %>
 ];
-l2.status = ["", "new", "reviewed", "not reproducable", "fixed", "closed"];
-l2.severity = ["", "normal", "high", "low"];
-l2.type = ["", "bug", "feature", "inquiry"];
+
+l2.status = ["", <% for(var x in app.bugtracker.data.Feature.STATUS) {
+                  print('"'+app.bugtracker.data.Feature.STATUS[x]+'",');
+             } %>];
+
+l2.severity = ["", <% for(var x in app.bugtracker.data.Feature.SEVERITY) {
+                  print('"'+app.bugtracker.data.Feature.SEVERITY[x]+'",');
+             } %>];
+
+l2.type = ["", <% for(var x in app.bugtracker.data.Feature.TYPE) {
+                  print('"'+app.bugtracker.data.Feature.TYPE[x]+'",');
+             } %>];
+
 l2.project = ["", "none",
               <%
               var projCursor = db.bugtracker.projects.find().toArray();
               for(var i=0; i<projCursor.length; i++)
                    print("'"+projCursor[i].name+((i<projCursor.length-1) ? "'," : "'"));
-              %>
-             ];
+              %> ];
+l2.area = { <%
+            var projCursor = db.bugtracker.projects.find().toArray();
+            for(var i=0; i<projCursor.length; i++) {
+                 print('"'+projCursor[i].name+"\" : [");
+                 for(var j=0; j< projCursor[i].areas.length; j++) {
+                      print("\""+projCursor[i].areas[j].name+"\",");
+                 }
+                 print("],");
+            }
+            %> };
 
 function deleteSelected() {
      var rows = getCheckedRows();
@@ -104,6 +124,67 @@ function deleteSelected() {
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
+function getProject() {
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     var project = "";
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check")) {
+               if(project == "")
+                    project = myDataTable.getRecord(row).getData("project");
+               else if(project != myDataTable.getRecord(row).getData("project") || project == "none") {
+                    alert("Areas are specific to projects.  All selected cases must have the same project in order to change the area.");
+                    return;
+               }
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     return project;
+}
+
+function fillLevel2Area() {
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+
+     // if we made it here, there is at least one checkbox selected and all selected checkboxes have the same project listed
+     // so, now we find the areas based on project
+     for(var i=0; i<l2.area[project].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
+     }
+
+     // also, show the "create new area" div
+     document.getElementById("newarea_div").style.display = "block";
+
+}
+
+function createArea() {
+     var newarea = document.getElementById("newarea_input").value;
+     if(newarea == "") {
+          alert("You must enter a name for the new area.");
+          return;
+     }
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+
+     ajax("project="+project+"&area="+newarea, "area_add.jxp", function(response) {
+          if(response == "") {
+               alert("Area already exists for project.");
+               return;
+          }
+          document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
+     });
+}
+
+
 function fillLevel2() {
      document.getElementById("massChangeL2").options.length = 0;
      l1 = document.getElementById("massChangeL1").value;
@@ -112,6 +193,9 @@ function fillLevel2() {
           return;
      }
      document.getElementById("massChangeL2").disabled = false;
+     if(l1 == "area") {
+          fillLevel2Area();
+     }
      for(var i=0; i<l2[l1].length; i++) {
           document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
      }

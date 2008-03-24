@@ -1,0 +1,16 @@
+<%
+core.app.bugtracker.data.area();
+
+var proj = db.bugtracker.projects.findOne( { name : request.project } );
+for(var i=0; i<proj.areas.length; i++) {
+     if(proj.areas[i].name == request.area)  {
+          print("");
+          return;
+     }
+}
+
+proj.areas.push(new app.bugtracker.data.Area(request.area, request.proj));
+db.bugtracker.projects.save(proj);
+print(request.area);
+
+%>
