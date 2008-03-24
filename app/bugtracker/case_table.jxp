@@ -6,19 +6,26 @@ core.io.encode.json();
 
 var liveDataCursor, query;
 
-if(request.action && request.action == "?") {
-    var searchobj = {};
+// Search across all fields
+if(request.action == "search" || request.action =="?") {
+     var searchobj = {};
+     var tempLive;
      for(var q in request) {
-          if(q != "action" && request[q] != "") {
+          if(q != "action") {
                query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+
+               // Once the database supports array searches, change "findOne" to "find"
+               if(q == "owner")
+                    query = db.users.findOne({name : query});
+               else if(q == "project")
+                    query = db.bugtracker.projects.findOne({name: query});
+
                searchobj[q] = query;
           }
      }
-    liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+     liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
 }
-
-
-if(request.action == "change") {
+else if(request.action == "change") {
      var cases = request.row.split(",");
      var cat = request.src;
      var subcat = request.dest;
