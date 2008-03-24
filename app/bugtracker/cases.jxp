@@ -295,14 +295,8 @@ function addForm(name, x) {
 }
 
 handleSaveSearch = function(name){
-<<<<<<< HEAD:app/bugtracker/cases.jxp
-     <%
-     searchOpts = Object.extend({}, request); delete searchOpts["action"];
-     noSearchOpts = new URL(request.getURL()); noSearchOpts.args = [{key: "action", value: "?"}];
-=======
         <% searchOpts = Object.extend({}, request); if("action" in searchOpts) delete searchOpts["action"];
     noSearchOpts = new URL(request.getURL()); noSearchOpts.args = [{key: "action", value: "?"}];
->>>>>>> 1c4ba38e469da102c2810a8e14c169ab4d106b54:app/bugtracker/cases.jxp
         %>
      var u = <%= io.Encode.JSON(Util.format_queryargs(searchOpts)) %>;
      var name = document.getElementById("saveSearchName").value;
