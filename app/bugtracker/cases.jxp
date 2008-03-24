@@ -295,7 +295,7 @@ var loader = new YAHOO.util.YUILoader( {
           myDataSource.connXhrMode = "queueRequests";
           myDataSource.responseSchema = {
                resultsList: "rows",
-               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area" ]
+               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "id" ]
           };
           myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, {initialRequest:"", sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}});
 
