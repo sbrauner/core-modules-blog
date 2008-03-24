@@ -10,11 +10,16 @@ io.Encode.JSON.string = function(s) {
 };
 
 io.Encode.JSON.helper = function(obj, indent){
+    if(obj == null) return "null";
     if(typeof obj == "number"){
         return new String(obj);
     }
     if(typeof obj == "string"){
         return io.Encode.JSON.string(obj);
+    }
+    if(typeof obj == "boolean"){
+        if(obj == true) return "true";
+        return "false";
     }
     if(obj instanceof Array){
         var str = "[" + obj.map(function(o){ return io.Encode.indent(indent) + io.Encode.JSON.helper(o, indent+2); }).join(',\n' + io.Encode.indent(indent+1)) + "]";

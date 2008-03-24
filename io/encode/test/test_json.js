@@ -30,7 +30,8 @@ objEqual = function(a, b){
 };
 
 var objects = ["abc", 5, [1, 2, 3], ["abc", 4],
-    {a: 4, b: "abc"}, [{a: 5, b: "abc"}, {a: "ccc", b: {c: "note", d: "float"}}]];
+    {a: 4, b: "abc"}, [{a: 5, b: "abc"}, {a: "ccc", b: {c: "note", d: null}}],
+    {A: true, "abc.d\"ef": false}];
 
 for(var i = 0; i < objects.length; i++){
     o1 = objects[i];
