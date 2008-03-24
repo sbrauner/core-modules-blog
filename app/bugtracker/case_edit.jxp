@@ -38,6 +38,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(feature.project == "null") feature.project = null;
 if(request.fstatus){
+     var targetRel = request.ftargetrelease;
+     if(targetRel == "newRel") {
+          db.bugtracker.releases.save({text: request.extra_ftargetrelease });
+          targetRel = request.extra_ftargetrelease;
+     }
+     feature.targetRelease = targetRel;
+
     if(typeof feature.project == "string") {
         feature.project = db.bugtracker.projects.findOne({_id: feature.project});
     }
@@ -315,11 +322,13 @@ if(project.areas.length > 0){
         </tr>
         <tr>
             <td class="label">Target Release</td>
-            <td class="value" colspan="3">
+<td class="value" colspan="3"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
 <% var rels = db.bugtracker.releases.find().toArray();
 print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</option>" }).join(","));
 %>
-<input name="ftargetRelease"/></td>
+<option value="newRel">New Release</option>
+</select>
+<input name="extra_ftargetrelease" disabled/></td>
         </tr>
         <tr><td colspan="4" class="section_divider"><hr /></td></tr>
         <tr>
