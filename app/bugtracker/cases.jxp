@@ -282,11 +282,7 @@ var loader = new YAHOO.util.YUILoader( {
           ];
 
           <%
-          var dsOpts = "";
-          for(var x in request) {
-               dsOpts += "&"+x+"="+request[x];
-          }
-          dsOpts = (dsOpts.length > 0) ? dsOpts.substring(1) : "";
+          dsOpts = Util.format_queryargs(request);
           log(dsOpts);
           %>
 

@@ -93,7 +93,6 @@ if(request.fstatus){
             var asString = function(f, args){
                 var oldPrint = print;
                 var buf = "";
-                print(tojson(args));
                 print = function(s){ buf += s; };
                 f.apply(null, args);
                 print = oldPrint;
@@ -101,7 +100,6 @@ if(request.fstatus){
             };
 
             body = asString(core.app.bugtracker.mail, [feature, user, link]);
-            log(body);
 
             m = new Mail.Message( subj, body );
             m.addRecipient(  feature.reporter.email  );
