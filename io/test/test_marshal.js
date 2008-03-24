@@ -89,3 +89,18 @@ assert(output[1].project == "none");
 assert(output[1].owner == "Kristina");
 assert(output[2].title == "Test slot 2");
 
+var projects = [{name: "p1", areas: [{name: "a1", owner: {name: "Ethan"}}, {name: "a2", owner: {name: "Dana"}}]},
+    {name: "p2", areas: [{name: "b2", owner: {name: "Kristina"}}]},
+    {name: "p3", areas: []}];
+
+var output = io.Marshal.TreeForm({key: Ext.pluck("name"),
+    value: function(p){ return p.areas.map(Ext.pluck("name")); }})(projects);
+
+print(tojson(output));
+
+assert(output.p1.length == 2);
+assert(output.p2.length == 1);
+assert(output.p3.length == 0);
+assert(output.p1[0] == "a1");
+assert(output.p1[1] == "a2");
+assert(output.p2[0] == "b2");
