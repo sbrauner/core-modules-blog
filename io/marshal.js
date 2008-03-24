@@ -9,3 +9,13 @@ io.Marshal = function(obj, whitelist){
     return Ext.explore(obj, whitelist, endfunc);
 };
 
+io.Marshal.TreeForm = function(opts){
+    return function(ary){
+        var ret = {};
+        var valuefunc = isFunction(opts.value) ? opts.value : function(o){ return io.Marshal(o, opts.value); };
+        for(var i = 0; i < ary.length; i++){
+            ret[opts.key(ary[i])] = valuefunc(ary[i]);
+        }
+        return ret;
+    };
+};
