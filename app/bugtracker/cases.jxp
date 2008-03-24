@@ -290,7 +290,7 @@ function addForm(name, x) {
 }
 
 handleSaveSearch = function(name){
-     <% searchOpts = Object.extend({}, request); delete searchOpts["action"];
+        <% searchOpts = Object.extend({}, request); if("action" in searchOpts) delete searchOpts["action"];
     noSearchOpts = new URL(request.getURL()); noSearchOpts.args = [{key: "action", value: "?"}];
         %>
      var u = <%= io.Encode.JSON(Util.format_queryargs(searchOpts)) %>;
