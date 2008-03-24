@@ -59,7 +59,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <form id="saveSearchForm" action="search_save">
       <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
       <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName"></div>
-      <div class="btns"><input type="button" value="Search" onclick="handleSaveSearch()" class="button"></div>
+      <div class="btns"><input type="button" value="Save" onclick="handleSaveSearch()" class="button"></div>
     </form>
 </fieldset>
 </div>
