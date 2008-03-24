@@ -94,7 +94,6 @@ if(request.fstatus){
             };
 
             body = asString(core.app.bugtracker.mail, [feature, user, link]);
-            log(body);
 
             m = new Mail.Message( subj, body );
             m.addRecipient(  feature.reporter.email  );
