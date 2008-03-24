@@ -1,0 +1,32 @@
+<% htmlheader("Edit Saved Searches");
+head.addScript("/~~/ui/js/common.js");
+%>
+
+<script>
+
+function deleteSearch(id) {
+     document.getElementById("div_"+id).style.display="none";
+     ajax("id="+id, "search_delete");
+}
+
+function rename(id) {
+     var newName = document.getElementById("name_"+id).value;
+     ajax("id="+id+"&name="+name, "search_rename");
+}
+
+</script>
+<%
+
+db.bugtracker.searches.find({user: user}).forEach(function(search){
+     %>
+     <div id="div_<%= search._id %>">
+     <input type="button" value="x" onclick="deleteSearch('<%= search._id %>')">
+     <input type="text" value="<%= search.name %>" id="name_<%= search._id %>">
+     <input type="button" value="Rename" onclick="rename('<%= search._id %>')">
+     </div>
+     <%
+});
+
+
+htmlfooter();
+%>

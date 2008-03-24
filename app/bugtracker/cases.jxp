@@ -25,9 +25,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div id="top_menu" class="yuimenubar">
             <div class="bd">
                 <ul class="first-of-type">
-                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New case</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a project</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My New Bugs</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="search_edit">Edit Saved Searches</a></li>
                 </ul>
             </div>
         </div>
