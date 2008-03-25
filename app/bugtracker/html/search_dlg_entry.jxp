@@ -1,0 +1,7 @@
+<% processArgs("search"); %>
+<div id="div_<%= search._id %>">
+  <input type="text" value="<%= search.name %>" id="name_<%= search._id %>">
+  <input type="button" value="Rename" onclick="rename('<%= search._id %>')">
+  <div id="ok_<%= search._id %>" style="opacity: 0; display: inline">Ok</div>
+  <input type="button" value="Delete" onclick="deleteSearch('<%= search._id %>')">
+</div>
