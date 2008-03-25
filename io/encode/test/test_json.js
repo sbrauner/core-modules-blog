@@ -41,3 +41,8 @@ for(var i = 0; i < objects.length; i++){
     print(io.Encode.JSON(o2));
     assert(objEqual(o1, o2));
 }
+
+var s = "a\nb";
+var s2 = io.Encode.JSON(s);
+var o2 = scope.eval(s2);
+assert(s == o2);
