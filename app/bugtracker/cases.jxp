@@ -29,7 +29,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
                     <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
                     <li class="yuimenubaritem first-of-type"><a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My New Bugs</a></li>
                     <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="search_edit">Edit Saved Searches</a></li>
+<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</li>
                 </ul>
             </div>
         </div>
@@ -40,9 +40,16 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
-<div id="toolbox" style="visibility:hidden">
-<input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
-<fieldset><legend>Edit Selected</legend>
+<div id="toolbox" style="display:none">
+<div class="field"><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</div>
+<fieldset class="toolbox"><legend>Saved searches </legend>
+<select onchange="doSavedSearch()" id="savedSearches" size="5">
+    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search(search, request.getURL());
+    }); %>
+</select></fieldset>
+
+<fieldset class="toolbox"><legend>Edit Selected</legend>
 <div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
 <div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
 <option value="">&nbsp;</option>
@@ -58,20 +65,31 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
 
-  <fieldset class="dlg"><legend>Save this search</legend>
+  <fieldset class="toolbox"><legend>Save this search</legend>
     <form id="saveSearchForm" action="search_save">
       <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
       <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
-      <input type="button" value="Search" onclick="handleSaveSearch()" class="button">
+      <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
       </div>
-<div class="field"><select onchange="doSavedSearch()" id="savedSearches" size="5">
-    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
-        core.app.bugtracker.html.search(search, request.getURL());
-    }); %>
-</select>
     </form>
 </fieldset>
 </div>
+
+<div id="editsearches" style="display: none">
+<%
+db.bugtracker.searches.find({user: user}).forEach(function(search){
+     %>
+     <div id="div_<%= search._id %>">
+     <input type="text" value="<%= search.name %>" id="name_<%= search._id %>">
+     <input type="button" value="Rename" onclick="rename('<%= search._id %>')">
+     <div id="ok_<%= search._id %>" style="opacity: 0; display: inline">Ok</div>
+     <input type="button" value="Delete" onclick="deleteSearch('<%= search._id %>')">
+     </div>
+     <%
+});
+%>
+</div>
+
 
 <div id="bugJar">
 </div>
@@ -83,6 +101,28 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
+
+function deleteSearch(id) {
+     document.getElementById("div_"+id).style.display="none";
+     ajax("id="+id, "search_delete");
+}
+
+var ok;
+function rename(id) {
+     var newName = document.getElementById("name_"+id).value;
+     ajax("id="+id+"&name="+newName, "search_rename");
+     ok = document.getElementById("ok_"+id);
+     var o = .95;
+     var delay = 50;
+     ok.style.opacity = 1;
+     while(o>0) {
+          setTimeout("ok.style.opacity = "+o+";", delay);
+          delay+=50;
+          o-=.05;
+     }
+     setTimeout("ok.style.opacity = 0;", delay);
+}
+
 
 var l2 = {};
 l2.owner = ["",
@@ -307,12 +347,19 @@ handleSaveSearch = function(name){
      });
 };
 
+var oMenu;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
      require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
+          YAHOO.util.Event.onContentReady("editsearches", function () {
+               oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
+               oMenu.setHeader("Edit Saved Searches");
+               oMenu.render();
+          });
+
           var myColumnDefs = [
                {label: '<form><input type="button" value="Search" onclick="doSearch()"></form>', children: [{label: "", key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
@@ -370,7 +417,8 @@ var loader = new YAHOO.util.YUILoader( {
           };
 
           /* Toolbox */
-         myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
+          document.getElementById("toolbox").style.display = "block";
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
                                                     close: false});
           myPanel.setHeader("Toolbox");
           myPanel.render();
