@@ -40,8 +40,15 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <% } %>
 
 <div id="toolbox" style="display:none">
-<input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed
-<fieldset><legend>Edit Selected</legend>
+<div class="field"><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</div>
+<fieldset class="toolbox"><legend>Saved searches </legend>
+<select onchange="doSavedSearch()" id="savedSearches" size="5">
+    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search(search, request.getURL());
+    }); %>
+</select></fieldset>
+
+<fieldset class="toolbox"><legend>Edit Selected</legend>
 <div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
 <div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
 <option value="">&nbsp;</option>
@@ -57,17 +64,12 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
 
-  <fieldset class="dlg"><legend>Save this search</legend>
+  <fieldset class="toolbox"><legend>Save this search</legend>
     <form id="saveSearchForm" action="search_save">
       <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
       <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
-      <input type="button" value="Search" onclick="handleSaveSearch()" class="button">
+      <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
       </div>
-<div class="field"><select onchange="doSavedSearch()" id="savedSearches" size="5">
-    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
-        core.app.bugtracker.html.search(search, request.getURL());
-    }); %>
-</select>
     </form>
 </fieldset>
 </div>
@@ -415,7 +417,7 @@ var loader = new YAHOO.util.YUILoader( {
 
           /* Toolbox */
           document.getElementById("toolbox").style.display = "block";
-         myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
                                                     close: false});
           myPanel.setHeader("Toolbox");
           myPanel.render();

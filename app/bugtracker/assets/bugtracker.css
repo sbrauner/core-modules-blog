@@ -111,3 +111,17 @@ div#editsearches {
     text-align: center;
     padding-bottom: 12px;
 }
+
+fieldset.toolbox {
+    margin: 10px;
+    padding: 5px;
+    border: 1px solid black;
+}
+div.field {
+    padding: 5px;
+    font-size: 12px;
+}
+div#toolbox input, div#toolbox select {
+    border: 1px solid black;
+    font-size: 12px;
+}
