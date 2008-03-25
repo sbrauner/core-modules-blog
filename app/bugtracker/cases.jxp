@@ -310,7 +310,7 @@ function toggleClosed() {
 
 function doSavedSearch() {
      var passData = "action=search&"+document.getElementById("savedSearches").value;
-     lastSearch = passData;
+     lastSearch = document.getElementById("savedSearches").value;
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
@@ -326,8 +326,8 @@ function doSearch() {
      if(passData == "")
           return;
 
-     var passData = "action=search"+passData;
      lastSearch = passData;
+     var passData = "action=search"+passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
