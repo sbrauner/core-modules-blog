@@ -24,15 +24,15 @@ var queryForms = {
 };
 
 // Search across all fields
-if(request.action == "search" || request.action =="?") {
+if(request.action == "search") {
      var searchobj = {};
      var tempLive;
      for(var q in request) {
-          if(q != "action") {
-               query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-               if(queryForms[q]) query = queryForms[q](query);
-               searchobj[q] = query;
-          }
+         if(q == "action" || q == "showClosed")
+             continue;
+         query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+         if(queryForms[q]) query = queryForms[q](query);
+         searchobj[q] = query;
      }
      liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
 }
@@ -65,7 +65,6 @@ else if(request.action == "delete") {
      for(var x in cases)
           db.bugtracker.cases.remove( { _id: cases[x] } );
 }
-
 
 if(!liveDataCursor) {
      liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
