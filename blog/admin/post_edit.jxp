@@ -90,9 +90,9 @@ if ( request.action == "save" ) {
 		var extraVal = request[ "extra_" + extraFieldName ];
 		var extraConfig = Blog.extraFields[extraFieldName];
 		log( "extraConfig : " + tojson( extraConfig ) );
-		if ( extraConfig.parse ){
+		if ( extraConfig.parseFunction ){
 		    log( "parsing" );
-		    extraVal = extraConfig.parse( extraVal );
+		    extraVal = extraConfig.parseFunction( extraVal );
 		}
 		thePost[ extraFieldName ] = extraVal;
 	    }
