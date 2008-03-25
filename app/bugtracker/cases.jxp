@@ -123,7 +123,7 @@ function rename(id) {
      setTimeout("ok.style.opacity = 0;", delay);
 }
 
-lastsearch = "";
+lastSearch = "";
 
 var l2 = {};
 l2.owner = ["",
@@ -342,7 +342,7 @@ function addForm(name, x) {
 handleSaveSearch = function(name){
      var u = lastSearch;
      var name = document.getElementById("saveSearchName").value;
-     ajax(u+"&name="+name, "search_save", function(response) {
+     ajax(u+"&name="+encodeURIComponent(name), "search_save", function(response) {
          document.getElementById("savedSearches").innerHTML += response;
      });
 };
