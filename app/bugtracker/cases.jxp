@@ -40,8 +40,8 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
-<div id="toolbox" style="display:none">
-<div class="field"><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</div>
+<div id="toolbox">
+<span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
 <fieldset class="toolbox"><legend>Saved searches </legend>
 <select onchange="doSavedSearch()" id="savedSearches" size="5">
     <% db.bugtracker.searches.find({user: user}).forEach(function(search){
@@ -432,11 +432,11 @@ var loader = new YAHOO.util.YUILoader( {
           };
 
           /* Toolbox */
-          document.getElementById("toolbox").style.display = "block";
+/*          document.getElementById("toolbox").style.display = "block";
           myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
                                                     close: false});
           myPanel.setHeader("Toolbox");
-          myPanel.render();
+          myPanel.render();*/
      }
 });
 
