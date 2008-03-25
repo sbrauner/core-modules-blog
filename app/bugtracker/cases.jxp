@@ -170,13 +170,7 @@ function deleteSelected() {
           return;
      }
 
-     var passData = "action=delete&row="+rows;
-     var updateCaseTable = {
-          success : myDataTable.onDataReturnReplaceRows,
-          failure : myDataTable.onDataReturnReplaceRows,
-          scope : myDataTable
-     };
-
+     var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
 }
@@ -277,12 +271,10 @@ function getCheckedRows() {
 
 
 function commitChanges() {
-     var passData = "";
-
     // figure out the column to change, and to what
      var src = document.getElementById("massChangeL1").value;
      var dest = document.getElementById("massChangeL2").value;
-     passData = "action=change&src="+src+"&dest="+dest+"&row=";
+     var passData = "showClosed="+showclosed+"&action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
      var rows = getCheckedRows();
@@ -296,8 +288,12 @@ function commitChanges() {
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
+var showClosed = document.getElementById("show_closed").checked ? true : false;
 function toggleClosed() {
-     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
+     showClosed = document.getElementById("show_closed").checked ? true : false;
+     myDataSource.sendRequest("showClosed="+showClosed, updateCaseTable);
+
+/*     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
 
      var row = myDataTable.getTrEl(0);
      while(row) {
@@ -305,11 +301,12 @@ function toggleClosed() {
                row.style.display = disp;
           }
           row = myDataTable.getNextTrEl(row);
-     }
+     }*/
+
 }
 
 function doSavedSearch() {
-     var passData = "action=search&"+document.getElementById("savedSearches").value;
+     var passData = "showClosed="+showClosed+"&action=search&"+document.getElementById("savedSearches").value;
      lastSearch = document.getElementById("savedSearches").value;
      myDataSource.sendRequest(passData, updateCaseTable);
 }
@@ -327,7 +324,7 @@ function doSearch() {
           return;
 
      lastSearch = passData;
-     var passData = "action=search"+passData;
+     var passData = "showClosed="+showClosed+"&action=search"+passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
