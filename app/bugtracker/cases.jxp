@@ -121,6 +121,7 @@ function rename(id) {
           o-=.05;
      }
      setTimeout("ok.style.opacity = 0;", delay);
+    document.getElementById("Search_"+id+"_name").innerHTML = newName;
 }
 
 lastSearch = "";
