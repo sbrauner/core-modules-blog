@@ -310,6 +310,19 @@ function toggleClosed() {
 
 function doSavedSearch() {
      var passData = "action=search&"+document.getElementById("savedSearches").value;
+     var ary = document.getElementById("savedSearches").value.split("&");
+     var mapping = {};
+     for(var i = 0; i < ary.length; ++i){
+         var pair = ary[i].split('=');
+         mapping[pair[0]] = pair[1];
+     }
+     var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     for(var i=0; i<fields.length; i++) {
+          if(mapping[fields[i].name]) {
+              fields[i].value = mapping[fields[i].name];
+          }
+     }
+
      lastSearch = document.getElementById("savedSearches").value;
      myDataSource.sendRequest(passData, updateCaseTable);
 }
@@ -317,17 +330,19 @@ function doSavedSearch() {
 function doSearch() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     var pairs = [];
      for(var i=0; i<myarr.length; i++) {
           if(myarr[i].value != "") {
-               passData += "&"+myarr[i].name+"="+myarr[i].value;
+               pairs.push(myarr[i].name+"="+myarr[i].value);
           }
      }
+     passData = pairs.join('&');
      // If there are no search queries, don't bother
      if(passData == "")
           return;
 
      lastSearch = passData;
-     var passData = "action=search"+passData;
+     var passData = "action=search&"+passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
