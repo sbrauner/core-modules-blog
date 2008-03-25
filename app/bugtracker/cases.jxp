@@ -410,7 +410,8 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
          var myPaginator = new YAHOO.widget.Paginator({
-             rowsPerPage: 10
+             rowsPerPage: 10,
+             alwaysVisible : false
          });
 
           YAHOO.util.Event.onContentReady("editsearches", function () {
