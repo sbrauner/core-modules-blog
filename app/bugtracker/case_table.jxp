@@ -30,8 +30,12 @@ if(request.action == "search") {
      for(var q in request) {
          if(q == "action" || q == "showClosed")
              continue;
-         query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-         if(queryForms[q]) query = queryForms[q](query);
+         if(request[q] == "none")
+             query = null;
+         else {
+             query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+             if(queryForms[q]) query = queryForms[q](query);
+         }
          searchobj[q] = query;
      }
      liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
