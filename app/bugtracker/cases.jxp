@@ -359,10 +359,6 @@ function doSearch() {
           }
      }
      passData = pairs.join('&');
-     // If there are no search queries, don't bother
-     if(passData == "")
-          return;
-
      lastSearch = passData;
      var passData = "showClosed="+showClosed+"&action=search&"+passData;
 
