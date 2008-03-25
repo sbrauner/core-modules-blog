@@ -336,7 +336,7 @@ function doSearch() {
 var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
-     return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"><input type="submit" name="action" value="?"></form>';
+     return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
 }
 
 handleSaveSearch = function(name){
