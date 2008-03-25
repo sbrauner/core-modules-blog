@@ -365,6 +365,15 @@ function addForm(name, x) {
     return '<form onsubmit="doSearch(); return false;"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
 }
 
+toggleCheckAll = function() {
+     var act = document.getElementById("checkall").checked ? false : true;
+     var checks = document.getElementById("bugJar").getElementsByTagName("input");
+     for(var i =0; i<checks.length; i++) {
+          if(checks[i].type=="checkbox")
+               checks[i].checked = act;
+     }
+}
+
 handleSaveSearch = function(name){
      var u = lastSearch;
      var name = document.getElementById("saveSearchName").value;
@@ -387,7 +396,7 @@ var loader = new YAHOO.util.YUILoader( {
           });
 
           var myColumnDefs = [
-               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: "", key: "check", formatter: "checkbox" }]},
+               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
