@@ -7,6 +7,7 @@ core.app.bugtracker.data.feature();
 core.net.url();
 core.io.encode.javascript();
 core.io.encode.json();
+core.ext.asstring();
 
 head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
@@ -77,18 +78,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 
 <div id="editsearches" style="display: none">
+<form>
 <%
 db.bugtracker.searches.find({user: user}).forEach(function(search){
-     %>
-     <div id="div_<%= search._id %>">
-     <input type="text" value="<%= search.name %>" id="name_<%= search._id %>">
-     <input type="button" value="Rename" onclick="rename('<%= search._id %>')">
-     <div id="ok_<%= search._id %>" style="opacity: 0; display: inline">Ok</div>
-     <input type="button" value="Delete" onclick="deleteSearch('<%= search._id %>')">
-     </div>
-     <%
+    core.app.bugtracker.html.search_dlg_entry(search);
 });
 %>
+</form>
 </div>
 
 
@@ -375,12 +371,17 @@ toggleCheckAll = function() {
      }
 }
 
-handleSaveSearch = function(name){
-     var u = lastSearch;
-     var name = document.getElementById("saveSearchName").value;
-     ajax(u+"&name="+encodeURIComponent(name), "search_save", function(response) {
-         document.getElementById("savedSearches").innerHTML += response;
-     });
+handleSaveSearch = function(){
+    var u = lastSearch;
+    var name = document.getElementById("saveSearchName").value;
+    ajax(u+"&name="+encodeURIComponent(name), "search_save", function(response) {
+        var r = YAHOO.lang.JSON.parse(response);
+        var r1 = r.r1;
+        var r2 = r.r2;
+
+        document.getElementById("savedSearches").innerHTML += r1;
+        document.getElementById("editsearches").innerHTML += r2;
+    });
 };
 
 var oMenu;
