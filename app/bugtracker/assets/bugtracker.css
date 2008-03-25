@@ -104,5 +104,10 @@ div#wholething {
     height: 100%;
     top: 0px;
     left: 0px;
-z-index: -1;
+    z-index: -1;
+}
+div#editsearches {
+    background: #E0E0E0;
+    text-align: center;
+    padding-bottom: 12px;
 }
