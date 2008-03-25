@@ -2,9 +2,7 @@
 processArgs("search");
 var perma = "";
 log(tojson(search.args[0]));
-for(x in search.args) {
-   perma += "&"+search.args[x].key+"="+search.args[x].value
-}
+perma = search.args.map(function(obj){ return obj.key + "=" + obj.value; }).join("&");
 log(perma);
 %>
-<option value="<%= perma %>"><%= search.name %></option>
+<option value="<%= perma %>" id="Search_<%= search._id %>_name"><%= search.name %></option>
