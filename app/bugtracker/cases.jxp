@@ -155,7 +155,7 @@ l2.project = ["", "none",
 l2.area = { <%
             var projCursor = db.bugtracker.projects.find().toArray();
             for(var i=0; i<projCursor.length; i++) {
-                 print('"'+projCursor[i].name+"\" : [");
+                 print('"'+projCursor[i].name+"\" : [\"\", ");
                  for(var j=0; j< projCursor[i].areas.length; j++) {
                       print("\""+projCursor[i].areas[j].name+"\",");
                  }
@@ -274,7 +274,7 @@ function commitChanges() {
     // figure out the column to change, and to what
      var src = document.getElementById("massChangeL1").value;
      var dest = document.getElementById("massChangeL2").value;
-     var passData = "showClosed="+showclosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+     var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
      var rows = getCheckedRows();
