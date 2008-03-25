@@ -158,7 +158,7 @@ l2.project = ["", "none",
 l2.area = { <%
             var projCursor = db.bugtracker.projects.find().toArray();
             for(var i=0; i<projCursor.length; i++) {
-                 print('"'+projCursor[i].name+"\" : [\"\", ");
+                print('"'+projCursor[i].name+"\" : [\"\", \"none\",");
                  for(var j=0; j< projCursor[i].areas.length; j++) {
                       print("\""+projCursor[i].areas[j].name+"\",");
                  }
@@ -272,6 +272,21 @@ function getCheckedRows() {
      return passData.substring(0, passData.length-1);
 }
 
+function assignArea() {
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+    var rows = getCheckedRows();
+    if(rows.length == 0) {
+        alert("You must select at least one case to change.");
+        return;
+    }
+    passData += rows;
+
+    var area = document.getElementById("pickarea_sel").value;
+    passData += "&area="+area;
+    myDataSource.sendRequest(passData, updateCaseTable);
+}
 
 function commitChanges() {
     // figure out the column to change, and to what
@@ -287,9 +302,6 @@ function commitChanges() {
      }
      passData += rows;
 
-     // perform one big ajax call
-     myDataSource.sendRequest(passData, updateCaseTable);
-
      if(src=="project") {
           document.getElementById("pickarea_div").style.display = "block";
           var project = dest;
@@ -298,6 +310,10 @@ function commitChanges() {
           }
           document.getElementById("newarea_div").style.display = "block";
      }
+    else {
+        // perform one big ajax call
+        myDataSource.sendRequest(passData, updateCaseTable);
+    }
 }
 
 var showClosed = document.getElementById("show_closed").checked ? true : false;
