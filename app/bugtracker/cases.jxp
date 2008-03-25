@@ -321,6 +321,9 @@ function doSavedSearch() {
           if(mapping[fields[i].name]) {
               fields[i].value = mapping[fields[i].name];
           }
+          else {
+              fields[i].value = "";
+          }
      }
 
      lastSearch = document.getElementById("savedSearches").value;
