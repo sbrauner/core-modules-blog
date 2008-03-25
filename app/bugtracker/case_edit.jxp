@@ -70,7 +70,11 @@ if(request.fstatus){
             feature.area = "";
         }
 
-        if(feature.project && feature.project.areas.filter(function(area){return area.name == feature.area;}).length == 0){
+        // FIXME: why did I write this to check for a new area every time,
+        // rather than just checking if the form says "New area"? I have
+        // no idea! But until I figure it out, I'm not gonna change it.
+        if(feature.project && feature.area &&
+           feature.project.areas.filter(function(area){return area.name == feature.area;}).length == 0){
             feature.project.areas.push(new app.bugtracker.data.Area(request["extra_farea"], null));
         }
 
