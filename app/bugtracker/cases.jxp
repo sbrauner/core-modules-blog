@@ -350,7 +350,7 @@ function doSearch() {
           return;
 
      lastSearch = passData;
-     var passData = "showClosed="+showClosed+"&action=search"+passData;
+     var passData = "showClosed="+showClosed+"&action=search&"+passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
