@@ -71,7 +71,6 @@ var showClosed = (request.showClosed == "false") ? false : true;
 
 if(!showClosed) {
      liveDataCursor = liveDataCursor.filter(function(x) {
-          log(x.status);
           if(x.status == "closed")
                return false;
           return true;
