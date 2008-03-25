@@ -86,14 +86,7 @@ div.yui-b p em {
 #top_menu {
     margin: 0;
 }
-div#toolbox {
-    background: #E0E0E0;
-    bottom: 0px;
-    right: 0px;
-}
-div#toolbox select {
-    width: 100px;
-}
+
 div.yui-dt-paginator {
     text-align: center;
 }
@@ -113,6 +106,7 @@ div#editsearches {
 }
 
 fieldset.toolbox {
+    display: inline;
     margin: 10px;
     padding: 5px;
     border: 1px solid black;
