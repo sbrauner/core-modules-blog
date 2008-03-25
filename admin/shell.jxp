@@ -152,5 +152,5 @@ lastIndexOf = function(ary, v){
         return false;
     }
 
-window.onkeydown = histfunc;
+window.onkeyup = histfunc;
 </script>
