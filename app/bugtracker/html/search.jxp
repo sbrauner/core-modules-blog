@@ -1,5 +1,5 @@
 <%
-processArgs("search", "link");
+processArgs("search");
 var perma = "";
 log(tojson(search.args[0]));
 for(x in search.args) {

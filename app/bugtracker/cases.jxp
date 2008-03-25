@@ -123,6 +123,7 @@ function rename(id) {
      setTimeout("ok.style.opacity = 0;", delay);
 }
 
+lastsearch = "";
 
 var l2 = {};
 l2.owner = ["",
@@ -309,6 +310,7 @@ function toggleClosed() {
 
 function doSavedSearch() {
      var passData = "action=search&"+document.getElementById("savedSearches").value;
+     lastSearch = passData;
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
@@ -325,6 +327,7 @@ function doSearch() {
           return;
 
      var passData = "action=search"+passData;
+     lastSearch = passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
@@ -337,12 +340,9 @@ function addForm(name, x) {
 }
 
 handleSaveSearch = function(name){
-        <% searchOpts = Object.extend({}, request); if("action" in searchOpts) delete searchOpts["action"];
-    noSearchOpts = new URL(request.getURL()); noSearchOpts.args = [{key: "action", value: "?"}];
-        %>
-     var u = <%= io.Encode.JSON(Util.format_queryargs(searchOpts)) %>;
+     var u = lastSearch;
      var name = document.getElementById("saveSearchName").value;
-     ajax(u+"&name="+name+"&link=<%= noSearchOpts.toString() %>", "search_save", function(response) {
+     ajax(u+"&name="+name, "search_save", function(response) {
          document.getElementById("savedSearches").innerHTML += response;
      });
 };

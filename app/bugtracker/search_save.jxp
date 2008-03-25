@@ -4,8 +4,6 @@ log("Saving a search with " + tojson(request));
 o = Object.extend({}, request);
 var name = o.name;
 delete o.name;
-var link = o.link;
-delete o.link;
 
 var args = [];
 for(var field in o){
@@ -15,5 +13,5 @@ for(var field in o){
 s = new app.bugtracker.data.Search(user, args, name);
 db.bugtracker.searches.save(s);
 
-core.app.bugtracker.html.search(s, link);
+core.app.bugtracker.html.search(s);
 %>
