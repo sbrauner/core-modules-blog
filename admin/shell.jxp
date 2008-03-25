@@ -28,7 +28,7 @@
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
