@@ -200,6 +200,7 @@ function getProject() {
 function fillLevel2Area() {
      var project = getProject();
      // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+    if(!project) return;
      if(project.length == 0) {
           alert("You must select at least one case to change areas.");
           return;
@@ -235,6 +236,7 @@ function createArea() {
                return;
           }
           document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
+          document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
      });
 }
 
