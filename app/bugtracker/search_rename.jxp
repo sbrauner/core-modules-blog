@@ -11,4 +11,5 @@ if(s.user._id != user._id){
 s.name = request.name;
 
 db.bugtracker.searches.save(s);
+print(s._id);
 %>
