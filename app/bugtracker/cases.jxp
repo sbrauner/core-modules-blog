@@ -359,10 +359,6 @@ function doSearch() {
           }
      }
      passData = pairs.join('&');
-     // If there are no search queries, don't bother
-     if(passData == "")
-          return;
-
      lastSearch = passData;
      var passData = "showClosed="+showClosed+"&action=search&"+passData;
 
@@ -409,6 +405,11 @@ var loader = new YAHOO.util.YUILoader( {
      require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
+         var myPaginator = new YAHOO.widget.Paginator({
+             rowsPerPage: 10,
+             alwaysVisible : false
+         });
+
           YAHOO.util.Event.onContentReady("editsearches", function () {
                oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
                oMenu.setHeader("Edit Saved Searches");
@@ -440,14 +441,11 @@ var loader = new YAHOO.util.YUILoader( {
                fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "id" ]
           };
           var oConfigs = {
-               paginator: new YAHOO.widget.Paginator({
-                    rowsPerPage: 10
-               }),
-
-                // Show over 500 records
-               initialRequest:"",
-               sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
+              paginator: myPaginator,
+              initialRequest:"",
+              sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
           };
+
           myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
 
           myDataTable.onEventSelectCell = function(e) {
@@ -466,7 +464,7 @@ var loader = new YAHOO.util.YUILoader( {
                oRecord.setData("check",oArgs.target.checked);
           });
           updateCaseTable = {
-               success : myDataTable.onDataReturnInitializeTable,
+              success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
                failure : myDataTable.onDataReturnInitializeTable,
                scope : myDataTable
           };
