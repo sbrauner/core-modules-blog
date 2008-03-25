@@ -3,6 +3,8 @@
 core.ext.pluck();
 core.io.marshal();
 core.io.encode.json();
+core.app.bugtracker.data.feature();
+
 
 var liveDataCursor, query;
 
@@ -62,7 +64,17 @@ else if(request.action == "delete") {
 
 
 if(!liveDataCursor) {
-    liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+}
+
+var showClosed = (request.showClosed == "false") ? false : true;
+
+if(!showClosed) {
+     liveDataCursor = liveDataCursor.filter(function(x) {
+          if(x.status == "closed")
+               return false;
+          return true;
+     });
 }
 
 print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,

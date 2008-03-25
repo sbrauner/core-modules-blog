@@ -62,6 +62,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
 </select>
 </div>
+<div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
 
@@ -157,7 +158,7 @@ l2.project = ["", "none",
 l2.area = { <%
             var projCursor = db.bugtracker.projects.find().toArray();
             for(var i=0; i<projCursor.length; i++) {
-                 print('"'+projCursor[i].name+"\" : [");
+                 print('"'+projCursor[i].name+"\" : [\"\", ");
                  for(var j=0; j< projCursor[i].areas.length; j++) {
                       print("\""+projCursor[i].areas[j].name+"\",");
                  }
@@ -172,13 +173,7 @@ function deleteSelected() {
           return;
      }
 
-     var passData = "action=delete&row="+rows;
-     var updateCaseTable = {
-          success : myDataTable.onDataReturnReplaceRows,
-          failure : myDataTable.onDataReturnReplaceRows,
-          scope : myDataTable
-     };
-
+     var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
 }
@@ -279,12 +274,10 @@ function getCheckedRows() {
 
 
 function commitChanges() {
-     var passData = "";
-
     // figure out the column to change, and to what
      var src = document.getElementById("massChangeL1").value;
      var dest = document.getElementById("massChangeL2").value;
-     passData = "action=change&src="+src+"&dest="+dest+"&row=";
+     var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
      var rows = getCheckedRows();
@@ -296,22 +289,25 @@ function commitChanges() {
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
-}
 
-function toggleClosed() {
-     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
-
-     var row = myDataTable.getTrEl(0);
-     while(row) {
-          if(myDataTable.getRecord(row).getData("status") == "closed") {
-               row.style.display = disp;
+     if(src=="project") {
+          document.getElementById("pickarea_div").style.display = "block";
+          var project = dest;
+          for(var i=0; i<l2.area[project].length; i++) {
+               document.getElementById("pickarea_sel").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
           }
-          row = myDataTable.getNextTrEl(row);
+          document.getElementById("newarea_div").style.display = "block";
      }
 }
 
+var showClosed = document.getElementById("show_closed").checked ? true : false;
+function toggleClosed() {
+     showClosed = document.getElementById("show_closed").checked ? true : false;
+     myDataSource.sendRequest("showClosed="+showClosed, updateCaseTable);
+}
+
 function doSavedSearch() {
-     var passData = "action=search&"+document.getElementById("savedSearches").value;
+     var passData = "showClosed="+showClosed+"&action=search&"+document.getElementById("savedSearches").value;
      var ary = document.getElementById("savedSearches").value.split("&");
      var mapping = {};
      for(var i = 0; i < ary.length; ++i){
@@ -332,6 +328,13 @@ function doSavedSearch() {
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
+function clearSearch() {
+     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     for(var i in myarr) {
+          myarr[i].value="";
+     }
+}
+
 function doSearch() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
@@ -347,7 +350,7 @@ function doSearch() {
           return;
 
      lastSearch = passData;
-     var passData = "action=search&"+passData;
+     var passData = "showClosed="+showClosed+"&action=search"+passData;
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
@@ -361,6 +364,15 @@ var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
     return '<form onsubmit="doSearch(); return false;"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
+}
+
+toggleCheckAll = function() {
+     var act = document.getElementById("checkall").checked ? false : true;
+     var checks = document.getElementById("bugJar").getElementsByTagName("input");
+     for(var i =0; i<checks.length; i++) {
+          if(checks[i].type=="checkbox")
+               checks[i].checked = act;
+     }
 }
 
 handleSaveSearch = function(name){
@@ -385,7 +397,7 @@ var loader = new YAHOO.util.YUILoader( {
           });
 
           var myColumnDefs = [
-               {label: '<form><input type="button" value="Search" onclick="doSearch()"></form>', children: [{label: "", key: "check", formatter: "checkbox" }]},
+               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -435,8 +447,8 @@ var loader = new YAHOO.util.YUILoader( {
                oRecord.setData("check",oArgs.target.checked);
           });
           updateCaseTable = {
-               success : myDataTable.onDataReturnReplaceRows,
-               failure : myDataTable.onDataReturnReplaceRows,
+               success : myDataTable.onDataReturnInitializeTable,
+               failure : myDataTable.onDataReturnInitializeTable,
                scope : myDataTable
           };
 
