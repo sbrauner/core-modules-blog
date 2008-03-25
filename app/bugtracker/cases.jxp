@@ -62,6 +62,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
 </select>
 </div>
+<div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
 
@@ -286,23 +287,21 @@ function commitChanges() {
 
      // perform one big ajax call
      myDataSource.sendRequest(passData, updateCaseTable);
+
+     if(src=="project") {
+          document.getElementById("pickarea_div").style.display = "block";
+          var project = dest;
+          for(var i=0; i<l2.area[project].length; i++) {
+               document.getElementById("pickarea_sel").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
+          }
+          document.getElementById("newarea_div").style.display = "block";
+     }
 }
 
 var showClosed = document.getElementById("show_closed").checked ? true : false;
 function toggleClosed() {
      showClosed = document.getElementById("show_closed").checked ? true : false;
      myDataSource.sendRequest("showClosed="+showClosed, updateCaseTable);
-
-/*     var disp = (document.getElementById("show_closed").checked) ? "table-row" : "none";
-
-     var row = myDataTable.getTrEl(0);
-     while(row) {
-          if(myDataTable.getRecord(row).getData("status") == "closed") {
-               row.style.display = disp;
-          }
-          row = myDataTable.getNextTrEl(row);
-     }*/
-
 }
 
 function doSavedSearch() {
@@ -446,8 +445,8 @@ var loader = new YAHOO.util.YUILoader( {
                oRecord.setData("check",oArgs.target.checked);
           });
           updateCaseTable = {
-               success : myDataTable.onDataReturnReplaceRows,
-               failure : myDataTable.onDataReturnReplaceRows,
+               success : myDataTable.onDataReturnInitializeTable,
+               failure : myDataTable.onDataReturnInitializeTable,
                scope : myDataTable
           };
 
