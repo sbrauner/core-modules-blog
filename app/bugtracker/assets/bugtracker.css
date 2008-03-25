@@ -124,4 +124,5 @@ div.field {
 div#toolbox input, div#toolbox select {
     border: 1px solid black;
     font-size: 12px;
+    padding: 2px;
 }
