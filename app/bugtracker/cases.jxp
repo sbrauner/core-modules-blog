@@ -308,6 +308,7 @@ function toggleClosed() {
 
 function doSavedSearch() {
      var passData = "action=search&"+document.getElementById("savedSearches").value;
+     alert("passData: "+passData);
      myDataSource.sendRequest(passData, updateCaseTable);
 }
 
@@ -332,7 +333,7 @@ function doSearch() {
 var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
-     return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"><input type="submit" name="action" value="?"></form>';
+     return '<form><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
 }
 
 handleSaveSearch = function(name){
