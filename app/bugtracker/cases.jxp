@@ -6,6 +6,7 @@ core.user.auth();
 core.app.bugtracker.data.feature();
 core.net.url();
 core.io.encode.javascript();
+core.io.encode.json();
 
 head.push("<script src=\"/~~/ui/js/common.js\"></script>");
 head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
