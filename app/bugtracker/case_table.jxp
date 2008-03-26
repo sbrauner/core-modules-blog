@@ -60,13 +60,11 @@ else if(request.action == "delete") {
 
 var showClosed = (request.showClosed == "false") ? false : true;
 
-delete req.showClosed;
-
 // Search across all leftover fields
 var searchobj = {};
 var tempLive;
 for(var q in req) {
-    if(q == "action")
+    if(q == "action" || q == "showClosed")
         continue;
     if(req[q] == "none")
         query = null;

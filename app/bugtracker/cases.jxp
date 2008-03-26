@@ -383,6 +383,7 @@ function getSearchArgs() {
          pairs.push(key+"="+dict[key]);
      }
 
+    pairs.push("showClosed="+showClosed);
 
      passData = pairs.join('&');
     return passData;
