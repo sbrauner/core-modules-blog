@@ -8,6 +8,9 @@ core.app.bugtracker.data.feature();
 
 var liveDataCursor, query;
 
+// This will keep track of the "leftover" arguments, to be used in search.
+var req = Object.extend({}, request);
+
 var queryForms = {
     owner: function(name) {
         // Search insensitively on the username. If we don't find one,
@@ -23,24 +26,7 @@ var queryForms = {
     }
 };
 
-// Search across all fields
-if(request.action == "search") {
-     var searchobj = {};
-     var tempLive;
-     for(var q in request) {
-         if(q == "action" || q == "showClosed")
-             continue;
-         if(request[q] == "none")
-             query = null;
-         else {
-             query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-             if(queryForms[q]) query = queryForms[q](query);
-         }
-         searchobj[q] = query;
-     }
-     liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
-}
-else if(request.action == "change") {
+if(request.action == "change") {
      var cases = request.row.split(",");
      var cat = request.src;
      var subcat = request.dest;
@@ -63,18 +49,34 @@ else if(request.action == "change") {
 
           db.bugtracker.cases.save(c);
      }
+    delete req.dest; delete req.src; delete req.row; delete req.area;
 }
 else if(request.action == "delete") {
      var cases = request.row.split(",");
      for(var x in cases)
           db.bugtracker.cases.remove( { _id: cases[x] } );
-}
-
-if(!liveDataCursor) {
-     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+    delete req.row;
 }
 
 var showClosed = (request.showClosed == "false") ? false : true;
+
+delete req.showClosed;
+
+// Search across all leftover fields
+var searchobj = {};
+var tempLive;
+for(var q in req) {
+    if(q == "action")
+        continue;
+    if(req[q] == "none")
+        query = null;
+    else {
+        query = new RegExp("(.*)"+req[q]+"(.*)", "i");
+        if(queryForms[q]) query = queryForms[q](query);
+    }
+    searchobj[q] = query;
+}
+liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
 
 if(!showClosed) {
      liveDataCursor = liveDataCursor.filter(function(x) {
