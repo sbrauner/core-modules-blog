@@ -47,7 +47,7 @@ function printObj(cursor, field) {
 <body>
 
 <form>
-<label>Select a table: </label><select name="table" onchange="this.form.submit()">
+<label>Select a table: </label><select name="table" id="table" onchange="changeDb(); this.form.submit()">
 <%
 
 var collection = db["system.namespaces"];
@@ -65,6 +65,10 @@ if (request.table) {
 %>
 
 <script type="text/javascript">
+function changeDb() {
+     document.getElementById();
+}
+
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }

@@ -69,8 +69,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </fieldset>
 
   <fieldset class="toolbox"><legend>Save this search</legend>
-    <form id="saveSearchForm" action="search_save">
-      <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
+    <form id="saveSearchForm" action="search_save" onsubmit="handleSaveSearch(); return false">
       <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
       <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
       </div>
@@ -361,12 +360,25 @@ function clearSearch() {
 function doSearch() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     var pairs = [];
+     var dict = {};
+     // FIXME:
+     // This looks convoluted, but YUI inserts bonus accessibility fields
+     // that get duplicate headers (i.e. input boxes) and so need to be
+     // stripped out. I'd love to use whichever field was changed most
+     // recently, but that's hard, and this hack is easy.
+     // Overwrite earlier input fields with the values from later ones.
+
      for(var i=0; i<myarr.length; i++) {
           if(myarr[i].value != "") {
-               pairs.push(myarr[i].name+"="+myarr[i].value);
+              dict[myarr[i].name] = myarr[i].value;
           }
      }
+     var pairs = [];
+     for(var key in dict){
+         pairs.push(key+"="+dict[key]);
+     }
+
+
      passData = pairs.join('&');
      lastSearch = passData;
      var passData = "showClosed="+showClosed+"&action=search&"+passData;
@@ -397,7 +409,8 @@ toggleCheckAll = function() {
 handleSaveSearch = function(){
     var u = lastSearch;
     var name = document.getElementById("saveSearchName").value;
-    ajax(u+"&name="+encodeURIComponent(name), "search_save", function(response) {
+    var passData = (u? u+"&": "") + "name="+encodeURIComponent(name);
+    ajax(passData, "search_save", function(response) {
         var r = YAHOO.lang.JSON.parse(response);
         var r1 = r.r1;
         var r2 = r.r2;
@@ -430,6 +443,24 @@ var loader = new YAHOO.util.YUILoader( {
              projEditPanel.setHeader("Edit Project");
              projEditPanel.render();
          });
+
+         // FIXME: ha ha ha
+         // Firefox saves partially completed forms, leading to weird results like reloading the page
+         // doesn't reload the values of the "rename" text fields in the "edit saved searches"
+         // dialog. Additionally, if you delete an entry from the middle, sometimes Firefox will
+         // get confused on subsequent reloads and show old names on the wrong forms.
+         // The best part about this all is that if you look at the elements in Firebug,
+         // they have the right "value" attributes! But somehow the values are all wrong!
+         // Because: Firefox is setting the value of these nodes in JS after the page is rendered.
+         //
+         // THIS IS INFURIATING.
+         //
+         // Fortunately the html ("correct") values are stored somewhere (the defaultValue property)
+         // so we just force those fields to be correct after the page is loaded. THAT WILL SHOW THEM.
+         var defaultAry = YAHOO.util.Dom.getElementsByClassName("useDefault");
+         for(var i = 0; i < defaultAry.length; i++){
+             defaultAry[i].value = defaultAry[i].defaultValue;
+         }
 
           var myColumnDefs = [
                {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
