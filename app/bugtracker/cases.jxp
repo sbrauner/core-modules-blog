@@ -417,6 +417,7 @@ function refreshTable(passData){
     if(passData) passData = passData+"&";
     else passData = "";
     myDataSource.sendRequest(passData + "showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
+    YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked = false;
 }
 
 function myNewBugs(name) {
