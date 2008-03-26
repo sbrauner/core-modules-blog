@@ -465,7 +465,7 @@ function myNewBugs(name) {
 var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
-    return '<form onsubmit="doSearch(); return false;"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
+    return '<form onsubmit="doSearch(); return false;" class="inline"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
 }
 
 toggleCheckAll = function() {

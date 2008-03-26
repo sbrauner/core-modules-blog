@@ -118,3 +118,7 @@ div#toolbox input, div#toolbox select {
     font-size: 12px;
     padding: 2px;
 }
+
+form.inline {
+    display: inline;
+}
