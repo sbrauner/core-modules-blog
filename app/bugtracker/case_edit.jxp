@@ -139,9 +139,11 @@ else if(request.fstatus){
          // Redirect back to bugs/ or whatever
          if(request.action != "Save and Add Another") {
               response.setResponseCode(301);
-             var referer = request.referer;
-             if(referer == "null") referer = "./";
-              response.setHeader("Location", referer);
+             if(request.search && request.page)
+                 var link = "./?search=" + escape(request.search) + "&page=" + request.page;
+             else
+                 var link = "./";
+              response.setHeader("Location", link);
          }
         else {
             var oldfeature = feature;
@@ -259,7 +261,8 @@ function ObjectId(){ return null; }
     <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
-<input type="hidden" name="referer" value="<%= (request.referer) ? request.referer : request.getHeader("Referer") %>"/>
+<input type="hidden" name="search" value="<%= request.search %>"/>
+<input type="hidden" name="page" value="<%= request.page %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>

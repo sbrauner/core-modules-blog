@@ -567,7 +567,7 @@ var loader = new YAHOO.util.YUILoader( {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id");
+              location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
           }
 
           myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
@@ -607,6 +607,7 @@ var loader = new YAHOO.util.YUILoader( {
              }
          %>
          fillInForm(<%= tojson(mapping) %>);
+         lastSearch = getSearchArgs();
          <%
          }
          %>
