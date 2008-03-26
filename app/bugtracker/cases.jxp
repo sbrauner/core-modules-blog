@@ -78,7 +78,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 
 <div id="editsearches" style="display: none">
-<form>
+<form id="editsearches_form">
 <%
 db.bugtracker.searches.find({user: user}).forEach(function(search){
     core.app.bugtracker.html.search_dlg_entry(search);
@@ -416,7 +416,9 @@ handleSaveSearch = function(){
         var r2 = r.r2;
 
         document.getElementById("savedSearches").innerHTML += r1;
-        document.getElementById("editsearches").innerHTML += r2;
+        // This has to go in editsearches_form, because if it goes in
+        // editsearches, we break the YUI dialog close button.
+        document.getElementById("editsearches_form").innerHTML += r2;
     });
 };
 
