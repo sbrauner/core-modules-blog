@@ -171,9 +171,9 @@ function deleteSelected() {
           return;
      }
 
-     var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
+     var passData = "action=delete&row="+rows;
      // perform one big ajax call
-     myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
+    refreshTable(passData);
 }
 
 function getProject() {
@@ -280,24 +280,35 @@ function getCheckedRows() {
 function assignArea() {
     var src = document.getElementById("massChangeL1").value;
     var dest = document.getElementById("massChangeL2").value;
-    var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+    var passData = "action=change&src="+src+"&dest="+dest+"&row=";
     var rows = getCheckedRows();
     if(rows.length == 0) {
-        alert("You must select at least one case to change.");
+        alert("You must select at least one case to change the area.");
         return;
     }
     passData += rows;
 
     var area = document.getElementById("pickarea_sel").value;
     passData += "&newarea="+area;
-    myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
+    refreshTable(passData);
+}
+
+function clearOpts(el) {
+    var opts = el.options;
+    for(var x in opts) {
+        opts[x].selected = false;
+    }
 }
 
 function commitChanges() {
     // figure out the column to change, and to what
-     var src = document.getElementById("massChangeL1").value;
-     var dest = document.getElementById("massChangeL2").value;
-     var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    if(dest == "") return;
+    clearOpts(document.getElementById("massChangeL1"));
+    clearOpts(document.getElementById("massChangeL2"));
+
+     var passData = "action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
      var rows = getCheckedRows();
@@ -317,18 +328,18 @@ function commitChanges() {
      }
     else {
         // perform one big ajax call
-        myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
+        refreshTable(passData);
     }
 }
 
 var showClosed = document.getElementById("show_closed").checked ? true : false;
 function toggleClosed() {
      showClosed = document.getElementById("show_closed").checked ? true : false;
-    myDataSource.sendRequest("showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
+    refreshTable();
 }
 
 function doSavedSearch() {
-     var passData = "showClosed="+showClosed+"&action=search&"+document.getElementById("savedSearches").value;
+     var passData = "showClosed="+showClosed+"&"+document.getElementById("savedSearches").value;
      var ary = document.getElementById("savedSearches").value.split("&");
      var mapping = {};
      for(var i = 0; i < ary.length; ++i){
@@ -345,12 +356,9 @@ function doSavedSearch() {
           }
      }
 
-     lastSearch = document.getElementById("savedSearches").value;
-     myDataSource.sendRequest(passData, updateCaseTable);
-    var opts = document.getElementById("savedSearches").options;
-    for(var i in opts) {
-        opts[i].selected = false;
-    }
+    lastSearch = document.getElementById("savedSearches").value;
+    clearOpts(document.getElementById("savedSearches"));
+    refreshTable();
 }
 
 function clearSearch() {
@@ -358,12 +366,13 @@ function clearSearch() {
      for(var i in myarr) {
           myarr[i].value="";
      }
+    doSearch();
 }
 
 function doSearch() {
     var passData = getSearchArgs();
     lastSearch = passData;
-    myDataSource.sendRequest(passData, updateCaseTable);
+    refreshTable();
 }
 
 function getSearchArgs() {
@@ -387,14 +396,18 @@ function getSearchArgs() {
          pairs.push(key+"="+dict[key]);
      }
 
-    pairs.push("showClosed="+showClosed);
-
      passData = pairs.join('&');
     return passData;
 }
 
+function refreshTable(passData){
+    if(passData) passData = passData+"&";
+    else passData = "";
+    myDataSource.sendRequest(passData + "showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
+}
+
 function myNewBugs(name) {
-    myDataSource.sendRequest("action=search&owner="+name+"&status=new", updateCaseTable);
+    myDataSource.sendRequest("owner="+name+"&status=new", updateCaseTable);
 };
 
 var myDataTable, myDataSource, updateCaseTable;

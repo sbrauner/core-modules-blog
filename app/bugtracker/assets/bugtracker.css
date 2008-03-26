@@ -104,7 +104,9 @@ div#editsearches {
     text-align: center;
     padding-bottom: 12px;
 }
-
+div#toolbox div {
+border: 1px solid black;
+}
 fieldset.toolbox {
     display: inline;
     margin: 10px;

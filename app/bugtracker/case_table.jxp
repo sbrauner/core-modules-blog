@@ -48,6 +48,7 @@ if(request.action == "change") {
                c[cat] = subcat;
 
           db.bugtracker.cases.save(c);
+         delete req.newarea;
      }
     delete req.dest; delete req.src; delete req.row; delete req.area;
 }
@@ -74,6 +75,7 @@ for(var q in req) {
     }
     searchobj[q] = query;
 }
+
 liveDataCursor = db.bugtracker.cases.find(searchobj).sort({number: 1}).toArray();
 
 if(!showClosed) {
