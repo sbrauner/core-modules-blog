@@ -1,0 +1,12 @@
+<%
+    var file = request.getFile("Filedata");
+
+    log.file.info(tojson(request));
+
+//    var fileId;
+ //   if (file) {
+ //       fileId = core.file.File.upload(file);
+ //   }
+%>
+
+nothing

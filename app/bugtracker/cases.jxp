@@ -88,26 +88,33 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 
 <div id="confirm" style="display: none;">
-<fieldset class="dlg2"><legend>Are you sure?</legend>
-<form id="confirmForm">
-<div class="field">Are you sure you want to delete these bug reports?</div>
-<div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
-</form>
-</fieldset>
+  <div class="hd">Delete Cases</div>
+  <div class="bd">
+    <form id="confirmForm">
+      <div class="field">Are you sure you want to delete these bug reports?</div>
+      <div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
+    </form>
+  </div>
 </div>
 
 <div id="editsearches" style="display: none">
-<form id="editsearches_form">
-<%
-db.bugtracker.searches.find({user: user}).forEach(function(search){
-    core.app.bugtracker.html.search_dlg_entry(search);
-});
-%>
-</form>
+  <div class="hd">Edit Saved Searches</div>
+  <div class="bd">
+    <form id="editsearches_form">
+    <%
+    db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search_dlg_entry(search);
+    });
+       %>
+    </form>
+  </div>
 </div>
 
 <div id="editproject" style="display: none">
-<% core.app.bugtracker.project_edit(); %>
+  <div class="hd">Edit Project</div>
+  <div class="bd">
+    <% core.app.bugtracker.project_edit(); %>
+  </div>
 </div>
 
 
@@ -535,13 +542,11 @@ var loader = new YAHOO.util.YUILoader( {
 
           YAHOO.util.Event.onContentReady("editsearches", function () {
                oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
-               oMenu.setHeader("Edit Saved Searches");
                oMenu.render();
           });
 
          YAHOO.util.Event.onContentReady("editproject", function() {
              projEditPanel = new YAHOO.widget.Panel("editproject", {width: "400px", visible: false, fixedcenter: true});
-             projEditPanel.setHeader("Edit Project");
              projEditPanel.render();
          });
 
