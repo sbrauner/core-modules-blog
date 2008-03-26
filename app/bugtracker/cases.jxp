@@ -303,6 +303,10 @@ function setCheckedRows(b) {
 function assignArea() {
     var src = document.getElementById("massChangeL1").value;
     var dest = document.getElementById("massChangeL2").value;
+    if(dest == "") return;
+    clearOpts(document.getElementById("massChangeL1"));
+    clearOpts(document.getElementById("massChangeL2"));
+
     var passData = "action=change&src="+src+"&dest="+dest+"&row=";
     var rows = getCheckedRows();
     if(rows.length == 0) {
@@ -314,6 +318,7 @@ function assignArea() {
     var area = document.getElementById("pickarea_sel").value;
     passData += "&newarea="+area;
     refreshTable(passData);
+    document.getElementById("newarea_div").style.display = "none";
 }
 
 function clearOpts(el) {
@@ -328,8 +333,6 @@ function commitChanges() {
     var src = document.getElementById("massChangeL1").value;
     var dest = document.getElementById("massChangeL2").value;
     if(dest == "") return;
-    clearOpts(document.getElementById("massChangeL1"));
-    clearOpts(document.getElementById("massChangeL2"));
 
      var passData = "action=change&src="+src+"&dest="+dest+"&row=";
 
@@ -350,6 +353,8 @@ function commitChanges() {
           document.getElementById("newarea_div").style.display = "block";
      }
     else {
+        clearOpts(document.getElementById("massChangeL1"));
+        clearOpts(document.getElementById("massChangeL2"));
         // perform one big ajax call
         refreshTable(passData);
     }
