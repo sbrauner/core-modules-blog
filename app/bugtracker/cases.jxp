@@ -88,12 +88,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 
 <div id="confirm" style="display: none;">
-<fieldset class="dlg2"><legend>Are you sure?</legend>
-<form id="confirmForm">
-<div class="field">Are you sure you want to delete these bug reports?</div>
-<div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
-</form>
-</fieldset>
+  <div class="hd">Delete Cases</div>
+  <div class="bd">
+    <form id="confirmForm">
+      <div class="field">Are you sure you want to delete these bug reports?</div>
+      <div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
+    </form>
+  </div>
 </div>
 
 <div id="editsearches" style="display: none">
