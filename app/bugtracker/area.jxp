@@ -34,5 +34,9 @@ else if(request.action == "delete") {
     });
     db.bugtracker.projects.save(proj);
 }
-
+else if(request.action == "owner") {
+    owner = db.users.findOne({ _id : request.owner });
+    proj.owner = owner;
+    db.bugtracker.projects.save(proj);
+}
 %>

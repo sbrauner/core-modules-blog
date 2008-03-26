@@ -27,6 +27,16 @@ if( request.powner ){
 %>
 
 <script>
+
+projOwners = {
+    <%
+    var projects = db.bugtracker.projects.find().toArray();
+    for(var p in projects) {
+        print("\""+projects[p].name+"\" : \""+(projects[p].owner ? projects[p].owner.name : "None")+"\",");
+    }
+    %>
+};
+
 function renameArea(oldarea, projname, i){
     var newarea = document.getElementById("area_"+i).value;
     ajax("action=rename&oldarea="+oldarea+"&area="+newarea+"&project="+projname, "area");
@@ -43,7 +53,15 @@ function loadAreas() {
     project = document.getElementById("projectid").value;
     if(project == "")  {
         document.getElementById("editProj_fieldset").style.display = "none";
+        document.getElementById("projOwnerName").options[0].selected = true;
         return;
+    }
+    var ownerDropdown = document.getElementById("projOwnerName");
+    for(var i=0; i<ownerDropdown.options.length; i++) {
+        if(ownerDropdown.options[i].innerHTML == projOwners[project]) {
+            ownerDropdown.options[i].selected = true;
+            break;
+        }
     }
     document.getElementById("editProj_area").innerHTML="";
     for(var i=2; i<l2.area[project].length; i++) {
@@ -87,6 +105,14 @@ function projEdit_newArea() {
     numdivs++;
 }
 
+function editProjOwner() {
+    userid = document.getElementById("projOwnerName").value;
+    if(!userid)
+        userid = "";
+    project = document.getElementById("projectid").value;
+    ajax("action=owner&owner="+userid+"&project="+project, "area");
+}
+
 </script>
 
 <form>
@@ -104,7 +130,8 @@ function projEdit_newArea() {
                                       [false].concat(db.users.find({}).toArray()),
                                       {view: function(u){return u?u.name:"None";},
                                        value: function(u){return u?u._id:"null"; },
-                                       id: "user"
+                                       id: "projOwnerName",
+                                       onchange: "editProjOwner()"
                                       }) %>
 </div>
 </form>
