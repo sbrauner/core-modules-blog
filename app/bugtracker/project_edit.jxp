@@ -39,7 +39,13 @@ projOwners = {
 
 function renameArea(oldarea, projname, i){
     var newarea = document.getElementById("area_"+i).value;
-    ajax("action=rename&oldarea="+oldarea+"&area="+newarea+"&project="+projname, "area");
+    if(newarea == "") {
+        alert("You cannot rename an area \"\".");
+        return;
+    }
+    ajax("action=rename&oldarea="+oldarea+"&area="+newarea+"&project="+projname, "area", function(response) {
+        doSearch();
+    });
 }
 
 function deleteArea(area, projname, i) {
@@ -107,8 +113,6 @@ function projEdit_newArea() {
 
 function editProjOwner() {
     userid = document.getElementById("projOwnerName").value;
-    if(!userid)
-        userid = "";
     project = document.getElementById("projectid").value;
     ajax("action=owner&owner="+userid+"&project="+project, "area");
 }

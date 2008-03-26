@@ -17,12 +17,20 @@ if(request.action == "add") {
     return;
 }
 else if(request.action == "rename") {
+    if(request.area == "")
+        return;
+
     for(var i=0; i<proj.areas.length; i++) {
         if(proj.areas[i].name == request.oldarea)  {
             proj.areas[i].name=request.area;
             db.bugtracker.projects.save(proj);
-            return;
+            break;
         }
+    }
+    bugs = db.bugtracker.cases.find({area: request.oldarea}).toArray();
+    for(var b in bugs) {
+        bugs[b].area = request.area;
+        db.bugtracker.cases.save(bugs[b]);
     }
 }
 else if(request.action == "delete") {
@@ -33,9 +41,19 @@ else if(request.action == "delete") {
         return true;
     });
     db.bugtracker.projects.save(proj);
+    bugs = db.bugtracker.cases.find({area: request.area}).toArray();
+    for(var b in bugs) {
+        bugs[b].area = null;
+        db.bugtracker.cases.save(bugs[b]);
+    }
 }
 else if(request.action == "owner") {
-    owner = db.users.findOne({ _id : request.owner });
+    var owner;
+    if(request.owner == "null")
+        owner = null;
+    else
+        owner = db.users.findOne({ _id : request.owner });
+
     proj.owner = owner;
     db.bugtracker.projects.save(proj);
 }
