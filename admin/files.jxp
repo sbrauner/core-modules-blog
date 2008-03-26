@@ -1,4 +1,5 @@
 <%
+log.file.info(tojson(request));
 var theFile = request.getFile( "theFile" );
 if ( theFile ){
     db._files.save( theFile );

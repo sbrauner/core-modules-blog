@@ -1,0 +1,67 @@
+<%
+    head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/fonts/fonts-min.css" />');
+    head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>');
+    head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta.js"></script>');
+    head.push('<script type="text/javascript" src="/@@/yui/current/uploader/uploader-experimental.js"></script>');
+%>
+
+<div class="yui-skin-sam">
+
+<div id="uploaderPlaceHolder" style="width:400px;height:210px">Unable to load Flash content. The YUI File Uploader Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<input type="Button" value="Browse" onClick="browse();" />
+<input type="Button" value="Upload" onClick="upload();" />
+
+<script type="text/javascript">
+
+	YAHOO.widget.Uploader.SWFURL = "/@@/yui/current/uploader/assets/uploader.swf";
+	var uploader = new YAHOO.widget.Uploader( "uploaderPlaceHolder" );
+	uploader.addListener('fileSelect',onFileSelect)
+	uploader.addListener('uploadStart',onUploadStart);
+	uploader.addListener('uploadProgress',onUploadProgress);
+	uploader.addListener('uploadCancel',onUploadCancel);
+	uploader.addListener('uploadComplete',onUploadComplete);
+	uploader.addListener('uploadCompleteData',onUploadResponse);
+	uploader.addListener('uploadError', onUploadError);
+
+	var fileList;
+	
+	function browse() {
+		uploader.clearFileList();
+		uploader.browse(false);//, [{description:"Images", extensions:"*.jpg"}]);
+	}
+	
+	function upload() {
+    	if (fileList != null) {
+    	    uploader.uploadAll('/admin/files.jxp', 'POST');
+            // for(var i in fileList) {
+            //  uploader.upload(i, '/~~/file/upload.jxp');
+            // }
+    	}	
+	}
+	
+	function onFileSelect(event) {
+		fileList = event.fileList;
+	}
+	
+	function onUploadStart(event) {
+	}
+	
+	function onUploadProgress(event) {
+	}
+	
+	function onUploadComplete(event) {
+	}
+	
+	function onUploadError(event) {
+    }
+	
+	function onUploadCancel(event) {
+	}
+	
+	function onUploadResponse(event) {
+	}
+
+</script>
+
+</div>
