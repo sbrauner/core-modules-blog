@@ -98,13 +98,16 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 
 <div id="editsearches" style="display: none">
-<form id="editsearches_form">
-<%
-db.bugtracker.searches.find({user: user}).forEach(function(search){
-    core.app.bugtracker.html.search_dlg_entry(search);
-});
-%>
-</form>
+  <div class="hd">Edit Saved Searches</div>
+  <div class="bd">
+    <form id="editsearches_form">
+    <%
+    db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search_dlg_entry(search);
+    });
+       %>
+    </form>
+  </div>
 </div>
 
 <div id="editproject" style="display: none">
@@ -527,7 +530,6 @@ var loader = new YAHOO.util.YUILoader( {
 
           YAHOO.util.Event.onContentReady("editsearches", function () {
                oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
-               oMenu.setHeader("Edit Saved Searches");
                oMenu.render();
           });
 
