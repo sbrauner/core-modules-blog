@@ -327,6 +327,18 @@ function toggleClosed() {
     refreshTable();
 }
 
+function fillInForm(mapping) {
+    var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i=0; i<fields.length; i++) {
+        if(mapping[fields[i].name]) {
+            fields[i].value = mapping[fields[i].name];
+        }
+        else {
+            fields[i].value = "";
+        }
+    }
+}
+
 function doSavedSearch() {
      var passData = "showClosed="+showClosed+"&"+document.getElementById("savedSearches").value;
      var ary = document.getElementById("savedSearches").value.split("&");
@@ -335,16 +347,7 @@ function doSavedSearch() {
          var pair = ary[i].split('=');
          mapping[pair[0]] = pair[1];
      }
-     var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     for(var i=0; i<fields.length; i++) {
-          if(mapping[fields[i].name]) {
-              fields[i].value = mapping[fields[i].name];
-          }
-          else {
-              fields[i].value = "";
-          }
-     }
-
+    fillInForm(mapping);
      lastSearch = document.getElementById("savedSearches").value;
     refreshTable();
 }
@@ -395,7 +398,8 @@ function refreshTable(passData){
 }
 
 function myNewBugs(name) {
-    myDataSource.sendRequest("owner="+name+"&status=new", updateCaseTable);
+    fillInForm({owner: name, status: "new"});
+    doSearch();
 };
 
 var myDataTable, myDataSource, updateCaseTable;
