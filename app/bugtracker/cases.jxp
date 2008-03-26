@@ -277,6 +277,15 @@ function getCheckedRows() {
      return passData.substring(0, passData.length-1);
 }
 
+function setCheckedRows(b) {
+     var row = myDataTable.getTrEl(0);
+     while(row) {
+         myDataTable.getRecord(row).setData("check", b);
+         row = myDataTable.getNextTrEl(row);
+     }
+}
+
+
 function assignArea() {
     var src = document.getElementById("massChangeL1").value;
     var dest = document.getElementById("massChangeL2").value;
@@ -366,10 +375,10 @@ function doSavedSearch() {
 }
 
 function clearSearch() {
-     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     for(var i in myarr) {
-          myarr[i].value="";
-     }
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value="";
+    }
     doSearch();
 }
 
@@ -425,9 +434,11 @@ toggleCheckAll = function() {
      var act = document.getElementById("checkall").checked ? false : true;
      var checks = document.getElementById("bugJar").getElementsByTagName("input");
      for(var i =0; i<checks.length; i++) {
-          if(checks[i].type=="checkbox")
+         if(checks[i].type=="checkbox") {
                checks[i].checked = act;
+         }
      }
+    setCheckedRows(act);
 }
 
 handleSaveSearch = function(){
