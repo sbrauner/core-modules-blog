@@ -51,6 +51,7 @@ if(request.action == "change") {
          delete req.newarea;
      }
     delete req.dest; delete req.src; delete req.row; delete req.area;
+    core.app.bugtracker.email_send(c, false);
 }
 else if(request.action == "delete") {
      var cases = request.row.split(",");
