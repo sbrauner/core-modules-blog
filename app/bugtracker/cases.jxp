@@ -112,9 +112,9 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 <script>
 
 function deleteSearch(id) {
-     document.getElementById("div_"+id).style.display="none";
-     ajax("id="+id, "search_delete");
-    document.getElementById("Search_"+id+"_name").style.display = "none";
+    document.getElementById("div_"+id).style.display="none";
+    ajax("id="+id, "search_delete");
+    document.getElementById("savedSearches").removeChild(document.getElementById("Search_"+id+"_name"));//.style.display = "none";
 }
 
 var ok;
@@ -281,13 +281,22 @@ function getCheckedRows() {
      return passData.substring(0, passData.length-1);
 }
 
+function setCheckedRows(b) {
+     var row = myDataTable.getTrEl(0);
+     while(row) {
+         myDataTable.getRecord(row).setData("check", b);
+         row = myDataTable.getNextTrEl(row);
+     }
+}
+
+
 function assignArea() {
     var src = document.getElementById("massChangeL1").value;
     var dest = document.getElementById("massChangeL2").value;
     var passData = "action=change&src="+src+"&dest="+dest+"&row=";
     var rows = getCheckedRows();
     if(rows.length == 0) {
-        alert("You must select at least one case to change.");
+        alert("You must select at least one case to change the area.");
         return;
     }
     passData += rows;
@@ -297,10 +306,21 @@ function assignArea() {
     refreshTable(passData);
 }
 
+function clearOpts(el) {
+    var opts = el.options;
+    for(var x in opts) {
+        opts[x].selected = false;
+    }
+}
+
 function commitChanges() {
     // figure out the column to change, and to what
-     var src = document.getElementById("massChangeL1").value;
-     var dest = document.getElementById("massChangeL2").value;
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    if(dest == "") return;
+    clearOpts(document.getElementById("massChangeL1"));
+    clearOpts(document.getElementById("massChangeL2"));
+
      var passData = "action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
@@ -351,16 +371,18 @@ function doSavedSearch() {
          var pair = ary[i].split('=');
          mapping[pair[0]] = pair[1];
      }
+
     fillInForm(mapping);
-     lastSearch = document.getElementById("savedSearches").value;
+    lastSearch = document.getElementById("savedSearches").value;
+    clearOpts(document.getElementById("savedSearches"));
     refreshTable();
 }
 
 function clearSearch() {
-     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     for(var i in myarr) {
-          myarr[i].value="";
-     }
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value="";
+    }
     doSearch();
 }
 
@@ -399,6 +421,7 @@ function refreshTable(passData){
     if(passData) passData = passData+"&";
     else passData = "";
     myDataSource.sendRequest(passData + "showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
+    YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked = false;
 }
 
 function myNewBugs(name) {
@@ -413,12 +436,14 @@ function addForm(name, x) {
 }
 
 toggleCheckAll = function() {
-     var act = document.getElementById("checkall").checked ? false : true;
+    var act = YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked ? true : false;
      var checks = document.getElementById("bugJar").getElementsByTagName("input");
      for(var i =0; i<checks.length; i++) {
-          if(checks[i].type=="checkbox")
+         if(checks[i].type=="checkbox") {
                checks[i].checked = act;
+         }
      }
+    setCheckedRows(act);
 }
 
 handleSaveSearch = function(){
@@ -459,7 +484,7 @@ handleCancel = function(){
     confirmDlg.hide();
 };
 
-var oMenu;
+var oMenu, checkAll = false;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
@@ -512,7 +537,7 @@ var loader = new YAHOO.util.YUILoader( {
          }
 
           var myColumnDefs = [
-               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
+              {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<form><input type="checkbox" class="checkall" onclick="toggleCheckAll()"></form>', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -555,8 +580,13 @@ var loader = new YAHOO.util.YUILoader( {
           myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
           myDataTable.subscribe("checkboxClickEvent", function(oArgs){
-               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
-               oRecord.setData("check",oArgs.target.checked);
+              var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+              oRecord.setData("check",oArgs.target.checked);
+
+              checkAlls = YAHOO.util.Dom.getElementsByClassName("checkall");
+              if(oArgs.target.checked == false) {
+                  checkAlls[1].checked = false;
+              }
           });
           updateCaseTable = {
               success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
