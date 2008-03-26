@@ -261,8 +261,8 @@ function ObjectId(){ return null; }
     <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
-<input type="hidden" name="search" value="<%= request.search %>"/>
-<input type="hidden" name="page" value="<%= request.page %>"/>
+<input type="hidden" name="search" value="<%= request.search ? request.search : "" %>"/>
+<input type="hidden" name="page" value="<%= request.page ? request.page : "" %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>
