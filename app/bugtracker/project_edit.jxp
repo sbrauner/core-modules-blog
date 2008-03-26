@@ -44,14 +44,14 @@ function renameArea(oldarea, projname, i){
         return;
     }
     ajax("action=rename&oldarea="+oldarea+"&newarea="+newarea+"&edproject="+projname, "area", function(response) {
-        myDataSource.sendRequest(lastSearch, updateCaseTable);
+        refreshTable();
     });
 }
 
 function deleteArea(area, projname, i) {
     ajax("action=delete&delarea="+area+"&edproject="+projname, "area", function(response) {
         document.getElementById("area_div"+i).style.display="none";
-        myDataSource.sendRequest(lastSearch, updateCaseTable);
+        refreshTable();
     });
 }
 
