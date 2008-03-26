@@ -352,12 +352,25 @@ function clearSearch() {
 function doSearch() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     var pairs = [];
+     var dict = {};
+     // FIXME:
+     // This looks convoluted, but YUI inserts bonus accessibility fields
+     // that get duplicate headers (i.e. input boxes) and so need to be
+     // stripped out. I'd love to use whichever field was changed most
+     // recently, but that's hard, and this hack is easy.
+     // Overwrite earlier input fields with the values from later ones.
+
      for(var i=0; i<myarr.length; i++) {
           if(myarr[i].value != "") {
-               pairs.push(myarr[i].name+"="+myarr[i].value);
+              dict[myarr[i].name] = myarr[i].value;
           }
      }
+     var pairs = [];
+     for(var key in dict){
+         pairs.push(key+"="+dict[key]);
+     }
+
+
      passData = pairs.join('&');
      lastSearch = passData;
      var passData = "showClosed="+showClosed+"&action=search&"+passData;
