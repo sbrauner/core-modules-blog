@@ -431,7 +431,7 @@ function addForm(name, x) {
 }
 
 toggleCheckAll = function() {
-     var act = document.getElementById("checkall").checked ? false : true;
+    var act = YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked ? true : false;
      var checks = document.getElementById("bugJar").getElementsByTagName("input");
      for(var i =0; i<checks.length; i++) {
          if(checks[i].type=="checkbox") {
@@ -457,7 +457,7 @@ handleSaveSearch = function(){
     });
 };
 
-var oMenu;
+var oMenu, checkAll = false;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
@@ -500,7 +500,7 @@ var loader = new YAHOO.util.YUILoader( {
          }
 
           var myColumnDefs = [
-               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
+              {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<form><input type="checkbox" class="checkall" onclick="toggleCheckAll()"></form>', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -543,8 +543,13 @@ var loader = new YAHOO.util.YUILoader( {
           myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
           myDataTable.subscribe("checkboxClickEvent", function(oArgs){
-               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
-               oRecord.setData("check",oArgs.target.checked);
+              var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+              oRecord.setData("check",oArgs.target.checked);
+
+              checkAlls = YAHOO.util.Dom.getElementsByClassName("checkall");
+              if(oArgs.target.checked == false) {
+                  checkAlls[1].checked = false;
+              }
           });
           updateCaseTable = {
               success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
