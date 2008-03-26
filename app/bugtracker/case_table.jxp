@@ -74,7 +74,7 @@ for(var q in req) {
     }
     searchobj[q] = query;
 }
-liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+liveDataCursor = db.bugtracker.cases.find(searchobj).sort({number: 1}).toArray();
 
 if(!showClosed) {
      liveDataCursor = liveDataCursor.filter(function(x) {
