@@ -111,7 +111,10 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </div>
 
 <div id="editproject" style="display: none">
-<% core.app.bugtracker.project_edit(); %>
+  <div class="hd">Edit Project</div>
+  <div class="bd">
+    <% core.app.bugtracker.project_edit(); %>
+  </div>
 </div>
 
 <div id="bugJar">
@@ -535,7 +538,6 @@ var loader = new YAHOO.util.YUILoader( {
 
          YAHOO.util.Event.onContentReady("editproject", function() {
              projEditPanel = new YAHOO.widget.Panel("editproject", {width: "400px", visible: false, fixedcenter: true});
-             projEditPanel.setHeader("Edit Project");
              projEditPanel.render();
          });
 
