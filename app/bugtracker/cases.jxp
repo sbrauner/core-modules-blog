@@ -29,8 +29,8 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
                 <ul class="first-of-type">
                     <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
                     <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
-<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</a></li>
-<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.show()">Edit Projects</a></li>
+<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</a></li>
+<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
                 </ul>
             </div>
         </div>
@@ -120,6 +120,8 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
+
+var dlg_height=5;
 
 function deleteSearch(id) {
     document.getElementById("div_"+id).style.display="none";
@@ -380,7 +382,6 @@ function fillInForm(mapping) {
 }
 
 function doSavedSearch() {
-     var passData = "showClosed="+showClosed+"&"+document.getElementById("savedSearches").value;
      var ary = document.getElementById("savedSearches").value.split("&");
      var mapping = {};
      for(var i = 0; i < ary.length; ++i){
@@ -487,6 +488,7 @@ showConfirm = function(){
     }
 
     document.getElementById('confirm').style.display='block';
+    confirmDlg.bringToTop();
     confirmDlg.rows = rows;
     confirmDlg.show();
 };
