@@ -319,6 +319,7 @@ function assignArea() {
     passData += "&newarea="+area;
     refreshTable(passData);
     document.getElementById("newarea_div").style.display = "none";
+    document.getElementById("pickarea_div").style.display = "none";
 }
 
 function clearOpts(el) {
