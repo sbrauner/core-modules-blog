@@ -324,7 +324,7 @@ function commitChanges() {
 var showClosed = document.getElementById("show_closed").checked ? true : false;
 function toggleClosed() {
      showClosed = document.getElementById("show_closed").checked ? true : false;
-     doSearch();
+    myDataSource.sendRequest("showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
 }
 
 function doSavedSearch() {
