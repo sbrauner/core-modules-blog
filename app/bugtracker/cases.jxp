@@ -548,12 +548,7 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
 
-          <%
-          dsOpts = Util.format_queryargs(request);
-          log(dsOpts);
-          %>
-
-          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource = new YAHOO.util.DataSource("case_table?<%= request.search? request.search: ""%>");
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
           myDataSource.connXhrMode = "queueRequests";
           myDataSource.responseSchema = {
@@ -588,6 +583,8 @@ var loader = new YAHOO.util.YUILoader( {
                   checkAlls[1].checked = false;
               }
           });
+
+         myDataSource.liveData = "case_table?";
           updateCaseTable = {
               success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
                failure : myDataTable.onDataReturnInitializeTable,
@@ -600,6 +597,19 @@ var loader = new YAHOO.util.YUILoader( {
                                                     close: false});
           myPanel.setHeader("Toolbox");
           myPanel.render();*/
+         <%
+         if(request.search){
+             var args = request.search.split('&');
+             var mapping = {};
+             for(var i = 0; i < args.length; i++){
+                 var pair = args[i].split('=');
+                 mapping[pair[0]] = pair[1];
+             }
+         %>
+         fillInForm(<%= tojson(mapping) %>);
+         <%
+         }
+         %>
      }
 });
 
