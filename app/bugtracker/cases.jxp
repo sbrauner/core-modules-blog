@@ -102,9 +102,9 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 <script>
 
 function deleteSearch(id) {
-     document.getElementById("div_"+id).style.display="none";
-     ajax("id="+id, "search_delete");
-    document.getElementById("Search_"+id+"_name").style.display = "none";
+    document.getElementById("div_"+id).style.display="none";
+    ajax("id="+id, "search_delete");
+    document.getElementById("savedSearches").removeChild(document.getElementById("Search_"+id+"_name"));//.style.display = "none";
 }
 
 var ok;
