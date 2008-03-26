@@ -1,0 +1,38 @@
+<%
+core.app.bugtracker.data.area();
+
+var proj = db.bugtracker.projects.findOne( { name : request.project } );
+
+if(request.action == "add") {
+    for(var i=0; i<proj.areas.length; i++) {
+        if(proj.areas[i].name == request.area)  {
+            print("");
+            return;
+        }
+    }
+
+    proj.areas.push(new app.bugtracker.data.Area(request.area, request.proj));
+    db.bugtracker.projects.save(proj);
+    print(request.area);
+    return;
+}
+else if(request.action == "rename") {
+    for(var i=0; i<proj.areas.length; i++) {
+        if(proj.areas[i].name == request.oldarea)  {
+            proj.areas[i].name=request.area;
+            db.bugtracker.projects.save(proj);
+            return;
+        }
+    }
+}
+else if(request.action == "delete") {
+    proj.areas = proj.areas.filter(function(a) {
+        if(a.name == request.area)  {
+            return false;
+        }
+        return true;
+    });
+    db.bugtracker.projects.save(proj);
+}
+
+%>

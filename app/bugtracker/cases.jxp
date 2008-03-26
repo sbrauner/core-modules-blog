@@ -31,6 +31,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
                     <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
                     <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
 <li class="yuimenubaritem first-of-type" onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</li>
+<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editproject').style.display='block'; projEditPanel.show()">Edit Projects</li>
                 </ul>
             </div>
         </div>
@@ -87,6 +88,9 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 </form>
 </div>
 
+<div id="editproject" style="display: none">
+<% core.app.bugtracker.project_edit(); %>
+</div>
 
 <div id="bugJar">
 </div>
@@ -225,14 +229,19 @@ function createArea() {
           alert("You must select at least one case to change areas.");
           return;
      }
+    _createArea(project, newarea);
+}
 
-     ajax("project="+project+"&area="+newarea, "area_add.jxp", function(response) {
+function _createArea(project, areaname) {
+
+     ajax("action=add&project="+project+"&area="+areaname, "area.jxp", function(response) {
           if(response == "") {
                alert("Area already exists for project.");
                return;
           }
-          document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
-          document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
+         document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
+         document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
+         return;
      });
 }
 
@@ -415,6 +424,12 @@ var loader = new YAHOO.util.YUILoader( {
                oMenu.setHeader("Edit Saved Searches");
                oMenu.render();
           });
+
+         YAHOO.util.Event.onContentReady("editproject", function() {
+             projEditPanel = new YAHOO.widget.Panel("editproject", {width: "400px", visible: false, fixedcenter: true});
+             projEditPanel.setHeader("Edit Project");
+             projEditPanel.render();
+         });
 
           var myColumnDefs = [
                {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
