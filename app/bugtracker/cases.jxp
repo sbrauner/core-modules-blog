@@ -57,7 +57,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 <td>
 <fieldset class="toolbox"><legend>Edit Selected</legend>
-<div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
+<div class="field"><input type="button" onclick="showConfirm()" value="Delete"></div>
 <div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
 <option value="">&nbsp;</option>
 <option value="owner">Owner</option>
@@ -84,6 +84,16 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 </fieldset>
 </td></tr></table>
 
+</div>
+
+
+<div id="confirm" style="display: none;">
+<fieldset class="dlg2"><legend>Are you sure?</legend>
+<form id="confirmForm">
+<div class="field">Are you sure you want to delete these bug reports?</div>
+<div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
+</form>
+</fieldset>
 </div>
 
 <div id="editsearches" style="display: none">
@@ -174,13 +184,7 @@ l2.area = { <%
             }
             %> };
 
-function deleteSelected() {
-     var rows = getCheckedRows();
-     if(rows == "") {
-          alert("You must select at least one case to delete.");
-          return;
-     }
-
+function deleteSelected(rows) {
      var passData = "action=delete&row="+rows;
      // perform one big ajax call
     refreshTable(passData);
@@ -469,6 +473,27 @@ handleSaveSearch = function(){
     });
 };
 
+showConfirm = function(){
+    var rows = getCheckedRows();
+    if(rows == "") {
+        alert("You must select at least one case to delete.");
+        return;
+    }
+
+    document.getElementById('confirm').style.display='block';
+    confirmDlg.rows = rows;
+    confirmDlg.show();
+};
+
+handleConfirm = function(){
+    confirmDlg.hide();
+    deleteSelected(confirmDlg.rows);
+};
+
+handleCancel = function(){
+    confirmDlg.hide();
+};
+
 var oMenu, checkAll = false;
 
 var loader = new YAHOO.util.YUILoader( {
@@ -480,6 +505,16 @@ var loader = new YAHOO.util.YUILoader( {
              rowsPerPage: 30,
              alwaysVisible : false
          });
+
+         confirmDlg = new YAHOO.widget.Dialog("confirm", {
+             width: "400px",
+             fixedcenter: true,
+             modal: true,
+             visible: false,
+             draggable: true
+         });
+         confirmDlg.render(document.body);
+         confirmDlg.callback = { success: handleConfirm };
 
           YAHOO.util.Event.onContentReady("editsearches", function () {
                oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
@@ -523,12 +558,7 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
 
-          <%
-          dsOpts = Util.format_queryargs(request);
-          log(dsOpts);
-          %>
-
-          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource = new YAHOO.util.DataSource("case_table?<%= request.search? request.search: ""%>");
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
           myDataSource.connXhrMode = "queueRequests";
           myDataSource.responseSchema = {
@@ -547,7 +577,7 @@ var loader = new YAHOO.util.YUILoader( {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id");
+              location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
           }
 
           myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
@@ -563,6 +593,8 @@ var loader = new YAHOO.util.YUILoader( {
                   checkAlls[1].checked = false;
               }
           });
+
+         myDataSource.liveData = "case_table?";
           updateCaseTable = {
               success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
                failure : myDataTable.onDataReturnInitializeTable,
@@ -575,6 +607,20 @@ var loader = new YAHOO.util.YUILoader( {
                                                     close: false});
           myPanel.setHeader("Toolbox");
           myPanel.render();*/
+         <%
+         if(request.search){
+             var args = request.search.split('&');
+             var mapping = {};
+             for(var i = 0; i < args.length; i++){
+                 var pair = args[i].split('=');
+                 mapping[pair[0]] = pair[1];
+             }
+         %>
+         fillInForm(<%= tojson(mapping) %>);
+         lastSearch = getSearchArgs();
+         <%
+         }
+         %>
      }
 });
 
