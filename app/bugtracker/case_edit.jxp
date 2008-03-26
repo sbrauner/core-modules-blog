@@ -37,7 +37,7 @@ Forms.fillInObject( "f", feature );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(feature.project == "null") feature.project = null;
-else {
+else if(typeof feature.project == "string") {
     feature.project = db.bugtracker.projects.findOne({_id: feature.project});
 }
 
