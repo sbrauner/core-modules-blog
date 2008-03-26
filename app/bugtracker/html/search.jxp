@@ -3,4 +3,4 @@ processArgs("search");
 var perma = "";
 perma = search.args.map(function(obj){ return obj.key + "=" + obj.value; }).join("&");
 %>
-<option value="<%= perma %>" id="Search_<%= search._id %>_name"><%= search.name %></option>
+<option onclick="doSavedSearch()" value="<%= perma %>" id="Search_<%= search._id %>_name"><%= search.name %></option>
