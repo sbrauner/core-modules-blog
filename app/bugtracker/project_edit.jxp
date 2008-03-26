@@ -41,11 +41,17 @@ function deleteArea(area, projname, i) {
 var numdivs = 0;
 function loadAreas() {
     project = document.getElementById("projectid").value;
+    if(project == "")  {
+        document.getElementById("editProj_fieldset").style.display = "none";
+        return;
+    }
     document.getElementById("editProj_area").innerHTML="";
     for(var i=2; i<l2.area[project].length; i++) {
         document.getElementById("editProj_area").appendChild(createAreaDiv(project, i));
     }
     numdivs=i;
+    document.getElementById("projEdit_area_txt").value = "";
+    document.getElementById("editProj_fieldset").style.display = "block";
 }
 
 function createAreaDiv(project, i) {
@@ -84,41 +90,26 @@ function projEdit_newArea() {
 </script>
 
 <form>
-<div class="field">
-<div class="field_name">Project</div>
-<div class="field_value">
-<select id="projectid" name="projectid" onchange="loadAreas()"><option value="">&nbsp;</option>
+<div class="field">Project <select id="projectid" name="projectid" onchange="loadAreas()"><option value="">&nbsp;</option>
 <% db.bugtracker.projects.find({}).forEach(function(u){ %>
                                                         <option value="<%= u.name %>"><%= u.name %></option>
                                                         <% }); %>
 </select>
 </div>
-</div>
 </form>
 
 
 <form>
-<div class="field">
-<div class="field_name">Owner</div>
-<div class="field_value">
-<%
-// This doesn't set the None user if project.owner
-// is null; that happens implicitly since None is first.
-%>
-<%= app.bugtracker.data.helper.select({u: null}, "u", "",
+<div class="field">Owner <%= app.bugtracker.data.helper.select({u: null}, "u", "",
                                       [false].concat(db.users.find({}).toArray()),
                                       {view: function(u){return u?u.name:"None";},
                                        value: function(u){return u?u._id:"null"; },
                                        id: "user"
-                                      }) %> </div>
-</div>
-<div class="field">
-<div class="field_name">&nbsp;</div>
-<div class="field_value"><input type="submit" value="Save"></div>
+                                      }) %>
 </div>
 </form>
 
-<fieldset><legend>Edit an area</legend>
+<fieldset id="editProj_fieldset" style="display: none;"><legend>Edit an area</legend>
 <form>
 <div id="editProj_area">
 </div>
