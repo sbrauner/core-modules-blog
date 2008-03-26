@@ -42,14 +42,20 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <% } %>
 
 <div id="toolbox">
+<table><tr><td>
 <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
+</td>
+
+<td>
 <fieldset class="toolbox"><legend>Saved searches </legend>
 <select onchange="doSavedSearch()" id="savedSearches" size="5">
     <% db.bugtracker.searches.find({user: user}).forEach(function(search){
         core.app.bugtracker.html.search(search, request.getURL());
     }); %>
 </select></fieldset>
+</td>
 
+<td>
 <fieldset class="toolbox"><legend>Edit Selected</legend>
 <div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
 <div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
@@ -66,7 +72,9 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 <div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
 <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
 </fieldset>
+</td>
 
+<td>
   <fieldset class="toolbox"><legend>Save this search</legend>
     <form id="saveSearchForm" action="search_save" onsubmit="handleSaveSearch(); return false">
       <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
@@ -74,6 +82,8 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
       </div>
     </form>
 </fieldset>
+</td></tr></table>
+
 </div>
 
 <div id="editsearches" style="display: none">
@@ -104,7 +114,7 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 function deleteSearch(id) {
     document.getElementById("div_"+id).style.display="none";
     ajax("id="+id, "search_delete");
-    document.getElementById("savedSearches").removeChild(document.getElementById("Search_"+id+"_name"));//.style.display = "none";
+    document.getElementById("savedSearches").removeChild(document.getElementById("Search_"+id+"_name"));
 }
 
 var ok;
@@ -467,7 +477,7 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
          var myPaginator = new YAHOO.widget.Paginator({
-             rowsPerPage: 10,
+             rowsPerPage: 30,
              alwaysVisible : false
          });
 
