@@ -347,6 +347,10 @@ function doSavedSearch() {
 
      lastSearch = document.getElementById("savedSearches").value;
      myDataSource.sendRequest(passData, updateCaseTable);
+    var opts = document.getElementById("savedSearches").options;
+    for(var i in opts) {
+        opts[i].selected = false;
+    }
 }
 
 function clearSearch() {
