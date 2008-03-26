@@ -429,6 +429,24 @@ var loader = new YAHOO.util.YUILoader( {
                oMenu.render();
           });
 
+         // FIXME: ha ha ha
+         // Firefox saves partially completed forms, leading to weird results like reloading the page
+         // doesn't reload the values of the "rename" text fields in the "edit saved searches"
+         // dialog. Additionally, if you delete an entry from the middle, sometimes Firefox will
+         // get confused on subsequent reloads and show old names on the wrong forms.
+         // The best part about this all is that if you look at the elements in Firebug,
+         // they have the right "value" attributes! But somehow the values are all wrong!
+         // Because: Firefox is setting the value of these nodes in JS after the page is rendered.
+         //
+         // THIS IS INFURIATING.
+         //
+         // Fortunately the html ("correct") values are stored somewhere (the defaultValue property)
+         // so we just force those fields to be correct after the page is loaded. THAT WILL SHOW THEM.
+         var defaultAry = YAHOO.util.Dom.getElementsByClassName("useDefault");
+         for(var i = 0; i < defaultAry.length; i++){
+             defaultAry[i].value = defaultAry[i].defaultValue;
+         }
+
           var myColumnDefs = [
                {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
