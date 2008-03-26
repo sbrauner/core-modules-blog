@@ -66,6 +66,23 @@ if(! project){
   <div class="field_value"><input type="submit" value="Save"></div>
 </div>
 </form>
-        <% } %>
+
+Or, edit an area:
+<form action="area_edit">
+  <input type="hidden" name="projectid" value="<%= project._id%>">
+  <div class="field">
+    <div class="field_name">Area</div>
+    <div class="field_value">
+      <select name="areaname">
+        <% project.areas.forEach(function(a){ %>
+        <option value="<%= a.name %>"><%= a.name %></option>
+        <% }); %>
+      </select>
+    </div>
+  </div>
+  <input type="submit" value="Select">
+</form>
+
+<% } %>
         <a href="./">Back to cases list</a>
             <% htmlfooter() %>

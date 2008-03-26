@@ -1,0 +1,15 @@
+<%
+if(! request.id){
+    throw Error("No id to rename");
+}
+
+var s = db.bugtracker.searches.findOne({_id: request.id});
+if(s.user._id != user._id){
+    throw Error("Can't rename other people's searches");
+}
+
+s.name = request.name;
+
+db.bugtracker.searches.save(s);
+print(s._id);
+%>

@@ -17,6 +17,8 @@ app.bugtracker.data.helper = {
         delete conf.view;
         var valuefunc = conf.value;
         delete conf.value;
+        var compare = conf.compare || function(a, b) { return false; };
+        delete conf.compare;
         s = "";
         s += "<select name=\""+prefix+field+"\" "+app.bugtracker.data.helper.format(conf)+">";
         var orig = obj[field];
@@ -39,7 +41,8 @@ app.bugtracker.data.helper = {
             // also need to be able to check if this wasn't.
             // If opts[f] is some string, then ._id for both objects will be
             // null, so don't accept that.
-            if((opts[f] == orig) || (opts[f] && opts[f]._id && orig && orig._id && opts[f]._id == orig._id))
+            if((opts[f] == orig) || (opts[f] && opts[f]._id && orig && orig._id && opts[f]._id == orig._id) ||
+               (compare(opts[f], orig)))
                 s += " selected=1"
 
             if(opts[f] != val)

@@ -5,65 +5,485 @@ core.user.user();
 core.user.auth();
 core.app.bugtracker.data.feature();
 core.net.url();
+core.io.encode.javascript();
+core.io.encode.json();
+core.ext.asstring();
+
+head.push("<script src=\"/~~/ui/js/common.js\"></script>");
+head.push('<link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">');
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 %>
+
 
 <html>
     <head>
         <title>Cases List</title>
-        <link rel="stylesheet" type="text/css" href="/@@/yui/current/menu/assets/skins/sam/menu.css">
         <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
         <script type="text/javascript" src="/@@/yui/current/container/container_core.js"></script>
         <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
         <script type="text/javascript" src="assets/menu.js"></script>
     </head>
-    <body class="yui-skin-sam">
+<body class="yui-skin-sam">
         <div id="top_menu" class="yuimenubar">
             <div class="bd">
                 <ul class="first-of-type">
-                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New case</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="<%= new URL(request.getURL()).addArg("owner", user.name).addArg("status", "new")%>">My new bugs</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a project</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
+                    <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
+                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
+<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</li>
                 </ul>
             </div>
         </div>
-        
+
         <div id="yui-main">
 
     <% if(request.msg){ %>
         <div class="notice"><%= content.HTML.escape_html(request.msg) %>
     <% } %>
 
-{
-    var tab = new htmltable({
-        ns: db.bugtracker.cases,
-        cols: [
-            {name: "number", isLink: true, searchWidth: 3, heading: "ID", cssClassName: 'field', view: function(n) { return parseInt(n).toFixed(0); } },
-            {name: "title", isLink: true, heading: "Name", searchWidth: 40, cssClassName: 'field'},
-            {name: "owner", searchWidth: 12, heading: "Owner", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
-             queryForm: function(name) {
-                 // Search insensitively on the username. If we don't find one,
-                 // just return some value that should never occur.
-                 var user = db.users.findOne({name: new RegExp(name, 'i')});
-                 if(user) return user;
-                 return -1;
-             }},
-            {name: "status", searchWidth: 10, heading: "Status", cssClassName: 'field'},
-            {name: "severity", searchWidth: 10, heading: "Severity", cssClassName: 'field'},
-            {name: "type", searchWidth: 10, heading: "Type", cssClassName: 'field', view: function(x) { return x? x: "none"; }},
-            {name: "project", searchWidth: 10, heading: "Project", cssClassName: 'field', view: function(u) { if(u) return u.name; else return "none"; },
-            queryForm: function(u) { return db.bugtracker.projects.findOne({name: new RegExp(u)});} },
-            {name: "area", searchWidth: 10, heading: "Area", cssClassName: 'field'}
-//            {name: "creationDate", heading: "Created", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }},
-//            {name: "lastModified", heading: "Last Modified", cssClassName: 'field', view: function(x) { return x.toString().replace(/... EST /,' '); }}
-        ],
-        detailUrl: "case_edit?id=",
-        searchable: true
-    });
+<div id="toolbox">
+<span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
+<fieldset class="toolbox"><legend>Saved searches </legend>
+<select onchange="doSavedSearch()" id="savedSearches" size="5">
+    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search(search, request.getURL());
+    }); %>
+</select></fieldset>
 
-    tab.dbview(tab.find(null, {number: 1}));
+<fieldset class="toolbox"><legend>Edit Selected</legend>
+<div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
+<div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
+<option value="">&nbsp;</option>
+<option value="owner">Owner</option>
+<option value="status">Status</option>
+<option value="severity">Severity</option>
+<option value="type">Type</option>
+<option value="project">Project</option>
+<option value="area">Area</option>
+</select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
+</select>
+</div>
+<div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
+<div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
+</fieldset>
+
+  <fieldset class="toolbox"><legend>Save this search</legend>
+    <form id="saveSearchForm" action="search_save">
+      <input type="hidden" name="searchArgs" value="<%= request.getHeader('Referer') %>">
+      <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
+      <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
+      </div>
+    </form>
+</fieldset>
+</div>
+
+<div id="editsearches" style="display: none">
+<form>
+<%
+db.bugtracker.searches.find({user: user}).forEach(function(search){
+    core.app.bugtracker.html.search_dlg_entry(search);
+});
+%>
+</form>
+</div>
+
+
+<div id="bugJar">
+</div>
+
+<div id="newCase">
+
+</div>
+
+
+<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
+<script>
+
+function deleteSearch(id) {
+     document.getElementById("div_"+id).style.display="none";
+     ajax("id="+id, "search_delete");
+    document.getElementById("Search_"+id+"_name").style.display = "none";
+}
+
+var ok;
+function rename(id) {
+     var newName = document.getElementById("name_"+id).value;
+     ajax("id="+id+"&name="+newName, "search_rename");
+     ok = document.getElementById("ok_"+id);
+     var o = .95;
+     var delay = 50;
+     ok.style.opacity = 1;
+     while(o>0) {
+          setTimeout("ok.style.opacity = "+o+";", delay);
+          delay+=50;
+          o-=.05;
+     }
+     setTimeout("ok.style.opacity = 0;", delay);
+    document.getElementById("Search_"+id+"_name").innerHTML = newName;
+}
+
+lastSearch = "";
+
+var l2 = {};
+l2.owner = ["",
+     <%
+     var ownerCursor = db.users.find().toArray();
+     for(var i=0; i<ownerCursor.length; i++)
+          print("'"+ownerCursor[i].name+((i<ownerCursor.length-1) ? "'," : "'"));
+     %>
+           ] ;
+
+l2.status = ["", <% for(var x in app.bugtracker.data.Feature.STATUS) {
+                  print('"'+app.bugtracker.data.Feature.STATUS[x]+'",');
+             } %>];
+
+l2.severity = ["", <% for(var x in app.bugtracker.data.Feature.SEVERITY) {
+                  print('"'+app.bugtracker.data.Feature.SEVERITY[x]+'",');
+             } %>];
+
+l2.type = ["", <% for(var x in app.bugtracker.data.Feature.TYPE) {
+                  print('"'+app.bugtracker.data.Feature.TYPE[x]+'",');
+             } %>];
+
+l2.project = ["", "none",
+              <%
+              var projCursor = db.bugtracker.projects.find().toArray();
+              for(var i=0; i<projCursor.length; i++)
+                   print("'"+projCursor[i].name+((i<projCursor.length-1) ? "'," : "'"));
+              %> ];
+l2.area = { <%
+            var projCursor = db.bugtracker.projects.find().toArray();
+            for(var i=0; i<projCursor.length; i++) {
+                print('"'+projCursor[i].name+"\" : [\"\", \"none\",");
+                 for(var j=0; j< projCursor[i].areas.length; j++) {
+                      print("\""+projCursor[i].areas[j].name+"\",");
+                 }
+                 print("],");
+            }
+            %> };
+
+function deleteSelected() {
+     var rows = getCheckedRows();
+     if(rows == "") {
+          alert("You must select at least one case to delete.");
+          return;
+     }
+
+     var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
+     // perform one big ajax call
+     myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+function getProject() {
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     var project = "";
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check")) {
+               if(project == "")
+                    project = myDataTable.getRecord(row).getData("project");
+               else if(project != myDataTable.getRecord(row).getData("project") || project == "none") {
+                    alert("Areas are specific to projects.  All selected cases must have the same project in order to change the area.");
+                    return;
+               }
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     return project;
+}
+
+function fillLevel2Area() {
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+    if(!project) return;
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+
+     // if we made it here, there is at least one checkbox selected and all selected checkboxes have the same project listed
+     // so, now we find the areas based on project
+     for(var i=0; i<l2.area[project].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
+     }
+
+     // also, show the "create new area" div
+     document.getElementById("newarea_div").style.display = "block";
+
+}
+
+function createArea() {
+     var newarea = document.getElementById("newarea_input").value;
+     if(newarea == "") {
+          alert("You must enter a name for the new area.");
+          return;
+     }
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+
+     ajax("project="+project+"&area="+newarea, "area_add.jxp", function(response) {
+          if(response == "") {
+               alert("Area already exists for project.");
+               return;
+          }
+          document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
+          document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
+     });
 }
 
 
+function fillLevel2() {
+     document.getElementById("massChangeL2").options.length = 0;
+     l1 = document.getElementById("massChangeL1").value;
+     if(l1 == "") {
+          document.getElementById("massChangeL2").disabled = true;
+          return;
+     }
+     document.getElementById("massChangeL2").disabled = false;
+     if(l1 == "area")
+          fillLevel2Area();
+     else
+          document.getElementById("newarea_div").style.display = "none";
+
+     for(var i=0; i<l2[l1].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
+     }
+}
+
+function getCheckedRows() {
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     var passData = "";
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check")) {
+               passData += myDataTable.getRecord(row).getData("id")+",";
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     if(passData.length == 0) return "";
+     return passData.substring(0, passData.length-1);
+}
+
+function assignArea() {
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+    var rows = getCheckedRows();
+    if(rows.length == 0) {
+        alert("You must select at least one case to change.");
+        return;
+    }
+    passData += rows;
+
+    var area = document.getElementById("pickarea_sel").value;
+    passData += "&area="+area;
+    myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+function commitChanges() {
+    // figure out the column to change, and to what
+     var src = document.getElementById("massChangeL1").value;
+     var dest = document.getElementById("massChangeL2").value;
+     var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+
+     // go through the table and find all selected rows
+     var rows = getCheckedRows();
+     if(rows.length == 0) {
+          alert("You must select at least one case to change.");
+          return;
+     }
+     passData += rows;
+
+     if(src=="project") {
+          document.getElementById("pickarea_div").style.display = "block";
+          var project = dest;
+          for(var i=0; i<l2.area[project].length; i++) {
+               document.getElementById("pickarea_sel").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
+          }
+          document.getElementById("newarea_div").style.display = "block";
+     }
+    else {
+        // perform one big ajax call
+        myDataSource.sendRequest(passData, updateCaseTable);
+    }
+}
+
+var showClosed = document.getElementById("show_closed").checked ? true : false;
+function toggleClosed() {
+     showClosed = document.getElementById("show_closed").checked ? true : false;
+     doSearch();
+}
+
+function doSavedSearch() {
+     var passData = "showClosed="+showClosed+"&action=search&"+document.getElementById("savedSearches").value;
+     var ary = document.getElementById("savedSearches").value.split("&");
+     var mapping = {};
+     for(var i = 0; i < ary.length; ++i){
+         var pair = ary[i].split('=');
+         mapping[pair[0]] = pair[1];
+     }
+     var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     for(var i=0; i<fields.length; i++) {
+          if(mapping[fields[i].name]) {
+              fields[i].value = mapping[fields[i].name];
+          }
+          else {
+              fields[i].value = "";
+          }
+     }
+
+     lastSearch = document.getElementById("savedSearches").value;
+     myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+function clearSearch() {
+     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     for(var i in myarr) {
+          myarr[i].value="";
+     }
+}
+
+function doSearch() {
+     var passData = "";
+     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+     var pairs = [];
+     for(var i=0; i<myarr.length; i++) {
+          if(myarr[i].value != "") {
+               pairs.push(myarr[i].name+"="+myarr[i].value);
+          }
+     }
+     passData = pairs.join('&');
+     lastSearch = passData;
+     var passData = "showClosed="+showClosed+"&action=search&"+passData;
+
+     // perform one big ajax call
+     myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+function myNewBugs(name) {
+    myDataSource.sendRequest("action=search&owner="+name+"&status=new", updateCaseTable);
+};
+
+var myDataTable, myDataSource, updateCaseTable;
+
+function addForm(name, x) {
+    return '<form onsubmit="doSearch(); return false;"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
+}
+
+toggleCheckAll = function() {
+     var act = document.getElementById("checkall").checked ? false : true;
+     var checks = document.getElementById("bugJar").getElementsByTagName("input");
+     for(var i =0; i<checks.length; i++) {
+          if(checks[i].type=="checkbox")
+               checks[i].checked = act;
+     }
+}
+
+handleSaveSearch = function(){
+    var u = lastSearch;
+    var name = document.getElementById("saveSearchName").value;
+    ajax(u+"&name="+encodeURIComponent(name), "search_save", function(response) {
+        var r = YAHOO.lang.JSON.parse(response);
+        var r1 = r.r1;
+        var r2 = r.r2;
+
+        document.getElementById("savedSearches").innerHTML += r1;
+        document.getElementById("editsearches").innerHTML += r2;
+    });
+};
+
+var oMenu;
+
+var loader = new YAHOO.util.YUILoader( {
+     base: "/@@/yui/current/",
+     require: ["datatable", "json", "container", "dragdrop"],
+     loadOptional: true,
+     onSuccess: function() {
+         var myPaginator = new YAHOO.widget.Paginator({
+             rowsPerPage: 10,
+             alwaysVisible : false
+         });
+
+          YAHOO.util.Event.onContentReady("editsearches", function () {
+               oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
+               oMenu.setHeader("Edit Saved Searches");
+               oMenu.render();
+          });
+
+          var myColumnDefs = [
+               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
+               {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
+               {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+               {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
+               {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
+               {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
+               {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
+               {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
+               {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
+          ];
+
+          <%
+          dsOpts = Util.format_queryargs(request);
+          log(dsOpts);
+          %>
+
+          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+          myDataSource.connXhrMode = "queueRequests";
+          myDataSource.responseSchema = {
+               resultsList: "rows",
+               fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "id" ]
+          };
+          var oConfigs = {
+              paginator: myPaginator,
+              initialRequest:"",
+              sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
+          };
+
+          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
+
+          myDataTable.onEventSelectCell = function(e) {
+               if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
+                    return;
+
+               location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id");
+          }
+
+          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
+          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
+          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
+
+          myDataTable.subscribe("checkboxClickEvent", function(oArgs){
+               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+               oRecord.setData("check",oArgs.target.checked);
+          });
+          updateCaseTable = {
+              success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
+               failure : myDataTable.onDataReturnInitializeTable,
+               scope : myDataTable
+          };
+
+          /* Toolbox */
+/*          document.getElementById("toolbox").style.display = "block";
+          myPanel=new YAHOO.widget.Panel("toolbox", {visible:true, constraintoviewport:true, draggable:true, context:["wholething","br","br"],
+                                                    close: false});
+          myPanel.setHeader("Toolbox");
+          myPanel.render();*/
+     }
+});
+
+loader.insert();
+
+
+</script>
+
+</div>
+<div id="wholething">
 </div>
 </body>

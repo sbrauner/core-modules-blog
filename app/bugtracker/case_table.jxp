@@ -1,0 +1,93 @@
+<%
+
+core.ext.pluck();
+core.io.marshal();
+core.io.encode.json();
+core.app.bugtracker.data.feature();
+
+
+var liveDataCursor, query;
+
+var queryForms = {
+    owner: function(name) {
+        // Search insensitively on the username. If we don't find one,
+        // just return some value that should never occur.
+        var user = db.users.findOne({name: name});
+        if(user) return user;
+        return -1;
+    },
+    project: function(u) {
+        var proj = db.bugtracker.projects.findOne({name: u});
+        if(proj) return proj;
+        return -1;
+    }
+};
+
+// Search across all fields
+if(request.action == "search") {
+     var searchobj = {};
+     var tempLive;
+     for(var q in request) {
+         if(q == "action" || q == "showClosed")
+             continue;
+         if(request[q] == "none")
+             query = null;
+         else {
+             query = new RegExp("(.*)"+request[q]+"(.*)", "i");
+             if(queryForms[q]) query = queryForms[q](query);
+         }
+         searchobj[q] = query;
+     }
+     liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
+}
+else if(request.action == "change") {
+     var cases = request.row.split(",");
+     var cat = request.src;
+     var subcat = request.dest;
+     for(var x in cases) {
+          var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
+
+          // Sooooo bad
+          if(cat == "owner") {
+               c.owner = db.users.findOne({ name: subcat } );
+          }
+         else if(cat == "project") {
+             c.project = db.bugtracker.projects.findOne({ name: subcat});
+             if(request.area == "none")
+                 c.area = "";
+             else if(request.area)
+                 c.area = request.area;
+          }
+          else
+               c[cat] = subcat;
+
+          db.bugtracker.cases.save(c);
+     }
+}
+else if(request.action == "delete") {
+     var cases = request.row.split(",");
+     for(var x in cases)
+          db.bugtracker.cases.remove( { _id: cases[x] } );
+}
+
+if(!liveDataCursor) {
+     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+}
+
+var showClosed = (request.showClosed == "false") ? false : true;
+
+if(!showClosed) {
+     liveDataCursor = liveDataCursor.filter(function(x) {
+          if(x.status == "closed")
+               return false;
+          return true;
+     });
+}
+
+print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
+                                                        title: true, owner: function(p){ return p? p.name: "none"},
+                                                        status: true, severity: true, type: true,
+                                                        project: function(p){ return p? p.name: "none"},
+                                                        area: true})}));
+%>
+

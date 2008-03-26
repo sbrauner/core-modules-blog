@@ -28,7 +28,9 @@
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -66,9 +68,7 @@
            }
        });
 
-var histfunc = function( e ) {
-
-    if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
+var blockYUIParen = function ( e ) {
     var key = e.keyCode || e.which;
     if(e.shiftKey){
         // In Konqueror and Safari, the keys for lparen and up-arrow generate
@@ -78,6 +78,11 @@ var histfunc = function( e ) {
         e.preventDefault = function(){};
         return;
     }
+};
+
+var histfunc = function( e ) {
+
+    if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var cmd = document.getElementById("commandac");
     var setcmd = function () {
         if ( arguments.length ) {
@@ -152,5 +157,4 @@ lastIndexOf = function(ary, v){
         return false;
     }
 
-window.onkeydown = histfunc;
 </script>

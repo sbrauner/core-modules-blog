@@ -1,0 +1,21 @@
+<%
+core.ext.asstring();
+core.app.bugtracker.data.search();
+log("Saving a search with " + tojson(request));
+o = Object.extend({}, request);
+var name = o.name;
+delete o.name;
+
+var args = [];
+for(var field in o){
+    args.push({key: field, value: o[field]});
+}
+
+s = new app.bugtracker.data.Search(user, args, name);
+db.bugtracker.searches.save(s);
+var r1 = Ext.asString(core.app.bugtracker.html.search, [s]);
+var r2 = Ext.asString(core.app.bugtracker.html.search_dlg_entry, [s]);
+
+print(io.Encode.JSON({r1: r1, r2: r2}));
+
+%>

@@ -1,0 +1,10 @@
+<% processArgs("feature", "user", "link"); %>
+
+The bug report titled "<%= feature.title %>" was changed by <%= user.name %>.
+
+Assigned to: <%= feature.owner ? feature.owner.name : "nobody" %>
+Status: <%= feature.status %>
+To see it, follow this link:
+
+<%= link %>
+

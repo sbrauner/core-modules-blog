@@ -61,6 +61,8 @@ if ( ! request.name )
             core.app.wiki.pieces.edit();
     else if ( request.history )
             core.app.wiki.pieces.history();
+    else if ( request.compare )
+        core.app.wiki.pieces.compare();
     else
             core.app.wiki.pieces.view();
 %>

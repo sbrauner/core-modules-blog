@@ -1,0 +1,16 @@
+<% core.app.wiki.pieces.header_wikipage(); %>
+
+<%
+    core.app.wiki.wikipagehistory();
+var versions = request.getParameters('compare');
+assert(versions.length == 2);
+versions = versions.map(function(id){ return db.wiki_history.findOne({_id: id}); });
+var oldversion = (versions[0].ts < versions[1].ts) ? versions[0] : versions[1];
+var newversion = (versions[0].ts < versions[1].ts) ? versions[1] : versions[0];
+var textDiff = Util.Diff.diff(oldversion.getHistoricalText(), newversion.getHistoricalText());
+%>
+<pre>
+<%= textDiff %>
+</pre>
+
+<% core.app.wiki.pieces.footer_wikipage(); %>

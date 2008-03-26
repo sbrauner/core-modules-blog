@@ -1,0 +1,44 @@
+<% htmlheader("Edit Saved Searches");
+head.addScript("/~~/ui/js/common.js");
+%>
+
+<script>
+
+function deleteSearch(id) {
+     document.getElementById("div_"+id).style.display="none";
+     ajax("id="+id, "search_delete");
+}
+
+var ok;
+function rename(id) {
+     var newName = document.getElementById("name_"+id).value;
+     ajax("id="+id+"&name="+newName, "search_rename");
+     ok = document.getElementById("ok_"+id);
+     var o = .95;
+     var delay = 50;
+     ok.style.opacity = 1;
+     while(o>0) {
+          setTimeout("ok.style.opacity = "+o+";", delay);
+          delay+=50;
+          o-=.05;
+     }
+     setTimeout("ok.style.opacity = 0;", delay);
+}
+
+</script>
+<%
+
+db.bugtracker.searches.find({user: user}).forEach(function(search){
+     %>
+     <div id="div_<%= search._id %>">
+     <input type="button" value="x" onclick="deleteSearch('<%= search._id %>')">
+     <input type="text" value="<%= search.name %>" id="name_<%= search._id %>">
+     <input type="button" value="Rename" onclick="rename('<%= search._id %>')">
+     <div id="ok_<%= search._id %>" style="opacity: 0; display: inline">Ok</div>
+     </div>
+     <%
+});
+
+
+htmlfooter();
+%>
