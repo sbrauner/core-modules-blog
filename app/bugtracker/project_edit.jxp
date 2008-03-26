@@ -51,6 +51,7 @@ function renameArea(oldarea, projname, i){
 function deleteArea(area, projname, i) {
     ajax("action=delete&area="+area+"&project="+projname, "area", function(response) {
         document.getElementById("area_div"+i).style.display="none";
+        doSearch();
     });
 }
 
