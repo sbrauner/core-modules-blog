@@ -37,7 +37,17 @@ Forms.fillInObject( "f", feature );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(feature.project == "null") feature.project = null;
-if(request.fstatus){
+else {
+    feature.project = db.bugtracker.projects.findOne({_id: feature.project});
+}
+
+var error = "";
+
+// We use fstatus as a generic "user has submitted form" check.
+if(request.fstatus && request.ftitle == ""){
+    error = "A bug report must have a title!";
+}
+else if(request.fstatus){
      var targetRel = request.ftargetrelease;
      if(targetRel == "newRel") {
           db.bugtracker.releases.save({text: request.extra_ftargetrelease });
@@ -241,8 +251,11 @@ function ObjectId(){ return null; }
       </ul>
       Here's your version:
     </div>
-    <% } %>
+    <% }
+      else if(error) { %>
+    <span class="errormsg"><%= error %></span>
 
+    <% } %>
     <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
