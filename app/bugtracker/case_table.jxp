@@ -39,10 +39,10 @@ if(request.action == "change") {
           }
          else if(cat == "project") {
              c.project = db.bugtracker.projects.findOne({ name: subcat});
-             if(request.area == "none")
+             if(request.newarea == "none")
                  c.area = "";
-             else if(request.area)
-                 c.area = request.area;
+             else if(request.newarea)
+                 c.area = request.newarea;
           }
           else
                c[cat] = subcat;

@@ -29,9 +29,8 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
                 <ul class="first-of-type">
                     <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
                     <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
-<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</li>
-<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editproject').style.display='block'; projEditPanel.show()">Edit Projects</li>
+<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</a></li>
+<li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.show()">Edit Projects</a></li>
                 </ul>
             </div>
         </div>
@@ -174,7 +173,7 @@ function deleteSelected() {
 
      var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
      // perform one big ajax call
-     myDataSource.sendRequest(passData, updateCaseTable);
+     myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
 }
 
 function getProject() {
@@ -233,7 +232,7 @@ function createArea() {
 
 function _createArea(project, areaname) {
 
-     ajax("action=add&project="+project+"&area="+areaname, "area.jxp", function(response) {
+     ajax("action=add&edproject="+project+"&newarea="+areaname, "area", function(response) {
           if(response == "") {
                alert("Area already exists for project.");
                return;
@@ -290,8 +289,8 @@ function assignArea() {
     passData += rows;
 
     var area = document.getElementById("pickarea_sel").value;
-    passData += "&area="+area;
-    myDataSource.sendRequest(passData, updateCaseTable);
+    passData += "&newarea="+area;
+    myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
 }
 
 function commitChanges() {
@@ -318,7 +317,7 @@ function commitChanges() {
      }
     else {
         // perform one big ajax call
-        myDataSource.sendRequest(passData, updateCaseTable);
+        myDataSource.sendRequest(passData+"&"+lastSearch, updateCaseTable);
     }
 }
 
@@ -358,6 +357,12 @@ function clearSearch() {
 }
 
 function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    myDataSource.sendRequest(passData, updateCaseTable);
+}
+
+function getSearchArgs() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
      var dict = {};
@@ -380,11 +385,7 @@ function doSearch() {
 
 
      passData = pairs.join('&');
-     lastSearch = passData;
-     var passData = "showClosed="+showClosed+"&action=search&"+passData;
-
-     // perform one big ajax call
-     myDataSource.sendRequest(passData, updateCaseTable);
+    return passData;
 }
 
 function myNewBugs(name) {
