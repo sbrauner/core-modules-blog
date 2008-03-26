@@ -430,6 +430,7 @@ handleSaveSearch = function(){
         // This has to go in editsearches_form, because if it goes in
         // editsearches, we break the YUI dialog close button.
         document.getElementById("editsearches_form").innerHTML += r2;
+        document.getElementById("saveSearchName").value = "";
     });
 };
 
