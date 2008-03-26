@@ -110,8 +110,17 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 <% core.app.bugtracker.project_edit(); %>
 </div>
 
+
+<table><tr valign="top">
+<td>
 <div id="bugJar">
 </div>
+</td>
+<td>
+<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>
+</td>
+</tr>
+</table>
 
 <div id="newCase">
 
@@ -555,7 +564,7 @@ var loader = new YAHOO.util.YUILoader( {
          }
 
           var myColumnDefs = [
-              {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<form><input type="checkbox" class="checkall" onclick="toggleCheckAll()"></form>', key: "check", formatter: "checkbox" }]},
+              {label: "", children: [{label: '<form><input type="checkbox" class="checkall" onclick="toggleCheckAll()"></form>', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
