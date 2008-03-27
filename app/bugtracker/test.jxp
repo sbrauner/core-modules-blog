@@ -23,10 +23,15 @@ div.fieldval {
 div.col2 {
     margin-left: <%= (col1.width+col1.margin)+col1.unit %>;
 }
-
-
-
 </style>
+
+<%
+core.html.form();
+var x = new html.FormBuilder({name: "myform", action: "send", method: "POST"});
+x.add("string", "Name:");
+x.add("input");
+x.render();
+%>
 
 <form>
 <fieldset><legend>Test Form</legend>

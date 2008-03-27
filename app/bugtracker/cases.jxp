@@ -37,13 +37,14 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
     <div id="yui-main">
 
-      <% if(request.msg){ %>
-      <div class="notice"><%= content.HTML.escape_html(request.msg) %>
-        <% } %>
+<%
+if(request.msg){ %>
+<div class="notice"><%= content.HTML.escape_html(request.msg) %>
+  <% } %>
 
-        <div id="toolbox">
-          <% core.app.bugtracker.html.toolbox(); %>
-        </div>
+  <div id="toolbox">
+    <% core.app.bugtracker.html.toolbox(); %>
+  </div>
 
 
 <!-- Dialogs section -->
