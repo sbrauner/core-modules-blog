@@ -28,6 +28,7 @@
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
+               YAHOO.util.Event.addListener(document, "keyup", blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
