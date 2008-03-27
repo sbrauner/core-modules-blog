@@ -3,12 +3,19 @@
 // fieldset?
 // allow templates?
 
+core.util.format();
+
 sandbox.FormBuilder = function (args){
-    this._method = args.method || 'GET';
     this._fields = {};
+    this._attr = Object.extend({}, args.attr);
+
+    this._attr.method = this._attr.method || args.method || 'GET';
+    this._attr.action = this._attr.action || args.action;
+    this._attr["class"] = this._attr['class'] || this._attr.className || args.className || "fb";
+    delete this._attr.className;
 
     for(var i = 0; i < args.fields.length; i++){
-        this._fields[args[i]] = new sandbox.FormBuilder.Field(this);
+        this._fields[args.fields[i]] = new sandbox.FormBuilder.Field(this);
     }
 
     this._values = args.values || {};
@@ -17,8 +24,23 @@ sandbox.FormBuilder = function (args){
 
 
 sandbox.FormBuilder.prototype.field = function(name, args){
-    this.fields[name].field(args);
+    if(! (name in this._fields))
+        this._fields[name] = new sandbox.FormBuilder.Field(this);
+    this._fields[name].field(args);
 };
+
+sandbox.FormBuilder.prototype.render = function(){
+    var s = "<form";
+    s += " " + Util.format_htmlattr(this._attr);
+    s += ">"
+    for(var key in this._fields){
+        s += this._fields[key].render(key);
+    }
+
+    s += "</form>";
+    return s;
+};
+
 
 sandbox.FormBuilder.Field = function (form){
     args = args || {};
@@ -34,19 +56,21 @@ sandbox.FormBuilder.Field.prototype.field = function(args){
 };
 
 sandbox.FormBuilder.Field.prototype.render = function(name){
-    var values = this._options.values;
-    var default = this._options.default;
-    var s = name + ": ";
-    if(values == null){
+    var options = this._options.options;
+    var defvalue = this._options.defvalue;
+    var label = this._options.label || name;
+    var multiple = this._options.multiple;
+    var s = label + ": ";
+    if(options == null){
         return s + "<input type='text' name='"+name+"'" +
-            (default ? (" value='"+default + "'") : "") +
+            (defvalue ? (" value='"+defvalue + "'") : "") +
             "/>";
     }
-    if(values.length >= this._form._selectnum){
-        s += "<select name='"+this._name+"'>";
-        for(var i = 0; i < values.length; i++){
+    if(options.length >= this._form._selectnum){
+        s += "<select name='"+name+"'>";
+        for(var i = 0; i < options.length; i++){
             s += "<option";
-            var v = values[i];
+            var v = options[i];
             if(v == null) {
                 s += " value='$null$'>None"
             }
@@ -58,6 +82,23 @@ sandbox.FormBuilder.Field.prototype.render = function(name){
             }
             s += "</option>";
         }
+        s += "</select>";
+        return s;
+    }
+    if(this._options.multiple){
+        for(var i = 0; i < options.length; i++){
+            s += "<input type='checkbox' name='"+name+"' value='"+options[i]+"'/>";
+        }
+        return s;
+    }
+    if(options._length == 1){
+        s += "<input type='checkbox' name='"+name+"' value='"+options[0]+"'/>";
+        return s;
     }
 
+    for(var i = 0; i < options.length; i++){
+        s += "<input type='radio' name='"+name+"' value='"+options[i]+"'/>";
+    }
+    return s;
 };
+

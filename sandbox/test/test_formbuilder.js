@@ -10,9 +10,11 @@ print(qw('  a b c').length);
 
 var form = new FormBuilder({
     fields: qw('name gender email'),
-    attr: {action: "form_handler"},
+    attr: {action: "form_whoo"},
     action: "form_handler",
 });
 
-form.field('name', {gender: qw('male female')});
+form.field("gender", {options: qw('male female')});
+
+print(form.render());
 
