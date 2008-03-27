@@ -1,0 +1,210 @@
+
+<table>
+  <tr>
+    <td>
+      <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
+    </td>
+
+    <td>
+      <fieldset class="toolbox"><legend>Saved searches </legend>
+        <select onchange="doSavedSearch()" id="savedSearches" size="5">
+          <% db.bugtracker.searches.find({user: user}).forEach(function(search){
+             core.app.bugtracker.html.search(search, request.getURL());
+             }); %>
+      </select></fieldset>
+    </td>
+
+    <td>
+      <fieldset class="toolbox"><legend>Edit Selected</legend>
+        <div class="field"><input type="button" onclick="showConfirm()" value="Delete"></div>
+        <div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
+            <option value="">&nbsp;</option>
+            <option value="owner">Owner</option>
+            <option value="status">Status</option>
+            <option value="severity">Severity</option>
+            <option value="type">Type</option>
+            <option value="project">Project</option>
+            <option value="area">Area</option>
+          </select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
+          </select>
+        </div>
+        <div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
+        <div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
+      </fieldset>
+    </td>
+
+    <td>
+      <fieldset class="toolbox"><legend>Save this search</legend>
+        <form id="saveSearchForm" action="search_save" onsubmit="handleSaveSearch(); return false">
+          <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
+            <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
+          </div>
+        </form>
+      </fieldset>
+    </td>
+  </tr>
+</table>
+
+<script>
+var showClosed = document.getElementById("show_closed").checked ? true : false;
+function toggleClosed() {
+     showClosed = document.getElementById("show_closed").checked ? true : false;
+    refreshTable();
+}
+
+function doSavedSearch() {
+     var ary = document.getElementById("savedSearches").value.split("&");
+     var mapping = {};
+     for(var i = 0; i < ary.length; ++i){
+         var pair = ary[i].split('=');
+         mapping[pair[0]] = pair[1];
+     }
+
+    fillInForm(mapping);
+    lastSearch = document.getElementById("savedSearches").value;
+    clearOpts(document.getElementById("savedSearches"));
+    refreshTable();
+}
+
+showConfirm = function(){
+    var rows = getCheckedRows();
+    if(rows == "") {
+        alert("You must select at least one case to delete.");
+        return;
+    }
+
+    document.getElementById('confirm').style.display='block';
+    confirmDlg.bringToTop();
+    confirmDlg.rows = rows;
+    confirmDlg.show();
+};
+
+handleConfirm = function(){
+    confirmDlg.hide();
+    deleteSelected(confirmDlg.rows);
+};
+
+handleCancel = function(){
+    confirmDlg.hide();
+};
+
+function deleteSelected(rows) {
+     var passData = "action=delete&row="+rows;
+     // perform one big ajax call
+    refreshTable(passData);
+}
+
+function fillLevel2() {
+     document.getElementById("massChangeL2").options.length = 0;
+     l1 = document.getElementById("massChangeL1").value;
+     if(l1 == "") {
+          document.getElementById("massChangeL2").disabled = true;
+          return;
+     }
+     document.getElementById("massChangeL2").disabled = false;
+     if(l1 == "area")
+          fillLevel2Area();
+     else
+          document.getElementById("newarea_div").style.display = "none";
+
+     for(var i=0; i<l2[l1].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
+     }
+}
+
+function getProject() {
+     var i=0;
+     var row = myDataTable.getTrEl(i);
+     var project = "";
+     while(row) {
+          if(myDataTable.getRecord(row).getData("check")) {
+               if(project == "")
+                    project = myDataTable.getRecord(row).getData("project");
+               else if(project != myDataTable.getRecord(row).getData("project") || project == "none") {
+                    alert("Areas are specific to projects.  All selected cases must have the same project in order to change the area.");
+                    return;
+               }
+          }
+          row = myDataTable.getNextTrEl(row);
+          i++;
+     }
+     return project;
+}
+
+
+function fillLevel2Area() {
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+    if(!project) return;
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+
+     // if we made it here, there is at least one checkbox selected and all selected checkboxes have the same project listed
+     // so, now we find the areas based on project
+     for(var i=0; i<l2.area[project].length; i++) {
+          document.getElementById("massChangeL2").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
+     }
+
+     // also, show the "create new area" div
+     document.getElementById("newarea_div").style.display = "block";
+
+}
+
+
+function createArea() {
+     var newarea = document.getElementById("newarea_input").value;
+     if(newarea == "") {
+          alert("You must enter a name for the new area.");
+          return;
+     }
+     var project = getProject();
+     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
+     if(project.length == 0) {
+          alert("You must select at least one case to change areas.");
+          return;
+     }
+    _createArea(project, newarea);
+}
+
+function assignArea() {
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    if(dest == "") return;
+    clearOpts(document.getElementById("massChangeL1"));
+    clearOpts(document.getElementById("massChangeL2"));
+
+    var passData = "action=change&src="+src+"&dest="+dest+"&row=";
+    var rows = getCheckedRows();
+    if(rows.length == 0) {
+        alert("You must select at least one case to change the area.");
+        return;
+    }
+    passData += rows;
+
+    var area = document.getElementById("pickarea_sel").value;
+    passData += "&newarea="+area;
+    refreshTable(passData);
+    document.getElementById("newarea_div").style.display = "none";
+    document.getElementById("pickarea_div").style.display = "none";
+}
+
+handleSaveSearch = function(){
+    var u = lastSearch;
+    var name = document.getElementById("saveSearchName").value;
+    var passData = (u? u+"&": "") + "name="+encodeURIComponent(name);
+    ajax(passData, "search_save", function(response) {
+        var r = YAHOO.lang.JSON.parse(response);
+        var r1 = r.r1;
+        var r2 = r.r2;
+
+        document.getElementById("savedSearches").innerHTML += r1;
+        // This has to go in editsearches_form, because if it goes in
+        // editsearches, we break the YUI dialog close button.
+        document.getElementById("editsearches_form").innerHTML += r2;
+        document.getElementById("saveSearchName").value = "";
+    });
+};
+
+</script>
