@@ -121,32 +121,32 @@ function editProjOwner() {
 </script>
 
 <form>
-<div class="field">Project <select id="projectid" name="projectid" onchange="loadAreas()"><option value="">&nbsp;</option>
-<% db.bugtracker.projects.find({}).forEach(function(u){ %>
-                                                        <option value="<%= u.name %>"><%= u.name %></option>
-                                                        <% }); %>
-</select>
-</div>
+  <div class="field">Project <select id="projectid" name="projectid" onchange="loadAreas()"><option value="">&nbsp;</option>
+      <% db.bugtracker.projects.find({}).forEach(function(u){ %>
+      <option value="<%= u.name %>"><%= u.name %></option>
+      <% }); %>
+    </select>
+  </div>
 </form>
 
 
 <form>
-<div class="field">Owner <%= app.bugtracker.data.helper.select({u: null}, "u", "",
-                                      [false].concat(db.users.find({}).toArray()),
-                                      {view: function(u){return u?u.name:"None";},
-                                       value: function(u){return u?u._id:"null"; },
-                                       id: "projOwnerName",
-                                       onchange: "editProjOwner()"
-                                      }) %>
-</div>
+  <div class="field">Owner <%= app.bugtracker.data.helper.select({u: null}, "u", "",
+                               [false].concat(db.users.find({}).toArray()),
+                               {view: function(u){return u?u.name:"None";},
+                               value: function(u){return u?u._id:"null"; },
+                               id: "projOwnerName",
+                               onchange: "editProjOwner()"
+                               }) %>
+  </div>
 </form>
 
 <fieldset id="editProj_fieldset" style="display: none;"><legend>Edit an area</legend>
-<form>
-<div id="editProj_area">
-</div>
-<input id="projEdit_area_txt" type="text"><input type="button" value="Create New Area" onclick="projEdit_newArea()">
-</form>
+  <form>
+    <div id="editProj_area">
+    </div>
+    <input id="projEdit_area_txt" type="text"><input type="button" value="Create New Area" onclick="projEdit_newArea()">
+  </form>
 </fieldset>
 
 
