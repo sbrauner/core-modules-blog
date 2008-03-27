@@ -32,6 +32,7 @@
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -82,8 +83,8 @@ var blockYUIParen = function ( e ) {
 };
 
 var histfunc = function( e ) {
-
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
+    var key = e.keyCode || e.which;
     var cmd = document.getElementById("commandac");
     var setcmd = function () {
         if ( arguments.length ) {
