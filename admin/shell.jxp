@@ -28,9 +28,13 @@
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
-               YAHOO.util.Event.addListener(document, "keyup", blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
+               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
+
+               // Cross-browser key events MADNESS. I don't know why this works, but
+               // doing this on keydown works in Konq and FF, but Safari needs this
+               // on keypress.
                if(YAHOO.env.ua.webkit != 1)
                    YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
                else
