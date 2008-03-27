@@ -87,7 +87,7 @@ if(!showClosed) {
      });
 }
 
-print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
+print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
                                                         title: true, owner: function(p){ return p? p.name: "none"},
                                                         status: true, severity: true, type: true,
                                                         project: function(p){ return p? p.name: "none"},

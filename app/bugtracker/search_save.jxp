@@ -16,6 +16,6 @@ db.bugtracker.searches.save(s);
 var r1 = Ext.asString(core.app.bugtracker.html.search, [s]);
 var r2 = Ext.asString(core.app.bugtracker.html.search_dlg_entry, [s]);
 
-print(io.Encode.JSON({r1: r1, r2: r2}));
+print(tojson({r1: r1, r2: r2}));
 
 %>
