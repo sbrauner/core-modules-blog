@@ -166,7 +166,7 @@ l2.area = { <%
 
 function _createArea(project, areaname) {
 
-     ajax("action=add&edproject="+project+"&newarea="+areaname, "area", function(response) {
+     ajax("action=add&edproject="+project+"&newarea="+areaname, "project", function(response) {
           if(response == "") {
                alert("Area already exists for project.");
                return;
