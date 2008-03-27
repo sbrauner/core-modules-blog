@@ -31,8 +31,10 @@
                YAHOO.util.Event.addListener(document, "keyup", blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+               if(YAHOO.env.ua.webkit != 1)
+                   YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",histfunc);
+               else
+                   YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
