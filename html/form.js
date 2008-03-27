@@ -14,8 +14,8 @@ Then we have forms in tables... we'll deal with those later
 */
 
 html.FormBuilder = {
-    stdClass = null;
-    dateFormat = "";
+    stdClass: null,
+    dateFormat: ""
 };
 
 html.FormBuilder = function(attr) {
