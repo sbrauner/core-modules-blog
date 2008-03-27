@@ -28,6 +28,7 @@ if( request.powner ){
 
 <script>
 
+// Associate owners with project
 projOwners = {
     <%
     var projects = db.bugtracker.projects.find().toArray();
@@ -113,13 +114,11 @@ function projEdit_newArea() {
 }
 
 function editProjOwner() {
-                                            var owner = document.getElementById("projOwnerName");
+    var owner = document.getElementById("projOwnerName");
     userid = owner.value;
     project = document.getElementById("projectid").value;
     ajax("action=owner&edowner="+userid+"&edproject="+project, "project");
-
-                                            projOwners[project] = owner.options[owner.selectedIndex].innerHTML;
-
+    projOwners[project] = owner.options[owner.selectedIndex].innerHTML;
 }
 
 </script>
