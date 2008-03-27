@@ -49,7 +49,7 @@ if(request.action == "change") {
 
           db.bugtracker.cases.save(c);
          delete req.newarea;
-         core.app.bugtracker.email_send(c, false);
+         fork(core.app.bugtracker.email_send, request, user, c, false).start();
      }
     delete req.dest; delete req.src; delete req.row; delete req.area;
 }
