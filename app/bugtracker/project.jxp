@@ -55,6 +55,7 @@ else if(request.action == "owner") {
         owner = db.users.findOne({ _id : request.edowner });
 
     proj.owner = owner;
+log(tojson(proj));
     db.bugtracker.projects.save(proj);
 }
 %>
