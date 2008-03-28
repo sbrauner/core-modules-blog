@@ -1,0 +1,44 @@
+<%
+htmlheader();
+
+col1 = {};
+col1.width = 5;
+col1.margin = .5;
+col1.unit = "em";
+
+%>
+
+<style>
+
+label {
+    display: block;
+    text-align: right;
+    width: <%= col1.width+col1.unit %>;
+    float: left;
+    margin-right: <%= col1.margin+col1.unit %>;
+}
+div.fieldval {
+    display: inline;
+}
+div.col2 {
+    margin-left: <%= (col1.width+col1.margin)+col1.unit %>;
+}
+</style>
+
+<%
+core.html.form();
+var x = new html.FormBuilder({name: "myform", action: "send", method: "POST"});
+x.add("string", "Name:");
+x.add("input");
+x.render();
+%>
+
+<form>
+<fieldset><legend>Test Form</legend>
+<div class="field"><label for="name">Name</label><div class="fieldval"><input type="text"></div></div>
+<div class="field"><label for="address">Address</label><div class="fieldval"><input type="text"></div></div>
+<div class="field"><div class="col2"><input type="submit"></div></div>
+</fieldset>
+</form>
+
+<% htmlfooter(); %>

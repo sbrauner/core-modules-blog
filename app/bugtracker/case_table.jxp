@@ -49,9 +49,9 @@ if(request.action == "change") {
 
           db.bugtracker.cases.save(c);
          delete req.newarea;
+         fork(core.app.bugtracker.email_send, request, user, c, false).start();
      }
     delete req.dest; delete req.src; delete req.row; delete req.area;
-    core.app.bugtracker.email_send(c, false);
 }
 else if(request.action == "delete") {
      var cases = request.row.split(",");
@@ -87,7 +87,7 @@ if(!showClosed) {
      });
 }
 
-print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
+print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
                                                         title: true, owner: function(p){ return p? p.name: "none"},
                                                         status: true, severity: true, type: true,
                                                         project: function(p){ return p? p.name: "none"},

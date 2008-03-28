@@ -96,7 +96,7 @@ else if(request.fstatus){
         db.bugtracker.cases.save(feature);
 
         if(mail){
-            core.app.bugtracker.email_send(feature, feature_new);
+            core.app.bugtracker.email_send(request, user, feature, feature_new);
             append = "";
         }
         else {
