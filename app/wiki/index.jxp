@@ -28,6 +28,9 @@ if ( ! request.name )
     // Construct the full name of the page if we have a prefix defined for this instance
     var name = displayName;
 
+assert( app ); 
+assert( app.wiki );
+
     if ( app.wiki.config.prefix && ! displayName.match( "^" + app.wiki.config.prefix ) )
         name = app.wiki.config.prefix + displayName;
 

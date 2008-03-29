@@ -7,8 +7,10 @@ head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
 
 var menu = [ 
     { name : "Home" , link : "/admin/" } ,
-    { name : "Site" , link : "#" , 
+    { name : "System..." , link : "#" , 
       submenu : [
+          { name : "Logs in Memory" , link : "/admin/logMemory.jxp" } ,
+          { name : "Scrolling Logs" , link : "/admin/logScroll.jxp" } ,
           { name : "Users" , link : "/admin/users.jxp" } ,
           { name : "Database" , link : "/admin/database.jxp" } ,
           { name : "Files" , link : "/admin/files.jxp" } ,
@@ -16,14 +18,14 @@ var menu = [
           { name : "Usage" , link : "/admin/usage.jxp" }
       ]
     } ,
-    { name : "Local" , link : "#" , 
+    { name : "Editor" , link : "/admin/ed" } ,
+    { name : "Shell" , link : "/admin/shell.jxp" } ,
+    { name : "Git" , link : "/admin/gitLocal.jxp" } ,
+    { name : "Docs..." , link : "#" , 
       submenu : [
-          { name : "Local Edit" , link : "/admin/localEdit.jxp" } ,
-          { name : "Logs in Memory" , link : "/admin/logMemory.jxp" } ,
-          { name : "Scrolling Logs" , link : "/admin/logScroll.jxp" } ,
-          { name : "Git" , link : "/admin/gitLocal.jxp" } ,
-          { name : "Shell" , link : "/admin/shell.jxp" } ,
-          { name : "Docs" , link : "/admin/doc.jxp" } ,
+          { name : "Documentation" , link : "http://www.10gen.com/wiki/" }, 
+          { name : "Browse Code" , link : "/admin/doc?f=/" } ,
+          { name : "Browse corejs" , link : "http://corejs.10gen.com/admin/doc?f=/" } ,
       ]
     }
 ];

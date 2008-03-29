@@ -6,8 +6,10 @@
 %>
 
 <pre>
-
 <%
+    if( request.f == null )
+	request.f == '/';
+
     var expand = request.expand;
 
     function breadcrumbs(f) { 
@@ -162,7 +164,6 @@
 	print(str);
     }
 
-
     if ( request.f ){
 
 	if( request.f == '/' )
@@ -197,7 +198,7 @@
 	}
       }
       else {
-	print( "no file" );
+	print( "no file to view specified" );
       }
 %>
 
