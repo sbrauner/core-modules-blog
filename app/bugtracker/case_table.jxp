@@ -8,6 +8,9 @@ core.app.bugtracker.data.feature();
 
 var liveDataCursor, query;
 
+// This will keep track of the "leftover" arguments, to be used in search.
+var req = Object.extend({}, request);
+
 var queryForms = {
     owner: function(name) {
         // Search insensitively on the username. If we don't find one,
@@ -23,24 +26,7 @@ var queryForms = {
     }
 };
 
-// Search across all fields
-if(request.action == "search") {
-     var searchobj = {};
-     var tempLive;
-     for(var q in request) {
-         if(q == "action" || q == "showClosed")
-             continue;
-         if(request[q] == "none")
-             query = null;
-         else {
-             query = new RegExp("(.*)"+request[q]+"(.*)", "i");
-             if(queryForms[q]) query = queryForms[q](query);
-         }
-         searchobj[q] = query;
-     }
-     liveDataCursor = db.bugtracker.cases.find(searchobj).toArray();
-}
-else if(request.action == "change") {
+if(request.action == "change") {
      var cases = request.row.split(",");
      var cat = request.src;
      var subcat = request.dest;
@@ -53,28 +39,45 @@ else if(request.action == "change") {
           }
          else if(cat == "project") {
              c.project = db.bugtracker.projects.findOne({ name: subcat});
-             if(request.area == "none")
+             if(request.newarea == "none")
                  c.area = "";
-             else if(request.area)
-                 c.area = request.area;
+             else if(request.newarea)
+                 c.area = request.newarea;
           }
           else
                c[cat] = subcat;
 
           db.bugtracker.cases.save(c);
+         delete req.newarea;
+         fork(core.app.bugtracker.email_send, request, user, c, false).start();
      }
+    delete req.dest; delete req.src; delete req.row; delete req.area;
 }
 else if(request.action == "delete") {
      var cases = request.row.split(",");
      for(var x in cases)
           db.bugtracker.cases.remove( { _id: cases[x] } );
-}
-
-if(!liveDataCursor) {
-     liveDataCursor = db.bugtracker.cases.find().sort({number: 1}).toArray();
+    delete req.row;
 }
 
 var showClosed = (request.showClosed == "false") ? false : true;
+
+// Search across all leftover fields
+var searchobj = {};
+var tempLive;
+for(var q in req) {
+    if(q == "action" || q == "showClosed")
+        continue;
+    if(req[q] == "none")
+        query = null;
+    else {
+        query = new RegExp("(.*)"+req[q]+"(.*)", "i");
+        if(queryForms[q]) query = queryForms[q](query);
+    }
+    searchobj[q] = query;
+}
+
+liveDataCursor = db.bugtracker.cases.find(searchobj).sort({number: 1}).toArray();
 
 if(!showClosed) {
      liveDataCursor = liveDataCursor.filter(function(x) {
@@ -84,7 +87,7 @@ if(!showClosed) {
      });
 }
 
-print(io.Encode.JSON({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
+print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
                                                         title: true, owner: function(p){ return p? p.name: "none"},
                                                         status: true, severity: true, type: true,
                                                         project: function(p){ return p? p.name: "none"},

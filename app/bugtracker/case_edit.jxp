@@ -37,7 +37,17 @@ Forms.fillInObject( "f", feature );
 head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css\"/>");
 head.push("<link rel=\"stylesheet\" href='assets/threaded.css' type=\"text/css\"/>");
 if(feature.project == "null") feature.project = null;
-if(request.fstatus){
+else if(typeof feature.project == "string") {
+    feature.project = db.bugtracker.projects.findOne({_id: feature.project});
+}
+
+var error = "";
+
+// We use fstatus as a generic "user has submitted form" check.
+if(request.fstatus && request.ftitle == ""){
+    error = "A bug report must have a title!";
+}
+else if(request.fstatus){
      var targetRel = request.ftargetrelease;
      if(targetRel == "newRel") {
           db.bugtracker.releases.save({text: request.extra_ftargetrelease });
@@ -86,40 +96,7 @@ if(request.fstatus){
         db.bugtracker.cases.save(feature);
 
         if(mail){
-            var subj = "[cases] Case " + feature.number + " \"" + feature.title + "\"";
-            if(! feature_new) subj += " changed";
-            else subj += " added";
-            var link = new URL(request.getURL()).replaceArg("id", feature._id.toString())
-            link.hostname = request.getHost();
-            link.port = request.getPort();
-            link = link.toString();
-
-            var asString = function(f, args){
-                var oldPrint = print;
-                var buf = "";
-                print = function(s){ buf += s; };
-                f.apply(null, args);
-                print = oldPrint;
-                return buf.trim();
-            };
-
-            body = asString(core.app.bugtracker.mail, [feature, user, link]);
-
-            m = new Mail.Message( subj, body );
-            m.addRecipient(  feature.reporter.email  );
-            if(feature.owner)
-                m.addRecipient(  feature.owner.email , "cc" );
-            if(feature && feature.project && feature.project.owner && feature.project.owner.email)
-                m.addRecipient(  feature.project.owner.email , "cc" );
-            if(feature && feature.project){
-                area = feature.project.areas.filter(function(a){ return a.name == feature.area; })[0];
-                if(area && area.owner && area.owner.email){
-                    m.addRecipient(  area.owner.email , "cc" );
-                }
-            }
-
-
-            m.send( mail );
+            core.app.bugtracker.email_send(request, user, feature, feature_new);
             append = "";
         }
         else {
@@ -129,9 +106,11 @@ if(request.fstatus){
          // Redirect back to bugs/ or whatever
          if(request.action != "Save and Add Another") {
               response.setResponseCode(301);
-             var referer = request.referer;
-             if(referer == "null") referer = "./";
-              response.setHeader("Location", referer);
+             if(request.search && request.page)
+                 var link = "./?search=" + escape(request.search) + "&page=" + request.page;
+             else
+                 var link = "./";
+              response.setHeader("Location", link);
          }
         else {
             var oldfeature = feature;
@@ -241,12 +220,16 @@ function ObjectId(){ return null; }
       </ul>
       Here's your version:
     </div>
-    <% } %>
+    <% }
+      else if(error) { %>
+    <span class="errormsg"><%= error %></span>
 
+    <% } %>
     <form method="POST" action="<%= postTarget.toString() %>">
     <input type="hidden" name="f_id"/>
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
-<input type="hidden" name="referer" value="<%= (request.referer) ? request.referer : request.getHeader("Referer") %>"/>
+<input type="hidden" name="search" value="<%= request.search ? request.search : "" %>"/>
+<input type="hidden" name="page" value="<%= request.page ? request.page : "" %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>

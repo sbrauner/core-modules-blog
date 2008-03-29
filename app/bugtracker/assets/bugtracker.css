@@ -100,9 +100,7 @@ div#wholething {
     z-index: -1;
 }
 div#editsearches {
-    background: #E0E0E0;
     text-align: center;
-    padding-bottom: 12px;
 }
 
 fieldset.toolbox {
@@ -119,4 +117,8 @@ div#toolbox input, div#toolbox select {
     border: 1px solid black;
     font-size: 12px;
     padding: 2px;
+}
+
+form.inline {
+    display: inline;
 }

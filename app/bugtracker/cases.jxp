@@ -16,92 +16,94 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
 
 
 <html>
-    <head>
-        <title>Cases List</title>
-        <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
-        <script type="text/javascript" src="/@@/yui/current/container/container_core.js"></script>
-        <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
-        <script type="text/javascript" src="assets/menu.js"></script>
-    </head>
-<body class="yui-skin-sam">
-        <div id="top_menu" class="yuimenubar">
-            <div class="bd">
-                <ul class="first-of-type">
-                    <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
-                    <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
-                    <li class="yuimenubaritem first-of-type"><a href="project_edit">Edit a Project</a></li>
-<li class="yuimenubaritem first-of-type" onclick="document.getElementById('editsearches').style.display='block'; oMenu.show()">Edit Saved Searches</li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="yui-main">
-
-    <% if(request.msg){ %>
-        <div class="notice"><%= content.HTML.escape_html(request.msg) %>
-    <% } %>
-
-<div id="toolbox">
-<span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
-<fieldset class="toolbox"><legend>Saved searches </legend>
-<select onchange="doSavedSearch()" id="savedSearches" size="5">
-    <% db.bugtracker.searches.find({user: user}).forEach(function(search){
-        core.app.bugtracker.html.search(search, request.getURL());
-    }); %>
-</select></fieldset>
-
-<fieldset class="toolbox"><legend>Edit Selected</legend>
-<div class="field"><input type="button" onclick="deleteSelected()" value="Delete"></div>
-<div class="field">Change <select onchange="fillLevel2()" id="massChangeL1" name="massChangeL1">
-<option value="">&nbsp;</option>
-<option value="owner">Owner</option>
-<option value="status">Status</option>
-<option value="severity">Severity</option>
-<option value="type">Type</option>
-<option value="project">Project</option>
-<option value="area">Area</option>
-</select> to <select onchange="commitChanges()" id="massChangeL2" name="massChangeL2" disabled>
-</select>
-</div>
-<div class="field" id="pickarea_div" style="display: none;">Choose an area: <select id="pickarea_sel" onchange="assignArea()"></select></div>
-<div class="field" id="newarea_div" style="display: none;"><input type="text" id="newarea_input"><input type="button" value="Create New Area" onclick="createArea()"></div>
-</fieldset>
-
-  <fieldset class="toolbox"><legend>Save this search</legend>
-    <form id="saveSearchForm" action="search_save" onsubmit="handleSaveSearch(); return false">
-      <div class="field"><label>Search name</label> <input type="text" name="name" class="text" id="saveSearchName">
-      <input type="button" value="Save" onclick="handleSaveSearch()" class="button">
+  <head>
+    <title>Cases List</title>
+    <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="/@@/yui/current/container/container_core.js"></script>
+    <script type="text/javascript" src="/@@/yui/current/menu/menu.js"></script>
+    <script type="text/javascript" src="assets/menu.js"></script>
+  </head>
+  <body class="yui-skin-sam">
+    <div id="top_menu" class="yuimenubar">
+      <div class="bd">
+        <ul class="first-of-type">
+          <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
+          <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
+          <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</a></li>
+          <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
+        </ul>
       </div>
+    </div>
+
+    <div id="yui-main">
+
+<%
+if(request.msg){ %>
+<div class="notice"><%= content.HTML.escape_html(request.msg) %>
+  <% } %>
+
+  <div id="toolbox">
+    <% core.app.bugtracker.html.toolbox(); %>
+  </div>
+
+
+<!-- Dialogs section -->
+
+<div id="confirm" style="display: none;">
+  <div class="hd">Delete Cases</div>
+  <div class="bd">
+    <form id="confirmForm">
+      <div class="field">Are you sure you want to delete these bug reports?</div>
+      <div class="btns"><input type="button" value="Delete" onclick="handleConfirm()" class="button"><input type="button" class="button" value="Cancel" onclick="handleCancel()"></div>
     </form>
-</fieldset>
+  </div>
 </div>
 
 <div id="editsearches" style="display: none">
-<form>
-<%
-db.bugtracker.searches.find({user: user}).forEach(function(search){
-    core.app.bugtracker.html.search_dlg_entry(search);
-});
-%>
-</form>
+  <div class="hd">Edit Saved Searches</div>
+  <div class="bd">
+    <form id="editsearches_form">
+      <%
+         db.bugtracker.searches.find({user: user}).forEach(function(search){
+         core.app.bugtracker.html.search_dlg_entry(search);
+         }); %>
+    </form>
+  </div>
 </div>
 
-
-<div id="bugJar">
+<div id="editproject" style="display: none">
+  <div class="hd">Edit Project</div>
+  <div class="bd">
+    <% core.app.bugtracker.project_edit(); %>
+  </div>
 </div>
 
-<div id="newCase">
+<!-- End dialogs section -->
 
-</div>
+
+<!-- Begin bug table -->
+<table>
+  <tr valign="top">
+    <td>
+      <div id="bugJar">
+      </div>
+    </td>
+    <td>
+      <form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>
+    </td>
+  </tr>
+</table>
+<!-- End bug table -->
 
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
 
+
 function deleteSearch(id) {
-     document.getElementById("div_"+id).style.display="none";
-     ajax("id="+id, "search_delete");
-    document.getElementById("Search_"+id+"_name").style.display = "none";
+    document.getElementById("div_"+id).style.display="none";
+    ajax("id="+id, "search_delete");
+    document.getElementById("savedSearches").removeChild(document.getElementById("Search_"+id+"_name"));
 }
 
 var ok;
@@ -161,97 +163,17 @@ l2.area = { <%
             }
             %> };
 
-function deleteSelected() {
-     var rows = getCheckedRows();
-     if(rows == "") {
-          alert("You must select at least one case to delete.");
-          return;
-     }
+function _createArea(project, areaname) {
 
-     var passData = "showClosed="+showClosed+"&action=delete&row="+rows;
-     // perform one big ajax call
-     myDataSource.sendRequest(passData, updateCaseTable);
-}
-
-function getProject() {
-     var i=0;
-     var row = myDataTable.getTrEl(i);
-     var project = "";
-     while(row) {
-          if(myDataTable.getRecord(row).getData("check")) {
-               if(project == "")
-                    project = myDataTable.getRecord(row).getData("project");
-               else if(project != myDataTable.getRecord(row).getData("project") || project == "none") {
-                    alert("Areas are specific to projects.  All selected cases must have the same project in order to change the area.");
-                    return;
-               }
-          }
-          row = myDataTable.getNextTrEl(row);
-          i++;
-     }
-     return project;
-}
-
-function fillLevel2Area() {
-     var project = getProject();
-     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
-    if(!project) return;
-     if(project.length == 0) {
-          alert("You must select at least one case to change areas.");
-          return;
-     }
-
-     // if we made it here, there is at least one checkbox selected and all selected checkboxes have the same project listed
-     // so, now we find the areas based on project
-     for(var i=0; i<l2.area[project].length; i++) {
-          document.getElementById("massChangeL2").options[i] = new Option(l2.area[project][i], l2.area[project][i]);
-     }
-
-     // also, show the "create new area" div
-     document.getElementById("newarea_div").style.display = "block";
-
-}
-
-function createArea() {
-     var newarea = document.getElementById("newarea_input").value;
-     if(newarea == "") {
-          alert("You must enter a name for the new area.");
-          return;
-     }
-     var project = getProject();
-     // what should actually be done is that the area option should be disabled unless at least one checkbox is checked
-     if(project.length == 0) {
-          alert("You must select at least one case to change areas.");
-          return;
-     }
-
-     ajax("project="+project+"&area="+newarea, "area_add.jxp", function(response) {
+     ajax("action=add&edproject="+project+"&newarea="+areaname, "project", function(response) {
           if(response == "") {
                alert("Area already exists for project.");
                return;
           }
-          document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
-          document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
+         document.getElementById("massChangeL2").options[document.getElementById("massChangeL2").options.length] = new Option(response, response);
+         document.getElementById("pickarea_sel").options[document.getElementById("pickarea_sel").options.length] = new Option(response, response);
+         return;
      });
-}
-
-
-function fillLevel2() {
-     document.getElementById("massChangeL2").options.length = 0;
-     l1 = document.getElementById("massChangeL1").value;
-     if(l1 == "") {
-          document.getElementById("massChangeL2").disabled = true;
-          return;
-     }
-     document.getElementById("massChangeL2").disabled = false;
-     if(l1 == "area")
-          fillLevel2Area();
-     else
-          document.getElementById("newarea_div").style.display = "none";
-
-     for(var i=0; i<l2[l1].length; i++) {
-          document.getElementById("massChangeL2").options[i] = new Option(l2[l1][i], l2[l1][i]);
-     }
 }
 
 function getCheckedRows() {
@@ -269,27 +191,29 @@ function getCheckedRows() {
      return passData.substring(0, passData.length-1);
 }
 
-function assignArea() {
-    var src = document.getElementById("massChangeL1").value;
-    var dest = document.getElementById("massChangeL2").value;
-    var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
-    var rows = getCheckedRows();
-    if(rows.length == 0) {
-        alert("You must select at least one case to change.");
-        return;
-    }
-    passData += rows;
+function setCheckedRows(b) {
+     var row = myDataTable.getTrEl(0);
+     while(row) {
+         myDataTable.getRecord(row).setData("check", b);
+         row = myDataTable.getNextTrEl(row);
+     }
+}
 
-    var area = document.getElementById("pickarea_sel").value;
-    passData += "&area="+area;
-    myDataSource.sendRequest(passData, updateCaseTable);
+
+function clearOpts(el) {
+    var opts = el.options;
+    for(var x in opts) {
+        opts[x].selected = false;
+    }
 }
 
 function commitChanges() {
     // figure out the column to change, and to what
-     var src = document.getElementById("massChangeL1").value;
-     var dest = document.getElementById("massChangeL2").value;
-     var passData = "showClosed="+showClosed+"&action=change&src="+src+"&dest="+dest+"&row=";
+    var src = document.getElementById("massChangeL1").value;
+    var dest = document.getElementById("massChangeL2").value;
+    if(dest == "") return;
+
+     var passData = "action=change&src="+src+"&dest="+dest+"&row=";
 
      // go through the table and find all selected rows
      var rows = getCheckedRows();
@@ -308,47 +232,42 @@ function commitChanges() {
           document.getElementById("newarea_div").style.display = "block";
      }
     else {
+        clearOpts(document.getElementById("massChangeL1"));
+        clearOpts(document.getElementById("massChangeL2"));
         // perform one big ajax call
-        myDataSource.sendRequest(passData, updateCaseTable);
+        refreshTable(passData);
     }
 }
 
-var showClosed = document.getElementById("show_closed").checked ? true : false;
-function toggleClosed() {
-     showClosed = document.getElementById("show_closed").checked ? true : false;
-     doSearch();
+
+function fillInForm(mapping) {
+    var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i=0; i<fields.length; i++) {
+        if(mapping[fields[i].name]) {
+            fields[i].value = mapping[fields[i].name];
+        }
+        else {
+            fields[i].value = "";
+        }
+    }
 }
 
-function doSavedSearch() {
-     var passData = "showClosed="+showClosed+"&action=search&"+document.getElementById("savedSearches").value;
-     var ary = document.getElementById("savedSearches").value.split("&");
-     var mapping = {};
-     for(var i = 0; i < ary.length; ++i){
-         var pair = ary[i].split('=');
-         mapping[pair[0]] = pair[1];
-     }
-     var fields = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     for(var i=0; i<fields.length; i++) {
-          if(mapping[fields[i].name]) {
-              fields[i].value = mapping[fields[i].name];
-          }
-          else {
-              fields[i].value = "";
-          }
-     }
-
-     lastSearch = document.getElementById("savedSearches").value;
-     myDataSource.sendRequest(passData, updateCaseTable);
-}
 
 function clearSearch() {
-     var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-     for(var i in myarr) {
-          myarr[i].value="";
-     }
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value="";
+    }
+    doSearch();
 }
 
 function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    refreshTable();
+}
+
+function getSearchArgs() {
      var passData = "";
      var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
      var dict = {};
@@ -369,49 +288,41 @@ function doSearch() {
          pairs.push(key+"="+dict[key]);
      }
 
-
      passData = pairs.join('&');
-     lastSearch = passData;
-     var passData = "showClosed="+showClosed+"&action=search&"+passData;
+    return passData;
+}
 
-     // perform one big ajax call
-     myDataSource.sendRequest(passData, updateCaseTable);
+function refreshTable(passData){
+    if(passData) passData = passData+"&";
+    else passData = "";
+    myDataSource.sendRequest(passData + "showClosed="+showClosed+"&"+lastSearch, updateCaseTable);
+    YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked = false;
 }
 
 function myNewBugs(name) {
-    myDataSource.sendRequest("action=search&owner="+name+"&status=new", updateCaseTable);
+    fillInForm({owner: name, status: "new"});
+    doSearch();
 };
 
 var myDataTable, myDataSource, updateCaseTable;
 
 function addForm(name, x) {
-    return '<form onsubmit="doSearch(); return false;"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
+    return '<form onsubmit="doSearch(); return false;" class="inline"><input type="text" name="'+name+'" size="'+x+'" class="minisearch"></form>';
 }
 
 toggleCheckAll = function() {
-     var act = document.getElementById("checkall").checked ? false : true;
+    var act = YAHOO.util.Dom.getElementsByClassName("checkall")[1].checked ? true : false;
      var checks = document.getElementById("bugJar").getElementsByTagName("input");
      for(var i =0; i<checks.length; i++) {
-          if(checks[i].type=="checkbox")
+         if(checks[i].type=="checkbox") {
                checks[i].checked = act;
+         }
      }
+    setCheckedRows(act);
 }
 
-handleSaveSearch = function(){
-    var u = lastSearch;
-    var name = document.getElementById("saveSearchName").value;
-    var passData = (u? u+"&": "") + "name="+encodeURIComponent(name);
-    ajax(passData, "search_save", function(response) {
-        var r = YAHOO.lang.JSON.parse(response);
-        var r1 = r.r1;
-        var r2 = r.r2;
 
-        document.getElementById("savedSearches").innerHTML += r1;
-        document.getElementById("editsearches").innerHTML += r2;
-    });
-};
-
-var oMenu;
+var oMenu, checkAll = false;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
@@ -419,18 +330,50 @@ var loader = new YAHOO.util.YUILoader( {
      loadOptional: true,
      onSuccess: function() {
          var myPaginator = new YAHOO.widget.Paginator({
-             rowsPerPage: 10,
+             rowsPerPage: 30,
              alwaysVisible : false
          });
 
+         confirmDlg = new YAHOO.widget.Dialog("confirm", {
+             width: "400px",
+             fixedcenter: true,
+             modal: true,
+             visible: false,
+             draggable: true
+         });
+         confirmDlg.render(document.body);
+         confirmDlg.callback = { success: handleConfirm };
+
           YAHOO.util.Event.onContentReady("editsearches", function () {
                oMenu = new YAHOO.widget.Panel("editsearches", {width: "400px", visible: false, fixedcenter: true});
-               oMenu.setHeader("Edit Saved Searches");
                oMenu.render();
           });
 
+         YAHOO.util.Event.onContentReady("editproject", function() {
+             projEditPanel = new YAHOO.widget.Panel("editproject", {width: "400px", visible: false, fixedcenter: true});
+             projEditPanel.render();
+         });
+
+         // FIXME: ha ha ha
+         // Firefox saves partially completed forms, leading to weird results like reloading the page
+         // doesn't reload the values of the "rename" text fields in the "edit saved searches"
+         // dialog. Additionally, if you delete an entry from the middle, sometimes Firefox will
+         // get confused on subsequent reloads and show old names on the wrong forms.
+         // The best part about this all is that if you look at the elements in Firebug,
+         // they have the right "value" attributes! But somehow the values are all wrong!
+         // Because: Firefox is setting the value of these nodes in JS after the page is rendered.
+         //
+         // THIS IS INFURIATING.
+         //
+         // Fortunately the html ("correct") values are stored somewhere (the defaultValue property)
+         // so we just force those fields to be correct after the page is loaded. THAT WILL SHOW THEM.
+         var defaultAry = YAHOO.util.Dom.getElementsByClassName("useDefault");
+         for(var i = 0; i < defaultAry.length; i++){
+             defaultAry[i].value = defaultAry[i].defaultValue;
+         }
+
           var myColumnDefs = [
-               {label: '<form><input type="button" value="Search" onclick="doSearch()"><input type="button" value="Clear" onclick="clearSearch()"></form>', children: [{label: '<input type="checkbox" id="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
+              {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
                {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
                {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
                {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
@@ -441,12 +384,29 @@ var loader = new YAHOO.util.YUILoader( {
                {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]}
           ];
 
-          <%
-          dsOpts = Util.format_queryargs(request);
-          log(dsOpts);
-          %>
+         var dbURL = "case_table?";
+         var startSearch = dbURL;
+         <%
+         if(request.search){
+             var args = request.search.split('&');
+             var mapping = {};
+             for(var i = 0; i < args.length; i++){
+                 var pair = args[i].split('=');
+                 mapping[pair[0]] = (pair[1]);
+             }
+         %>
+         var mapping = <%= tojson(mapping) %>;
+         lastSearch = getSearchArgs();
+         var pairs = [];
+         for(var i in mapping){
+             pairs.push(i+'='+mapping[i]);
+         }
+             startSearch = startSearch+pairs.join('&');
+         <%
+         }
+         %>
 
-          myDataSource = new YAHOO.util.DataSource("case_table?<%= dsOpts %>");
+          myDataSource = new YAHOO.util.DataSource(startSearch);
           myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
           myDataSource.connXhrMode = "queueRequests";
           myDataSource.responseSchema = {
@@ -465,7 +425,7 @@ var loader = new YAHOO.util.YUILoader( {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                     return;
 
-               location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id");
+              location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
           }
 
           myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
@@ -473,9 +433,21 @@ var loader = new YAHOO.util.YUILoader( {
           myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
           myDataTable.subscribe("checkboxClickEvent", function(oArgs){
-               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
-               oRecord.setData("check",oArgs.target.checked);
+              var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
+              oRecord.setData("check",oArgs.target.checked);
+
+              checkAlls = YAHOO.util.Dom.getElementsByClassName("checkall");
+              if(oArgs.target.checked == false) {
+                  checkAlls[1].checked = false;
+              }
           });
+
+         myDataSource.liveData = "case_table?";
+
+         <% if(request.search){ %>
+         fillInForm(mapping);
+         <% } %>
+
           updateCaseTable = {
               success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
                failure : myDataTable.onDataReturnInitializeTable,

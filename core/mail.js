@@ -98,7 +98,8 @@ Mail.SMTP.gmail = function( username , password ){
 
 // For now, IMAP is only being used with one account on gmail and only looking at the inbox.  
 // When this changes, these variables will need to change:
-
+var username = "10gen.auto@gmail.com";
+var password = "jumpy171";
 
 // Creates a new imap session (not connected)
 Mail.IMAP = function( addr , server , username , password , ssl , port ){
@@ -145,7 +146,7 @@ Mail.IMAP.gmail = function( username , password ){
     imap._session.setDebug(true);
 
     var store = imap._session.getStore("imap");
-    store.connect("imap.gmail.com", 993, "10gen.auto@gmail.com","jumpy171");
+    store.connect("imap.gmail.com", 993, username, password);
     
     if(!store.isConnected()) {
 	log("not connected");

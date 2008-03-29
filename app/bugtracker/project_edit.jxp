@@ -24,65 +24,132 @@ if( request.powner ){
     }
     db.bugtracker.projects.save(project);
 }
+%>
 
-if(! project){
-    htmlheader("Select a project");
- %>
+<script>
+
+// Associate owners with project
+projOwners = {
+    <%
+    var projects = db.bugtracker.projects.find().toArray();
+    for(var p in projects) {
+        print("\""+projects[p].name+"\" : \""+(projects[p].owner ? projects[p].owner.name : "None")+"\",");
+    }
+    %>
+};
+
+function renameArea(oldarea, projname, i){
+    var newarea = document.getElementById("area_"+i).value;
+    if(newarea == "") {
+        alert("You cannot rename an area \"\".");
+        return;
+    }
+    ajax("action=rename&oldarea="+oldarea+"&newarea="+newarea+"&edproject="+projname, "project", function(response) {
+        refreshTable();
+    });
+}
+
+function deleteArea(area, projname, i) {
+    ajax("action=delete&delarea="+area+"&edproject="+projname, "project", function(response) {
+        document.getElementById("area_div"+i).style.display="none";
+        refreshTable();
+    });
+}
+
+var numdivs = 0;
+function loadAreas() {
+    project = document.getElementById("projectid").value;
+    if(project == "")  {
+        document.getElementById("editProj_fieldset").style.display = "none";
+        document.getElementById("projOwnerName").options[0].selected = true;
+        return;
+    }
+    var ownerDropdown = document.getElementById("projOwnerName");
+    for(var i=0; i<ownerDropdown.options.length; i++) {
+        if(ownerDropdown.options[i].innerHTML == projOwners[project]) {
+            ownerDropdown.options[i].selected = true;
+            break;
+        }
+    }
+    document.getElementById("editProj_area").innerHTML="";
+    for(var i=2; i<l2.area[project].length; i++) {
+        document.getElementById("editProj_area").appendChild(createAreaDiv(project, i));
+    }
+    numdivs=i;
+    document.getElementById("projEdit_area_txt").value = "";
+    document.getElementById("editProj_fieldset").style.display = "block";
+}
+
+function createAreaDiv(project, i) {
+        var txt = document.createElement("input");
+        txt.setAttribute("type", "text");
+        txt.setAttribute("id", "area_"+i);
+        txt.setAttribute("value", l2.area[project][i]);
+        var btn1 = document.createElement("input");
+        btn1.setAttribute("type", "button");
+        btn1.setAttribute("value", "Rename");
+        btn1.setAttribute("onclick", "renameArea('"+l2.area[project][i]+"', '"+project+"', '"+i+"')");
+        var btn2 = document.createElement("input");
+        btn2.setAttribute("type", "button");
+        btn2.setAttribute("value", "Delete");
+    btn2.setAttribute("onclick", "deleteArea('"+l2.area[project][i]+"', '"+project+"', '"+i+"')");
+        var dv = document.createElement("div");
+        dv.setAttribute("id", "area_div"+i);
+        dv.setAttribute("class", "field");
+
+        dv.appendChild(txt);
+        dv.appendChild(btn1);
+        dv.appendChild(btn2);
+    return dv;
+}
+
+function projEdit_newArea() {
+    var areaname = document.getElementById("projEdit_area_txt").value;
+    var projname = document.getElementById("projectid").value;
+    _createArea(projname,areaname);
+    l2.area[project].push(areaname);
+    document.getElementById("editProj_area").appendChild(createAreaDiv(projname, numdivs));
+    document.getElementById("projEdit_area_txt").value = "";
+    numdivs++;
+}
+
+function editProjOwner() {
+    var owner = document.getElementById("projOwnerName");
+    userid = owner.value;
+    project = document.getElementById("projectid").value;
+    ajax("action=owner&edowner="+userid+"&edproject="+project, "project");
+    projOwners[project] = owner.options[owner.selectedIndex].innerHTML;
+}
+
+</script>
+
 <form>
-<div class="field">
-  <div class="field_name">Project</div>
-  <div class="field_value">
-    <select name="projectid">
+  <div class="field">Project <select id="projectid" name="projectid" onchange="loadAreas()"><option value="">&nbsp;</option>
       <% db.bugtracker.projects.find({}).forEach(function(u){ %>
-      <option value="<%= u._id%>"><%= u.name %></option>
+      <option value="<%= u.name %>"><%= u.name %></option>
       <% }); %>
     </select>
   </div>
-</div>
-<input type="submit" value="Select">
-</form>
-     <% } else {
-    htmlheader("Editing " + project.name);
- %>
-<form method="POST">
-<input type="hidden" name="projectid" value="<%= project._id %>"/>
-<div class="field">
-  <div class="field_name">Project</div>
-  <div class="field_value"><%= project.name %></div>
-</div>
-        <div class="field">
-          <div class="field_name">Owner</div>
-          <div class="field_value">
-            <% // This doesn't set the None user if project.owner
-    // is null; that happens implicitly since None is first. %>
-    <%= app.bugtracker.data.helper.select(project, "owner", "p",
-                                          [false].concat(db.users.find({}).toArray()),
-                                          {view: function(u){return u?u.name:"None";},
-                                           value: function(u){return u?u._id:"null"; },
-                                          }) %> </div>
-        </div>
-<div class="field">
-  <div class="field_name">&nbsp;</div>
-  <div class="field_value"><input type="submit" value="Save"></div>
-</div>
 </form>
 
-Or, edit an area:
-<form action="area_edit">
-  <input type="hidden" name="projectid" value="<%= project._id%>">
-  <div class="field">
-    <div class="field_name">Area</div>
-    <div class="field_value">
-      <select name="areaname">
-        <% project.areas.forEach(function(a){ %>
-        <option value="<%= a.name %>"><%= a.name %></option>
-        <% }); %>
-      </select>
-    </div>
+
+<form>
+  <div class="field">Owner <%= app.bugtracker.data.helper.select({u: null}, "u", "",
+                               [false].concat(db.users.find({}).toArray()),
+                               {view: function(u){return u?u.name:"None";},
+                               value: function(u){return u?u._id:"null"; },
+                               id: "projOwnerName",
+                               onchange: "editProjOwner()"
+                               }) %>
   </div>
-  <input type="submit" value="Select">
 </form>
 
-<% } %>
-        <a href="./">Back to cases list</a>
-            <% htmlfooter() %>
+<fieldset id="editProj_fieldset" style="display: none;"><legend>Edit an area</legend>
+  <form>
+    <div id="editProj_area">
+    </div>
+    <input id="projEdit_area_txt" type="text"><input type="button" value="Create New Area" onclick="projEdit_newArea()">
+  </form>
+</fieldset>
+
+

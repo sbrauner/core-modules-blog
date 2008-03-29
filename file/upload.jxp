@@ -1,0 +1,14 @@
+<%
+    var uploadedFile = request.getFile("Filedata");
+
+    log.file.info(tojson(request));
+    log.file.info(tojson(uploadedFile));
+    log.file(file.File);
+
+    var fileId;
+    if (uploadedFile) {
+        fileId = file.File.upload(uploadedFile);
+    }
+%>
+
+<%= fileId %>
