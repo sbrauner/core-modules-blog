@@ -3,13 +3,16 @@
 /* 
  * doc.jxp - documentation tool. 
 */
-%>
 
+if( request.getHost() == 'corejs.10gen.com' ) { 
+    print("<h3>Browsing 10gen Core Libraries Source Code</h3>\n");
+}
+%>
+<style type="text/css">
+pre {margin: 8px}
+</style>
 <pre>
 <%
-    if( request.f == null )
-	request.f == '/';
-
     var expand = request.expand;
 
     function breadcrumbs(f) { 
