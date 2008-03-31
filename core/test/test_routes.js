@@ -13,6 +13,12 @@ assert( "/A.jxp" == routes.apply( "/a/asd" ) );
 assert( null == routes.apply( "/c/a/asd" ) );
 assert( "/B.jxp" == routes.apply( "/b/asd" ) );
 
+assert( "/B.jxp" == routes.apply( "/b.asd" ) );
+
+routes[ "b.asd" ] = "/foobar.asd";
+assert( "/foobar.asd" == routes.apply( "/b.asd" ) );
+
+
 routes.setDefault( "/index" );
 assert( "/index" == routes.apply( "/c/a/asd" ) );
 
@@ -70,6 +76,8 @@ routes.forum.images["feed-icon16x16"] = "/~~/app/forum/images/feed-icon16x16";
 
 var res = routes.apply('/forum/images/feed-icon16x16', null);
 assert( res == "/~~/app/forum/images/feed-icon16x16" );
+
+
 
 // ---
 
