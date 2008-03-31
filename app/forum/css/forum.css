@@ -511,3 +511,6 @@ div#dlg div.btns, div#editThreadDiv div.btns, div#splitterDiv div.btns {
      float: right;
 }
 
+th a {
+   text-decoration: none;
+}
