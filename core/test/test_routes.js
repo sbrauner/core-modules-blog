@@ -62,6 +62,15 @@ assert( "/~~/wiki/" == routes.apply( "/wiki/do/4" , request ) );
 assert( request.action == "do" );
 assert( request.value == "4" );
 
+// Nesting w/o regexps
+routes = new Routes();
+routes.forum = new Routes();
+routes.forum.images = new Routes();
+routes.forum.images["feed-icon16x16"] = "/~~/app/forum/images/feed-icon16x16";
+
+var res = routes.apply('/forum/images/feed-icon16x16', null);
+assert( res == "/~~/app/forum/images/feed-icon16x16" );
+
 // ---
 
 routes = new Routes();
@@ -100,3 +109,5 @@ assert(null == routes.find( new Routes() ));
 
 routes.add(/.+/, "yo");
 assert(null == routes.find( new Routes() ));
+
+

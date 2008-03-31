@@ -91,7 +91,7 @@ Routes.prototype.apply = function( uri , request ){
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
-    var firstPiece = uri.replace( /^\/?([\w\.]+)\b.*/ , "$1" );
+    var firstPiece = uri.replace( /^\/?([^\/\\\?&=#]+)\b.*/ , "$1" );
 
     // currentRoot stuff
     if ( true ) {
