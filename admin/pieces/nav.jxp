@@ -7,7 +7,7 @@ var menu = [
 
 
     { text: '<em id=\"xgenLabel\"> </em>', url : 'http://www.10gen.com' } ,
-    { text: '<em id=\"homeLabel\">Home</em>', url : "/" },
+    { text: '<em id=\"homeLabel\">Home</em>', url : "/admin/" },
 
     { text : "<em id='systemLabel'>System</em>" , url : "#" ,
       submenu : {
