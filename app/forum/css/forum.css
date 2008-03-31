@@ -35,6 +35,7 @@ div#tagline {
 table {
     width: 100%;
     clear: right;
+    border-spacing: 0px;
 }
 
 td {
