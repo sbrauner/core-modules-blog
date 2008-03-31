@@ -1,3 +1,4 @@
+core.content.search();
 core.db.db();
 app.Forum.data.Thread = function(){
     this.commentsEnabled = true;
