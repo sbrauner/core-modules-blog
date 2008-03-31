@@ -13,6 +13,12 @@ assert( "/A.jxp" == routes.apply( "/a/asd" ) );
 assert( null == routes.apply( "/c/a/asd" ) );
 assert( "/B.jxp" == routes.apply( "/b/asd" ) );
 
+assert( "/B.jxp" == routes.apply( "/b.asd" ) );
+
+routes[ "b.asd" ] = "/foobar.asd";
+assert( "/foobar.asd" == routes.apply( "/b.asd" ) );
+
+
 routes.setDefault( "/index" );
 assert( "/index" == routes.apply( "/c/a/asd" ) );
 
@@ -62,6 +68,20 @@ assert( "/~~/wiki/" == routes.apply( "/wiki/do/4" , request ) );
 assert( request.action == "do" );
 assert( request.value == "4" );
 
+// Nesting w/o regexps
+routes = new Routes();
+routes.forum = new Routes();
+routes.forum.images = new Routes();
+routes.forum.images["feed-icon16x16"] = "/~~/app/forum/images/feed-icon16x16";
+
+var res = routes.apply('/forum/images/feed-icon16x16', null);
+assert( res == "/~~/app/forum/images/feed-icon16x16" );
+
+routes.forum.setDefault("/~~/app/forum/index");
+var res = routes.apply('/forum/', null);
+
+assert( res == "/~~/app/forum/index");
+
 // ---
 
 routes = new Routes();
@@ -100,3 +120,5 @@ assert(null == routes.find( new Routes() ));
 
 routes.add(/.+/, "yo");
 assert(null == routes.find( new Routes() ));
+
+

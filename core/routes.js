@@ -91,7 +91,7 @@ Routes.prototype.apply = function( uri , request ){
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
 
-    var firstPiece = uri.replace( /^\/?([\w\.]+)\b.*/ , "$1" );
+    var firstPiece = uri.replace( /^\/?([^\/\\\?&=#]+)\b.*/ , "$1" );
 
     // currentRoot stuff
     if ( true ) {
@@ -106,6 +106,7 @@ Routes.prototype.apply = function( uri , request ){
         lastPiece = firstPiece;
     }
 
+
     for ( var key in this ){
 
         if ( key.startsWith( "_" ) )
@@ -113,6 +114,11 @@ Routes.prototype.apply = function( uri , request ){
 
         if ( key == firstPiece )
             return this.finish( uri , request , firstPiece , key , this[ key ] );
+    }
+
+    if(firstPiece.substring( 0 , firstPiece.indexOf('.') ) in this){
+        key = firstPiece.substring( 0, firstPiece.indexOf('.'));
+        return this.finish(uri, request, firstPiece, key, this[key]);
     }
 
     for ( var i=0; i<this._regexp.length; i++ ){

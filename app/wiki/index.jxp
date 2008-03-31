@@ -28,7 +28,7 @@ if ( ! request.name )
     // Construct the full name of the page if we have a prefix defined for this instance
     var name = displayName;
 
-assert( app ); 
+assert( app );
 assert( app.wiki );
 
     if ( app.wiki.config.prefix && ! displayName.match( "^" + app.wiki.config.prefix ) )
@@ -48,6 +48,7 @@ assert( app.wiki );
     }
 
     if ( ! app.wiki.config.readOnly ){
+        var theFile = request.getFile( "theFile" );
         if (request['rename'] ) {
             app.wiki.WikiController.renamePage(wikiPage, request.newName);
         }
@@ -57,6 +58,12 @@ assert( app.wiki );
         else if (request['update'] ) {
             log(tojson(request));
             wikiPage.setText(request.wikitext.replace(/\r?\n/g, "\n"));
+        }
+        else if (theFile) {
+            db._files.save( theFile );
+            wikiPage.files.push(theFile._id);
+            // Note: doesn't create a new historical version.. should it?
+            db.wiki.save(wikiPage);
         }
     }
 
