@@ -1,5 +1,7 @@
 <%
 
+var config = arguments[0] || {};
+
 head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
 
 
@@ -58,7 +60,7 @@ if ( allowModule ){
 
 <div id="menuSpot" class="yui-skin-sam"></div>
 
-<script>
+<% if ( ! config.noScriptTags ){ print( "<script>" ); } %>
 
 var menu = <%= tojson( menu ) %>;
 
@@ -85,4 +87,4 @@ var menuLoader = new YAHOO.util.YUILoader({
 
 menuLoader.insert();
 
-</script>
+<% if ( ! config.noScriptTags ){ print( "</script>" ); } %>
