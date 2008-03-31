@@ -132,7 +132,9 @@ div#login_status {
 }
 
 div#customer_body {
+    padding-top: 10px;
     clear: both;
+    text-align: left;
 }
 
 .module_menu_item {
@@ -178,6 +180,8 @@ div#customer_body {
 #filemenu.visible .yuimenu .yuimenuitemlabel { *zoom: normal; }
 
 #adminHeader em {  display: block; overflow: hidden; }
+
+#menuSpot { display: block; height: 30px; }
 
 em#xgenLabel { height: 24px; width: 50px; background: url('/~~/admin/assets/logo10gen_tiny.gif') 0% 40% no-repeat; }
 em#homeLabel { background: url('/~~/admin/assets/house.png') 0% 40% no-repeat; padding-left: 20px; }
