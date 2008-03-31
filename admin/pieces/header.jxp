@@ -5,40 +5,6 @@ core.ui.elements.menu();
 
 head.addCSS( "NOCDN/~~/admin/assets/css.jxp" ); 
 
-var menu = [ 
-    { name : "Home" , link : "/admin/" } ,
-    { name : "System..." , link : "#" , 
-      submenu : [
-          { name : "Logs in Memory" , link : "/admin/logMemory.jxp" } ,
-          { name : "Scrolling Logs" , link : "/admin/logScroll.jxp" } ,
-          { name : "Users" , link : "/admin/users.jxp" } ,
-          { name : "Database" , link : "/admin/database.jxp" } ,
-          { name : "Files" , link : "/admin/files.jxp" } ,
-          { name : "Cron" , link : "/admin/cron.jxp" } ,
-          { name : "Usage" , link : "/admin/usage.jxp" }
-      ]
-    } ,
-    { name : "Editor" , link : "/admin/ed" } ,
-    { name : "Shell" , link : "/admin/shell.jxp" } ,
-    { name : "Git" , link : "/admin/gitLocal.jxp" } ,
-    { name : "Docs..." , link : "#" , 
-      submenu : [
-          { name : "Documentation" , link : "http://www.10gen.com/wiki/" }, 
-          { name : "Browse Code" , link : "/admin/doc?f=/" } ,
-          { name : "Browse corejs" , link : "http://corejs.10gen.com/admin/doc?f=/" } ,
-      ]
-    }
-];
-
-if ( allowModule ){
-    for ( var mod in allowModule ){
-        menu.push( { name : mod , 
-                     link : "/admin/" + mod + "/index" , 
-                     css : "module_menu_item"
-                   } );
-    }
-}
-
 %>
 <% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
 <html>
@@ -49,9 +15,8 @@ if ( allowModule ){
 <body  >
 <% if (!_openAccess) { %>
 
-<div id="admin_header">
-    <div id="admin_logo"><img id="admin_logo_image" src="NOCDN/~~/admin/assets/10Gen_logo.png" width="100" height="47" /></div>
-    <% ui.elements.Menu.display( menu );  %>
+<div id="adminHeader">
+    <% core.admin.pieces.nav(); %>
     <% core.user.html.topCorner(); %>
 </div>
 <% } %>

@@ -171,3 +171,22 @@ div#customer_body {
    top: 0px;
    right: 0px;
 }
+
+
+/* xgenAdminTopNav start */
+#filemenu.visible .yuimenuitemlabel, #editmenu.visible .yuimenuitemlabel { *zoom: 1; }
+#filemenu.visible .yuimenu .yuimenuitemlabel { *zoom: normal; }
+
+#adminHeader em {  display: block; overflow: hidden; }
+
+em#xgenLabel { height: 24px; width: 50px; background: url('/~~/admin/assets/logo10gen_tiny.gif') 0% 40% no-repeat; }
+em#homeLabel { background: url('/~~/admin/assets/house.png') 0% 40% no-repeat; padding-left: 20px; }
+em#logLabel { background: url('/~~/admin/assets/script.png') 0% 40% no-repeat; padding-left: 20px; }
+em#helpLabel { background: url('/~~/admin/assets/help.png') 0% 40% no-repeat; padding-left: 20px; }
+em#systemLabel { background: url('/~~/admin/assets/cog.png') 0% 40% no-repeat; padding-left: 20px;}
+em#docsLabel { background: url('/~~/admin/assets/book.png') 0% 40% no-repeat; padding-left: 20px; }
+em#shellLabel { background: url('/~~/admin/assets/application_osx.png') 0% 40% no-repeat; padding-left: 20px; }
+em#gitLabel { background: url('/~~/admin/assets/plugin.png') 0% 40% no-repeat; padding-left: 20px; }
+em#editorLabel { background: url('/~~/admin/assets/application_edit.png') 0% 40% no-repeat; padding-left: 20px; }
+em#logoutLabel { background: url('/~~/admin/assets/cancel.png') 0% 40% no-repeat; padding-left: 20px; }
+/* xgenAdminTopNav end */

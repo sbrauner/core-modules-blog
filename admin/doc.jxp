@@ -1,11 +1,11 @@
 <% 
-
 /* 
  * doc.jxp - documentation tool. 
 */
 
-if( request.getHost() == 'corejs.10gen.com' ) { 
-    print("<h3>Browsing 10gen Core Libraries Source Code</h3>\n");
+var isCore = request.getHost() == 'corejs.10gen.com';
+if( isCore ) {
+    print("<h3>10gen Core Libraries Source Code</h3>\n");
 }
 %>
 <style type="text/css">
@@ -15,6 +15,7 @@ pre {margin: 8px}
 <%
     var expand = request.expand;
 
+    // print the path to the file we are viewing with links up the dir tree
     function breadcrumbs(f) { 
 	print("<b>");
 
@@ -36,6 +37,7 @@ pre {margin: 8px}
 	print("\n");
     }
 
+    // collapsing of source code to "..."
     function crunch(s) { 
 	var i = s.indexOf('{');
 	if( i < 0 )
@@ -179,6 +181,14 @@ pre {margin: 8px}
 	    var ff = openFile(request.f);
 	    if( ff ) { 
 		var files = ff.listFiles();
+		files = files.sort(function(a,b) {
+		    if( a.isDirectory() && !b.isDirectory() ) return -1;
+		    if( b.isDirectory() && !a.isDirectory() ) return 1;
+		    if( a.filename < b.filename ) return -1;
+		    if( b.filename < a.filename ) return 1;
+		    return 0;
+		});
+
 		for( var i in files ) { 
 		    var fil = "" + files[i];
 		    if( !fil.endsWith('~') && !fil.startsWith('.') ) {
@@ -193,6 +203,13 @@ pre {margin: 8px}
 	    var theFile = openFile( request.f ); 
 	    if ( theFile.exists() ){
 		var data = theFile.getDataAsString();
+		if( isCore ) {
+		    var isJxp = request.f.endsWith(".jxp");
+		    if( isJxp ) print("&lt;% ");
+		    print("// Copyright 2008 10gen.  Some rights reserved; see www.10gen.com/wiki/license.");
+		    if( isJxp ) print(" %&gt;");
+		    print("\n");
+		}
 		show(data);
 	    }
 	    else {

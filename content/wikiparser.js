@@ -33,7 +33,12 @@ content.WikiParser = function() {
 
     this.basics = [
         { r: /'''(.+?)'''/g , s: "<strong>$1</strong>" }, // '''bold'''
-        { r: /''(.+?)''/g , s: "<em>$1</em>" } // ''italics''
+        { r: /''(.+?)''/g , s: "<em>$1</em>" }, // ''italics''
+    ];
+
+    // development related wiki things
+    this.programmer = [ 
+	{ r: /(core\.[a-zA-Z0-9._]+\(\))/g, s:'<a href="foo">$1</a>' },
     ];
 };
 
@@ -114,6 +119,8 @@ content.WikiParser.prototype._line = function(str) {
 
     // the basics
     str = content.WikiParser._repl(this.basics, str);
+
+    str = content.WikiParser._repl(this.programmer, str);
 
     // * bullets
     if( str.match(/^\*/) ) {

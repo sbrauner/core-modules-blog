@@ -1,17 +1,52 @@
 
+core.util.words();
+
 Captcha = {
 
     DEBUG : false ,
 
+    words : { 
+	english : function( minLen , maxLen ){
+	    return Captcha.words._word( Util.Words.usa , minLen , maxLen );
+	},
+
+	_word : function( words , minLen , maxLen ){
+	    
+	    assert( words );
+	    
+	    var min = minLen || 6;
+	    var max = maxLen || min;
+
+	    assert( max >= min );
+
+	    while ( true ){
+		var s = words.getRandomWord();
+		
+		if ( s.length >= min && s.length <= max )
+		    return s;
+	    }
+
+	} ,
+	
+	gobblygook : function( minLen ){
+	    var min = minLen || 6;
+
+            var s = "";
+            while ( s.length < min )
+		s += md5( Math.random() ).replace( /\d/g , "" ).substring( 0 , 6 );	
+	    
+	    return s;
+	}
+	
+    } , 
+
     img : function(){
         if ( ! response )
             throw( "need a response" );
+	
+	var s = Captcha.words.english();
 
-        var s = "";
-        while ( s.length < 6 )
-            s += md5( Math.random() ).replace( /\d/g , "" ).substring( 0 , 6 );
         JSCaptcha.img( s , response );
-
         return Captcha.USE.img( s );
     } ,
 

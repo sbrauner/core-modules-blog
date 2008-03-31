@@ -4,8 +4,6 @@ ui.elements.Menu = function(){
 };
 
 ui.elements.Menu.display = function( o ){
-
-    //head.addCSS( "/@@/yui/current/reset-fonts-grids/reset-fonts-grids.css" );
     head.addCSS( "/@@/yui/current/base/base.css" );
     head.addCSS( "/@@/yui/current/menu/assets/skins/sam/menu.css" );
 
