@@ -132,7 +132,9 @@ div#login_status {
 }
 
 div#customer_body {
+    padding-top: 10px;
     clear: both;
+    text-align: left;
 }
 
 .module_menu_item {
