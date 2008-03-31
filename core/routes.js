@@ -84,9 +84,14 @@ Routes.prototype.currentRoot = function(){
     return currentRoot;
 };
 
-Routes.prototype.apply = function( uri , request ){
+Routes.prototype.apply = function( uri , request , response ){
 
     Routes.log.debug( "apply\t" + uri );
+
+    if ( uri == "" ){
+        // FIXME: this could be smarter, like check for query args, etc.
+        response.sendRedirectTemporary(request.getURL()+"/");
+    }
 
     if ( ! uri.startsWith( "/" ) )
         uri = "/" + uri;
@@ -113,25 +118,25 @@ Routes.prototype.apply = function( uri , request ){
             continue;
 
         if ( key == firstPiece )
-            return this.finish( uri , request , firstPiece , key , this[ key ] );
+            return this.finish( uri , request , response , firstPiece , key , this[ key ] );
     }
 
     if(firstPiece.substring( 0 , firstPiece.indexOf('.') ) in this){
         key = firstPiece.substring( 0, firstPiece.indexOf('.'));
-        return this.finish(uri, request, firstPiece, key, this[key]);
+        return this.finish(uri , request , response , firstPiece, key, this[key]);
     }
 
     for ( var i=0; i<this._regexp.length; i++ ){
         var value = this._regexp[i];
         if ( value.key.test( uri ) )
-            return this.finish( uri , request , firstPiece , value.key , value );
+            return this.finish( uri , request , response , firstPiece , value.key , value );
     }
 
     Routes.log.debug( "\t using default\t" + this._default );
-    return this.finish( uri , request , firstPiece , null , this._default );
+    return this.finish( uri , request , response , firstPiece , null , this._default );
 };
 
-Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
+Routes.prototype.finish = function( uri , request , response , firstPiece , key , value ){
     if ( ! value )
         return null;
 
@@ -167,7 +172,7 @@ Routes.prototype.finish = function( uri , request , firstPiece , key , value ){
     }
 
     if ( isObject( end ) && end.apply ){
-        var res = end.apply( uri.substring( 1 + firstPiece.length ) , request ) || "";
+        var res = end.apply( uri.substring( 1 + firstPiece.length ) , request , response ) || "";
         if ( ! ( res && res.startsWith( "/" ) ) )
             res =  "/" + firstPiece + "/" + res;
         res = res.replace( /\/+/g , "/" );

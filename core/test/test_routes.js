@@ -82,6 +82,15 @@ var res = routes.apply('/forum/', null);
 
 assert( res == "/~~/app/forum/index");
 
+// redirects
+
+var target;
+var request = { getURL: function() { return "/forum"; } };
+var response = { sendRedirectTemporary: function(arg1){ target = arg1; } };
+var res = routes.apply('/forum', request, response);
+
+assert(target == "/forum/");
+
 // ---
 
 routes = new Routes();
