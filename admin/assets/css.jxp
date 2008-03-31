@@ -181,6 +181,8 @@ div#customer_body {
 
 #adminHeader em {  display: block; overflow: hidden; }
 
+#menuSpot { display: block; height: 30px; }
+
 em#xgenLabel { height: 24px; width: 50px; background: url('/~~/admin/assets/logo10gen_tiny.gif') 0% 40% no-repeat; }
 em#homeLabel { background: url('/~~/admin/assets/house.png') 0% 40% no-repeat; padding-left: 20px; }
 em#logLabel { background: url('/~~/admin/assets/script.png') 0% 40% no-repeat; padding-left: 20px; }

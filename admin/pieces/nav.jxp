@@ -2,8 +2,11 @@
 
 var config = arguments[0] || {};
 
-head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
+if ( config.onlyBase )
+    config.noScriptTags = true;
 
+head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
+head.addScript( "/@@/yui/current/container/container-min.js" );
 
 var menu = [
 
@@ -58,33 +61,42 @@ if ( allowModule ){
 
 %>
 
-<div id="menuSpot" class="yui-skin-sam"></div>
+<div ? ( ! config.onlyBase ) id="menuSpot" class="yui-skin-sam"></div>
 
 <% if ( ! config.noScriptTags ){ print( "<script>" ); } %>
 
 var menu = <%= tojson( menu ) %>;
+
+<% if ( ! config.onlyBase ){ %>
 
 var menuLoader = new YAHOO.util.YUILoader({
     base: '/@@/yui/current/',
     require: ['reset-fonts-grids', 'menu', 'utilities', 'container'],
     rollup: true,
     onSuccess: function() {
-        // TODO: Add to a global variable.
-        var xgenAdminMenuBar = new YAHOO.widget.MenuBar("adminTopNav", {
-            lazyload: true,
-            autosubmenudisplay: true,
-            itemdata: menu ,
-            hidedelay: 750,
-            effect: {
-                effect: YAHOO.widget.ContainerEffect.FADE,
-                duration: 0.10
-            }
-        });
+
+<% } %>
+
+      var xgenAdminMenuBar = new YAHOO.widget.MenuBar("adminTopNav", {
+          lazyload: true,
+	  autosubmenudisplay: true,
+	  itemdata: menu ,
+	  hidedelay: 750,
+	  effect: {
+	     effect: YAHOO.widget.ContainerEffect.FADE,
+	     duration: 0.10
+	  }
+      } );
+
+<% if ( ! config.onlyBase ){ %>
 
         xgenAdminMenuBar.render(document.getElementById( "menuSpot" ) );
+
     }
+
 });
 
 menuLoader.insert();
+<% } %>
 
 <% if ( ! config.noScriptTags ){ print( "</script>" ); } %>
