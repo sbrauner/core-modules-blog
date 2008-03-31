@@ -89,8 +89,10 @@ Routes.prototype.apply = function( uri , request , response ){
     Routes.log.debug( "apply\t" + uri );
 
     if ( uri == "" ){
-        // FIXME: this could be smarter, like check for query args, etc.
-        response.sendRedirectTemporary(request.getURL()+"/");
+        var nu = request.getURI() + "/";
+        if ( request.getQueryString()  )
+            nu += "?" + request.getQueryString();
+        response.sendRedirectTemporary( nu );
     }
 
     if ( ! uri.startsWith( "/" ) )
