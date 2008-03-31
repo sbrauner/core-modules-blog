@@ -1,7 +1,7 @@
 <% core.app.wiki.pieces.header_wikipage(); %>
 
 <div id="wiki_content" class="content" >
-  <% if (wikiPageHistoricalVersion) { 
+  <% if (wikiPageHistoricalVersion) {
       if (wikiPageShowDiff) { %>
   <pre><%= wikiPageHistoricalVersion.getDiff() %></pre>
       <% } else { %>
@@ -10,7 +10,17 @@
   <% } else { %>
       <%= wikiPage.getParsedText() %>
   <% } %>
-             
+
 </div>
+
+<ul id="wiki_files" class="files">
+      <% if(wikiPage.files){ 
+          wikiPage.files.forEach(function(fileid){
+              var file = db._files.findOne({_id: fileid});
+         %>
+      <li><a href="/~~/f?id=<%= fileid %>"><%= file.filename %></a></li>
+      <% }); %>
+      <% } %>
+</ul>
 
 <% core.app.wiki.pieces.footer_wikipage(); %>

@@ -3,6 +3,7 @@ app.wiki.WikiPage = function(name) {
     this.name = name || '';
     this.text = 'New WikiPage';
     this.lastEdit = new Date();
+    this.files = [];
 };
 
 if (db) {
@@ -77,7 +78,7 @@ app.wiki.WikiPage.prototype.getWikiPageHistories = function() {
 app.wiki.WikiPage.prototype.getLastEdit = function(){
     var cursor = this.getWikiPageHistories();
     if ( ! cursor.hasNext() )
-	return null;
+        return null;
     return cursor.next();
 }
 
