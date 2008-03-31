@@ -77,7 +77,10 @@ routes.forum.images["feed-icon16x16"] = "/~~/app/forum/images/feed-icon16x16";
 var res = routes.apply('/forum/images/feed-icon16x16', null);
 assert( res == "/~~/app/forum/images/feed-icon16x16" );
 
+routes.forum.setDefault("/~~/app/forum/index");
+var res = routes.apply('/forum/', null);
 
+assert( res == "/~~/app/forum/index");
 
 // ---
 
