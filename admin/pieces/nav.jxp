@@ -1,0 +1,88 @@
+<%
+
+head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
+
+
+var menu = [
+
+
+    { text: '<em id=\"xgenLabel\"> </em>', url : 'http://www.10gen.com' } ,
+    { text: '<em id=\"homeLabel\">Home</em>', url : "/" },
+
+    { text : "<em id='systemLabel'>System</em>" , url : "#" ,
+      submenu : {
+	  id : "systemMenu" ,
+          itemdata : [
+              { text : "Users" , url : "/admin/users.jxp" } ,
+              { text : "Database" , url : "/admin/database.jxp" } ,
+              { text : "Files" , url : "/admin/files.jxp" } ,
+              { text : "Cron" , url : "/admin/cron.jxp" } ,
+              { text : "Usage" , url : "/admin/usage.jxp" } ,
+	      { text : "Logs" ,
+		submenu : { 
+		    id : "logsMenu" ,
+		    itemdata : [
+	      		{ text : "Logs in Memory" , url : "/admin/logMemory.jxp" } ,
+			{ text : "Scrolling Logs" , url : "/admin/logScroll.jxp" }
+		    ]
+		}
+	      }
+	  ]
+      }
+    } ,
+    { text : "<em id='editorLabel'>Editor</em>" , url : "/admin/ed" } ,
+    { text : "<em id='shellLabel'>Shell</em>" , url : "/admin/shell.jxp" } ,
+    { text : "<em id='gitLabel'>Git</em>" , url : "/admin/gitLocal.jxp" } ,
+    { text : "<em id='docsLabel'>Docs</a>" , url : "#" ,
+      submenu : {
+	  id : "docsMenu" ,
+	  itemdata : [
+              { text : "Documentation" , url : "http://www.10gen.com/wiki/" },
+              { text : "Browse Code" , url : "/admin/doc?f=/" } ,
+              { text : "Browse corejs" , url : "http://corejs.10gen.com/admin/doc?f=/" }
+	  ]
+      }
+    }
+];
+
+if ( allowModule ){
+    for ( var mod in allowModule ){
+        menu.push( { text : mod ,
+                     url : "/admin/" + mod + "/index" ,
+                     css : "module_menu_item"
+                   } );
+    }
+}
+
+%>
+
+<div id="menuSpot" class="yui-skin-sam"></div>
+
+<script>
+
+var menu = <%= tojson( menu ) %>;
+
+var menuLoader = new YAHOO.util.YUILoader({
+    base: '/@@/yui/current/',
+    require: ['reset-fonts-grids', 'menu', 'utilities', 'container'],
+    rollup: true,
+    onSuccess: function() {
+        // TODO: Add to a global variable.
+        var xgenAdminMenuBar = new YAHOO.widget.MenuBar("adminTopNav", {
+            lazyload: true,
+            autosubmenudisplay: true,
+            itemdata: menu ,
+            hidedelay: 750,
+            effect: {
+                effect: YAHOO.widget.ContainerEffect.FADE,
+                duration: 0.10
+            }
+        });
+
+        xgenAdminMenuBar.render(document.getElementById( "menuSpot" ) );
+    }
+});
+
+menuLoader.insert();
+
+</script>
