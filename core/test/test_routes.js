@@ -82,6 +82,25 @@ var res = routes.apply('/forum/', null);
 
 assert( res == "/~~/app/forum/index");
 
+// redirects
+
+var response = { sendRedirectTemporary: function(arg1){ target = arg1; } };
+
+request = javaStatic( "ed.net.httpserver.HttpRequest" , "getDummy" , "/forum" );
+
+target = null;
+res = routes.apply('/forum', request, response);
+assert(target == "/forum/");
+
+target = null;
+assert( "/~~/app/forum/index" == routes.apply('/forum/', request, response) );
+assert( target == null );
+
+request = javaStatic( "ed.net.httpserver.HttpRequest" , "getDummy" , "/forum?a" );
+target = null;
+assert( "/~~/app/forum/index" == routes.apply('/forum', request, response ) );
+assert( "/forum/?a" == target );
+
 // ---
 
 routes = new Routes();
