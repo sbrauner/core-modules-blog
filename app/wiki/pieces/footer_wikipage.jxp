@@ -7,7 +7,7 @@
     s: <a href="search">search</a> &nbsp; h: <a href="Main">home</a>
     <% if( user ) { %>
         <br/>
-        ctrl-enter: saves after editing &nbsp; <a href="help.markup">markup help</a> &nbsp; <a href="?history=true">history</a>
+        ctrl-enter: saves after editing &nbsp; <a href="http://www.10gen.com/wiki/wiki.markup" target="help">markup help</a> &nbsp; <a href="?history=true">history</a>
     <% } %>
 </div>
 <p />
