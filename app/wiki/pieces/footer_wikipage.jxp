@@ -26,7 +26,7 @@
 </div>
 
 <% if (!app.wiki.config.readOnly) { %>
-    <div class="popup" id="rename_popup">
+    <div class="popup" id="rename_popup" style="display: none;">
         <div class="hd">Confirm Page Rename</div>
         <div class="bd">
             <form method="POST">
@@ -37,7 +37,7 @@
         <div class="ft"></div>
     </div>
 
-    <div class="popup" id="delete_popup"></div>
+    <div class="popup" id="delete_popup" style="display: none;"></div>
 <% } %>
 </div>
 

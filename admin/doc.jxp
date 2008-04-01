@@ -147,11 +147,17 @@ pre {margin: 8px}
 	// hotlink any http://... strings
 	s=s.replace(/\b(http:\/\/[^ ]+)/, '<a href="$1">$1</a>');
 
+	// hotlink core.include()
 	s=s.replace(/([ \t]*)core\.(.*?)\( *\) *;/, function(m,a,b) {
 		var path = b.replace(/\./g, '/');
 		return a + '<a href="http://corejs.10gen.com/admin/doc?f=/' + path + '.js">core.' + b + '</a>();';
 	    });
 
+	// hotlink jxp.include();
+	s=s.replace(/([ \t]*)jxp\.(.*?)\( *\) *;/, function(m,a,b) {
+		var path = b.replace(/\./g, '/');
+		return a + '<a href="/admin/doc?f=/' + path + '">jxp.' + b + '</a>();';
+	    });
 
 	return s;
     }
