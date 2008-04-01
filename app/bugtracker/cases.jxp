@@ -376,18 +376,19 @@ var loader = new YAHOO.util.YUILoader( {
              defaultAry[i].value = defaultAry[i].defaultValue;
          }
 
-          var myColumnDefs = [
-              {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
-              {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
-              {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
-              {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
-              {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
-              {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
-              {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
-              {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
-              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
-              {label: addForm("reporter", 3), children: [{ key: "reporter", label: "Author", sortable:true }]}
-          ];
+         var myColumnDefs = [
+             {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
+             {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
+             {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+             {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
+             {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
+             {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
+             {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
+             {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
+             {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
+             {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
+             {label: addForm("dependency", 3), children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
+         ];
 
          var dbURL = "case_table?";
          var startSearch = dbURL;
@@ -411,20 +412,39 @@ var loader = new YAHOO.util.YUILoader( {
          }
          %>
 
-          myDataSource = new YAHOO.util.DataSource(startSearch);
-          myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-          myDataSource.connXhrMode = "queueRequests";
-          myDataSource.responseSchema = {
-               resultsList: "rows",
-              fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id" ]
-          };
-          var oConfigs = {
-              paginator: myPaginator,
-              initialRequest:"",
-              sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
-          };
+         myDataSource = new YAHOO.util.DataSource(startSearch);
+         myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+         myDataSource.connXhrMode = "queueRequests";
+         myDataSource.responseSchema = {
+             resultsList: "rows",
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id", {key: "dependency", parser:YAHOO.util.DataSource.parseNumber}, "dependencyType" ]
+         };
+         var oConfigs = {
+             paginator: myPaginator,
+             initialRequest:"",
+             sortedBy:{key:"number",dir:YAHOO.widget.DataTable.CLASS_DESC}
+         };
 
-          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
+         myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
+
+         YAHOO.widget.DataTable.Formatter.myCustom = function(elCell, oRecord, oColumn, oData) {
+             switch(oRecord.getData("dependencyType")) {
+             case "1":
+                 elCell.innerHTML="Depends on "+oRecord.getData("dependency");
+                 break;
+             case "2":
+                 elCell.innerHTML="Refers to "+oRecord.getData("dependency");
+                 break;
+             case "3":
+                 elCell.innerHTML="Duplicates "+oRecord.getData("dependency");
+                 break;
+             case "4":
+                 elCell.innerHTML="Blocks "+oRecord.getData("dependency");
+                 break;
+             default:
+                 elCell.innerHTML="";
+             }
+                   };
 
           myDataTable.onEventSelectCell = function(e) {
                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
