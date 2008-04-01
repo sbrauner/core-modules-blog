@@ -8,16 +8,7 @@ link.hostname = request.getHost();
 link.port = request.getPort();
 link = link.toString();
 
-var asString = function(f, args){
-    var oldPrint = print;
-    var buf = "";
-    print = function(s){ buf += s; };
-    f.apply(null, args);
-    print = oldPrint;
-    return buf.trim();
-};
-
-body = asString(core.app.bugtracker.mail, [feature, user, link]);
+body = asString(function(){core.app.bugtracker.mail(feature, user, link)});
 
 m = new Mail.Message( subj, body );
 m.addRecipient(  feature.reporter.email  );
