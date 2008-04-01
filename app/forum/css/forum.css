@@ -35,6 +35,7 @@ div#tagline {
 table {
     width: 100%;
     clear: right;
+    border-spacing: 0px;
 }
 
 td {
@@ -510,3 +511,6 @@ div#dlg div.btns, div#editThreadDiv div.btns, div#splitterDiv div.btns {
      float: right;
 }
 
+th a {
+   text-decoration: none;
+}

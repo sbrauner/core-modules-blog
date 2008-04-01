@@ -17,7 +17,7 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
     return Auth.cookie.reject( request , response );
 }
 
-var sectionName = request.getURI().replace( /.*admin\// , "" ).replace( /\.jxp/ , "" );
+var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
 if ( sectionName.match( /^index/ ) )
     sectionName = "";
 

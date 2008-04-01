@@ -26,16 +26,21 @@ content.WikiParser = function() {
 
     // [[links]]
     this.link = [
-	{ r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
+        { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
-        { r: /\[([^ \[]+\/[^ \[]+) +([^\[]+)\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
-        { r: /\[([^\[]+\/[^\[]+)\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
+        // FIXME: this following regexp doesn't eat trailing spaces, because
+        // the name part matches "anything which isn't a bracket"; probably
+        // this is correct, because a name-part can have spaces in it.
+        { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
+        // If there was anything after trailing space, it would match the above
+        // regexp, so match up to "anything which isn't a space or a bracket".
+        { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
         ];
 
     this.urls = [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$2]$4'}, // raw URL
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$2]$4'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$3]$5'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$3]$5'}, // raw URL
         ];
 
     this.basics = [

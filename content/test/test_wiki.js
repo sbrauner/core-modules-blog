@@ -11,3 +11,15 @@ assert(o == " <a href=\"http://manuals.rubyonrails.com\">http://manuals.rubyonra
 s = "http://manuals.rubyonrails.com ";
 o = w.toHtml(s);
 assert(o == "<a href=\"http://manuals.rubyonrails.com\">http://manuals.rubyonrails.com</a> \n");
+
+s = "[ http://manuals.rubyonrails.com ]";
+o = w.toHtml(s);
+assert(o == "<a href=\"http://manuals.rubyonrails.com\">http://manuals.rubyonrails.com</a>\n");
+
+s = "[ http://manuals.rubyonrails.com ] here";
+o = w.toHtml(s);
+assert(o == "<a href=\"http://manuals.rubyonrails.com\">http://manuals.rubyonrails.com</a> here\n");
+
+s = "[ http://manuals.rubyonrails.com rails] here";
+o = w.toHtml(s);
+assert(o == "<a href=\"http://manuals.rubyonrails.com\">rails</a> here\n");
