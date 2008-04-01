@@ -28,6 +28,8 @@ for(var i = 0; i < urls.length; i++){
     app.Forum.routes[urls[i]] = app.Forum.defaultRoot + '/' + urls[i];
 }
 
+app.Forum.routes.setDefault("index", null);
+
 app.Forum.routes.css = new Routes();
 
 var cssfiles = ['forum.css', 'lock-icon.gif', 'sticky-icon.gif', 'th_arrow2.gif',

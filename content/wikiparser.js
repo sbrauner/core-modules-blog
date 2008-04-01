@@ -1,4 +1,11 @@
-/* transzlate wiki markup to html 
+/* translate wiki markup to html 
+   see http://www.10gen.com/wiki/wiki.markup
+
+   todo: move this file to /app/wiki/ folder?
+
+   options:
+     set app.wiki.programmer=false to disable "programmer" extensions to the wiki; for example the 
+       programmer extensions auto-link "core.module();" statements in the wiki.
 */
 
 content.WikiParser = function() {
@@ -19,16 +26,21 @@ content.WikiParser = function() {
 
     // [[links]]
     this.link = [
-	{ r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
+        { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
-        { r: /\[([^ \[]+\/[^ \[]+) +([^\[]+)\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
-        { r: /\[([^\[]+\/[^\[]+)\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
+        // FIXME: this following regexp doesn't eat trailing spaces, because
+        // the name part matches "anything which isn't a bracket"; probably
+        // this is correct, because a name-part can have spaces in it.
+        { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
+        // If there was anything after trailing space, it would match the above
+        // regexp, so match up to "anything which isn't a space or a bracket".
+        { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
         ];
 
     this.urls = [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$2]$4'}, // raw URL
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$2]$4'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$3]$5'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$3]$5'}, // raw URL
         ];
 
     this.basics = [
@@ -36,9 +48,16 @@ content.WikiParser = function() {
         { r: /''(.+?)''/g , s: "<em>$1</em>" }, // ''italics''
     ];
 
-    // development related wiki things
+    // wiki extensions helpful for development
+    // the first rule here automatically marks up a core.foo() tag to link to 
+    // the associated corejs.10gen.com/admin/doc page.
     this.programmer = [ 
-	{ r: /(core\.[a-zA-Z0-9._]+\(\))/g, s:'<a href="foo">$1</a>' },
+        { r: /^([^\[]*)core\.([a-zA-Z0-9_.]+)\(\)/g, 
+	  s: function(a,b,c) { 
+               return b + '<a href="http://corejs.10gen.com/admin/doc?f=/' +
+	       c.replace(/[.]/, "/") + '">' + "core." + c + '()</a>';
+	     }
+        }
     ];
 };
 
@@ -111,6 +130,15 @@ content.WikiParser.prototype._line = function(str) {
     // raw urls - disabled, see above
     str = content.WikiParser._repl(this.urls, str);
 
+    if( str.match(/core/) && app.wiki && (app.wiki.programmer==null || !app.wiki.programmer) ) {
+	var old = str;
+	str = content.WikiParser._repl(this.programmer, str);
+	if( str != old ) {
+	    print("old:" + old +'\n');
+	    print("str:" + str +'\n');
+	}
+    }
+
     // links
     if( str.match(/\[/) ) {
         if( this.prefixRE ) str = str.replace(this.prefixRE, '[[');
@@ -119,8 +147,6 @@ content.WikiParser.prototype._line = function(str) {
 
     // the basics
     str = content.WikiParser._repl(this.basics, str);
-
-    str = content.WikiParser._repl(this.programmer, str);
 
     // * bullets
     if( str.match(/^\*/) ) {

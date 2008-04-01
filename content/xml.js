@@ -97,7 +97,7 @@ xml = {
     } ,
 
     fromString : function( s ){
-        return xml.from(xml._xmlTokenizerre(s));
+        return xml.from(xml._xmlTokenizerchar(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
@@ -209,7 +209,7 @@ xml = {
             var i = 0;
             while(isSpace(s[i])) ++i;
             if (i >= s.length) return -1;
-            start = i;
+            var start = i;
             var sub = s.substring(start, s.length);
             if(insideTag == false){
                 if(s[start] == '<'){
