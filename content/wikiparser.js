@@ -1,4 +1,4 @@
-/* transzlate wiki markup to html 
+/* translate wiki markup to html
 */
 
 content.WikiParser = function() {
@@ -19,16 +19,18 @@ content.WikiParser = function() {
 
     // [[links]]
     this.link = [
-	{ r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
+        { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
         { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
-        { r: /\[([^ \[]+\/[^ \[]+) +([^\[]+)\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
-        { r: /\[([^\[]+\/[^\[]+)\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
+        { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
+        // If there was anything after trailing space, it would match the above
+        // regexp, so match up to "anything which isn't a space or a bracket".
+        { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
         ];
 
     this.urls = [
         //{ r: /(http:\/\/[^ ]*)/g, s: '<a href="$1">$1</a>' }, // http://link
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$2]$4'}, // raw URL
-        { r: /(^|[^\[])((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$2]$4'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)(\.([ \t\n]|$))/g, s: '$1[$3]$5'}, // raw URL
+        { r: /((^|\w|\])\s*)((http[s]?|ftp):\/\/[^ \n\t]*)([ \t\n]|$)/g, s: '$1[$3]$5'}, // raw URL
         ];
 
     this.basics = [
@@ -37,8 +39,8 @@ content.WikiParser = function() {
     ];
 
     // development related wiki things
-    this.programmer = [ 
-	{ r: /(core\.[a-zA-Z0-9._]+\(\))/g, s:'<a href="foo">$1</a>' },
+    this.programmer = [
+        { r: /(core\.[a-zA-Z0-9._]+\(\))/g, s:'<a href="foo">$1</a>' },
     ];
 };
 
