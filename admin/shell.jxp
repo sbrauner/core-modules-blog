@@ -9,6 +9,7 @@
            require: ['fonts', 'dragdrop', 'logger', 'autocomplete'],
            base: '/@@/yui/2.4.1/',
            onSuccess: function(loader) {
+               objectList = [];
                this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -18,7 +19,15 @@
                        return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
-                       return "<span class=\"response\">" + msg.msg + "</span><br/>";
+                       var obj = eval("(" + msg.msg + ")");
+                       alert("obj" + obj);
+                       if(typeof obj == "object"){
+                           var s = printObjStart(obj, function(attrblock){return "<span class=\"response\" "+attrblock+">Object</span>";});
+                           alert("+"+s+"+")
+                           return s;
+                       }
+                       else
+                           return "<span class=\"response\">" + msg.msg + "</span><br/>";
                    }
                };
 
@@ -121,6 +130,53 @@ var histfunc = function( e ) {
 </div>
 
 <script>
+    function printObjStart(cursor, dispfunc) {
+        return printObj({obj: cursor}, "obj", dispfunc);
+    }
+
+var count = 0;
+var objcount = 0;
+function Text(cursor, field){
+    return "<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+typeof cursor[field]+"','"+count+"')\">";
+}
+function Check(cursor, field) {
+    return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
+}
+
+function printObj(cursor, field, dispfunc) {
+    var s = "<div>"+field+": ";
+    if(!cursor || !cursor[field]) return "";
+
+    if(typeof cursor[field] == "boolean") {
+        s += Check(cursor, field);
+    }
+    else if(typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+        s += Text(cursor, field);
+    }
+    else if(typeof cursor[field] == "object") {
+        //name = cursor[field].name || cursor[field].toString() || "Object";
+        s += dispfunc("onclick=\"showObj('o"+objcount+"')\"")+"<div class=\"obj\" id=\"o"+objcount+"\">";
+        var tempobj = objcount;
+        objcount++;
+        for(var name in cursor[field]) {
+            s += printObj(cursor[field], name, dispfunc);
+        }
+        s += "<input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='x'></div>";
+    }
+    else {
+        s += (typeof cursor[field]);
+    }
+    s += "</div>";
+    return s;
+}
+
+function showObj(i) {
+         document.getElementById(i).style.display = "block";
+}
+function hideObj(i) {
+         document.getElementById(i).style.display = "none";
+}
+
     indexOf = function(ary, v){
         for(var i=0; i<ary.length; ++i){
             if(ary[i] == v)
