@@ -87,6 +87,11 @@ else if(request.fstatus){
             feature.area = "";
         }
 
+
+        if(feature.dependencyType == 0) {
+            feature.dependency = null;
+        }
+
         // FIXME: why did I write this to check for a new area every time,
         // rather than just checking if the form says "New area"? I have
         // no idea! But until I figure it out, I'm not gonna change it.
@@ -219,6 +224,7 @@ function ObjectId(){ return null; }
         <li>Area: <%= orig.area %></li>
         <li>OS: <%= orig.OS %></li>
         <li>Target release: <%= orig.targetRelease%></li>
+        <li>Dependency: <%= orig.dependency %></li>
         <li>Description: <%= orig.description.replace(/\n/g, "<br/>")%></li>
       </ul>
       Here's your version:
@@ -293,13 +299,13 @@ function ObjectId(){ return null; }
             </td>
             <td class="label">Area</td>
             <td class="value">
-            <%
-            var project = feature.project || choices[0];
+<%
+var project = feature.project || choices[0];
 var pchoices = [{name: "None"}].concat(project.areas.sort(function(x, y){ return Ext.stringCompare(x.name, y.name);}));
 if(project.areas.length > 0){
     pchoices = pchoices.concat([{name: "New area"}]);
 }
-                       %>
+%>
             <%=
                app.bugtracker.data.helper.select(feature, "area", "f", pchoices,
                                                  { view: function(a) { return a.name; },
@@ -310,13 +316,41 @@ if(project.areas.length > 0){
         </tr>
         <tr>
             <td class="label">Target Release</td>
-<td class="value" colspan="3"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
+            <td class="value"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
 <% var rels = db.bugtracker.releases.find().toArray();
 print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</option>" }).join(","));
 %>
-<option value="newRel">New Release</option>
-</select>
-<input name="extra_ftargetrelease" disabled/></td>
+                <option value="newRel">New Release</option>
+              </select>
+              <input name="extra_ftargetrelease" disabled/>
+            </td>
+            <td class="label">
+              <select name="fdependencyType">
+                <option value="0" <%= (feature.dependencyType == 0) ? "selected" : "" %>>No dependencies</option>
+                <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
+                <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
+                <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
+                <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Blocks</option>
+              </select>
+            </td>
+            <td class="value">
+              <select name="fdependency" value="<%= request.dependency %>"><option value="">&nbsp;</option>
+                <%
+                   var cases = db.bugtracker.cases.find().toArray();
+                   for(i in cases) {
+                   var x = "";
+                   if( feature.dependency == cases[i].number) {
+                       x="selected";
+                   log("feature: "+feature.dependency+" num: "+cases[i].number+" feature==num? "+(feature.dependency == cases[i].number));
+                   }
+
+
+                   print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
+                   }
+                   %>
+              </select>
+            </td>
+
         </tr>
         <tr><td colspan="4" class="section_divider"><hr /></td></tr>
         <tr>
