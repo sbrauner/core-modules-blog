@@ -1,13 +1,14 @@
 
 SERVER_HOSTNAME = javaStatic( "java.net.InetAddress" , "getLocalHost" ).getHostName();
 
-function mapUrlToJxpFileCore( uri , request ){
+function mapUrlToJxpFileCore( uri , request , response ){
     
     // webdav
     var ua = request.getHeader( "User-Agent" );
     if ( ua && 
          ( ua.match( /webdav/i )
            || ua.match( /BitKinex/ )
+           || ua.match( /\bneon\b/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider DAV/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider Protocol Discovery/ )
            )
@@ -35,7 +36,7 @@ function mapUrlToJxpFileCore( uri , request ){
 	return uri;
 
     if ( routes && routes.apply ){
-        var res = routes.apply( uri , request );
+        var res = routes.apply( uri , request , response );
         if ( res )
             return res;
     }
