@@ -112,8 +112,6 @@ pre {margin: 8px}
 
 
 	/*
-
-
 	//s = s.replace(/\{\}/, "");
 	var done;
 	while( 1 ) {
@@ -140,17 +138,21 @@ pre {margin: 8px}
 	}
 	s = s.replace(/~FUNC~/g, "function");
 
-*/
+        */
+
 	return s;
     }
 
     function prepLine(s) {
+	// hotlink any http://... strings
+	s=s.replace(/\b(http:\/\/[^ ]+)/, '<a href="$1">$1</a>');
+
 	s=s.replace(/([ \t]*)core\.(.*?)\( *\) *;/, function(m,a,b) {
 		var path = b.replace(/\./g, '/');
 		return a + '<a href="http://corejs.10gen.com/admin/doc?f=/' + path + '.js">core.' + b + '</a>();';
 	    });
 
-        //s.replace(/( *)(core\.[^ ()\[\];]+\(\)) *;/, '$1<a href="sdf">$2</a>');
+
 	return s;
     }
 
@@ -170,15 +172,15 @@ pre {margin: 8px}
     }
 
     if ( request.f ){
+	var filename = request.f;
 
-	if( request.f == '/' )
-	    print("/\n\n");
-	else
-	    breadcrumbs(request.f);
+	if( filename.endsWith('/') ) {
+	    if( filename == '/' )
+		print("/\n\n");
+	    else
+		breadcrumbs(filename);
 
-	if( request.f.endsWith('/') ) {
-
-	    var ff = openFile(request.f);
+	    var ff = openFile(filename);
 	    if( ff ) { 
 		var files = ff.listFiles();
 		files = files.sort(function(a,b) {
@@ -193,18 +195,33 @@ pre {margin: 8px}
 		    var fil = "" + files[i];
 		    if( !fil.endsWith('~') && !fil.startsWith('.') ) {
 			var dirchar = (files[i].isDirectory()?'/':'');
-			print( '<a href="?f=' + request.f + fil + dirchar + '">' + files[i] + dirchar + '</a>\n' );
+			print( '<a href="?f=' + filename + fil + dirchar + '">' + files[i] + dirchar + '</a>\n' );
 		    }
 		}
 	    }
 
 	} else {
 
-	    var theFile = openFile( request.f ); 
+	    var theFile = openFile( filename ); 
+
+	    if( !theFile.exists() && !filename.match(/[.]/) ) {
+		// wiki sends us corejs links with '.js', '.jxp' on the end.  try to guess extension.
+		// wiki wikiparser.js, this.programmer
+		theFile = openFile( filename + ".js" );
+		if( theFile.exists() )
+		    filename += ".js";
+		else { 
+		    theFile = openFile( filename + ".jxp" );
+		    if( theFile.exists() ) filename += ".jxp";
+		}
+	    }
+
+	    breadcrumbs(filename);
+
 	    if ( theFile.exists() ){
 		var data = theFile.getDataAsString();
 		if( isCore ) {
-		    var isJxp = request.f.endsWith(".jxp");
+		    var isJxp = filename.endsWith(".jxp");
 		    if( isJxp ) print("&lt;% ");
 		    print("// Copyright 2008 10gen.  Some rights reserved; see www.10gen.com/wiki/license.");
 		    if( isJxp ) print(" %&gt;");
@@ -213,7 +230,7 @@ pre {margin: 8px}
 		show(data);
 	    }
 	    else {
-		print( "does not exist" );
+		print( "file " + filename + " not found" );
 	    } 
 	}
       }

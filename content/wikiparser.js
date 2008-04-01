@@ -1,4 +1,11 @@
-/* transzlate wiki markup to html 
+/* translate wiki markup to html 
+   see http://www.10gen.com/wiki/wiki.markup
+
+   todo: move this file to /app/wiki/ folder?
+
+   options:
+     set app.wiki.programmer=false to disable "programmer" extensions to the wiki; for example the 
+       programmer extensions auto-link "core.module();" statements in the wiki.
 */
 
 content.WikiParser = function() {
@@ -36,9 +43,16 @@ content.WikiParser = function() {
         { r: /''(.+?)''/g , s: "<em>$1</em>" }, // ''italics''
     ];
 
-    // development related wiki things
+    // wiki extensions helpful for development
+    // the first rule here automatically marks up a core.foo() tag to link to 
+    // the associated corejs.10gen.com/admin/doc page.
     this.programmer = [ 
-	{ r: /(core\.[a-zA-Z0-9._]+\(\))/g, s:'<a href="foo">$1</a>' },
+        { r: /^([^\[]*)core\.([a-zA-Z0-9_.]+)\(\)/g, 
+	  s: function(a,b,c) { 
+               return b + '<a href="http://corejs.10gen.com/admin/doc?f=/' +
+	       c.replace(/[.]/, "/") + '">' + "core." + c + '()</a>';
+	     }
+        }
     ];
 };
 
@@ -111,6 +125,15 @@ content.WikiParser.prototype._line = function(str) {
     // raw urls - disabled, see above
     str = content.WikiParser._repl(this.urls, str);
 
+    if( str.match(/core/) && app.wiki && (app.wiki.programmer==null || !app.wiki.programmer) ) {
+	var old = str;
+	str = content.WikiParser._repl(this.programmer, str);
+	if( str != old ) {
+	    print("old:" + old +'\n');
+	    print("str:" + str +'\n');
+	}
+    }
+
     // links
     if( str.match(/\[/) ) {
         if( this.prefixRE ) str = str.replace(this.prefixRE, '[[');
@@ -119,8 +142,6 @@ content.WikiParser.prototype._line = function(str) {
 
     // the basics
     str = content.WikiParser._repl(this.basics, str);
-
-    str = content.WikiParser._repl(this.programmer, str);
 
     // * bullets
     if( str.match(/^\*/) ) {
