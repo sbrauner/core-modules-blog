@@ -142,8 +142,12 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
-Post.prototype.getNextPost = function(){
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $lt : this.ts } } );
+Post.prototype.getNextPost = function( filter ){
+    var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
+    if ( filter )
+	Object.extend( s , filter );
+    
+    var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : -1 } );
     cursor.limit( 1 );
     
@@ -153,8 +157,11 @@ Post.prototype.getNextPost = function(){
     return null;
 };
 
-Post.prototype.getPreviousPost = function(){
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" , ts : { $gt : this.ts } } );
+Post.prototype.getPreviousPost = function( filter ){
+    var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
+    if ( filter )
+	Object.extend( s , filter );
+    var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
     cursor.limit( 1 );
     
