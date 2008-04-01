@@ -68,8 +68,15 @@ html.FormBuilder.addInput = function(attr) {
         attr = {};
     if(!attr['type'])
         attr.type = "text";
-    if(!attr["class"] && this.stdClass)
-        attr["class"] = this.stdClass;
+    if(!attr['class'] && this.stdClass)
+        attr['class'] = this.stdClass;
 
     this.add(htmlName, attr);
 }
+
+// for select
+// addSelect(attr, opts)
+
+// for labels, divs, and other stuff with innerHTML
+// addElement(tag, attr, innerHTML)
+

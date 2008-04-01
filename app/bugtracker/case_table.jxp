@@ -23,34 +23,39 @@ var queryForms = {
         var proj = db.bugtracker.projects.findOne({name: u});
         if(proj) return proj;
         return -1;
+    },
+    reporter: function(u) {
+        var user = db.users.findOne({name: u});
+        if(user) return user;
+        return -1;
     }
 };
 
 if(request.action == "change") {
-     var cases = request.row.split(",");
-     var cat = request.src;
-     var subcat = request.dest;
-     for(var x in cases) {
-          var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
+    var cases = request.row.split(",");
+    var cat = request.src;
+    var subcat = request.dest;
+    for(var x in cases) {
+        var c = db.bugtracker.cases.findOne( { _id: cases[x] } );
 
-          // Sooooo bad
-          if(cat == "owner") {
-               c.owner = db.users.findOne({ name: subcat } );
-          }
-         else if(cat == "project") {
-             c.project = db.bugtracker.projects.findOne({ name: subcat});
-             if(request.newarea == "none")
-                 c.area = "";
-             else if(request.newarea)
-                 c.area = request.newarea;
-          }
-          else
-               c[cat] = subcat;
+        // Sooooo bad
+        if(cat == "owner") {
+            c.owner = db.users.findOne({ name: subcat } );
+        }
+        else if(cat == "project") {
+            c.project = db.bugtracker.projects.findOne({ name: subcat});
+            if(request.newarea == "none")
+                c.area = "";
+            else if(request.newarea)
+                c.area = request.newarea;
+        }
+        else
+            c[cat] = subcat;
 
-          db.bugtracker.cases.save(c);
-         delete req.newarea;
-         fork(core.app.bugtracker.email_send, request, user, c, false).start();
-     }
+        db.bugtracker.cases.save(c);
+        delete req.newarea;
+        fork(core.app.bugtracker.email_send, request, user, c, false).start();
+    }
     delete req.dest; delete req.src; delete req.row; delete req.area;
 }
 else if(request.action == "delete") {
@@ -72,6 +77,7 @@ for(var q in req) {
         query = null;
     else {
         query = new RegExp("(.*)"+req[q]+"(.*)", "i");
+        log("q: "+q+" queryForms: "+tojson(queryForms));
         if(queryForms[q]) query = queryForms[q](query);
     }
     searchobj[q] = query;
@@ -87,10 +93,18 @@ if(!showClosed) {
      });
 }
 
-print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id", number: true,
-                                                        title: true, owner: function(p){ return p? p.name: "none"},
-                                                        status: true, severity: true, type: true,
-                                                        project: function(p){ return p? p.name: "none"},
-                                                        area: true})}));
+
+print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id",
+                                                  number: true,
+                                                  title: true, owner: function(p){ return p? p.name: "none"},
+                                                  status: true, severity: true, type: true,
+                                                  project: function(p){ return p? p.name: "none"},
+                                                  area: true,
+                                                  reporter: function(p) { return p? p.name: "none"}
+                                                 }
+                                )
+               }
+              )
+     );
 %>
 
