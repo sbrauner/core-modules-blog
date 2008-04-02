@@ -46,6 +46,13 @@ function printObj(cursor, field) {
 </head>
 <body>
 
+<script type="text/javascript">
+function changeDb() {
+    passData="dbname="+document.getElementById("table").value;
+//    ajax(passData, "changeDb");
+}
+</script>
+
 <form>
 <label>Select a table: </label><select name="table" id="table" onchange="changeDb(); this.form.submit()">
 <%
@@ -61,14 +68,13 @@ for(var i=0; i<dblist.length; i++) {
 </form>
 
 <%
-if (request.table) {
+//if (request.table) {
+   if(!request.table) {
+       request.table="forum.threads";
+   }
 %>
 
 <script type="text/javascript">
-function changeDb() {
-     document.getElementById();
-}
-
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }
@@ -137,7 +143,7 @@ for(var i=0; i<cursor.length; i++) {
 %>
 </table>
 <%
-}
+//}
 %>
 
 </body>

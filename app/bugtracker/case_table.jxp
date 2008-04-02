@@ -100,7 +100,9 @@ print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id",
                                                   status: true, severity: true, type: true,
                                                   project: function(p){ return p? p.name: "none"},
                                                   area: true,
-                                                  reporter: function(p) { return p? p.name: "none"}
+                                                  reporter: function(p) { return p? p.name: "none"},
+                                                  dependency: true,
+                                                  dependencyType: true
                                                  }
                                 )
                }

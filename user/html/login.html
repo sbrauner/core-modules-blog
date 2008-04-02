@@ -36,7 +36,6 @@ var login = User.findMyLocation();
     <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit login">
         <fieldset class="login">
             <legend>Login</legend>
-
             <table>
                 <tr>
                     <td><label for="login_user">Username</label></td>
@@ -58,9 +57,11 @@ var login = User.findMyLocation();
                     </td>
                 </tr>
             </table>
+			<p class="login">
+			  <a href="<%= login %>/username_send">Forgot your username?</a> <br />
+		      <a href="<%= login %>/reset_send">Forgot your password?</a>
+		 	</p>
     </fieldset>
   </form>
-    <a href="<%= login %>/username_send">Forgot your username?</a>
-    <a href="<%= login %>/reset_send">Forgot your password?</a>
 
 </div>
