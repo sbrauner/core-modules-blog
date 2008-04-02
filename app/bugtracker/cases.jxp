@@ -453,18 +453,19 @@ var loader = new YAHOO.util.YUILoader( {
              var dep = oRecord.getData("dependency");
              elCell.innerHTML="";
              for(var d in dep) {
+                 d2 = parseInt(d);
                  switch(dep[d]) {
                  case "1":
-                     elCell.innerHTML+="<div>Depends on "+d+"</div>";
+                     elCell.innerHTML+="<div>Depends on "+d2+"</div>";
                      break;
                  case "2":
-                     elCell.innerHTML+="<div>Refers to "+d+"</div>";
+                     elCell.innerHTML+="<div>Refers to "+d2+"</div>";
                      break;
                  case "3":
-                     elCell.innerHTML+="<div>Duplicates "+d+"</div>";
+                     elCell.innerHTML+="<div>Duplicates "+d2+"</div>";
                      break;
                  case "4":
-                     elCell.innerHTML+="<div>Is blocked by "+d+"</div>";
+                     elCell.innerHTML+="<div>Is blocked by "+d2+"</div>";
                      break;
                  default: // "0" or ?
                      elCell.innerHTML+="";

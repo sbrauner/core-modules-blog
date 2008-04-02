@@ -87,9 +87,9 @@ else if(request.fstatus){
             feature.area = "";
         }
 
-
-        if(feature.dependencyType == 0) {
-            feature.dependency = null;
+        if(request.dependency) {
+            if(!feature.dependency || typeof feature.dependency != "object") feature.dependency = {};
+            feature.dependency[request.dependency] = request.dependencyType;
         }
 
         // FIXME: why did I write this to check for a new area every time,
@@ -115,18 +115,18 @@ else if(request.fstatus){
             append = "?msg=No+mail+sent";
         }
 
-         // Redirect back to bugs/ or whatever
-         if(request.action != "Save and Add Another") {
-              response.setResponseCode(301);
-              response.setHeader("Location", link);
-         }
+        // Redirect back to bugs/ or whatever
+        if(request.action != "Save and Add Another") {
+            response.setResponseCode(301);
+            response.setHeader("Location", link);
+        }
         else {
             var oldfeature = feature;
             feature = new app.bugtracker.data.Feature();
             ["owner", "status", "severity", "type", "os",
              "project", "area", "release"].forEach(function(field){
-                feature[field] = oldfeature[field];
-            });
+                 feature[field] = oldfeature[field];
+             });
             feature.reporter = user;
             postTarget = postTarget.removeArg("id");
         }
@@ -324,29 +324,34 @@ print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</optio
               </select>
               <input name="extra_ftargetrelease" disabled/>
             </td>
+
             <td class="label">
-              <select name="fdependencyType">
-                <option value="0" <%= (feature.dependencyType == 0) ? "selected" : "" %>>No dependencies</option>
-                <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
-                <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
-                <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
-                <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Is blocked by</option>
-              </select>
+              <div id="depFactory_l">
+                <select name="dependencyType">
+                  <option value="0" <%= (feature.dependencyType == 0) ? "selected" : "" %>>No dependencies</option>
+                  <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
+                  <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
+                  <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
+                  <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Is blocked by</option>
+                </select>
+              </div>
             </td>
             <td class="value">
-              <select name="fdependency" value="<%= request.dependency %>"><option value="">&nbsp;</option>
-                <%
-                   var cases = db.bugtracker.cases.find().toArray();
-                   for(i in cases) {
-                   var x = "";
-                   if( feature.dependency == cases[i].number) {
-                       x="selected";
-                   }
+              <div id="depFactory_v">
+                <select name="dependency" value="<%= request.dependency %>"><option value="">&nbsp;</option>
+                  <%
+                     var cases = db.bugtracker.cases.find().toArray();
+                     for(i in cases) {
+                     var x = "";
+                     if( feature.dependency == cases[i].number) {
+                     x="selected";
+                     }
 
-                   print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
-                   }
-                   %>
-              </select>
+                     print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
+                     }
+                     %>
+                </select>
+              </div>
             </td>
 
         </tr>
