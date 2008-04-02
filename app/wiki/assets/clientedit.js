@@ -92,6 +92,9 @@ clientEditLoader.insert({
                     }
                     saveKeyListener.enable();
                 }
+
+                // Reset the rename input (see the bugtracker for info)
+                document.getElementById("newNameInput").value = document.getElementById("newNameInput").defaultValue;
             });
     }
 });
@@ -113,6 +116,8 @@ var handleRenameKeyPress = function(e, obj) {
     }
     searchKeyListener.disable();
     homeKeyListener.disable();
+    obj[1].preventDefault();
+    obj[1].stopPropagation();
 }
 
 var handleDeleteKeyPress = function(e, obj) {
