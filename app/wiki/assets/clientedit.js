@@ -107,7 +107,10 @@ var handleRenameKeyPress = function(e, obj) {
     editKeyListener.disable();
     renameKeyListener.disable();
     deleteKeyListener.disable();
-    saveKeyListener.disable();
+    if(isEditPage){
+        // Otherwise, there's no save key
+        saveKeyListener.disable();
+    }
     searchKeyListener.disable();
     homeKeyListener.disable();
 }
@@ -117,7 +120,9 @@ var handleDeleteKeyPress = function(e, obj) {
     editKeyListener.disable();
     renameKeyListener.disable();
     deleteKeyListener.disable();
-    saveKeyListener.disable();
+    if(isEditPage){
+        saveKeyListener.disable();
+    }
     searchKeyListener.disable();
     homeKeyListener.disable();
 }
@@ -131,17 +136,21 @@ var handleConfirm = function() {
     editKeyListener.enable();
     renameKeyListener.enable();
     deleteKeyListener.enable();
-    saveKeyListener.enable();
+    if(isEditPage){
+        saveKeyListener.enable();
+    }
     searchKeyListener.enable();
     homeKeyListener.enable();
 }
 
-var handleCancel = function() { 
-    this.hide(); 
+var handleCancel = function() {
+    this.hide();
     editKeyListener.enable();
     renameKeyListener.enable();
     deleteKeyListener.enable();
-    saveKeyListener.enable();
+    if(isEditPage){
+        saveKeyListener.enable();
+    }
     searchKeyListener.enable();
     homeKeyListener.enable();
-};    
+};
