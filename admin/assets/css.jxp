@@ -145,6 +145,16 @@ div#customer_body {
     margin-left: auto;
     margin-right: auto;
     width: 75% !important;
+    float: left;
+}
+
+#treeview {
+    float: right;
+    width: 20%;
+}
+
+form.command {
+    clear: both;
 }
 
 .usercmd {

@@ -2,14 +2,16 @@
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
      <div id="console" class="transcript"></div>
-     <script type="text/javascript" src="/@@/yui/2.4.1/yuiloader/yuiloader-beta.js"></script>
+     <div id="treeview"></div>
+     <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete'],
-           base: '/@@/yui/2.4.1/',
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview'],
+           base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
+               objectTreeView = new YAHOO.widget.TreeView("treeview");
                this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -20,10 +22,12 @@
                    }
                    if(msg.category == "response"){
                        var obj = eval("(" + msg.msg + ")");
-                       alert("obj" + obj);
                        if(typeof obj == "object"){
+                           var i = objectList.push(obj);
+                           var treenode = new YAHOO.widget.TextNode("Object " + i,
+                               objectTreeView.getRoot(), false);
+                           objectTreeView.draw();
                            var s = printObjStart(obj, function(attrblock){return "<span class=\"response\" "+attrblock+">Object</span>";});
-                           alert("+"+s+"+")
                            return s;
                        }
                        else
@@ -124,7 +128,7 @@ var histfunc = function( e ) {
     }
 };
      </script>
-     <form onSubmit="return doRun('commandac');">
+     <form class="command" onSubmit="return doRun('commandac');">
        Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
     </form>
 </div>
