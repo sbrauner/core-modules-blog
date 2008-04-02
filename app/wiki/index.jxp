@@ -36,8 +36,6 @@ if ( ! request.name )
 
     // Get the actual wiki page. If there is no page with the given name, create a new page
     var wikiPage = db.wiki.findOne( { name : name } );
-log.wiki("wikiPage:" + wikiPage);
-log.wiki("getdisplayname:" + wikiPage.getDisplayName);
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
     // Check to see if we have been asked for an historical version of this wiki page
