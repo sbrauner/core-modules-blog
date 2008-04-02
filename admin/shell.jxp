@@ -31,7 +31,7 @@
                            populateTree(treenode, obj);
                            loader.objectNodes.push(treenode);
                            loader.objectTreeView.draw();
-                           var s = "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span>";
+                           var s = "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span><br/>";
                            return s;
                        }
                        else
