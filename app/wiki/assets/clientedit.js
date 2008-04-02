@@ -102,6 +102,7 @@ var handleEditKeyPress = function() {
 }
 
 var handleRenameKeyPress = function(e, obj) {
+    document.getElementById('rename_popup').style.display = 'block';
     renameDialog.show();
     editKeyListener.disable();
     renameKeyListener.disable();

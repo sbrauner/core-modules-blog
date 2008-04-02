@@ -36,7 +36,7 @@ var menu = [
       }
     } ,
     { text : "<em id='editorLabel'>Editor</em>" , url : "/admin/ed" } ,
-    { text : "<em id='shellLabel'>Shell</em>" , url : "/admin/shell.jxp" } ,
+//    { text : "<em id='shellLabel'>Shell</em>" , url : "/admin/shell.jxp" } ,
     { text : "<em id='gitLabel'>Git</em>" , url : "/admin/gitLocal.jxp" } ,
     { text : "<em id='docsLabel'>Docs</a>" , url : "#" ,
       submenu : {

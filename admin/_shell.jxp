@@ -18,10 +18,11 @@ if ( ! holder ){
 
 var theScope = holder[ shellId ];
 if ( ! theScope ){
-    theScope = scope;
+    theScope = gg.child( "_shell scope : " + shellId );
+    theScope.setGlobal( true );
     holder[ shellId ] = theScope;
 }
-
+theScope.setGlobal( true );
 var res = theScope.eval( request.command , "aaaa" + shellId , null );
 print( tojson( res ) );
 %>
