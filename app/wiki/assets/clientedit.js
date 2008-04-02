@@ -121,6 +121,7 @@ var handleRenameKeyPress = function(e, obj) {
 }
 
 var handleDeleteKeyPress = function(e, obj) {
+    document.getElementById('delete_popup').style.display = "block";
     deleteDialog.show();
     editKeyListener.disable();
     renameKeyListener.disable();
