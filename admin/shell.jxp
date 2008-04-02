@@ -3,6 +3,7 @@
      Shell (do not refresh page or anything crazy like that)<br>
      <div id="console" class="transcript"></div>
      <div id="treeview"></div>
+     <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
      <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
