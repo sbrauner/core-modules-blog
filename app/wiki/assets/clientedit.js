@@ -43,7 +43,7 @@ clientEditLoader.insert({
                 deleteElement.type = 'hidden';
                 deleteElement.value = true;
                 deleteDialog.form.appendChild(deleteElement);
-                
+
                 // create the rename dialog
                 renameDialog = new YAHOO.widget.Dialog("rename_popup", {
                                         fixedCenter: true,
@@ -82,7 +82,7 @@ clientEditLoader.insert({
                     }
                     deleteKeyListener.enable();
                 }
-                
+
                 // only set this up on an edit page
                 if (isEditPage) {
                     if (YAHOO.env.ua.webkit) {
@@ -91,10 +91,10 @@ clientEditLoader.insert({
                         saveKeyListener = new YAHOO.util.KeyListener(document, saveKeySelector, handleSaveKeyPress);
                     }
                     saveKeyListener.enable();
-                } 
+                }
             });
     }
-});    
+});
 
 var handleEditKeyPress = function() {
     // redirect to edit page
@@ -107,7 +107,10 @@ var handleRenameKeyPress = function(e, obj) {
     editKeyListener.disable();
     renameKeyListener.disable();
     deleteKeyListener.disable();
-    saveKeyListener.disable();
+    if(isEditPage){
+        // Otherwise, there's no save key
+        saveKeyListener.disable();
+    }
     searchKeyListener.disable();
     homeKeyListener.disable();
 }
@@ -117,7 +120,9 @@ var handleDeleteKeyPress = function(e, obj) {
     editKeyListener.disable();
     renameKeyListener.disable();
     deleteKeyListener.disable();
-    saveKeyListener.disable();
+    if(isEditPage){
+        saveKeyListener.disable();
+    }
     searchKeyListener.disable();
     homeKeyListener.disable();
 }
@@ -131,17 +136,21 @@ var handleConfirm = function() {
     editKeyListener.enable();
     renameKeyListener.enable();
     deleteKeyListener.enable();
-    saveKeyListener.enable();
+    if(isEditPage){
+        saveKeyListener.enable();
+    }
     searchKeyListener.enable();
     homeKeyListener.enable();
 }
 
-var handleCancel = function() { 
-    this.hide(); 
+var handleCancel = function() {
+    this.hide();
     editKeyListener.enable();
     renameKeyListener.enable();
     deleteKeyListener.enable();
-    saveKeyListener.enable();
+    if(isEditPage){
+        saveKeyListener.enable();
+    }
     searchKeyListener.enable();
     homeKeyListener.enable();
-};    
+};
