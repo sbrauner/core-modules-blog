@@ -11,7 +11,8 @@
            base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
-               objectTreeView = new YAHOO.widget.TreeView("treeview");
+               loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
+               loader.objectNodes = [];
                this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -25,9 +26,11 @@
                        if(typeof obj == "object"){
                            var i = objectList.push(obj);
                            var treenode = new YAHOO.widget.TextNode("Object " + i,
-                               objectTreeView.getRoot(), false);
-                           objectTreeView.draw();
-                           var s = printObjStart(obj, function(attrblock){return "<span class=\"response\" "+attrblock+">Object</span>";});
+                               loader.objectTreeView.getRoot(), false);
+                           populateTree(treenode, obj);
+                           loader.objectNodes.push(treenode);
+                           loader.objectTreeView.draw();
+                           var s = "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span>";
                            return s;
                        }
                        else
@@ -134,10 +137,6 @@ var histfunc = function( e ) {
 </div>
 
 <script>
-    function printObjStart(cursor, dispfunc) {
-        return printObj({obj: cursor}, "obj", dispfunc);
-    }
-
 var count = 0;
 var objcount = 0;
 function Text(cursor, field){
@@ -147,38 +146,34 @@ function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
 }
 
-function printObj(cursor, field, dispfunc) {
-    var s = "<div>"+field+": ";
-    if(!cursor || !cursor[field]) return "";
-
-    if(typeof cursor[field] == "boolean") {
-        s += Check(cursor, field);
-    }
-    else if(typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        s += Text(cursor, field);
-    }
-    else if(typeof cursor[field] == "object") {
-        //name = cursor[field].name || cursor[field].toString() || "Object";
-        s += dispfunc("onclick=\"showObj('o"+objcount+"')\"")+"<div class=\"obj\" id=\"o"+objcount+"\">";
-        var tempobj = objcount;
-        objcount++;
-        for(var name in cursor[field]) {
-            s += printObj(cursor[field], name, dispfunc);
+function populateTree(treenode, obj) {
+    for(var field in obj){
+        s = field + ": ";
+        if(typeof obj[field] == "boolean") {
+            s += obj[field];
         }
-        s += "<input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='x'></div>";
+        else if(typeof obj[field] == "string") {
+            s += '"' + obj[field] + '"';
+        }
+        else if(typeof obj[field] == "number") {
+            s += obj[field];
+        }
+        else if(typeof obj[field] == "object") {
+            s += "Object";
+        }
+        else {
+            s += (typeof obj[field]);
+        }
+
+        var tmpNode = new YAHOO.widget.TextNode(s, treenode, false);
+        if(typeof obj[field] == "object") {
+            populateTree(tmpNode, obj[field]);
+        }
     }
-    else {
-        s += (typeof cursor[field]);
-    }
-    s += "</div>";
-    return s;
 }
 
-function showObj(i) {
-         document.getElementById(i).style.display = "block";
-}
-function hideObj(i) {
-         document.getElementById(i).style.display = "none";
+function expandObj(i){
+    loader.objectNodes[i].expand();
 }
 
     indexOf = function(ary, v){
