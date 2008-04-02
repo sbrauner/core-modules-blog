@@ -153,6 +153,15 @@ div#customer_body {
     width: 20%;
 }
 
+#treeview * {
+    margin: 0pt;
+    padding-left: 0;
+}
+
+#treeview td {
+    border: none;
+}
+
 form.command {
     clear: both;
 }
