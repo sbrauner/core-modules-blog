@@ -99,6 +99,9 @@ var blockYUIParen = function ( e ) {
     }
 };
 
+var currentCommand = '';
+var historyLocation = 0;
+
 var histfunc = function( e ) {
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
@@ -112,6 +115,8 @@ var histfunc = function( e ) {
         }
     }
     if( key == 38 ) { // up arrow
+        if(historyLocation == 0)
+            currentCommand = document.getElementById("commandac").value;
         historyLocation -= 1;
         if (historyLocation < -historyAry.length){
             historyLocation = -historyAry.length;
@@ -124,7 +129,7 @@ var histfunc = function( e ) {
         historyLocation += 1;
         if (historyLocation >= 0){
             historyLocation = 0;
-            setcmd("");
+            setcmd(currentCommand);
         }
         else {
             setcmd();
@@ -191,28 +196,28 @@ lastIndexOf = function(ary, v){
     }
     return -1;
 };
-    shellId = "shell-" + Math.random();
-    var historyLocation = 0;
-    function doRun(el){
-        var command = document.getElementById( el );
-        var usr = command.value;
-        command.value = "";
-        if(indexOf(pastCommands, usr) == -1){
-            pastCommands.push(usr);
-        }
-        if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
-            historyAry.push(indexOf(pastCommands,usr));
-        }
-        historyLocation = 0;
-
-        YAHOO.log(usr, "user", "shell");
-        var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
-
-        var res = loadDocSync( url );
-        res = res.replace( /(^\s+|\s+$)/g , "" );
-        YAHOO.log(res, "response", "shell");
-
-        return false;
+shellId = "shell-" + Math.random();
+function doRun(el){
+    var command = document.getElementById( el );
+    var usr = command.value;
+    command.value = "";
+    if(indexOf(pastCommands, usr) == -1){
+        pastCommands.push(usr);
     }
+    if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
+        historyAry.push(indexOf(pastCommands,usr));
+    }
+    historyLocation = 0;
+    currentCommand = "";
+
+    YAHOO.log(usr, "user", "shell");
+    var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
+
+    var res = loadDocSync( url );
+    res = res.replace( /(^\s+|\s+$)/g , "" );
+    YAHOO.log(res, "response", "shell");
+
+    return false;
+}
 
 </script>
