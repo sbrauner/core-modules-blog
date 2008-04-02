@@ -3,12 +3,12 @@
 if(!request.dep || !request.depOn || !request.type)
    return -1;
 
-var bug = db.bugtracker.cases.findOne({_id: request.dep});
+dep = parseInt(request.dep);
+var bug = db.bugtracker.cases.findOne({number: dep});
 if(!bug.dependency || typeof bug.dependency != "object") {
    bug.dependency = {};
 }
 bug.dependency[request.depOn] = request.type;
-log("bug: "+tojson(bug.dependency));
 db.bugtracker.cases.save(bug);
 
 %>

@@ -96,7 +96,7 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 </table>
 <!-- End bug table -->
 
-<div id="assignDependency" style="background: white; border: 1px solid black;">
+<div id="assignDependency" style="background: white; border: 1px solid black; cursor: pointer">
 </div>
 
 
@@ -501,13 +501,13 @@ var loader = new YAHOO.util.YUILoader( {
                      var dep = [" depends on ", " refers to ", " duplicates ", " is blocked by "];
                      var dep_div = document.getElementById("assignDependency");
                      var depOpt = document.createElement("div");
-                     depOpt.setAttribute("onclick", "assignDep('"+rec.getData("id")+"','"+recDependsOn.getData("id")+"',0)");
+                     depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',0)");
                      depOpt.innerHTML = "No dependency";
                      dep_div.appendChild(depOpt);
                      var j=1;
                      for(var i in dep) {
                          depOpt = document.createElement("div");
-                         depOpt.setAttribute("onclick", "assignDep('"+rec.getData("id")+"','"+recDependsOn.getData("id")+"',"+j+")");
+                         depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',"+j+")");
                          depOpt.innerHTML = z+dep[i]+w;
                          dep_div.appendChild(depOpt);
                          j++;
