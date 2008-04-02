@@ -30,7 +30,7 @@
         <div class="hd">Confirm Page Rename</div>
         <div class="bd">
             <form method="POST">
-                <label for="newName">New Page Name:</label> <input type="text" width="40" name="newName" value="<%= wikiPage.name %>">
+                <label for="newName">New Page Name:</label> <input type="text" width="40" name="newName" value="<%= wikiPage.name %>" id="newNameInput">
                 <input type="hidden" name="rename" value="true"/>
             </form>
         </div>
