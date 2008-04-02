@@ -1,4 +1,4 @@
-core.ext.asstring();
+core.ext.redirect();
 
 testing.Client = function(){
     this.cookies = {};
@@ -54,19 +54,22 @@ testing.Client.prototype.setURL = function(query){
 // testing.Client.prototype.setArgs = function(args){
 
 testing.Client.prototype.setAnswer = function(answer){
-    // answer == 'retval' or 'output', and specifies what you care about when
+    // answer == 'value' or 'output', and specifies what you care about when
     // you call execute on a function
     this.answer = answer || 'output';
     return this;
 };
 
-testing.Client.prototype.execute = function(f, answer){
+testing.Client.prototype.execute = function(f){
+    // execute "within the context of a request" -- i.e. generate
+    // sensible request and response objects and keep track of what happens to
+    // them
     this.redirects = [];
-    // answer == 'retval' or 'output'
     answer = this.answer || 'output';
     request = this.getRequest(this.query);
     response = this.getResponse();
-    var value = Ext.asString(f, true);
-    if(answer in value) return value[answer];
-    if(answer == "redirects") return this.redirects;
+    var val = Ext.redirect(f);
+    if(answer in val) return val[answer];
+    if(answer in this) return this[answer];
+    return val;
 };

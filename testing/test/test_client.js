@@ -10,7 +10,7 @@ assert(c.getRequest().getCookie("test1") == "valu1");
 var urls = ['/', '/forum/thread_edit', '/blog?page=4'];
 
 urls.forEach(function(u){
-    var url = c.setURL(u).setAnswer("retval").execute(function(){
+    var url = c.setURL(u).setAnswer("value").execute(function(){
         return request.getURL();
     });
     assert(u == url);
@@ -24,3 +24,4 @@ urls.forEach(function(u){
     assert(redirects[0].type == "temporary");
     assert(redirects[0].location == "?");
 });
+

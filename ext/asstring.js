@@ -1,12 +1,8 @@
-Ext.asString = function(f, sendReturnValue){
-    // FIXME: Should there even be an option to get the return value?
-    var oldPrint = print;
-    var buf = "";
-    print = function(s){ buf += s; };
-    var value = f();
-    print = oldPrint;
-    if(! sendReturnValue)
-        return buf.trim();
-    else
-        return {retval: value, output: buf};
+core.ext.redirect();
+
+Ext.asString = function(f){
+    // Ext.redirect except we only want the output and trim.
+    // This should probably be moved to Ext.redirect.asString or something?
+    var value = Ext.redirect(f);
+    return value.output.trim();
 };
