@@ -150,7 +150,7 @@ pre {margin: 8px}
 	// hotlink core.include()
 	s=s.replace(/([ \t]*)core\.(.*?)\( *\) *;/, function(m,a,b) {
 		var path = b.replace(/\./g, '/');
-		return a + '<a href="http://corejs.10gen.com/admin/doc?f=/' + path + '.js">core.' + b + '</a>();';
+		return a + '<a href="http://corejs.10gen.com/admin/doc?f=/' + path + '">core.' + b + '</a>();';
 	    });
 
 	// hotlink jxp.include();
@@ -219,6 +219,10 @@ pre {margin: 8px}
 		else { 
 		    theFile = openFile( filename + ".jxp" );
 		    if( theFile.exists() ) filename += ".jxp";
+		    else { 
+			theFile = openFile(filename+".html");
+			if( theFile.exists() ) filename += ".html";
+		    }
 		}
 	    }
 

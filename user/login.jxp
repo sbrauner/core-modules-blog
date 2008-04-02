@@ -1,7 +1,7 @@
 <%
     htmlheader("Login");
 
-core.user.html.login({to: request.getHeader("Referer")});
+core.user.html.login( { to: request.to || request.getHeader("Referer")}) ;
 
 htmlfooter();
 %>

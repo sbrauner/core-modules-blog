@@ -8,7 +8,7 @@ if ( request.l && request.l != 0 ){
     cols = [
             { name : "date" } ,
             { name : "thread" , view : function(z) {
-                    return z.getName();
+                return z == null ? "null" : z.getName();
                 } } ,
             { name : "level" } ,
             { name : "msg" } ,
