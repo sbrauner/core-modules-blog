@@ -133,15 +133,15 @@ content.WikiParser.prototype._line = function(str) {
     if( str.match(/core/) && app.wiki && (app.wiki.programmer==null || !app.wiki.programmer) ) {
 	var old = str;
 	str = content.WikiParser._repl(this.programmer, str);
-	if( str != old ) {
-	    print("old:" + old +'\n');
-	    print("str:" + str +'\n');
-	}
     }
 
     // links
     if( str.match(/\[/) ) {
-        if( this.prefixRE ) str = str.replace(this.prefixRE, '[[');
+//	log.wiki.error("line2:prefixRE:" + this.prefixRE);
+        if( this.prefixRE ) { 
+	    str = str.replace(this.prefixRE, '[[');
+//	    log.wiki.error("postreplace2:" + str);
+	}
         str = content.WikiParser._repl(this.link, str);
     }
 
@@ -151,7 +151,7 @@ content.WikiParser.prototype._line = function(str) {
     // * bullets
     if( str.match(/^\*/) ) {
         var stars = "" + str.match(/^\*+/);
-//        stars = stars.replace( /\*/g, "u" );
+	//stars = stars.replace( /\*/g, "u" );
         newLevel = stars.length;
         str = str.replace( /^(\*+ *)(.*)/, '<li class="u">$2</li>');
     }
@@ -170,10 +170,14 @@ content.WikiParser.prototype._reset = function() {
 };
 
 content.WikiParser.prototype.toHtml = function(str, prefix) {
+    lastPrefix = { last: prefix };
+
+    log.wiki.error("prefix2:"+ prefix);
     this._reset();
     if( prefix && prefix.length ) {
         var s = prefix.replace(/\./g, '\.');
         this.prefixRE = RegExp("\\[\\[" + s, 'g');
+	log.wiki.error("prefix2:re:" + this.prefixRE);
     }
 
     var ln = str.split(/\r?\n/);

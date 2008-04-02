@@ -1,6 +1,6 @@
 <%
     core.user.auth();
-    user = Auth.getUser( request );
+user = Auth.getUser( request , response );
 
 if ( ! user ){
     print( "invalid username/password" );
@@ -8,12 +8,12 @@ if ( ! user ){
     return;
 }
 
-if(User.requirements.confirmed_email && user && ! user.isAdmin() && ! user.hasPermission("confirmed_email")){
+if( User.requirements.confirmed_email && user && ! user.isAdmin() && ! user.hasPermission("confirmed_email")){
     core.user.confirm_send();
 }
 
 to = request.to || "/";
-if(notice)
+if( notice )
     to = to + "?notice="+notice;
 
 response.setResponseCode( 301 );

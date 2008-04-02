@@ -2,6 +2,9 @@
     /* determine the base url we are running under.
     */
 
+    assert( app );
+    assert( app.wiki );
+
     var uri = request.getURI();
 
     // This should be moved to a general handler for all modules
@@ -28,14 +31,13 @@ if ( ! request.name )
     // Construct the full name of the page if we have a prefix defined for this instance
     var name = displayName;
 
-assert( app );
-assert( app.wiki );
-
     if ( app.wiki.config.prefix && ! displayName.match( "^" + app.wiki.config.prefix ) )
         name = app.wiki.config.prefix + displayName;
 
     // Get the actual wiki page. If there is no page with the given name, create a new page
     var wikiPage = db.wiki.findOne( { name : name } );
+log.wiki("wikiPage:" + wikiPage);
+log.wiki("getdisplayname:" + wikiPage.getDisplayName);
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
     // Check to see if we have been asked for an historical version of this wiki page

@@ -1,3 +1,4 @@
+/* Auth several different styles of authentication. */
 
 core.user.user();
 
@@ -165,6 +166,7 @@ Auth = {
         }
     } ,
 
+    /* cookie-style user authentication */
     cookie :  {
         getUser : function( request , response , name ){
             var now = new Date();
