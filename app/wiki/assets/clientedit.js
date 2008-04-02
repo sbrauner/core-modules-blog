@@ -43,7 +43,7 @@ clientEditLoader.insert({
                 deleteElement.type = 'hidden';
                 deleteElement.value = true;
                 deleteDialog.form.appendChild(deleteElement);
-                
+
                 // create the rename dialog
                 renameDialog = new YAHOO.widget.Dialog("rename_popup", {
                                         fixedCenter: true,
@@ -82,7 +82,7 @@ clientEditLoader.insert({
                     }
                     deleteKeyListener.enable();
                 }
-                
+
                 // only set this up on an edit page
                 if (isEditPage) {
                     if (YAHOO.env.ua.webkit) {
@@ -91,10 +91,10 @@ clientEditLoader.insert({
                         saveKeyListener = new YAHOO.util.KeyListener(document, saveKeySelector, handleSaveKeyPress);
                     }
                     saveKeyListener.enable();
-                } 
+                }
             });
     }
-});    
+});
 
 var handleEditKeyPress = function() {
     // redirect to edit page
