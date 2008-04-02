@@ -330,7 +330,7 @@ print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</optio
                 <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
                 <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
                 <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
-                <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Blocks</option>
+                <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Is blocked by</option>
               </select>
             </td>
             <td class="value">
@@ -341,9 +341,7 @@ print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</optio
                    var x = "";
                    if( feature.dependency == cases[i].number) {
                        x="selected";
-                   log("feature: "+feature.dependency+" num: "+cases[i].number+" feature==num? "+(feature.dependency == cases[i].number));
                    }
-
 
                    print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
                    }

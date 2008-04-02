@@ -96,6 +96,9 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 </table>
 <!-- End bug table -->
 
+<div id="assignDependency" style="background: white; border: 1px solid black;">
+</div>
+
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
 <script>
@@ -325,8 +328,27 @@ toggleCheckAll = function() {
     setCheckedRows(act);
 }
 
+assignDep = function(x, xDependsOn, type) {
+    var passData="dep="+x+"&depOn="+xDependsOn+"&type="+type;
+    ajax(passData, "setDep", function(response) {
+        if(response == "-1") {
+            alert("Oops, couldn't set the dependency!");
+            return;
+        }
+
+        document.getElementById("assignDependency").innerHTML = "";
+        assignDep_dlg.hide();
+        myDataTable.unselectRow(dependency);
+
+        refreshTable();
+    });
+}
+
 
 var oMenu, checkAll = false;
+var settingDep = false;
+var dependency = null;
+var assignDep_dlg;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
@@ -417,7 +439,7 @@ var loader = new YAHOO.util.YUILoader( {
          myDataSource.connXhrMode = "queueRequests";
          myDataSource.responseSchema = {
              resultsList: "rows",
-             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id", {key: "dependency", parser:YAHOO.util.DataSource.parseNumber}, "dependencyType" ]
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id", "dependency" ]
          };
          var oConfigs = {
              paginator: myPaginator,
@@ -428,34 +450,101 @@ var loader = new YAHOO.util.YUILoader( {
          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
 
          YAHOO.widget.DataTable.Formatter.myCustom = function(elCell, oRecord, oColumn, oData) {
-             switch(oRecord.getData("dependencyType")) {
-             case "1":
-                 elCell.innerHTML="Depends on "+oRecord.getData("dependency");
-                 break;
-             case "2":
-                 elCell.innerHTML="Refers to "+oRecord.getData("dependency");
-                 break;
-             case "3":
-                 elCell.innerHTML="Duplicates "+oRecord.getData("dependency");
-                 break;
-             case "4":
-                 elCell.innerHTML="Blocks "+oRecord.getData("dependency");
-                 break;
-             default:
-                 elCell.innerHTML="";
+             var dep = oRecord.getData("dependency");
+             elCell.innerHTML="";
+             for(var d in dep) {
+                 switch(dep[d]) {
+                 case "1":
+                     elCell.innerHTML+="<div>Depends on "+d+"</div>";
+                     break;
+                 case "2":
+                     elCell.innerHTML+="<div>Refers to "+d+"</div>";
+                     break;
+                 case "3":
+                     elCell.innerHTML+="<div>Duplicates "+d+"</div>";
+                     break;
+                 case "4":
+                     elCell.innerHTML+="<div>Is blocked by "+d+"</div>";
+                     break;
+                 default: // "0" or ?
+                     elCell.innerHTML+="";
+                 }
              }
-                   };
+         };
 
-          myDataTable.onEventSelectCell = function(e) {
-               if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
-                    return;
+         myDataTable.onEventSelectCell = function(e) {
+             if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
+                 return;
 
-              location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
+             if(YAHOO.util.Dom.getLastChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target) {
+                 // if this is a first click, highlight the row
+                 if(settingDep == false) {
+                     //YAHOO.util.Dom.getAncestorByTagName(e.target, "tr").style.background = "#AACCAA";
+                     myDataTable.selectRow(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
+                     dependency = myDataTable.getTrEl(e.target);
+                     settingDep = true;
+                     return;
+                 }
+                 // otherwise, unhighlight the row
+                 else {
+                     var rec = myDataTable.getRecord(dependency);
+                     var recDependsOn = myDataTable.getRecord(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
+                     if(rec.getData("id") == recDependsOn.getData("id")) {
+                         alert("A case cannot depend on itself.");
+                         return;
+                     }
+
+                     // z depends on w
+                     var z = rec.getData("title");
+                     var w = recDependsOn.getData("title");
+
+                     var dep = [" depends on ", " refers to ", " duplicates ", " is blocked by "];
+                     var dep_div = document.getElementById("assignDependency");
+                     var depOpt = document.createElement("div");
+                     depOpt.setAttribute("onclick", "assignDep('"+rec.getData("id")+"','"+recDependsOn.getData("id")+"',0)");
+                     depOpt.innerHTML = "No dependency";
+                     dep_div.appendChild(depOpt);
+                     var j=1;
+                     for(var i in dep) {
+                         depOpt = document.createElement("div");
+                         depOpt.setAttribute("onclick", "assignDep('"+rec.getData("id")+"','"+recDependsOn.getData("id")+"',"+j+")");
+                         depOpt.innerHTML = z+dep[i]+w;
+                         dep_div.appendChild(depOpt);
+                         j++;
+                     }
+
+                     // pop up a select to determine dependency type
+                     var posx = 0;
+                     var posy = 0;
+                     if (e.event.pageX || e.event.pageY) {
+                         posx = e.event.pageX;
+                         posy = e.event.pageY;
+                     }
+                     else if (e.event.clientX || e.event.clientY) {
+                         posx = e.event.clientX + document.body.scrollLeft
+                         + document.documentElement.scrollLeft;
+                         posy = e.event.clientY + document.body.scrollTop
+                         + document.documentElement.scrollTop;
+                     }
+                     assignDep_dlg = new YAHOO.widget.Overlay("assignDependency", { xy: [posx, posy],
+                         visible: false,
+                         width: "300px" } );
+                     assignDep_dlg.render();
+                     assignDep_dlg.show();
+
+                     // link cases onchange
+
+                     settingDep = false;
+                     return;
+                 }
+             }
+
+             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
           }
 
-          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
-          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
-          myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
+         myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
+         myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
+         myDataTable.subscribe("cellClickEvent", myDataTable.onEventSelectCell);
 
           myDataTable.subscribe("checkboxClickEvent", function(oArgs){
               var oRecord = this.getRecord(YAHOO.util.Dom.getAncestorByTagName(oArgs.target, "tr"));
