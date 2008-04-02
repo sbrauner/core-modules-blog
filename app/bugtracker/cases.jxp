@@ -337,6 +337,7 @@ assignDep = function(x, xDependsOn, type) {
         }
 
         document.getElementById("assignDependency").innerHTML = "";
+        settingDep = false;
         assignDep_dlg.hide();
         myDataTable.unselectRow(dependency);
 
@@ -491,7 +492,8 @@ var loader = new YAHOO.util.YUILoader( {
                      var rec = myDataTable.getRecord(dependency);
                      var recDependsOn = myDataTable.getRecord(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
                      if(rec.getData("id") == recDependsOn.getData("id")) {
-                         alert("A case cannot depend on itself.");
+                         myDataTable.unselectRow(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
+                         settingDep = false;
                          return;
                      }
 
@@ -508,8 +510,16 @@ var loader = new YAHOO.util.YUILoader( {
                      var j=1;
                      for(var i in dep) {
                          depOpt = document.createElement("div");
-                         depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',"+j+")");
                          depOpt.innerHTML = z+dep[i]+w;
+                         if(rec.getData("dependency")[recDependsOn.getData("number")]
+                            && rec.getData("dependency")[recDependsOn.getData("number")] == (parseInt(i)+1)) {
+                             depOpt.style.background = "#ddddff";
+//                             depOpt.style.cursor = "default";
+                         }
+                         else {
+                             depOpt.style.background = "white";
+                         }
+                         depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',"+j+")");
                          dep_div.appendChild(depOpt);
                          j++;
                      }
@@ -527,15 +537,13 @@ var loader = new YAHOO.util.YUILoader( {
                          posy = e.event.clientY + document.body.scrollTop
                          + document.documentElement.scrollTop;
                      }
-                     assignDep_dlg = new YAHOO.widget.Overlay("assignDependency", { xy: [posx, posy],
+                     assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { xy: [posx, posy],
                          visible: false,
                          width: "300px" } );
                      assignDep_dlg.render();
                      assignDep_dlg.show();
 
                      // link cases onchange
-
-                     settingDep = false;
                      return;
                  }
              }
