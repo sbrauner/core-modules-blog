@@ -403,6 +403,12 @@ generateCaseList = function(bug) {
     var sel = document.createElement("select");
     sel.setAttribute("name", "dependency");
     sel.setAttribute("onchange", "generateRow(null, null,"+selectCount+")");
+
+    var opt = document.createElement("option");
+    opt.setAttribute("value", "");
+    opt.innerHTML = "&nbsp;";
+    sel.appendChild(opt);
+
     for(c in cases) {
         var opt = document.createElement("option");
         opt.setAttribute("value", casenums[c]);
@@ -418,6 +424,7 @@ generateCaseList = function(bug) {
 var depInit = { <%
                 if(feature.dependency) {
                     for(x in feature.dependency) {
+                        if(feature.dependency[x] == 0) continue;
                         print(x+": '"+feature.dependency[x]+"',");
                     }
                 }
