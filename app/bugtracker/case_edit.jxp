@@ -314,7 +314,7 @@ if(project.areas.length > 0){
             <input name="extra_farea" <%=choices.length > 0? "disabled=\"true\"": "" %> />
           </td>
         </tr>
-        <tr>
+        <tr valign="top">
             <td class="label">Target Release</td>
             <td class="value"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
 <% var rels = db.bugtracker.releases.find().toArray();
@@ -326,33 +326,121 @@ print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</optio
             </td>
 
             <td class="label">
-              <div id="depFactory_l">
-                <select name="dependencyType">
-                  <option value="0" <%= (feature.dependencyType == 0) ? "selected" : "" %>>No dependencies</option>
-                  <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
-                  <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
-                  <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
-                  <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Is blocked by</option>
-                </select>
-              </div>
+              Dependencies:
             </td>
             <td class="value">
-              <div id="depFactory_v">
-                <select name="dependency" value="<%= request.dependency %>"><option value="">&nbsp;</option>
-                  <%
-                     var cases = db.bugtracker.cases.find().toArray();
-                     for(i in cases) {
-                     var x = "";
-                     if( feature.dependency == cases[i].number) {
-                     x="selected";
-                     }
+              <div id="depFactory">
+                  <!--
+                  <select name="dependencyType">
+                    <option value="0" <%= (feature.dependencyType == 0) ? "selected" : "" %>>No dependency</option>
+                    <option value="1" <%= (feature.dependencyType == 1) ? "selected" : "" %>>Depends on</option>
+                    <option value="2" <%= (feature.dependencyType == 2) ? "selected" : "" %>>Refers to</option>
+                    <option value="3" <%= (feature.dependencyType == 3) ? "selected" : "" %>>Duplicates</option>
+                    <option value="4" <%= (feature.dependencyType == 4) ? "selected" : "" %>>Is blocked by</option>
+                  </select>
+                  <select name="dependency" onchange="generateRow()"><option value="">&nbsp;</option>
+                    <%
+                       var cases = db.bugtracker.cases.find().toArray();
+                       for(i in cases) {
+                       var x = "";
+                       if( feature.dependency == cases[i].number) {
+                       x="selected";
+                       }
 
-                     print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
-                     }
-                     %>
-                </select>
+                       print('<option value="'+cases[i].number+'" '+x+'>Case #'+cases[i].number.toFixed()+": "+cases[i].title+"</option>");
+                       }
+                       %>
+                  </select>
+                  -->
               </div>
             </td>
+
+            <script type="text/javascript">
+
+var dep = [ <%
+            core.app.bugtracker.data.dependency();
+            print(app.bugtracker.data.Dependency.prototype.TYPE_TITLE.join());
+            %>
+          ];
+
+var cases = [ <%
+              var cases = db.bugtracker.cases.find().toArray();
+              for(i in cases) {
+                  cases[i] = '"Case #'+cases[i].number.toFixed()+': '+cases[i].title+'"';
+              }
+              print(cases.join());
+              %>
+            ];
+
+var casenums = [ <%
+              var cases = db.bugtracker.cases.find().toArray();
+              for(i in cases)
+                  cases[i] = '"'+cases[i].number.toFixed()+'"';
+              print(cases.join());
+              %>
+            ];
+
+generateRow = function(type, bug, count) {
+    if(count) {
+        if(count < selectCount-1) return;
+    }
+    var selDiv = document.createElement("div");
+    selDiv.appendChild(generateType(type));
+    selDiv.appendChild(generateCaseList(bug));
+    selectCount++;
+    document.getElementById("depFactory").appendChild(selDiv);
+}
+
+generateType = function(type) {
+    var sel = document.createElement("select");
+    sel.setAttribute("name", "dependencyType");
+    for(d in dep) {
+        var opt = document.createElement("option");
+        opt.setAttribute("value", d);
+        if(type && d == type)
+            opt.selected = true;
+        opt.innerHTML = dep[d];
+        sel.appendChild(opt);
+    }
+    return sel;
+}
+
+generateCaseList = function(bug) {
+    var sel = document.createElement("select");
+    sel.setAttribute("name", "dependency");
+    sel.setAttribute("onchange", "generateRow(null, null,"+selectCount+")");
+    for(c in cases) {
+        var opt = document.createElement("option");
+        opt.setAttribute("value", casenums[c]);
+        if(bug && casenums[c] == bug)
+            opt.selected = true;
+        opt.innerHTML = cases[c];
+        sel.appendChild(opt);
+    }
+    return sel;
+}
+
+
+var depInit = { <%
+                if(feature.dependency) {
+                    for(x in feature.dependency) {
+                        print(x+": '"+feature.dependency[x]+"'");
+                    }
+                }
+                %>
+              };
+
+var selectCount = 1;
+
+// Generate the initial dropdowns
+for(x in depInit) {
+    generateRow(depInit[x], x);
+}
+generateRow();
+
+            </script>
+
+
 
         </tr>
         <tr><td colspan="4" class="section_divider"><hr /></td></tr>
