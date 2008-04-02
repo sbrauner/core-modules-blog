@@ -20,7 +20,7 @@ query = "/?username=Ethan&prefix=" + prefix + "&hash=" + md5(prefix + ":" + u.pa
 log.user.auth.level = log.LEVEL.DEBUG;
 
 client = new testing.Client();
-client.setAnswer("retval");
+client.setAnswer("value");
 var user = client.setURL(query).execute(function(){
     return Auth.cookie.getUser(request, response, "test");
 });
