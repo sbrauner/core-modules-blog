@@ -12,6 +12,8 @@ u.email = "ethan@10gen.com";
 u.setPassword("truancy");
 db.users.save(u);
 
+// First, log in using query arguments
+
 var prefix = md5(SERVER_HOSTNAME + new Date().roundMinutes(7));
 query = "/?username=Ethan&prefix=" + prefix + "&hash=" + md5(prefix + ":" + u.pass_ha1_name);
 
@@ -25,6 +27,8 @@ var user = client.setURL(query).execute(function(){
 
 assert(user.name == "Ethan");
 
+// That should have set cookies, so now we should be authenticated w/o
+// query args
 var user = client.setURL().execute(function(){
         return Auth.cookie.getUser(request, response, "test");
     });
