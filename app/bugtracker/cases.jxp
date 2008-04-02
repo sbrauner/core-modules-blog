@@ -97,7 +97,10 @@ db.bugtracker.searches.find({user: user}).forEach(function(search){
 <!-- End bug table -->
 
 <div id="assignDependency" style="background: white; border: 1px solid black; cursor: pointer">
+<div class="hd">Change dependency</div>
+<div class="bd" id="assignDependency_bd"></div>
 </div>
+
 
 
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>
@@ -336,7 +339,6 @@ assignDep = function(x, xDependsOn, type) {
             return;
         }
 
-        document.getElementById("assignDependency").innerHTML = "";
         settingDep = false;
         assignDep_dlg.hide();
         myDataTable.unselectRow(dependency);
@@ -345,7 +347,6 @@ assignDep = function(x, xDependsOn, type) {
     });
 }
 
-
 var oMenu, checkAll = false;
 var settingDep = false;
 var dependency = null;
@@ -353,9 +354,10 @@ var assignDep_dlg;
 
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
-     require: ["datatable", "json", "container", "dragdrop"],
+    require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
+
          var myPaginator = new YAHOO.widget.Paginator({
              rowsPerPage: 30,
              alwaysVisible : false
@@ -398,6 +400,8 @@ var loader = new YAHOO.util.YUILoader( {
          for(var i = 0; i < defaultAry.length; i++){
              defaultAry[i].value = defaultAry[i].defaultValue;
          }
+
+         var counter = 0;
 
          var myColumnDefs = [
              {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
@@ -450,6 +454,8 @@ var loader = new YAHOO.util.YUILoader( {
 
          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
 
+
+
          YAHOO.widget.DataTable.Formatter.myCustom = function(elCell, oRecord, oColumn, oData) {
              var dep = oRecord.getData("dependency");
              elCell.innerHTML="";
@@ -489,6 +495,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
                  // otherwise, unhighlight the row
                  else {
+
                      var rec = myDataTable.getRecord(dependency);
                      var recDependsOn = myDataTable.getRecord(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
                      if(rec.getData("id") == recDependsOn.getData("id")) {
@@ -501,8 +508,10 @@ var loader = new YAHOO.util.YUILoader( {
                      var z = rec.getData("title");
                      var w = recDependsOn.getData("title");
 
+                     document.getElementById("assignDependency_bd").innerHTML = "";
+
                      var dep = [" depends on ", " refers to ", " duplicates ", " is blocked by "];
-                     var dep_div = document.getElementById("assignDependency");
+                     var dep_div = document.getElementById("assignDependency_bd");
                      var depOpt = document.createElement("div");
                      depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',0)");
                      depOpt.innerHTML = "No dependency";
@@ -511,13 +520,14 @@ var loader = new YAHOO.util.YUILoader( {
                      for(var i in dep) {
                          depOpt = document.createElement("div");
                          depOpt.innerHTML = z+dep[i]+w;
-                         if(rec.getData("dependency")[recDependsOn.getData("number")]
+//                         alert(rec.getData('dependency'));
+                         if(rec.getData('dependency') && rec.getData("dependency")[recDependsOn.getData("number")]
                             && rec.getData("dependency")[recDependsOn.getData("number")] == (parseInt(i)+1)) {
                              depOpt.style.background = "#ddddff";
 //                             depOpt.style.cursor = "default";
                          }
                          else {
-                             depOpt.style.background = "white";
+                             depOpt.style.background = "none";
                          }
                          depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',"+j+")");
                          dep_div.appendChild(depOpt);
@@ -537,10 +547,6 @@ var loader = new YAHOO.util.YUILoader( {
                          posy = e.event.clientY + document.body.scrollTop
                          + document.documentElement.scrollTop;
                      }
-                     assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { xy: [posx, posy],
-                         visible: false,
-                         width: "300px" } );
-                     assignDep_dlg.render();
                      assignDep_dlg.show();
 
                      // link cases onchange
@@ -550,6 +556,11 @@ var loader = new YAHOO.util.YUILoader( {
 
              location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
           }
+
+         assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,
+                                                                       visible: false,
+                                                                       width: "300px" } );
+         assignDep_dlg.render();
 
          myDataTable.subscribe("cellMouseoverEvent", myDataTable.onEventHighlightRow);
          myDataTable.subscribe("cellMouseoutEvent", myDataTable.onEventUnhighlightRow);
