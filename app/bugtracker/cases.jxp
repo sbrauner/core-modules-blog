@@ -350,6 +350,7 @@ assignDep = function(x, xDependsOn, type) {
 var oMenu, checkAll = false;
 var settingDep = false;
 var dependency = null;
+var rec = null;
 var assignDep_dlg;
 
 var loader = new YAHOO.util.YUILoader( {
@@ -489,6 +490,7 @@ var loader = new YAHOO.util.YUILoader( {
                  if(settingDep == false) {
                      //YAHOO.util.Dom.getAncestorByTagName(e.target, "tr").style.background = "#AACCAA";
                      myDataTable.selectRow(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
+                     rec = myDataTable.getRecord(myDataTable.getTrEl(e.target));
                      dependency = myDataTable.getTrEl(e.target);
                      settingDep = true;
                      return;
@@ -496,7 +498,6 @@ var loader = new YAHOO.util.YUILoader( {
                  // otherwise, unhighlight the row
                  else {
 
-                     var rec = myDataTable.getRecord(dependency);
                      var recDependsOn = myDataTable.getRecord(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
                      if(rec.getData("id") == recDependsOn.getData("id")) {
                          myDataTable.unselectRow(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr"));
