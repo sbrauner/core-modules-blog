@@ -20,7 +20,7 @@ User.Confirmation.prototype.send = function(){
 
     // Send a mail to the user
     var subj = "[" + siteName + "] Confirmation email";
-    var link = User.fullLink('/confirm_receive').addArg('id', this._id).toString();
+    var link = User.fullLink('/confirm_receive').addArg('id', this._id.toString()).toString();
 
     var body = "Dear "+(this.user.nickname || this.user.name)+ "\n" +
         "\n"+
