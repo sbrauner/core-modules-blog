@@ -2,9 +2,13 @@
   
 var u = request.username;
 var e = request.email;
+var n = request.nickname;
 
 if ( ! ( u && e ) )
     return print( "Need Username and Email Address" );
+
+if ( ! ( n ) )
+    return print( "Need Display name" );
 
 if ( db.users.findOne( { name : u } ) )
     return print( "Username Taken" );
@@ -12,6 +16,9 @@ if ( db.users.findOne( { name : u } ) )
 if ( db.users.findOne( { email : e } ) )
     return print( "Email Address Already Registered" );
     
+if ( db.users.findOne( { nickname : n } ) )
+    return print( "Nickname Already In Use" );
+
 print( "good" );
 
 %>

@@ -134,7 +134,7 @@
       return false;
     }
 
-    var check = loadDocSync( "<%= login %>/checkUsername?username=" + u + "&email=" + e );
+    var check = loadDocSync( "<%= login %>/checkUsername?username=" + u + "&email=" + e + "&nickname=" + n);
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
