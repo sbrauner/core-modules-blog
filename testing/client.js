@@ -84,3 +84,15 @@ testing.Client.prototype.execute = function(f){
     return val;
 };
 
+testing.Client.prototype.withPermission = function(perm, f){
+    user = new User();
+    user.name = "Testing User 1";
+    user.addPermission(perm);
+
+    // I can't count 24 zeroes! You must be mad.
+    user._id = ['0000', '0000', '0000', '0000', '0000', '0001'].join('');
+
+    var val = this.execute(f);
+
+    return val;
+};

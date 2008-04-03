@@ -47,3 +47,9 @@ var output = c.setAnswer("output").execute(function(){
 });
 
 assert(output == "From inside!");
+
+c.setAnswer("value");
+assert(c.withPermission("core.app.forum.moderator", function(){
+    return user.hasPermission("core.app.forum.moderator");
+}));
+
