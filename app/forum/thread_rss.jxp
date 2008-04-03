@@ -27,11 +27,11 @@ response.setHeader( "Content-Type" , "text/xml"); %>
      %>
 
      <item>
-       <title>Post by <%= children[i].author.name %> on <%= children[i].ts.webFormat() %></title>
+       <title>Post by <%= children[i].author.getDisplayName() %> on <%= children[i].ts.webFormat() %></title>
        <guid><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id + "#" + children[i].getID() %></guid>
        <link><%= request.getHeader( "Host") + "/forum/viewthread?id="+thread.topic._id+"#"+children[i].getID() %></link>
        <pubDate><%= children[i].ts.webFormat() %></pubDate>
-       <author><%= children[i].author.name %></author>
+       <author><%= children[i].author.getDisplayName() %></author>
        <description><%= RSS.clean(children[i].content) %></description>
      </item>
 

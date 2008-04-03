@@ -23,7 +23,7 @@ var prettyDate = t.ts.format("MMM d, yyyy h:mm")+t.ts.format("a").toLowerCase();
       </div>
 
       <div class="meta">
-        <%= t.author.name %>
+<%= t.author.getDisplayName() %>
         <%
         if(app.Forum.Controller.userPermissionType(t.author) == "ADMIN"){
              print("(administrator)");
