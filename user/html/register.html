@@ -12,7 +12,7 @@
     <table>
     <tr>
         <td><label for="login_user">Username</label></td>
-        <td><input name="login_user" class="text"></td>
+        <td><input name="login_user" class="text" value="<%= opts.username || "" %>"></td>
     </tr>
 
     <tr>
@@ -26,22 +26,22 @@
     </tr>
     <tr>
         <td><label for="login_user">First name (optional)</label></td>
-        <td><input name="login_firstname" class="text"></td>
+        <td><input name="login_firstname" class="text" value="<%= opts.firstname || "" %>"></td>
     </tr>
 
     <tr>
         <td><label for="login_user">Last name (optional)</label></td>
-        <td><input name="login_lastname" class="text"></td>
+        <td><input name="login_lastname" class="text" value="<%= opts.lastname || "" %>"></td>
     </tr>
 
     <tr>
         <td><label for="login_user">Display name</label></td>
-        <td><input name="login_nickname" class="text"></td>
+        <td><input name="login_nickname" class="text" value="<%= opts.nickname %>"></td>
     </tr>
 
     <tr>
         <td><label for="login_email">Email</label></td>
-        <td><input name="login_email" class="text"></td>
+        <td><input name="login_email" class="text" value="<%= opts.email || "" %>"></td>
     </tr>
 
     <% if(User.config.useCaptcha){ %>
