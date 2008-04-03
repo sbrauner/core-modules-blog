@@ -4,6 +4,11 @@ var id = request.id;
 
 var confirm = User.Confirmation.findOne({_id: id});
 
+if(confirm == null){
+    throw "Confirmation is gone! Perhaps you miscopied it, or perhaps it's already been used?";
+}
+
+
 log.user.confirm.debug("receiving confirm with " + id + "; confirm.user = " + tojson(confirm.user) + " and logged in as " + tojson(user));
 
 if(user == null){
