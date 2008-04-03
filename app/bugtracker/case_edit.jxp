@@ -351,18 +351,19 @@ var dep = [ <%
             %>
           ];
 
-var cases = [ <%
+var cases = <%
+              core.io.encode.javascript()
               var newcases = [];
               var cases = db.bugtracker.cases.find().sort({number: 1}).toArray();
               for(var i=0; i<cases.length; i++) {
                   if(cases[i].number.toFixed() == feature.number)
                       continue;
 
-                  newcases.push('"Case #'+cases[i].number.toFixed()+': '+cases[i].title+'"');
+                  newcases.push('Case #'+cases[i].number.toFixed()+': '+cases[i].title);
               }
-              print(newcases.join());
+              print(tojson(newcases));
               %>
-            ];
+            ;
 
 var casenums = [ <%
               var cases = db.bugtracker.cases.find().toArray();
