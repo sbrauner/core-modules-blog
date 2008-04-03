@@ -11,6 +11,8 @@ if(!request.username){
 var username = request.username;
 var email = request.email;
 var password = request.password;
+var firstname = request.firstname;
+var lastname = request.lastname;
 
 var to = request.to;
 to = to || '/';
@@ -41,6 +43,8 @@ u = new User();
 u.name = username;
 u.email = email;
 u.setPassword( password );
+u.firstname = firstname;
+u.lastname = lastname;
 db.users.save( u );
 
 // log in

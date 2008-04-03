@@ -11,6 +11,16 @@
     <legend>Register</legend>
     <table>
     <tr>
+        <td><label for="login_user">First name</label></td>
+        <td><input name="login_firstname" class="text"></td>
+    </tr>
+
+    <tr>
+        <td><label for="login_user">Last name</label></td>
+        <td><input name="login_lastname" class="text"></td>
+    </tr>
+
+    <tr>
         <td><label for="login_user">Username</label></td>
         <td><input name="login_user" class="text"></td>
     </tr>
@@ -68,6 +78,10 @@
     var p2 = frm.login_pass2.value;
 
     var c = frm.login_captcha.value;
+
+    var n1 = frm.login_firstname.value;
+    var n2 = frm.login_lastname.value;
+
     if(frm.login_to)
       var to = frm.login_to.value;
 
@@ -107,7 +121,7 @@
       return false;
     }
 
-    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c;
+    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&firstname=" + n1 + "&lastname=" + n2;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;
