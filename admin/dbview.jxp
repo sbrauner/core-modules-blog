@@ -1,7 +1,7 @@
 <%
-   /* dbview.jxp - database content viewer utility */
+/* dbview.jxp - database content viewer utility */
 
-   core.content.html();
+core.content.html();
 
 var objcount = 0; // unique id for each object's div
 
@@ -11,8 +11,7 @@ function printObj(cursor, field) {
     if(cursor[field] == null || typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number" || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
         print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
     } else if(typeof cursor[field] == "object") {
-        name = field;
-        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">Object:</label><span class=\"obj\">"+name+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
+        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">Object:</label><span class=\"obj\">"+field+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
         var tempobj = objcount;
         objcount++;
         for(var name in cursor[field])
@@ -27,9 +26,8 @@ function printObj(cursor, field) {
 function outp(x) {
     if( typeof x != 'string' ) {
         if(typeof x == "object") {
-        x = {"field": x};
-
-            printObj(x, "field");
+            x = {"...": x};
+            printObj(x, "...");
         }
         else
             print(x);
