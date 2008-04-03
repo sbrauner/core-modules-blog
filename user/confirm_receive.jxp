@@ -4,6 +4,12 @@ var id = request.id;
 
 var confirm = User.Confirmation.findOne({_id: id});
 
+log.user.confirm.debug("receiving confirm with " + id + "; confirm.user = " + tojson(confirm.user) + " and logged in as " + tojson(user));
+
+if(user == null){
+    throw "Not logged in! Cannot confirm user!";
+}
+
 if(confirm.user._id != user._id){
     return Auth.cookie.reject(request, response);
 }
