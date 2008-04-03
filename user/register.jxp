@@ -11,6 +11,7 @@ if(!request.username){
 var username = request.username;
 var email = request.email;
 var password = request.password;
+var nickname = request.nickname;
 var firstname = request.firstname;
 var lastname = request.lastname;
 
@@ -19,32 +20,38 @@ to = to || '/';
 
 // validate
 if ( ! ( username && username.trim().length >= 5 ) )
-    throw "username error";
+    throw "Username must be at least 5 characters long.";
 
 if ( ! ( password && password.trim().length >= 5 ) )
-    throw "password error";
+    throw "Password must be at least 5 characters long.";
 
 if ( ! ( email && email.trim().length >= 3 ) )
-    throw "email error";
+    throw "Email is not valid.";
+
+if ( ! ( nickname.trim() ) )
+    throw "Display name is required.";
 
 if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
-    throw "captcha was wrong";
+    throw "CAPTCHA entry is incorrect.";
 }
 
 // add
 
 if ( db.users.findOne( { name : username } ) )
-    throw "username exists";
+    throw "This username is already taken.";
 
 if ( db.users.findOne( { email : email } ) )
-    throw "email exists";
+    throw "A user with this email already exists.";
 
 u = new User();
 u.name = username;
 u.email = email;
 u.setPassword( password );
-u.firstname = firstname;
-u.lastname = lastname;
+if(firstname)
+    u.firstname = firstname;
+if(lastname)
+    u.lastname = lastname;
+u.nickname = nickname;
 db.users.save( u );
 
 // log in

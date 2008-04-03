@@ -22,7 +22,7 @@ User.Confirmation.prototype.send = function(){
     var subj = "[" + siteName + "] Confirmation email";
     var link = User.fullLink('/confirm_receive').addArg('id', this._id.toString()).toString();
 
-    var body = "Dear "+(this.user.nickname || this.user.name)+ "\n" +
+    var body = "Dear "+ this.user.getDisplayName() + "\n" +
         "\n"+
         "Thanks for registering with "+siteName+". Before your user account is activated, you must verify your email address. Please click the link below or copy and paste it into your browser.\n"+
         "\n"+
