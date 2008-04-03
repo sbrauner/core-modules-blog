@@ -505,34 +505,31 @@ var loader = new YAHOO.util.YUILoader( {
                      }
 
                      // z depends on w
-                     var z = rec.getData("title");
-                     var w = recDependsOn.getData("title");
+                     var z = rec.getData("number");
+                     var w = recDependsOn.getData("number");
 
                      document.getElementById("assignDependency_bd").innerHTML = "";
 
                      var dep = [" depends on ", " refers to ", " duplicates ", " is blocked by "];
                      var dep_div = document.getElementById("assignDependency_bd");
+
                      var depOpt = document.createElement("div");
                      depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',0)");
-                     depOpt.innerHTML = "No dependency";
+                     depOpt.innerHTML = '<input type="radio" name="dep" />No dependency';
                      dep_div.appendChild(depOpt);
                      var j=1;
                      for(var i in dep) {
                          depOpt = document.createElement("div");
-                         depOpt.innerHTML = '"'+z+'"'+dep[i]+'"'+w+'"';
-//                         alert(rec.getData('dependency'));
+                         depOpt.innerHTML = '<input type="radio" name="dep" />'+z+dep[i]+w;
                          if(rec.getData('dependency') && rec.getData("dependency")[recDependsOn.getData("number")]
                             && rec.getData("dependency")[recDependsOn.getData("number")] == (parseInt(i)+1)) {
-                             depOpt.style.background = "#ddddff";
-//                             depOpt.style.cursor = "default";
-                         }
-                         else {
-                             depOpt.style.background = "none";
+                             depOpt.style.fontWeight = "bold";
                          }
                          depOpt.setAttribute("onclick", "assignDep('"+rec.getData("number")+"','"+recDependsOn.getData("number")+"',"+j+")");
                          dep_div.appendChild(depOpt);
                          j++;
                      }
+
 
                      // pop up a select to determine dependency type
                      var posx = 0;
