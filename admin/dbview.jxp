@@ -2,15 +2,43 @@
   /* dbview.jxp - database content viewer utility */
 
   core.content.html();
-  function outp(x) {
+
+var objcount = 0; // unique id for each object's div
+
+function printObj(cursor, field) {
+    if(!cursor || !cursor[field]) return;
+
+    if(cursor[field] == null || typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number" || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+        print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
+    } else if(typeof cursor[field] == "object") {
+        name = cursor[field].name || cursor[field].title || cursor[field].toString();
+        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">Object:</label><span class=\"obj\">"+name+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
+        var tempobj = objcount;
+        objcount++;
+        for(var name in cursor[field])
+            printObj(cursor[field], name);
+        print("<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>");
+    } else {
+        print('<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>");
+    }
+}
+
+
+function outp(x) {
     if( typeof x != 'string' ) {
-      print(x); return;
+        if(typeof x == "object") {
+            x = {"field": x};
+            printObj(x, "field");
+        }
+        else
+            print(x);
+        return;
     }
     if( x.length<=20 )
         print(content.HTML.escape_html(x));
-    else 
+    else
 	print( content.HTML.escape_html(x).substring(0,18)+"..." );
-  }
+}
 
   // top == show all collections
   var top = request.ns == null;
@@ -46,13 +74,24 @@
       }
     }
     //print("<p>f:" + tojson(f));
-    for( var g in f ) { 
+    for( var g in f ) {
 	if( f[g] >= thresh ) fields.push(g);
     }
     //print("<p>fields:" + tojson(fields));
   }
 }
+
 <h3><%=hdr%></h3>
+
+<script type="text/javascript">
+function showObj(i) {
+         document.getElementById(i).style.display = "block";
+}
+function hideObj(i) {
+         document.getElementById(i).style.display = "none";
+}
+</script>
+
 <%
   if( !top ) {
     print('\n<table class="dbview">');
@@ -76,7 +115,7 @@
     else if( top ) {
 %>
 <a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
-<% 
+<%
  } else {
       print("<tr>");
       for( h in f ) {
@@ -93,7 +132,7 @@
 	    if( !first )
 		print(", ");
 	    first = false;
-	    print(x); print(": "); outp(tojson(obj[x])); 
+	    print(x); print(": "); outp(tojson(obj[x]));
         }
       }
       print("</td></tr>\n");
