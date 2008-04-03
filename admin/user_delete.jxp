@@ -1,0 +1,4 @@
+<%
+   u = db.users.remove({_id: request.id});
+   response.sendRedirectTemporary("users");
+ %>
