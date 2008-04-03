@@ -26,9 +26,24 @@ urls.forEach(function(u){
 });
 
 c.setAnswer("value");
+
 var key1 = c.setURL('/').addArgs({key1: 'hi', arg: 'yo'}).execute(function(){
     return request.key1;
 });
 
 assert(key1 == 'hi');
 
+var n_key1 = c.setURL('/').addArg('key1', 'hi').addArg('key1', 'ho').execute(function(){
+    var ary = request.getParameters('key1');
+    assert(ary[0] == 'hi');
+    assert(ary[1] == 'ho');
+    return request.getParameters('key1').length;
+});
+
+assert(n_key1 == 2);
+
+var output = c.setAnswer("output").execute(function(){
+    print("From inside!");
+});
+
+assert(output == "From inside!");
