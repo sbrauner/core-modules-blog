@@ -102,6 +102,18 @@ URL.prototype._addArg = function(key, value){
     return this;
 };
 
+URL.prototype.addArgs = function(obj){
+    c = this.clone();
+    return c._addArgs(obj);
+};
+
+URL.prototype._addArgs = function(obj){
+    for(var key in obj){
+        this._addArg(key, obj[key]);
+    }
+    return this;
+};
+
 URL.prototype.replaceArg = function(key, value){
     // Replace the first query arg with the key "key" with the value "value".
     // If there is no query arg with key "key", then just add a key:arg pair at the
@@ -183,9 +195,9 @@ URL.escape_queryargs = function( s , plusIsLiteral ){
 
     // The *real* encodeURIComponent doesn't replace spaces with +, but instead
     // uses %20. We support this with the "broken" parameter (if true, use %20).
-    
+
     if ( ! plusIsLiteral ) s = s.replace( / /g , "+" );
-    
+
     return escape( s );
 };
 
@@ -195,6 +207,6 @@ URL.unescape_queryargs = function( s, plusIsLiteral ){
     // plus signs are usually encoded into %2b, so no "raw" plus signs come
     // through unless they were encoded from spaces.
     if( ! plusIsLiteral ) s = s.replace( /\+/g , ' ');
-    
+
     return unescape( s );
 };

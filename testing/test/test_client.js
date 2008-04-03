@@ -25,3 +25,10 @@ urls.forEach(function(u){
     assert(redirects[0].location == "?");
 });
 
+c.setAnswer("value");
+var key1 = c.setURL('/').addArgs({key1: 'hi', arg: 'yo'}).execute(function(){
+    return request.key1;
+});
+
+assert(key1 == 'hi');
+
