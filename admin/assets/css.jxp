@@ -193,12 +193,21 @@ form.command {
    right: 0px;
 }
 
-.obj {
+div.obj {
     display: none;
     position: absolute;
     background: white;
     padding: 10px;
     border: 1px black solid;
+}
+div.parent {
+    cursor: pointer;
+}
+label.obj {
+    float: left;
+    width: 100px;
+    margin-right: 5px;
+    text-align: left;
 }
 
 /* xgenAdminTopNav start */
