@@ -519,7 +519,7 @@ var loader = new YAHOO.util.YUILoader( {
                      var j=1;
                      for(var i in dep) {
                          depOpt = document.createElement("div");
-                         depOpt.innerHTML = z+dep[i]+w;
+                         depOpt.innerHTML = '"'+z+'"'+dep[i]+'"'+w+'"';
 //                         alert(rec.getData('dependency'));
                          if(rec.getData('dependency') && rec.getData("dependency")[recDependsOn.getData("number")]
                             && rec.getData("dependency")[recDependsOn.getData("number")] == (parseInt(i)+1)) {
