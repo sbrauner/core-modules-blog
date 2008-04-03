@@ -93,7 +93,7 @@ URL.prototype.addArg = function(key, value){
     // and add the same argument, you'll end up with a long list of
     // query arguments. Please consider replaceArg instead.
     // @return a new URL, with the additional query argument added.
-    c = this.clone();
+    var c = this.clone();
     return c._addArg(key, value);
 };
 
@@ -103,7 +103,7 @@ URL.prototype._addArg = function(key, value){
 };
 
 URL.prototype.addArgs = function(obj){
-    c = this.clone();
+    var c = this.clone();
     return c._addArgs(obj);
 };
 
@@ -120,7 +120,7 @@ URL.prototype.replaceArg = function(key, value){
     // end.
     // @return a new URL, with the old query argument (if any) removed and a new
     //    one added.
-    c = this.clone();
+    var c = this.clone();
     return c._replaceArg(key, value);
 };
 
@@ -140,7 +140,7 @@ URL.prototype.removeArg = function(key){
     // Remove the first arg with the key "key" from a URL.
     // @return a new URL with either the same args (if none had the right key) or
     //         one less arg (if that arg had the same key).
-    c = this.clone();
+    var c = this.clone();
     c._removeArg(key);
     return c;
 };
@@ -161,7 +161,7 @@ URL.prototype._removeArg = function(key){
 };
 
 URL.prototype.clearArgs = function(){
-    c = this.clone();
+    var c = this.clone();
     c._clearArgs();
     return c;
 };
@@ -177,7 +177,7 @@ URL.prototype.removeQuery = URL.prototype.removeArg;
 URL.prototype.clearQueries = URL.prototype.clearArgs;
 
 URL.prototype.replaceLastPath = function(s){
-    c = this.clone();
+    var c = this.clone();
     c._replaceLastPath(s);
     return c;
 };
