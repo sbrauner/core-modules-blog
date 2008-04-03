@@ -11,16 +11,6 @@
     <legend>Register</legend>
     <table>
     <tr>
-        <td><label for="login_user">First name</label></td>
-        <td><input name="login_firstname" class="text"></td>
-    </tr>
-
-    <tr>
-        <td><label for="login_user">Last name</label></td>
-        <td><input name="login_lastname" class="text"></td>
-    </tr>
-
-    <tr>
         <td><label for="login_user">Username</label></td>
         <td><input name="login_user" class="text"></td>
     </tr>
@@ -33,6 +23,20 @@
     <tr>
         <td><label for="login_pass2">Password Again</label></td>
         <td><input type="password" name="login_pass2" class="text"></td>
+    </tr>
+    <tr>
+        <td><label for="login_user">First name (optional)</label></td>
+        <td><input name="login_firstname" class="text"></td>
+    </tr>
+
+    <tr>
+        <td><label for="login_user">Last name (optional)</label></td>
+        <td><input name="login_lastname" class="text"></td>
+    </tr>
+
+    <tr>
+        <td><label for="login_user">Display name</label></td>
+        <td><input name="login_nickname" class="text"></td>
     </tr>
 
     <tr>
@@ -79,14 +83,20 @@
 
     var c = frm.login_captcha.value;
 
-    var n1 = frm.login_firstname.value;
-    var n2 = frm.login_lastname.value;
+    var n = frm.login_nickname.value;
+    var fn = frm.login_firstname.value;
+    var ln = frm.login_lastname.value;
 
     if(frm.login_to)
       var to = frm.login_to.value;
 
     if ( ! ( u && u.trim().length != 0 ) ){
       window.alert( "need a username" );
+      return false;
+    }
+
+    if ( ! ( n.trim() ) ){
+      window.alert( "need a displayname" );
       return false;
     }
 
@@ -121,7 +131,7 @@
       return false;
     }
 
-    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&firstname=" + n1 + "&lastname=" + n2;
+    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&nickname=" + n + "&firstname=" + fn + "&lastname=" + ln;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;

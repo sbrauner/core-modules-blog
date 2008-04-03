@@ -11,6 +11,7 @@ if(!request.username){
 var username = request.username;
 var email = request.email;
 var password = request.password;
+var nickname = request.nickname;
 var firstname = request.firstname;
 var lastname = request.lastname;
 
@@ -27,8 +28,8 @@ if ( ! ( password && password.trim().length >= 5 ) )
 if ( ! ( email && email.trim().length >= 3 ) )
     throw "Email is not valid.";
 
-if ( ! ( firstname.trim() && lastname.trim() ) )
-    throw "First name and last name are required.";
+if ( ! ( nickname.trim() ) )
+    throw "Display name is required.";
 
 if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
     throw "CAPTCHA entry is incorrect.";
@@ -46,8 +47,11 @@ u = new User();
 u.name = username;
 u.email = email;
 u.setPassword( password );
-u.firstname = firstname;
-u.lastname = lastname;
+if(firstname)
+    u.firstname = firstname;
+if(lastname)
+    u.lastname = lastname;
+u.nickname = nickname;
 db.users.save( u );
 
 // log in
