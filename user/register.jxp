@@ -19,25 +19,28 @@ to = to || '/';
 
 // validate
 if ( ! ( username && username.trim().length >= 5 ) )
-    throw "username error";
+    throw "Username must be at least 5 characters long.";
 
 if ( ! ( password && password.trim().length >= 5 ) )
-    throw "password error";
+    throw "Password must be at least 5 characters long.";
 
 if ( ! ( email && email.trim().length >= 3 ) )
-    throw "email error";
+    throw "Email is not valid.";
+
+if ( ! ( firstname.trim() && lastname.trim() ) )
+    throw "First name and last name are required.";
 
 if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
-    throw "captcha was wrong";
+    throw "CAPTCHA entry is incorrect.";
 }
 
 // add
 
 if ( db.users.findOne( { name : username } ) )
-    throw "username exists";
+    throw "This username is already taken.";
 
 if ( db.users.findOne( { email : email } ) )
-    throw "email exists";
+    throw "A user with this email already exists.";
 
 u = new User();
 u.name = username;
