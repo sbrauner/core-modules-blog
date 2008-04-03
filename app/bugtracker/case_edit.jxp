@@ -403,6 +403,7 @@ generateType = function(type) {
 generateCaseList = function(bug) {
     var sel = document.createElement("select");
     sel.setAttribute("name", "dependency");
+    sel.setAttribute("style", "width: 200px;");
     sel.setAttribute("onchange", "generateRow(null, null,"+selectCount+")");
 
     var opt = document.createElement("option");
