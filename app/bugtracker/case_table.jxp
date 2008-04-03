@@ -77,7 +77,6 @@ for(var q in req) {
         query = null;
     else {
         query = new RegExp("(.*)"+req[q]+"(.*)", "i");
-        log("q: "+q+" queryForms: "+tojson(queryForms));
         if(queryForms[q]) query = queryForms[q](query);
     }
     searchobj[q] = query;
