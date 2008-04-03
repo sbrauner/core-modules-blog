@@ -209,7 +209,7 @@ Blog.handlePosts = function( request , thePost , user ){
 
         if ( user ) {
             comment = {};
-            comment.author = user.name;
+            comment.author = user.getDisplayName();
             comment.email = user.email;
         }
         else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {

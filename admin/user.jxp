@@ -50,6 +50,11 @@ print.setFormObject( u );
   <input type="submit" name="action" value="save">
 </form>
 
+<form method="post" action="user_delete">
+  <input type="hidden" name="id" value="<%= u._id %>">
+  Delete this user: (beware, there will not be a confirmation)
+  <input type="submit" name="action" value="delete">
+</form>
 <%
 print.setFormObject( null );
 

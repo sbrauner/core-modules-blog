@@ -1,5 +1,6 @@
 core.ext.redirect();
 core.net.url();
+core.user.user();
 
 testing.Client = function(){
     this.cookies = {};
@@ -78,6 +79,9 @@ testing.Client.prototype.execute = function(f){
     answer = this.answer || 'output';
     request = this.getRequest(this.url.toString());
     response = this.getResponse();
+    head = Object.extend([], {addScript: function() {},
+                              addCSS: function() {} });
+    jxp = {};
     var val = Ext.redirect(f);
     if(answer in val) return val[answer];
     if(answer in this) return this[answer];
