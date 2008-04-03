@@ -60,6 +60,9 @@ User.prototype.removePermission = function( perm ){
     this.permissions.splice(i, 1);
 };
 
+User.prototype.getFullName = function( ){
+    return this.firstname + " " + this.lastname;
+};
 
 User.find = function( thing , theTable ){
     if ( ! theTable )
@@ -101,3 +104,4 @@ User.statusLink = function(status){
     if(status == "confirmed_email")
         return new URL(User.findMyLocation()+"confirm_send").toString()
 };
+
