@@ -414,7 +414,7 @@ var loader = new YAHOO.util.YUILoader( {
              {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
              {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
-             {label: addForm("dependency", 3), children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
+             {label: "", children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
          ];
 
          var dbURL = "case_table?";
