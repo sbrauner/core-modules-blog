@@ -18,31 +18,40 @@ var lastname = request.lastname;
 var to = request.to;
 to = to || '/';
 
-// validate
-if ( ! ( username && username.trim().length >= 5 ) )
-    throw "Username must be at least 5 characters long.";
 
-if ( ! ( password && password.trim().length >= 5 ) )
-    throw "Password must be at least 5 characters long.";
-
-if ( ! ( email && email.trim().length >= 3 ) )
-    throw "Email is not valid.";
-
-if ( ! ( nickname.trim() ) )
-    throw "Display name is required.";
-
-if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
-    throw "CAPTCHA entry is incorrect.";
+try {
+    // validate
+    if ( ! ( username && username.trim().length >= 5 ) )
+        throw "Username must be at least 5 characters long.";
+    
+    if ( ! ( password && password.trim().length >= 5 ) )
+        throw "Password must be at least 5 characters long.";
+    
+    if ( ! ( email && email.trim().length >= 3 ) )
+        throw "Email is not valid.";
+    
+    if ( ! ( nickname.trim() ) )
+        throw "Display name is required.";
+    
+    if ( User.config.useCaptcha && ! Captcha.valid( request ) ) {
+        throw "CAPTCHA entry is incorrect.";
+    }
+    
+    // add
+    
+    if ( db.users.findOne( { name : username } ) )
+        throw "This username is already taken.";
+    
+    if ( db.users.findOne( { email : email } ) )
+        throw "A user with this email already exists.";
 }
-
-// add
-
-if ( db.users.findOne( { name : username } ) )
-    throw "This username is already taken.";
-
-if ( db.users.findOne( { email : email } ) )
-    throw "A user with this email already exists.";
-
+catch (e){
+    addToNotice('abort', e);
+    htmlheader("Error");
+    core.user.html.register(request);
+    htmlfooter();
+    throw Exception.Quiet(e);
+}
 u = new User();
 u.name = username;
 u.email = email;

@@ -4,11 +4,28 @@ var id = request.id;
 
 var confirm = User.Confirmation.findOne({_id: id});
 
+if(confirm == null){
+    throw "Confirmation is gone! Perhaps you miscopied it!";
+}
+
+if(confirm.used){
+    throw "This confirmation was already used!";
+}
+
+
+log.user.confirm.debug("receiving confirm with " + id + "; confirm.user = " + tojson(confirm.user) + " and logged in as " + tojson(user));
+
+if(user == null){
+    throw "Not logged in! Cannot confirm user!";
+}
+
 if(confirm.user._id != user._id){
     return Auth.cookie.reject(request, response);
 }
 
-User.Confirmation.remove(confirm);
+confirm.used = true;
+User.Confirmation.save(confirm);
+//User.Confirmation.remove(confirm);
 user.addPermission("confirmed_email");
 db.users.save(user);
 
