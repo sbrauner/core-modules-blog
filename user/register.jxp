@@ -44,8 +44,12 @@ try {
     
     if ( db.users.findOne( { email : email } ) )
         throw "A user with this email already exists.";
+
+    if ( db.users.findOne( { nickname : nickname } ) )
+        throw "This username is already taken.";
 }
 catch (e){
+    log.user.debug("validation failed: " + e);
     addToNotice('abort', e);
     htmlheader("Error");
     core.user.html.register(request);

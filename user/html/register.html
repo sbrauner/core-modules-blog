@@ -5,14 +5,14 @@
 <div id="register">
 
 
-  <form method="post" action="<%= login %>/register" onSubmit="return checkRegister( this )" class="edit register">
+  <form method="post" action="<%= login %>/register" onSubmit="return checkRegister( this )" class="edit register" id="register_form">
 
     <fieldset class="edit register">
     <legend>Register</legend>
     <table>
     <tr>
         <td><label for="login_user">Username</label></td>
-        <td><input name="login_user" class="text" value="<%= opts.username || "" %>"></td>
+        <td><input name="login_user" class="text" value="<%= opts.username || "" %>" onblur="blurUsername()"></td>
     </tr>
 
     <tr>
@@ -73,6 +73,15 @@
 <% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <script>
 
+  var lastUsername = "";
+  function blurUsername( ){
+    var frm = document.getElementById("register_form");
+    var u = frm.login_user.value;
+    var n = frm.login_nickname.value;
+    if(n == lastUsername)
+      frm.login_nickname.value = u;
+    lastUsername = u;
+  }
 
   function checkRegister( frm ){
     var u = frm.login_user.value;
@@ -125,7 +134,7 @@
       return false;
     }
 
-    var check = loadDocSync( "<%= login %>/checkUsername?username=" + u + "&email=" + e );
+    var check = loadDocSync( "<%= login %>/checkUsername?username=" + u + "&email=" + e + "&nickname=" + n);
     if ( ! check.match( /good/ ) ){
       window.alert( "Sorry : " + check );
       return false;
