@@ -174,7 +174,11 @@ form.command {
     color: #00f;
 }
 
-.history[class~="highlight"] {
+.historyLink {
+    cursor: pointer;
+}
+
+.historyLink[class~="highlight"] {
     border: 1px #0bb solid;
 }
 

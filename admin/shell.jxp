@@ -308,7 +308,7 @@ addHistoryLink = function(i){
 
 makeHistoryLink = function(i){
     var cmd = pastCommands[historyAry[i]];
-    var divclass = "class='history'";
+    var divclass = "class='historyLink'";
     var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
     return thisdiv;
 };
