@@ -69,7 +69,7 @@ if( ! session ){
                    else {
                        pastCommands.push(cmd);
                    }
-                   historyAry.push(inputs.indexOf(cmd));
+                   historyAry.push(pastCommands.indexOf(cmd));
                }
 
                var outputs = <%= tojson(session.getResults()) %>;
@@ -120,6 +120,14 @@ if( ! session ){
                        return q;
                    };
                };
+
+               historyPopup = new YAHOO.widget.Dialog('history_popup', {
+                   fixedcenter: true,
+                   draggable: true,
+                   visible: false
+               });
+               historyPopup.render();
+
            }
        });
 
@@ -135,21 +143,42 @@ var blockYUIParen = function ( e ) {
     }
 };
 
+// historyLocation starts at 0, and goes negative; -1 is the previous command,
+// -2 is the one before that, etc.
+// The earliest command is -historyAry.length.
 var currentCommand = '';
 var historyLocation = 0;
+
+var setHistoryLocation = function( i, cmd ){
+    historyLocation = i;
+    if(i == 0) {
+        setcmd(cmd || "");
+    }
+    else {
+        setcmd();
+    }
+    var highlit = YAHOO.util.Dom.getElementsByClassName("highlight");
+    for(var i = 0; i < highlit.length; i++){
+        YAHOO.util.Dom.removeClass(highlit, "highlight");
+    }
+
+    highlightHistory();
+    
+};
+
+var setcmd = function () {
+    var cmd = document.getElementById("commandac");
+    if ( arguments.length ) {
+        cmd.value = arguments[0];
+    }
+    else {
+        cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
+    }
+}
 
 var histfunc = function( e ) {
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
-    var cmd = document.getElementById("commandac");
-    var setcmd = function () {
-        if ( arguments.length ) {
-            cmd.value = arguments[0];
-        }
-        else {
-            cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
-        }
-    }
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
@@ -158,24 +187,33 @@ var histfunc = function( e ) {
             historyLocation = -historyAry.length;
         }
         else {
-            setcmd();
+            setHistoryLocation(historyLocation);
         }
     }
     else if( key == 40 ) { // down arrow
         historyLocation += 1;
         if (historyLocation >= 0){
             historyLocation = 0;
-            setcmd(currentCommand);
+            setHistoryLocation(historyLocation, currentCommand);
         }
         else {
-            setcmd();
+            setHistoryLocation(historyLocation);
         }
     }
 };
      </script>
      <form class="command" onSubmit="return doRun('commandac');">
        Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
+       <div onclick="showHistory()">Show history</div>
     </form>
+
+     <div id="history_popup" style="display: none;">
+       <div class="hd">History</div>
+       <div class="bd">
+         <div id="history_links"><% /* filled in by JS */ %></div>
+       </div>
+       <div class="ft"></div>
+     </div>
 </div>
 
 <script>
@@ -243,8 +281,10 @@ function doRun(el){
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
         historyAry.push(indexOf(pastCommands,usr));
     }
-    historyLocation = 0;
+
     currentCommand = "";
+    setHistoryLocation(0);
+    addHistoryLink(historyAry.length-1);
 
     YAHOO.log(usr, "user", "shell");
     var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
@@ -255,5 +295,42 @@ function doRun(el){
 
     return false;
 }
+
+highlightHistory = function(){
+    YAHOO.util.Dom.addClass("historyLink_"+(historyAry.length+historyLocation),
+                       "highlight")
+};
+
+addHistoryLink = function(i){
+    var links = document.getElementById('history_links');
+    links.innerHTML = links.innerHTML + makeHistoryLink(i);
+};
+
+makeHistoryLink = function(i){
+    var cmd = pastCommands[historyAry[i]];
+    var divclass = "class='history'";
+    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
+    return thisdiv;
+};
+
+showHistory = function(){
+    var s = "";
+    for(var i = 0; i < historyAry.length; i++){
+        s += makeHistoryLink(i);
+    }
+    document.getElementById('history_links').innerHTML = s;
+    document.getElementById("history_popup").style.display = "block";
+    highlightHistory();
+
+    historyPopup.show();
+};
+
+activateHistory = function(i){
+    // i goes from 0..n-1.   0 is the earliest.
+    // historyLocation goes from -n..-1.   -n is the earliest.
+    setHistoryLocation( -(historyAry.length-i) );
+    historyPopup.hide();
+    document.getElementById( "commandac" ).focus();
+};
 
 </script>

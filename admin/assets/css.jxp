@@ -174,6 +174,10 @@ form.command {
     color: #00f;
 }
 
+.history[class~="highlight"] {
+    border: 1px #0bb solid;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
