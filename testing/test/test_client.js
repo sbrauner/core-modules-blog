@@ -60,3 +60,22 @@ for(var i = 0; i < ips.length; i++){
     c.setIP(ip);
     assert(c.execute(function(){ return request.getRemoteIP(); }) == ip);
 }
+
+try {
+    c.execute(function() {
+        throw Exception.Quiet("user broke something");
+    });
+}
+catch(e){
+    assert(false); // should never get here; exception.quiet is ignored
+}
+
+try {
+    c.execute(function() {
+        throw "Administrator screwed up";
+    });
+    assert(false); // should never get here; exceptions are rethrown by Client
+}
+catch(e){
+
+}
