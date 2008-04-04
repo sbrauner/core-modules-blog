@@ -147,6 +147,23 @@ var blockYUIParen = function ( e ) {
 var currentCommand = '';
 var historyLocation = 0;
 
+var setHistoryLocation = function( i, cmd ){
+    if(i == 0) {
+        setcmd(cmd);
+    }
+    else {
+        historyLocation = i;
+        setcmd();
+    }
+    var highlit = YAHOO.util.Dom.getElementsByClassName("highlight");
+    for(var i = 0; i < highlit.length; i++){
+        YAHOO.util.Dom.removeClass(highlit, "highlight");
+    }
+
+    highlightHistory();
+    
+};
+
 var setcmd = function () {
     var cmd = document.getElementById("commandac");
     if ( arguments.length ) {
@@ -168,17 +185,17 @@ var histfunc = function( e ) {
             historyLocation = -historyAry.length;
         }
         else {
-            setcmd();
+            setHistoryLocation(historyLocation);
         }
     }
     else if( key == 40 ) { // down arrow
         historyLocation += 1;
         if (historyLocation >= 0){
             historyLocation = 0;
-            setcmd(currentCommand);
+            setHistoryLocation(historyLocation, currentCommand);
         }
         else {
-            setcmd();
+            setHistoryLocation(historyLocation);
         }
     }
 };
@@ -275,26 +292,30 @@ function doRun(el){
     return false;
 }
 
+highlightHistory = function(){
+    YAHOO.util.Dom.addClass("historyLink_"+(historyAry.length+historyLocation),
+                       "highlight")
+};
+
 showHistory = function(){
     var s = "";
     for(var i = 0; i < historyAry.length; i++){
         var cmd = pastCommands[historyAry[i]];
-        var divclass = "";
-        if((historyAry.length + historyLocation) == i)
-            divclass = "class='history highlight' ";
-        var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")'>"+i+": "+cmd+"</div>";
+        var divclass = "class='history'";
+        var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
         s += thisdiv;
     }
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
+    highlightHistory();
+
     historyPopup.show();
 };
 
 activateHistory = function(i){
     // i goes from 0..n-1.   0 is the earliest.
     // historyLocation goes from -n..-1.   -n is the earliest.
-    historyLocation = -(historyAry.length-i);
-    setcmd();
+    setHistoryLocation( -(historyAry.length-i) );
     historyPopup.hide();
     document.getElementById( "commandac" ).focus();
 };
