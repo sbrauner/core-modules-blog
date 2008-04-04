@@ -53,3 +53,29 @@ assert(c.withPermission("core.app.forum.moderator", function(){
     return user.hasPermission("core.app.forum.moderator");
 }));
 
+
+var ips = ["192.168.14.12", "127.0.1.1", "127.127.127.126", "123.456.78.90"];
+for(var i = 0; i < ips.length; i++){
+    var ip = ips[i];
+    c.setIP(ip);
+    assert(c.execute(function(){ return request.getRemoteIP(); }) == ip);
+}
+
+try {
+    c.execute(function() {
+        throw Exception.Quiet("user broke something");
+    });
+}
+catch(e){
+    assert(false); // should never get here; exception.quiet is ignored
+}
+
+try {
+    c.execute(function() {
+        throw "Administrator screwed up";
+    });
+    assert(false); // should never get here; exceptions are rethrown by Client
+}
+catch(e){
+
+}
