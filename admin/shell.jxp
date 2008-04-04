@@ -34,6 +34,9 @@ if( ! session ){
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
                this.myLogReader.formatMsg = function(msg){
+                   if(msg.category == "format")
+                       return msg.msg;
+
                    if(msg.category == "user"){
                        return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
@@ -74,11 +77,14 @@ if( ! session ){
 
                var outputs = <%= tojson(session.getResults()) %>;
 
+               // re-log all the old commands and responses
+               YAHOO.log("<span class='faded'>", "format", "shell");
                for(var i = 0; i < inputs.length; i++){
                    YAHOO.log(inputs[i], 'user', 'shell');
                    YAHOO.log(outputs[i], 'response', 'shell');
                }
-
+               YAHOO.log("</span>", "format", "shell");
+               YAHOO.log("<hr/>", "format", "shell");
                // Install this handler before the autocompleter because it will
                // grab up/down key events
                YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
