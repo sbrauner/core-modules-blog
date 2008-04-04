@@ -182,6 +182,10 @@ form.command {
     border: 1px #0bb solid;
 }
 
+.faded {
+    opacity: 0.5;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
