@@ -1,3 +1,18 @@
+<% 
+// We load this module here, rather than in _shell.jxp, because we "know" that
+// this file will always be run first, and because this way it reduces the 
+// amount of code that _shell has to run (i.e. improves latency of response.
+// Also, we need it here. (oops)
+core.admin.data.shellsession();
+core.ext.pluck();
+
+var session = db.shell.sessions.findOne({user: user});
+if( ! session ){
+    session = new admin.data.ShellSession(user);
+    session.save();
+}
+
+ %>
 
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
@@ -23,6 +38,7 @@
                        return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
+                       if(!msg.msg) return "";
                        var obj = eval("(" + msg.msg + ")");
                        if(typeof obj == "object"){
                            var i = objectList.push(obj);
@@ -38,10 +54,30 @@
                            return "<span class=\"response\">" + msg.msg + "</span><br/>";
                    }
                };
+               
+               var inputs = <%= tojson(session.getCommands()) %>;
 
+               historyAry = []; // indexes of input used on each line
+               pastCommands = []; // commands themselves; unique for YUI AC
+               
+               // translate non-unique strings into YUI-friendly format
+               for(var i = 0; i < inputs.length; i++){
+                   var cmd = inputs[i];
+                   if(inputs.indexOf(cmd) < i) {
+                       // duplicate command!
+                   }
+                   else {
+                       pastCommands.push(cmd);
+                   }
+                   historyAry.push(inputs.indexOf(cmd));
+               }
 
-               pastCommands = new Array();
-               historyAry = new Array();
+               var outputs = <%= tojson(session.getResults()) %>;
+
+               for(var i = 0; i < inputs.length; i++){
+                   YAHOO.log(inputs[i], 'user', 'shell');
+                   YAHOO.log(outputs[i], 'response', 'shell');
+               }
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
