@@ -7,13 +7,15 @@ var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
 function printEditableField(x, id, path) {
-    if( x.length && x.length<=20 )
-        x = content.HTML.escape_html(x);
-    else if(x.length) {
-	x = content.HTML.escape_html(x)
-        // put extra text in a hidden div
-        print('<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>');
-        x = x.substring(0,18)+"...";
+    if(typeof x == "string") {
+        if( x.length<=20 )
+            x = content.HTML.escape_html(x);
+        else {
+	    x = content.HTML.escape_html(x)
+            // put extra text in a hidden div
+            print('<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>');
+            x = x.substring(0,18)+"...";
+        }
     }
 
     print('<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>");
@@ -133,6 +135,13 @@ function hideObj(i) {
          document.getElementById(i).style.display = "none";
 }
 
+function deleteRow(id) {
+    var passData = "db=<%= request.ns %>&action=delete&id="+id;
+    ajax(passData, "editDb", function(response) {
+        document.getElementById("row"+id).style.display = "none";
+    });
+}
+
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
     editSpan.setAttribute("onclick", "");
@@ -153,7 +162,7 @@ function editField(id, type, dbid, path) {
 function saveValue(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
 
-    passData = "db=<%= request.ns %>&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
+    passData = "db=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
     if(type == "boolean") {
         ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
             if(response != "") {
@@ -197,6 +206,7 @@ function saveValue(id, type, dbid, path) {
 if( !top ) {
     print('\n<table class="dbview">');
     print("<tr>");
+    print("<th>Delete Row</th>");
     for( h in f ) {
         if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
@@ -218,7 +228,8 @@ for( var i=0; i < rows.length; i++ ) {
 <a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
         <%
     } else {
-        print("<tr>");
+        print('<tr id="row'+rows[i]._id+'">');
+        print('<td><input type="button" onclick="deleteRow(\''+rows[i]._id+'\')" value="x" />');
         for( h in f ) {
 	    if( f[h]>thresh && !ignore[h] ) {
 	        print("<td>");
