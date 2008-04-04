@@ -6,14 +6,14 @@ core.content.html();
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
-function printObj(cursor, field) {
+function printObj(cursor, field, id, path) {
     if(!cursor || !cursor[field]) return;
 
     if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
         print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
     }
     else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        print('<div><label class="obj">'+field+':</label><span class="obj" id="f'+fieldcount+'" onclick="editField('+fieldcount+', \''+(typeof cursor[field])+'\')">'+cursor[field]+"</span></div>");
+        print('<div><label class="obj">'+field+':</label><span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof cursor[field])+'","'+id+'",'+tojson(path)+')\'>'+cursor[field]+"</span></div>");
         fieldcount++;
     } else if(typeof cursor[field] == "object") {
         var name;
@@ -33,20 +33,24 @@ function printObj(cursor, field) {
         print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
         var tempobj = objcount;
         objcount++;
-        for(var name in cursor[field])
-            printObj(cursor[field], name);
+        for(var name in cursor[field]) {
+            path.push(name);
+            printObj(cursor[field], name, id, path);
+            path.pop();
+        }
         print("<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>");
     } else {
         print('<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>");
     }
 }
 
-
-function outp(x) {
+var done = false;
+function outp(x, id, name) {
     if( typeof x != 'string' ) {
         if(typeof x == "object") {
+            // make x an obj of the form cursor[field]
             x = {"...": x};
-            printObj(x, "...");
+            printObj(x, "...", id, [name]);
         }
         else
             print(x);
@@ -73,8 +77,15 @@ function outp(x) {
   // ignore internal transient variables
   var ignore= { _ns:1, _save:1, _update:1 };
 
-  var max = top?1000:100;
-  var rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
+var rows, max;
+if(request.all) {
+    rows = collection.find().sort( { name : 1 } ).toArray();
+    max = rows.length+1;
+}
+else {
+    max = top?1000:(request.max ? parseInt(request.max) : 100);
+    rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
+}
 
   var fields;
   // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
@@ -100,6 +111,8 @@ function outp(x) {
 %>
 
 <h3><%=hdr%></h3>
+<form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
+<form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
 
 <script type="text/javascript">
 function showObj(i) {
@@ -108,17 +121,32 @@ function showObj(i) {
 function hideObj(i) {
          document.getElementById(i).style.display = "none";
 }
-function editField(id, type) {
+function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
+    editSpan.setAttribute("onclick", "");
     var val = editSpan.innerHTML;
     if(type == "boolean") {
-        alert("val: "+val);
         var yes = (val == "true") ? "checked" : "";
-        editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\')" />';
+        editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\','+path+')" />';
+    }
+    if(type == "string" || type == "number") {
+        editSpan.innerHTML = '<input type="text" id="in'+id+'" value="'+editSpan.innerHTML+'" /><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\')" />';
     }
 }
-function saveValue(id, type) {
-    document.getElementById("f"+id).innerHTML = document.getElementById("in"+id).checked;
+function saveValue(id, type, dbid, path) {
+    var editSpan = document.getElementById("f"+id);
+    passData = "db=<%= request.ns %>&type="+type+"&id="+dbid+"&path="+path+"&val=";
+    if(type == "boolean") {
+        ajax(passData+document.getElementById("in"+id).checked, "modDb", function(response) {
+            editSpan.innerHTML = document.getElementById("in"+id).checked;
+        });
+    }
+    if(type == "number")
+        editSpan.innerHTML = document.getElementById("in"+id).value;
+    if(type == "string")
+        editSpan.innerHTML = document.getElementById("in"+id).value;
+
+    editSpan.setAttribute("onclick", "editField("+id+",'"+type+"')");
 }
 
 </script>
@@ -152,7 +180,7 @@ function saveValue(id, type) {
       for( h in f ) {
 	  if( f[h]>thresh && !ignore[h] ) {
 	      print("<td>");
-	      outp(obj[h]);
+	      outp(obj[h], obj._id, h);
 	      print("</td>");
 	  }
       }
