@@ -1,3 +1,18 @@
+<% 
+// We load this module here, rather than in _shell.jxp, because we "know" that
+// this file will always be run first, and because this way it reduces the 
+// amount of code that _shell has to run (i.e. improves latency of response.
+// Also, we need it here. (oops)
+core.admin.data.shellsession();
+core.ext.pluck();
+
+var session = db.shell.sessions.findOne({user: user});
+if( ! session ){
+    session = new admin.data.ShellSession(user);
+    session.save();
+}
+
+ %>
 
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
@@ -39,9 +54,8 @@
                    }
                };
 
-
-               pastCommands = new Array();
-               historyAry = new Array();
+               pastCommands = <%= tojson(session.getCommands()) %>;
+               historyAry = pastCommands.concat(); // i.e. copy
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events

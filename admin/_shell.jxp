@@ -1,6 +1,5 @@
 <%
-
-    var shellId = request.id;
+var shellId = request.id;
 if ( ! shellId ){
     print( "no shellId :(" );
     return;
@@ -25,4 +24,8 @@ if ( ! theScope ){
 theScope.setGlobal( true );
 var res = theScope.eval( request.command , "aaaa" + shellId , null );
 print( tojson( res ) );
+
+var session = db.shell.sessions.findOne({user: user});
+session.push(request.command, res);
+db.shell.sessions.save(session);
 %>
