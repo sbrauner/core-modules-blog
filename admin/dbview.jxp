@@ -4,14 +4,33 @@
 core.content.html();
 
 var objcount = 0; // unique id for each object's div
+var fieldcount = 0;
 
 function printObj(cursor, field) {
     if(!cursor || !cursor[field]) return;
 
-    if(cursor[field] == null || typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number" || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
         print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
+    }
+    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+        print('<div><label class="obj">'+field+':</label><span class="obj" id="f'+fieldcount+'" onclick="editField('+fieldcount+', \''+(typeof cursor[field])+'\')">'+cursor[field]+"</span></div>");
+        fieldcount++;
     } else if(typeof cursor[field] == "object") {
-        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">Object:</label><span class=\"obj\">"+field+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
+        var name;
+        var desc;
+        if(cursor[field] instanceof Date) {
+            name = "Date";
+            desc = cursor[field].toString();
+        }
+        else if(cursor[field] instanceof Array) {
+            name = "Array";
+            desc = "["+cursor[field].length+"]";
+        }
+        else {
+            name = "Object";
+            desc = field;
+        }
+        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
         var tempobj = objcount;
         objcount++;
         for(var name in cursor[field])
@@ -89,6 +108,19 @@ function showObj(i) {
 function hideObj(i) {
          document.getElementById(i).style.display = "none";
 }
+function editField(id, type) {
+    var editSpan = document.getElementById("f"+id);
+    var val = editSpan.innerHTML;
+    if(type == "boolean") {
+        alert("val: "+val);
+        var yes = (val == "true") ? "checked" : "";
+        editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\')" />';
+    }
+}
+function saveValue(id, type) {
+    document.getElementById("f"+id).innerHTML = document.getElementById("in"+id).checked;
+}
+
 </script>
 
 <%
