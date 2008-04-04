@@ -70,7 +70,7 @@ function outp(x, id, name) {
         printObj(x, "...", id, [name]);
     }
     else if(x == null || typeof x == "native" || typeof x == "function")
-        print("null");
+        print(x);
     else
         printEditableField(x, id, [name]);
 }
@@ -318,6 +318,8 @@ var myColumnDefs = [ {key: "delete"}, <%
                      %>
                    ];
 
-        var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource);
+
+
+var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource);
 
 </script>
