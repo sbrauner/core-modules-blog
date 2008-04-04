@@ -16,9 +16,12 @@ body {
     color: #000;
     background: <%= background %>;
 }
-
 a {
         color: <%= header_dark_blue %>;
+}
+th a {
+color: #fff;
+text-decoration: none;
 }
 
 table {

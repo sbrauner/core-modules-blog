@@ -139,6 +139,7 @@ function hideObj(i) {
 function deleteRow(id) {
     var passData = "db=<%= request.ns %>&action=delete&id="+id;
     ajax(passData, "editDb", function(response) {
+        alert("Row successfully deleted");
         document.getElementById("row"+id).style.display = "none";
     });
 }
@@ -302,24 +303,47 @@ myDataSource = new YAHOO.util.DataSource(
         responseSchema: {
             fields: [ {key: "delete"}, <%
                       for(var i in rows[0]) {
-                          if(!ignore[i])
-                              print('{ key: "'+i+'"},');
+                          if(!ignore[i]) {
+                              print('{ key: "'+i+'"');
+                                  print(', parser:YAHOO.util.DataSource.parseString');
+                              print('},');
+                          }
                       }
                       %>
                     ]
         }
     });
 
-var myColumnDefs = [ {key: "delete"}, <%
+/*    var done = false;
+sortDates = function(a, b, desc) {
+    if(!done) {
+        a = a.getData
+        alert(b);
+        done = true;
+    }
+}*/
+
+var myColumnDefs = [ {key: "delete"},
+    <%
                      for(var i in rows[0]) {
-                         if(!ignore[i])
-                             print('{ key: "'+i+'"},');
+                         if(!ignore[i]) {
+                             print('{ key: "'+i+'" ');
+                             if(rows[0][i] instanceof Date) {
+   //                              print(', sortOptions: { sortFunction : sortDates }');
+                             }
+//                             else
+                             if(typeof rows[0][i] == "number") {
+                                 print(', formatter: "number"');
+                             }
+                             print(', sortable: true },');
+                         }
                      }
                      %>
                    ];
 
 
-
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource);
+
+
 
 </script>
