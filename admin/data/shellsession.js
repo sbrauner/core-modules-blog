@@ -3,6 +3,7 @@ core.db.db();
 admin.data.ShellSession = function(user){
     // Array of commands.
     this.commands = [];
+    this.inputs = [];
     this._dbCons = admin.data.ShellSession.Commmand;
 
     // DBRef to db.users
@@ -25,7 +26,7 @@ Object.extend(admin.data.ShellSession.prototype, {
     },
 });
 
-admin.data.ShellSession.Command = function(input){
+admin.data.ShellSession.Command = function(input, output){
     this.input = input || "";
     // Results objects stored as as JSON strings.
     // We can't store results themselves, because results objects often have

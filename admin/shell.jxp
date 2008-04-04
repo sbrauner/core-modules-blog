@@ -53,9 +53,22 @@ if( ! session ){
                            return "<span class=\"response\">" + msg.msg + "</span><br/>";
                    }
                };
+               
+               var inputs = <%= tojson(session.getCommands()) %>;
 
-               pastCommands = <%= tojson(session.getCommands()) %>;
-               historyAry = pastCommands.concat(); // i.e. copy
+               historyAry = []; // indexes of input used on each line
+               pastCommands = []; // commands themselves; unique for YUI AC
+               
+               for(var i = 0; i < inputs.length; i++){
+                   var cmd = inputs[i];
+                   if(inputs.indexOf(cmd) < i) {
+                       // duplicate command!
+                   }
+                   else {
+                       pastCommands.push(cmd);
+                   }
+                   historyAry.push(inputs.indexOf(cmd));
+               }
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
