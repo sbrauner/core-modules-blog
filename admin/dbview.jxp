@@ -6,6 +6,11 @@ core.content.html();
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
+function printEditableField(x, id, path) {
+    print('<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>");
+    fieldcount++;
+}
+
 function printObj(cursor, field, id, path) {
     if(!cursor || !cursor[field]) return;
 
@@ -13,8 +18,9 @@ function printObj(cursor, field, id, path) {
         print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
     }
     else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        print('<div><label class="obj">'+field+':</label><span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof cursor[field])+'","'+id+'",'+tojson(path)+')\'>'+cursor[field]+"</span></div>");
-        fieldcount++;
+        print('<div><label class="obj">'+field+':</label>');
+        printEditableField(cursor[field], id, path);
+        print('</div>');
     } else if(typeof cursor[field] == "object") {
         var name;
         var desc;
@@ -46,20 +52,15 @@ function printObj(cursor, field, id, path) {
 
 var done = false;
 function outp(x, id, name) {
-    if( typeof x != 'string' ) {
-        if(typeof x == "object") {
-            // make x an obj of the form cursor[field]
-            x = {"...": x};
-            printObj(x, "...", id, [name]);
-        }
-        else
-            print(x);
-        return;
+    if(typeof x == "object") {
+        // make x an obj of the form cursor[field]
+        x = {"...": x};
+        printObj(x, "...", id, [name]);
     }
-    if( x.length<=20 )
-        print(content.HTML.escape_html(x));
+    else if(x == null)
+        print("null");
     else
-	print( content.HTML.escape_html(x).substring(0,18)+"..." );
+        printEditableField(x, id, [name]);
 }
 
   // top == show all collections
@@ -118,50 +119,65 @@ else {
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }
+
 function hideObj(i) {
          document.getElementById(i).style.display = "none";
 }
+
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
     editSpan.setAttribute("onclick", "");
     var val = editSpan.innerHTML;
     if(type == "boolean") {
         var yes = (val == "true") ? "checked" : "";
-        editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\','+path+')" />';
+        editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
     }
     if(type == "string" || type == "number") {
-        editSpan.innerHTML = '<input type="text" id="in'+id+'" value="'+editSpan.innerHTML+'" /><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\')" />';
+        editSpan.innerHTML = '<input type="text" id="in'+id+'" value="'+editSpan.innerHTML+'" /><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
     }
 }
+
 function saveValue(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
-    passData = "db=<%= request.ns %>&type="+type+"&id="+dbid+"&path="+path+"&val=";
+
+    passData = "db=<%= request.ns %>&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
     if(type == "boolean") {
-        ajax(passData+document.getElementById("in"+id).checked, "modDb", function(response) {
+        ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
+            if(response != "") {
+                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
+                return;
+            }
             editSpan.innerHTML = document.getElementById("in"+id).checked;
+            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
         });
     }
-    if(type == "number")
-        editSpan.innerHTML = document.getElementById("in"+id).value;
-    if(type == "string")
-        editSpan.innerHTML = document.getElementById("in"+id).value;
+    if(type == "number" || type == "string") {
+        ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
+            if(response == "") {
+                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
+                return;
+            }
+            editSpan.innerHTML = document.getElementById("in"+id).value;
+            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
+        });
+    }
 
-    editSpan.setAttribute("onclick", "editField("+id+",'"+type+"')");
+
 }
 
 </script>
 
 <%
-  if( !top ) {
+if( !top ) {
     print('\n<table class="dbview">');
     print("<tr>");
     for( h in f ) {
-      if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
+        if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
     print("<th>(other)</th></tr>\n");
-  }
+}
 
-  for( var i=0; i < rows.length; i++ ) {
+for( var i=0; i < rows.length; i++ ) {
     var obj=rows[i];
     var idx=top ? obj.name.indexOf("$") : -1;
     if( obj.name && idx>=0 ) {
@@ -172,31 +188,31 @@ function saveValue(id, type, dbid, path) {
 	print("<br>");
     }
     else if( top ) {
-%>
+        %>
 <a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
-<%
- } else {
-      print("<tr>");
-      for( h in f ) {
-	  if( f[h]>thresh && !ignore[h] ) {
-	      print("<td>");
-	      outp(obj[h], obj._id, h);
-	      print("</td>");
-	  }
-      }
-      print("<td>");
-      var first = true;
-      for( x in obj ) {
-        if( f[x]<= thresh ) {
-	    if( !first )
-		print(", ");
-	    first = false;
-	    print(x); print(": "); outp(tojson(obj[x]));
+        <%
+    } else {
+        print("<tr>");
+        for( h in f ) {
+	    if( f[h]>thresh && !ignore[h] ) {
+	        print("<td>");
+	        outp(obj[h], rows[i]._id, h);
+	        print("</td>");
+	    }
         }
-      }
-      print("</td></tr>\n");
+        print("<td>");
+        var first = true;
+        for( x in obj ) {
+            if( f[x]<= thresh ) {
+	        if( !first )
+		    print(", ");
+	        first = false;
+	        print(x); print(": "); outp(tojson(obj[x]));
+            }
+        }
+        print("</td></tr>\n");
     }
-  }
+}
 
   if( !top ) print("</table>");
 
