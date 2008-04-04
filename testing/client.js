@@ -7,6 +7,7 @@ testing.Client = function(){
     this.headers = [];
     this.redirects = [];
     this.url = new URL('/');
+    this.ip = "127.0.0.1";
 };
 
 testing.Client.prototype.getHeaders = function(){
@@ -18,7 +19,12 @@ testing.Client.prototype.getHeaders = function(){
     if(cookieStrings.length > 0){
         headers = headers.concat(["Cookie: " + cookieStrings.join("; ")]);
     }
+    headers = headers.concat(["X-Cluster-Client-Ip: " + this.ip]);
     return headers.join("\n");
+};
+
+testing.Client.prototype.setIP = function(ip){
+    this.ip = ip;
 };
 
 testing.Client.prototype.addHeader = function(header){

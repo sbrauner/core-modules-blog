@@ -53,3 +53,10 @@ assert(c.withPermission("core.app.forum.moderator", function(){
     return user.hasPermission("core.app.forum.moderator");
 }));
 
+
+var ips = ["192.168.14.12", "127.0.1.1", "127.127.127.126", "123.456.78.90"];
+for(var i = 0; i < ips.length; i++){
+    var ip = ips[i];
+    c.setIP(ip);
+    assert(c.execute(function(){ return request.getRemoteIP(); }) == ip);
+}
