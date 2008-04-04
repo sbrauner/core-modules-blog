@@ -274,8 +274,13 @@ shellId = "shell-" + Math.random();
 function doRun(el){
     var command = document.getElementById( el );
     var usr = command.value;
+    var save = "";
     command.value = "";
     if(indexOf(pastCommands, usr) == -1){
+        // This behavior is inspired by the history functionality in bash.
+        // If you retype the last command, or re-run it, it doesn't get
+        // entered into the history twice.
+        save = "true";
         pastCommands.push(usr);
     }
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
@@ -287,7 +292,7 @@ function doRun(el){
     addHistoryLink(historyAry.length-1);
 
     YAHOO.log(usr, "user", "shell");
-    var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
+    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
 
     var res = loadDocSync( url );
     res = res.replace( /(^\s+|\s+$)/g , "" );
@@ -308,7 +313,7 @@ addHistoryLink = function(i){
 
 makeHistoryLink = function(i){
     var cmd = pastCommands[historyAry[i]];
-    var divclass = "class='history'";
+    var divclass = "class='historyLink'";
     var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
     return thisdiv;
 };

@@ -18,10 +18,6 @@ var output = c.withPermission("core.app.forum.admin", function(){
 
 assert(output.match(/onclick="newTopic\(/));
 
-// This test case doesn't currently work; output redirection + throwing
-// exceptions is tricky and I don't have the time right now.
-// FIXME, please!
-
 db.forum.banned_ips.save({ip: "127.0.0.1"});
 
 var output = c.execute(core.app.forum.index);

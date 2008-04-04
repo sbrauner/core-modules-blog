@@ -1,3 +1,5 @@
+admin.MAX_HISTORY_LENGTH = 40;
+
 core.db.db();
 
 admin.data.ShellSession = function(user){
@@ -24,6 +26,12 @@ Object.extend(admin.data.ShellSession.prototype, {
     getResults : function(){
         return this.commands.map(Ext.pluck('output'));
     },
+
+    presave: function(){
+        if(this.commands.length > admin.MAX_HISTORY_LENGTH){
+            this.commands.splice(0, this.commands.length - admin.MAX_HISTORY_LENGTH);
+        }
+    }
 });
 
 admin.data.ShellSession.Command = function(input, output){
