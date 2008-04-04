@@ -7,6 +7,15 @@ var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
 function printEditableField(x, id, path) {
+    if( x.length && x.length<=20 )
+        x = content.HTML.escape_html(x);
+    else if(x.length) {
+	x = content.HTML.escape_html(x)
+        // put extra text in a hidden div
+        print('<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>');
+        x = x.substring(0,18)+"...";
+    }
+
     print('<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>");
     fieldcount++;
 }
@@ -57,7 +66,7 @@ function outp(x, id, name) {
         x = {"...": x};
         printObj(x, "...", id, [name]);
     }
-    else if(x == null)
+    else if(x == null || typeof x == "native" || typeof x == "function")
         print("null");
     else
         printEditableField(x, id, [name]);
@@ -133,7 +142,11 @@ function editField(id, type, dbid, path) {
         editSpan.innerHTML = '<input type="checkbox" id="in'+id+'" '+yes+'/><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
     }
     if(type == "string" || type == "number") {
-        editSpan.innerHTML = '<input type="text" id="in'+id+'" value="'+editSpan.innerHTML+'" /><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
+        var xtra = document.getElementById("extra"+id);
+        if(xtra)
+            editSpan.innerHTML = '<textarea id="in'+id+'">'+xtra.innerHTML+'</textarea><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
+        else
+            editSpan.innerHTML = '<input type="text" id="in'+id+'" value="'+editSpan.innerHTML+'" /><input type="button" value="Save" onclick="saveValue('+id+',\''+type+'\',\''+dbid+'\',\''+path+'\')" />';
     }
 }
 
@@ -152,14 +165,27 @@ function saveValue(id, type, dbid, path) {
         });
     }
     if(type == "number" || type == "string") {
-        ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
-            if(response == "") {
-                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                return;
-            }
-            editSpan.innerHTML = document.getElementById("in"+id).value;
-            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-        });
+        var xtra = document.getElementById("extra"+id);
+        if(xtra) {
+            ajax(passData+document.getElementById("in"+id).innerHTML, "editDb", function(response) {
+                if(response == "") {
+                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
+                    return;
+                }
+                editSpan.innerHTML = document.getElementById("in"+id).innerHTML;
+                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
+            });
+        }
+        else {
+            ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
+                if(response == "") {
+                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
+                    return;
+                }
+                editSpan.innerHTML = document.getElementById("in"+id).value;
+                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
+            });
+        }
     }
 
 
