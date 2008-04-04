@@ -120,6 +120,12 @@ if( ! session ){
                        return q;
                    };
                };
+
+               historyPopup = new YAHOO.widget.Dialog('history_popup', {
+                   fixedcenter: true,
+                   draggable: true,
+                   visible: false
+               });
            }
        });
 
@@ -175,7 +181,16 @@ var histfunc = function( e ) {
      </script>
      <form class="command" onSubmit="return doRun('commandac');">
        Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
+       <div onclick="showHistory()">Show history</div>
     </form>
+
+     <div id="history_popup" style="display: none;">
+       <div class="hd">History</div>
+       <div class="bd">
+         <div id="history_links"></div>
+       </div>
+       <div class="ft"></div>
+     </div>
 </div>
 
 <script>
@@ -255,5 +270,21 @@ function doRun(el){
 
     return false;
 }
+
+showHistory = function(){
+    var s = "";
+    for(var i = 0; i < historyAry.length; i++){
+        var cmd = pastCommands[historyAry[i]];
+        s += "<div onclick='activateHistory("+i+")'>"+i+": "+cmd+"</div>";
+    }
+    document.getElementById('history_links').innerHTML = s;
+    document.getElementById("history_popup").style.display = "block";
+    historyPopup.show();
+};
+
+activateHistory = function(i){
+    document.getElementById("commandac").value = pastCommands[historyAry[i]];
+    historyPopup.hide();
+};
 
 </script>
