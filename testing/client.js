@@ -88,12 +88,16 @@ testing.Client.prototype.execute = function(f){
     head = Object.extend([], {addScript: function() {},
                               addCSS: function() {} });
     jxp = {};
-    try {
-        var val = Ext.redirect(f);
-    }
-    catch(e){
-        if(! (e instanceof Exception.Quiet)) throw e;
-    }
+    val = Ext.redirect(function(){
+        try{
+            return f();
+        }
+        catch(e){
+            if(! (e instanceof Exception.Quiet)) throw e;
+            // if it was Quiet..
+            return e;
+        }
+    });
     if(val && answer in val) return val[answer];
     if(answer in this) return this[answer];
     return val;
