@@ -1,5 +1,6 @@
 <%
 /* dbview.jxp - database content viewer utility */
+head.push('<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yuiloader/yuiloader-beta-min.js" ></script>');
 
 core.content.html();
 
@@ -200,17 +201,30 @@ function saveValue(id, type, dbid, path) {
 
 }
 
+/*var loader = new YAHOO.util.YUILoader( {
+    base: "/@@/yui/current/",
+    require: ["datatable", "json"],
+    loadOptional: true,
+    onSuccess: function() {
+
+        alert("done");*/
+
+
+//    }
+//});
+
 </script>
 
 <%
 if( !top ) {
-    print('\n<table class="dbview">');
-    print("<tr>");
+    print('<div id="myMarkedUpContainer">');
+    print('\n<table class="dbview" id="dbview_table">');
+    print("<thead><tr>");
     print("<th>Delete Row</th>");
     for( h in f ) {
         if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
-    print("<th>(other)</th></tr>\n");
+    print("<th>(other)</th></tr></thead><tbody>\n");
 }
 
 for( var i=0; i < rows.length; i++ ) {
@@ -251,13 +265,59 @@ for( var i=0; i < rows.length; i++ ) {
     }
 }
 
-  if( !top ) print("</table>");
+if( !top ) print("</tbody></table></div>");
 
-  if( rows.length >= max )
+if( rows.length >= max )
     print("<br>Only first " + max + " displayed");
-
-//  if( !top )
-//    print('<p>&nbsp;<a href="/admin/dbview">all collections</a>');
 
 %>
 
+<!--CSS file (default YUI Sam Skin) -->
+<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/datatable/assets/skins/sam/datatable.css">
+<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/logger/assets/skins/sam/logger.css">
+
+<!-- Dependencies -->
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/element/element-beta-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datasource/datasource-beta-debug.js"></script>
+
+<!-- OPTIONAL: JSON Utility -->
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/json/json-min.js"></script>
+
+<!-- OPTIONAL: Drag Drop (enables resizeable or reorderable columns) -->
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/dragdrop/dragdrop-min.js"></script>
+
+<!-- Source files -->
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datatable/datatable-beta-debug.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/logger/logger-debug.js"></script>
+
+<script type="text/javascript">
+//var myContainer = document.body.appendChild(document.createElement("div"));
+//var myLogReader = new YAHOO.widget.LogReader(myContainer);
+
+myDataSource = new YAHOO.util.DataSource(
+    YAHOO.util.Dom.get("dbview_table"),
+    {
+        responseType : YAHOO.util.DataSource.TYPE_HTMLTABLE,
+        responseSchema: {
+            fields: [ {key: "delete"}, <%
+                      for(var i in rows[0]) {
+                          if(!ignore[i])
+                              print('{ key: "'+i+'"},');
+                      }
+                      %>
+                    ]
+        }
+    });
+
+var myColumnDefs = [ {key: "delete"}, <%
+                     for(var i in rows[0]) {
+                         if(!ignore[i])
+                             print('{ key: "'+i+'"},');
+                     }
+                     %>
+                   ];
+
+        var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource);
+
+</script>
