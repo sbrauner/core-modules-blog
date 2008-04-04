@@ -25,6 +25,8 @@ htmlfooter = function() {
     print('</body></html>');
 }
 
+core.content.html();
+
 addToNotice = function(key, value){
     // FIXME: This is a XSS attack waiting to happen.
     // Want us to show some code? Just link to a URL like
@@ -42,5 +44,7 @@ addToNotice = function(key, value){
         notice = {};
     }
 
+    // Try to prevent XSS, at least.
+    value = content.HTML.escape(value);
     notice[key] = value;
 };
