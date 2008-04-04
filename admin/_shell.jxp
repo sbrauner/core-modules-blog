@@ -25,7 +25,10 @@ theScope.setGlobal( true );
 var res = theScope.eval( request.command , "aaaa" + shellId , null );
 print( tojson( res ) );
 
-var session = db.shell.sessions.findOne({user: user});
-session.push(request.command, tojson(res));
-db.shell.sessions.save(session);
+if(request.save){
+    // Only the client knows whether to save this command.
+    var session = db.shell.sessions.findOne({user: user});
+    session.push(request.command, tojson(res));
+    db.shell.sessions.save(session);
+}
 %>
