@@ -38,6 +38,7 @@ if( ! session ){
                        return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
+                       if(!msg.msg) return "";
                        var obj = eval("(" + msg.msg + ")");
                        if(typeof obj == "object"){
                            var i = objectList.push(obj);
@@ -59,6 +60,7 @@ if( ! session ){
                historyAry = []; // indexes of input used on each line
                pastCommands = []; // commands themselves; unique for YUI AC
                
+               // translate non-unique strings into YUI-friendly format
                for(var i = 0; i < inputs.length; i++){
                    var cmd = inputs[i];
                    if(inputs.indexOf(cmd) < i) {
@@ -68,6 +70,13 @@ if( ! session ){
                        pastCommands.push(cmd);
                    }
                    historyAry.push(inputs.indexOf(cmd));
+               }
+
+               var outputs = <%= tojson(session.getResults()) %>;
+
+               for(var i = 0; i < inputs.length; i++){
+                   YAHOO.log(inputs[i], 'user', 'shell');
+                   YAHOO.log(outputs[i], 'response', 'shell');
                }
 
                // Install this handler before the autocompleter because it will
