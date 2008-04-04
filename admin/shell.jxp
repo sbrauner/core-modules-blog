@@ -69,7 +69,7 @@ if( ! session ){
                    else {
                        pastCommands.push(cmd);
                    }
-                   historyAry.push(inputs.indexOf(cmd));
+                   historyAry.push(pastCommands.indexOf(cmd));
                }
 
                var outputs = <%= tojson(session.getResults()) %>;
@@ -126,6 +126,8 @@ if( ! session ){
                    draggable: true,
                    visible: false
                });
+               historyPopup.render();
+
            }
        });
 
@@ -148,11 +150,11 @@ var currentCommand = '';
 var historyLocation = 0;
 
 var setHistoryLocation = function( i, cmd ){
+    historyLocation = i;
     if(i == 0) {
-        setcmd(cmd);
+        setcmd(cmd || "");
     }
     else {
-        historyLocation = i;
         setcmd();
     }
     var highlit = YAHOO.util.Dom.getElementsByClassName("highlight");
@@ -279,8 +281,10 @@ function doRun(el){
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
         historyAry.push(indexOf(pastCommands,usr));
     }
-    historyLocation = 0;
+
     currentCommand = "";
+    setHistoryLocation(0);
+    addHistoryLink(historyAry.length-1);
 
     YAHOO.log(usr, "user", "shell");
     var url = "/admin/_shell?id=" + shellId + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
@@ -297,13 +301,22 @@ highlightHistory = function(){
                        "highlight")
 };
 
+addHistoryLink = function(i){
+    var links = document.getElementById('history_links');
+    links.innerHTML = links.innerHTML + makeHistoryLink(i);
+};
+
+makeHistoryLink = function(i){
+    var cmd = pastCommands[historyAry[i]];
+    var divclass = "class='history'";
+    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
+    return thisdiv;
+};
+
 showHistory = function(){
     var s = "";
     for(var i = 0; i < historyAry.length; i++){
-        var cmd = pastCommands[historyAry[i]];
-        var divclass = "class='history'";
-        var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
-        s += thisdiv;
+        s += makeHistoryLink(i);
     }
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
