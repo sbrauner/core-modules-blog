@@ -279,7 +279,11 @@ showHistory = function(){
     var s = "";
     for(var i = 0; i < historyAry.length; i++){
         var cmd = pastCommands[historyAry[i]];
-        s += "<div onclick='activateHistory("+i+")'>"+i+": "+cmd+"</div>";
+        var divclass = "";
+        if((historyAry.length + historyLocation) == i)
+            divclass = "class='history highlight' ";
+        var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")'>"+i+": "+cmd+"</div>";
+        s += thisdiv;
     }
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
@@ -287,6 +291,8 @@ showHistory = function(){
 };
 
 activateHistory = function(i){
+    // i goes from 0..n-1.   0 is the earliest.
+    // historyLocation goes from -n..-1.   -n is the earliest.
     historyLocation = -(historyAry.length-i);
     setcmd();
     historyPopup.hide();
