@@ -147,19 +147,19 @@ var blockYUIParen = function ( e ) {
 var currentCommand = '';
 var historyLocation = 0;
 
+var setcmd = function () {
+    var cmd = document.getElementById("commandac");
+    if ( arguments.length ) {
+        cmd.value = arguments[0];
+    }
+    else {
+        cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
+    }
+}
+
 var histfunc = function( e ) {
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
-    var cmd = document.getElementById("commandac");
-    var setcmd = function () {
-        if ( arguments.length ) {
-            cmd.value = arguments[0];
-        }
-        else {
-            cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
-        }
-    }
-
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
@@ -287,8 +287,10 @@ showHistory = function(){
 };
 
 activateHistory = function(i){
-    document.getElementById("commandac").value = pastCommands[historyAry[i]];
+    historyLocation = -(historyAry.length-i);
+    setcmd();
     historyPopup.hide();
+    document.getElementById( "commandac" ).focus();
 };
 
 </script>
