@@ -31,7 +31,16 @@ if (request.action == "Delete"){
 
 db.bugtracker.releases.ensureIndex({text: true});
 
-var link = "./?search=" + escape(request.search) + "&page=" + request.page + "&showClosed=" + request.showClosed;
+var args = [];
+if(request.search)
+    args.push("search=" + escape(request.search));
+if(request.page)
+    args.push("page=" + request.page);
+if(request.showClosed)
+    args.push("showClosed=" + request.showClosed);
+
+var link = "./?" + args.join("&");
+
 
 
 
