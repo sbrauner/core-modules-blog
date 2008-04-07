@@ -114,7 +114,8 @@ Blog.handleRequest = function( request , arg ){
 
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
-        uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '').replace(/^.rss/ , "/" );
+        uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '');
+	uri = uri.replace(/^.rss\b/ , "/" );
         uri = uri.replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
         Blog.log.debug("base URI: [" + uri + "]" );
