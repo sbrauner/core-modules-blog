@@ -27,7 +27,7 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
     <div id="top_menu" class="yuimenubar">
       <div class="bd">
         <ul class="first-of-type">
-          <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
+    <li class="yuimenubaritem first-of-type"><a href="case_edit" onclick="showCase(); return false">New Case</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
         </ul>
@@ -346,6 +346,13 @@ assignDep = function(x, xDependsOn, type) {
     });
 }
 
+showCase = function(id){
+    var s = "case_edit?search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
+    if(id)
+        s += "&id="+id;
+    location = s;
+};
+
 var oMenu, checkAll = false;
 var settingDep = false;
 var dependency = null;
@@ -419,7 +426,7 @@ var loader = new YAHOO.util.YUILoader( {
          ];
 
          var dbURL = "case_table?";
-         var startSearch = dbURL +"showClosed=" + <%= request.showClosed %> + "&";
+         var startSearch = dbURL +"showClosed=" + <%= request.showClosed || "true" %> + "&";
          <%
          if(request.search){
              var args = request.search.split('&');
@@ -552,7 +559,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
 
-             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
+             showCase(myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id"));
           }
 
          assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,
