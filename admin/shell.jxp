@@ -181,6 +181,8 @@ if( ! session ){
                });
                historyPopup.render();
 
+               t.focus();
+
            }
        });
 
