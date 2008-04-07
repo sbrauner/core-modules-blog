@@ -2,6 +2,9 @@
 /* everyone is allowed to read the source code in corejs and samples. */
     var _openAccess = false;
 
+// AJAX functions that do not require headers/footers
+var ajaxFunctions = [ "showTable" ];
+
 _openAccess =
     request.getURI().match( /^.admin\/doc$/ ) &&
     ( request.getHost() == "corejs.10gen.com" || request.getHost() == "samples.10gen.com");
@@ -20,6 +23,7 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
 if ( sectionName.match( /^index/ ) )
     sectionName = "";
+
 
 var section = null;
 
@@ -56,17 +60,19 @@ if ( section == null && sectionName.match( /\// ) ){
 if ( section == null )
     section = core.admin[ sectionName ];
 
-if ( isFunction( section ) && 
+if ( isFunction( section ) &&
      ( section.getName().match( /\._/ )
        || section.getName().match( /admin.ed/ ) ) ){
     section();
     return;
 }
 
-core.admin.pieces.header();
+if ( ajaxFunctions.indexOf(sectionName) == -1 ) {
+    core.admin.pieces.header();
 
-if ( isFunction( sectionHeader ) )
-    sectionHeader();
+    if ( isFunction( sectionHeader ) )
+        sectionHeader();
+}
 
 if ( isFunction( section ) )
     section();
@@ -76,8 +82,10 @@ else {
         jxp.admin[ "_index" ]();
 }
 
-if ( isFunction( sectionFooter ) )
-    sectionFooter();
+if ( ajaxFunctions.indexOf(sectionName) == -1 ) {
+   if ( isFunction( sectionFooter ) )
+       sectionFooter();
 
-core.admin.pieces.footer();
+    core.admin.pieces.footer();
+}
 %>
