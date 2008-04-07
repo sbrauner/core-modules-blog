@@ -29,7 +29,33 @@ if( ! session ){
                objectList = [];
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
-               this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
+
+               var t = document.createElement("textarea");
+               t.id = "commandac";
+               var commandcontainer = document.createElement("div");
+               var acdiv = document.createElement("div");
+               prompt = document.createElement("span");
+               prompt.className = "prompt";
+               prompt.appendChild(document.createTextNode("js> "));
+               acdiv.appendChild(prompt);
+               acdiv.appendChild(t);
+               acdiv.appendChild(commandcontainer);
+               this.myLogReader = new YAHOO.widget.LogReader('console', {
+                   newestOnTop: false, 
+                   footerEnabled: false,
+                   _initConsoleEl: function(){
+                       YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
+                       this._elBd = this._elConsole;
+                       this._elConsole = document.createElement("div");
+                       this._elBd.appendChild(this._elConsole);
+                       this._elBd.appendChild(acdiv);
+
+                   },
+                   _printBuffer: function(){
+                       YAHOO.widget.LogReader.prototype._printBuffer.call(this);
+                       this._elBd.scrollTop = this._elBd.scrollHeight;
+                   }});
+
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
@@ -43,7 +69,7 @@ if( ! session ){
                    if(msg.category == "response"){
                        if(!msg.msg) return "";
                        var obj = eval("(" + msg.msg + ")");
-                       if(typeof obj == "object"){
+                       if(typeof obj == "object" && obj != null){
                            var i = objectList.push(obj);
                            var treenode = new YAHOO.widget.TextNode("Object " + i,
                                loader.objectTreeView.getRoot(), false);
@@ -85,13 +111,16 @@ if( ! session ){
                }
                YAHOO.log("</span>", "format", "shell");
                YAHOO.log("<hr/>", "format", "shell");
+
+               this.myLogReader._printBuffer();
+
                // Install this handler before the autocompleter because it will
                // grab up/down key events
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",blockYUIParen);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keydown",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keypress",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keyup",blockYUIParen);
 
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+               YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -99,17 +128,20 @@ if( ! session ){
                // variable with the last complete command we've sent and
                // if we get a query for that exact command, we replace it
                // with a gibberish !!!!!! query.
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",function(e){
+               YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
+                       window.lastSent = encodeURIComponent(t.value);
+                       if(checkRun(t)) {
+                           doRun(t);
+                           e.preventDefault();
+                       }
                    }
                });
-
 
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
                    this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
-                   this.oAutoComp = new YAHOO.widget.AutoComplete("commandac", "commandcontainer", this.oACDS);
+                   this.oAutoComp = new YAHOO.widget.AutoComplete(t, commandcontainer, this.oACDS);
                    this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
@@ -208,11 +240,9 @@ var histfunc = function( e ) {
     }
 };
      </script>
-     <form class="command" onSubmit="return doRun('commandac');">
-       Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
-       <div onclick="showHistory()">Show history</div>
-    </form>
 
+     <div class="clear"></div>
+     <div onclick="showHistory()">Show history</div>
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>
        <div class="bd">
@@ -276,9 +306,30 @@ lastIndexOf = function(ary, v){
     }
     return -1;
 };
+
+function checkRun(el){
+    var usr = el.value;
+    // simple check right now -- count {/}, [/], (/) and make sure they're equal
+    // Obviously this will fail if you have a string like "[".
+    // We need to exclude strings and regexps here!
+    var checkMatch = function(left, right){
+        var leftMatch = usr.match(new RegExp(left, "g"));
+        if (leftMatch) leftMatch = leftMatch.length;
+        else leftMatch = 0;
+        var rightMatch = usr.match(new RegExp(right, "g"));
+        if (rightMatch) rightMatch = rightMatch.length;
+        else rightMatch = 0;
+        return leftMatch == rightMatch;
+    };
+    if(! checkMatch("{", "}") ) return false;
+    if(! checkMatch("\\[", "\\]") ) return false;
+    if(! checkMatch("\\(", "\\)") ) return false;
+    return true;
+}
+
 shellId = "shell-" + Math.random();
 function doRun(el){
-    var command = document.getElementById( el );
+    var command = el;
     var usr = command.value;
     var save = "";
     command.value = "";

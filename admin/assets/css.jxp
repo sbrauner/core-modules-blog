@@ -165,7 +165,7 @@ div#customer_body {
     border: none;
 }
 
-form.command {
+.clear {
     clear: both;
 }
 
@@ -198,8 +198,13 @@ form.command {
     margin-right: auto;
 }
 
-#commandac {
-    _position: absolute;
+/* For the single-terminal-window look */
+textarea.yui-ac-input {
+    width: 90% !important;
+}
+
+.prompt {
+    color: #f0f;
 }
 
 #login_status {
