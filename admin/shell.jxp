@@ -5,6 +5,7 @@
 // Also, we need it here. (oops)
 core.admin.data.shellsession();
 core.ext.pluck();
+core.ext.buffer();
 
 var session = db.shell.sessions.findOne({user: user});
 if( ! session ){
@@ -23,7 +24,7 @@ if( ! session ){
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview'],
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json'],
            base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
@@ -71,14 +72,18 @@ if( ! session ){
                            return "<span class=\"response\">" + msg + "</span><br/>";
                        }
                        if(!msg.msg) return "";
+
+                       var s = "";
                        var obj = eval("(" + msg.msg + ")");
-                       if(obj == null){
-                           return string(obj);
+                       if(obj.$printed){
+                           s += "<span class=\"output\">" + obj.$printed + "</span><br/>";
                        }
-                       else if(obj.$exception){
-                           var s = "<span class=\"error\">" + obj.$exception + "</span><br/>";
+                       if(obj.$exception){
+                           s += "<span class=\"error\">" + obj.$exception + "</span><br/>";
                            return s;
                        }
+                       
+                       obj = obj["$"];
                        if(typeof obj == "object" && obj != null){
                            var i = objectList.push(obj);
                            var treenode = new YAHOO.widget.TextNode("Object " + i,
@@ -86,11 +91,11 @@ if( ! session ){
                            populateTree(treenode, obj);
                            loader.objectNodes.push(treenode);
                            loader.objectTreeView.draw();
-                           var s = "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span><br/>";
+                           s += "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span><br/>";
                            return s;
                        }
                        else
-                           return string(msg.msg);
+                           return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
                
