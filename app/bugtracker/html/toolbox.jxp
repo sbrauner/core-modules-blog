@@ -193,6 +193,7 @@ function assignArea() {
 handleSaveSearch = function(){
     var u = lastSearch;
     var name = document.getElementById("saveSearchName").value;
+    if(! name.trim() ){ alert("You can't save a search without a name."); return; }
     var passData = (u? u+"&": "") + "name="+encodeURIComponent(name);
     ajax(passData, "search_save", function(response) {
         var r = YAHOO.lang.JSON.parse(response);
