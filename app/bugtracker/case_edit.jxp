@@ -29,7 +29,7 @@ if (request.action == "Delete"){
     return;
 }
 
-
+db.bugtracker.releases.ensureIndex({text: true});
 
 var link = "./?search=" + escape(request.search) + "&page=" + request.page + "&showClosed=" + request.showClosed;
 
@@ -326,10 +326,10 @@ if(project.areas.length > 0){
         <tr valign="top">
             <td class="label">Target Release</td>
             <td class="value"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
-<% var rels = db.bugtracker.releases.find().toArray();
+<% var rels = db.bugtracker.releases.find().sort({text: 1}).toArray();
 print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</option>" }).join(","));
 %>
-                <option value="newRel">New Release</option>
+                <option value="newRel">New release</option>
               </select>
               <input name="extra_ftargetrelease" disabled/>
             </td>
