@@ -189,6 +189,10 @@ div#customer_body {
     opacity: 0.5;
 }
 
+#console {
+    font-size: 100%;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
