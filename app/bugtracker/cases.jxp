@@ -29,7 +29,6 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <ul class="first-of-type">
           <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
-          <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
         </ul>
       </div>

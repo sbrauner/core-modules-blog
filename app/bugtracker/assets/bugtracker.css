@@ -122,3 +122,8 @@ div#toolbox input, div#toolbox select {
 form.inline {
     display: inline;
 }
+
+div.link {
+    color: #00f;
+    cursor: pointer;
+}

@@ -11,7 +11,9 @@
           <% db.bugtracker.searches.find({user: user}).forEach(function(search){
              core.app.bugtracker.html.search(search, request.getURL());
              }); %>
-      </select></fieldset>
+      </select>
+      <div class="link" onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</div>
+      </fieldset>
     </td>
 
     <td>
