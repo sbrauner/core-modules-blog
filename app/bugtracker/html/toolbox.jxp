@@ -2,7 +2,7 @@
 <table>
   <tr>
     <td>
-      <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
+      <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" <%= request.showClosed != "false" ? "checked" : "" %>>Show Closed</span>
     </td>
 
     <td>

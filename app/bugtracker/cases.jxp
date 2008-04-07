@@ -419,7 +419,7 @@ var loader = new YAHOO.util.YUILoader( {
          ];
 
          var dbURL = "case_table?";
-         var startSearch = dbURL;
+         var startSearch = dbURL +"showClosed=" + <%= request.showClosed %>;
          <%
          if(request.search){
              var args = request.search.split('&');
@@ -552,7 +552,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
 
-             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
+             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
           }
 
          assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,

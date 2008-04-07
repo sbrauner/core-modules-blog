@@ -30,10 +30,9 @@ if (request.action == "Delete"){
 }
 
 
-if(request.search && request.page)
-    var link = "./?search=" + escape(request.search) + "&page=" + request.page;
-else
-    var link = "./";
+
+var link = "./?search=" + escape(request.search) + "&page=" + request.page + "&showClosed=" + request.showClosed;
+
 
 
 var postTarget = new URL(request.getURL());
@@ -248,6 +247,7 @@ function ObjectId(){ return null; }
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
 <input type="hidden" name="search" value="<%= request.search ? request.search : "" %>"/>
 <input type="hidden" name="page" value="<%= request.page ? request.page : "" %>"/>
+<input type="hidden" name="showClosed" value="<%= request.showClosed ? request.showClosed : "" %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>
