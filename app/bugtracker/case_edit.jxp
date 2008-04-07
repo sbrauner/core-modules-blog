@@ -69,8 +69,11 @@ else if(request.fstatus){
         db.bugtracker.releases.save(rel);
         feature.targetRelease = rel;
     }
-    else {
+    else if(targetRel != "none"){
         feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel});
+    }
+    else {
+        feature.targetRelease = "";
     }
 
     if(typeof feature.project == "string") {
