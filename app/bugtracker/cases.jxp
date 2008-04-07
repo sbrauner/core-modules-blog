@@ -29,7 +29,6 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
         <ul class="first-of-type">
           <li class="yuimenubaritem first-of-type"><a href="case_edit">New Case</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
-          <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
         </ul>
       </div>
@@ -414,12 +413,13 @@ var loader = new YAHOO.util.YUILoader( {
              {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
              {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
+             {label: addForm("targetRelease", 3), children: [{ key: "targetRelease", label: "Release", sortable:true }]},
              {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
              {label: "", children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
          ];
 
          var dbURL = "case_table?";
-         var startSearch = dbURL;
+         var startSearch = dbURL +"showClosed=" + <%= request.showClosed %>;
          <%
          if(request.search){
              var args = request.search.split('&');
@@ -445,7 +445,7 @@ var loader = new YAHOO.util.YUILoader( {
          myDataSource.connXhrMode = "queueRequests";
          myDataSource.responseSchema = {
              resultsList: "rows",
-             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id", "dependency" ]
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency" ]
          };
          var oConfigs = {
              paginator: myPaginator,
@@ -552,7 +552,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
 
-             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage();
+             location="case_edit?id="+myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id") +"&search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
           }
 
          assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,

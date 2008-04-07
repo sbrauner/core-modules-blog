@@ -81,7 +81,7 @@ function outp(x, id, name) {
   if( top ) collection = db["system.namespaces"];
   else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
-  var hdr = top ? "All Collections for database " + db.getName() : "Collection: " + request.ns;
+  var hdr = top ? "All collections for database " + db.getName() : "Collection: " + request.ns;
   if( top ) {
     // we'll sort by collection name
     collection.ensureIndex( {name:true} );
@@ -110,22 +110,17 @@ else {
     var f = {};
     for( var i=0; i < rows.length; i++ ) {
       for( var e in rows[i] ) {
-	  //	  if( [1,2].contains(e) ) print("?");
 	  if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
-	  //	  print("e:" + e + " f[e]:" + f[e] + "<br>\n");
       }
     }
-    //print("<p>f:" + tojson(f));
     for( var g in f ) {
 	if( f[g] >= thresh ) fields.push(g);
     }
-    //print("<p>fields:" + tojson(fields));
   }
 %>
 
 <h3><%=hdr%></h3>
-<% if (!top) {
-   %>
+<% if (!top) { %>
    <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
@@ -209,48 +204,48 @@ function saveValue(id, type, dbid, path) {
 
 }
 
-/*var loader = new YAHOO.util.YUILoader( {
-    base: "/@@/yui/current/",
-    require: ["datatable", "json"],
-    loadOptional: true,
-    onSuccess: function() {
-
-        alert("done");*/
-
-
-//    }
-//});
 
 </script>
 
 <%
-if( !top ) {
-    print('<div id="myMarkedUpContainer">');
-    print('\n<table class="dbview" id="dbview_table">');
-    print("<thead><tr>");
+
+print('<div id="myMarkedUpContainer">');
+print('\n<table class="dbview" id="dbview_table">');
+print("<thead><tr>");
+
+if( top ) {
+    print("<tr><th>Name</th><th>Indicies</th></tr>");
+}
+else {
     print("<th>Delete Row</th>");
     for( h in f ) {
         if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
     }
-    print("<th>(other)</th></tr></thead><tbody>\n");
+    print("<th>(other)</th></tr>\n");
 }
+print("</thead><tbody>");
 
 for( var i=0; i < rows.length; i++ ) {
+    print('<tr id="row'+rows[i]._id+'">');
     var obj=rows[i];
-    var idx=top ? obj.name.indexOf("$") : -1;
-    if( obj.name && idx>=0 ) {
-	var idxname = obj.name.substring(idx+1);
-        print("&nbsp&nbsp&nbsp; index "); print(idxname); print(' ');
-	var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
-	print(idxobj?tojson(idxobj.key):"null");
-	print("<br>");
-    }
-    else if( top ) {
+    if( top ) {
         %>
-<a href="?ns=<%=obj.name%>"><%=obj.name%></a><br>
+        <td><a href="?ns=<%=obj.name%>"><%=obj.name.substring(obj.name.indexOf(".")+1)%></a></td>
         <%
+        print("<td>");
+        while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
+            obj = rows[++i];
+            var idx=top ? obj.name.indexOf("$") : -1;
+            if( obj.name && idx>=0 ) {
+	        var idxname = obj.name.substring(idx+1);
+                print("index "); print(idxname); print(' ');
+	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
+	        print(idxobj?tojson(idxobj.key):"null");
+                print("<br />");
+            }
+        }
+	print("</td>");
     } else {
-        print('<tr id="row'+rows[i]._id+'">');
         print('<td><input type="button" onclick="deleteRow(\''+rows[i]._id+'\')" value="x" />');
         for( h in f ) {
 	    if( f[h]>thresh && !ignore[h] ) {
@@ -269,11 +264,12 @@ for( var i=0; i < rows.length; i++ ) {
 	        print(x); print(": "); outp(tojson(obj[x]));
             }
         }
-        print("</td></tr>\n");
+        print("</td>\n");
     }
+    print("</tr>");
 }
 
-if( !top ) print("</tbody></table></div>");
+print("</tbody></table></div>");
 
 if( rows.length >= max )
     print("<br>Only first " + max + " displayed");
@@ -308,43 +304,46 @@ myDataSource = new YAHOO.util.DataSource(
     {
         responseType : YAHOO.util.DataSource.TYPE_HTMLTABLE,
         responseSchema: {
-            fields: [ {key: "delete"}, <%
-                      for(var i in rows[0]) {
-                          if(!ignore[i]) {
-                              print('{ key: "'+i+'"');
-                                  print(', parser:YAHOO.util.DataSource.parseString');
-                              print('},');
-                          }
-                      }
+            fields: [ <% if(top) { %>
+                                   { key: "Name" },
+                                   { key: "Indicies"}
+                                   <%
+                                 } else {
+                                     %>
+
+                                   {key: "delete"}, <%
+                                               for(var i in rows[0]) {
+                                                   if(!ignore[i]) {
+                                                       print('{ key: "'+i+'"');
+                                                       print(', parser:YAHOO.util.DataSource.parseString');
+                                                       print('},');
+                                                   }
+                                               }
+                                             }
                       %>
+
                     ]
         }
     });
 
-/*    var done = false;
-sortDates = function(a, b, desc) {
-    if(!done) {
-        a = a.getData
-        alert(b);
-        done = true;
-    }
-}*/
-
-var myColumnDefs = [ {key: "delete"},
-    <%
-                     for(var i in rows[0]) {
-                         if(!ignore[i]) {
-                             print('{ key: "'+i+'" ');
-                             if(rows[0][i] instanceof Date) {
-   //                              print(', sortOptions: { sortFunction : sortDates }');
-                             }
-//                             else
-                             if(typeof rows[0][i] == "number") {
-                                 print(', formatter: "number"');
-                             }
-                             print(', sortable: true },');
-                         }
-                     }
+var myColumnDefs = [ <% if(top) { %>
+                                   { key: "Name" },
+                                   { key: "Indicies"}
+                                   <%
+                                 } else {
+                                     %>
+                                     {key: "delete"},
+                                     <%
+                                     for(var i in rows[0]) {
+                                         if(!ignore[i]) {
+                                             print('{ key: "'+i+'" ');
+                                             if(typeof rows[0][i] == "number") {
+                                                 print(', formatter: "number"');
+                                             }
+                                             print(', sortable: true },');
+                                         }
+                                     }
+                                 }
                      %>
                    ];
 

@@ -20,6 +20,8 @@ if ( ! theScope ){
     theScope = gg.child( "_shell scope : " + shellId );
     theScope.setGlobal( true );
     holder[ shellId ] = theScope;
+    // FIXME: run the stored session commands here to populate the scope??
+    // Load the scope from the DB?? Not sure..
 }
 theScope.setGlobal( true );
 var res = theScope.eval( request.command , "aaaa" + shellId , null );
