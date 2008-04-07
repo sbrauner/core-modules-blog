@@ -67,8 +67,18 @@ if( ! session ){
                        return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
+                       var string = function(msg){
+                           return "<span class=\"response\">" + msg + "</span><br/>";
+                       }
                        if(!msg.msg) return "";
                        var obj = eval("(" + msg.msg + ")");
+                       if(obj == null){
+                           return string(obj);
+                       }
+                       else if(obj.$exception){
+                           var s = "<span class=\"error\">" + obj.$exception + "</span><br/>";
+                           return s;
+                       }
                        if(typeof obj == "object" && obj != null){
                            var i = objectList.push(obj);
                            var treenode = new YAHOO.widget.TextNode("Object " + i,
@@ -80,7 +90,7 @@ if( ! session ){
                            return s;
                        }
                        else
-                           return "<span class=\"response\">" + msg.msg + "</span><br/>";
+                           return string(msg.msg);
                    }
                };
                

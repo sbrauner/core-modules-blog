@@ -24,7 +24,15 @@ if ( ! theScope ){
     // Load the scope from the DB?? Not sure..
 }
 theScope.setGlobal( true );
-var res = theScope.eval( request.command , "aaaa" + shellId , null );
+var res;
+try {
+    res = theScope.eval( request.command , "aaaa" + shellId , null );
+}
+catch (e){
+    var ary = [e.toString()].concat(e.getStackTrace());
+    res = {"$exception" : ary.join("<br>")};
+}
+
 print( tojson( res ) );
 
 if(request.save){
