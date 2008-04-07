@@ -25,10 +25,13 @@ head.push("<link rel=\"stylesheet\" href='assets/bugtracker.css' type=\"text/css
   </head>
   <body class="yui-skin-sam">
     <div id="top_menu" class="yuimenubar">
+      <% if(user == null) { %>
+      <div class="notice">You're not logged in!</div>
+      <% } %>
       <div class="bd">
         <ul class="first-of-type">
     <li class="yuimenubaritem first-of-type"><a href="case_edit" onclick="showCase(); return false">New Case</a></li>
-          <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user.name %>')">My New Bugs</a></li>
+    <li class="yuimenubaritem first-of-type"><a onclick="myNewBugs('<%= user ? user.name : "" %>')">My New Bugs</a></li>
           <li class="yuimenubaritem first-of-type"><a onclick="document.getElementById('editproject').style.display='block'; projEditPanel.bringToTop(); projEditPanel.show()">Edit Projects</a></li>
         </ul>
       </div>
@@ -63,9 +66,11 @@ if(request.msg){ %>
   <div class="bd">
     <form id="editsearches_form">
 <%
-db.bugtracker.searches.find({user: user}).forEach(function(search){
-    core.app.bugtracker.html.search_dlg_entry(search);
-});
+if(user) {
+    db.bugtracker.searches.find({user: user}).forEach(function(search){
+        core.app.bugtracker.html.search_dlg_entry(search);
+    });
+}
 %>
     </form>
   </div>
