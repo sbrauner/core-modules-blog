@@ -349,10 +349,17 @@ function checkRun(el){
         }while(new_s != s);
         return s;
     }
-    var newusr = repeat(usr, function(s) { return s.replace(/'.*\\'/, "'$"); });
-    newusr = repeat(newusr, function(s) { return s.replace(/".*\\"/, '"$'); });
-    newusr = repeat(newusr, function(s) { return s.replace(/\/.*\\\//, "/$"); });
-    newusr = newusr.replace(/".*"/g, "").replace(/'.*'/g, "").replace(/\/.*\/[igm]/g, "");
+    var newusr = repeat(usr, function(s) { return s.replace(/'.*?\\'/, "'$"); });
+    newusr = repeat(newusr, function(s) { return s.replace(/".*?\\"/, '"$'); });
+    newusr = repeat(newusr, function(s) { return s.replace(/\/.*?\\\//, "/$"); });
+    // Strip strings
+    newusr = newusr.replace(/".*?"/g, '""').replace(/'.*?'/g, '""');
+
+    // Replace / after char or digit (division operator) with nonexistent $ 
+    // operator
+    newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
+    // Strip regexes
+    newusr = newusr.replace(/\/.*?\/[igm]?/g, "''");
 
     // simple check right now -- count {/}, [/], (/) and make sure they're equal
     var checkMatch = function(usr, left, right){
