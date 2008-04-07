@@ -155,3 +155,18 @@ function dbEval(jsfunction) {
     var res = _dbCommand( cmd );
     return res.retval;
 }
+
+_count = function() {
+    return db[args[0]].find(args[1]||{}, {_id:ObjId()}).length();
+}
+
+/* count - count # of objects in a collection 
+
+   Second parameter is optional and specifies condition that must be true for the objects to 
+   be counted.  Example:
+
+     c = count("videos", {active:true});
+ */
+function count(collection, query) {
+    return dbEval(_count, collection, query);
+}
