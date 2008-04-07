@@ -56,11 +56,12 @@ if(request.fstatus && request.ftitle == ""){
 else if(request.fstatus){
     var targetRel = request.ftargetrelease;
     if(targetRel == "newRel") {
-        db.bugtracker.releases.save({text: request.extra_ftargetrelease });
-        targetRel = request.extra_ftargetrelease;
+        var rel = {text: request.extra_ftargetrelease};
+        db.bugtracker.releases.save(rel);
+        feature.targetRelease = rel;
     }
     else {
-        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel}).text;
+        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel});
     }
 
     if(typeof feature.project == "string") {

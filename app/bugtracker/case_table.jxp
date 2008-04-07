@@ -102,7 +102,7 @@ print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id",
                                                   reporter: function(p) { return p? p.name: "none"},
                                                   dependency: true,
                                                   dependencyType: true,
-                                                  targetRelease: true
+                                                  targetRelease: Ext.pluck("text")
                                                  }
                                 )
                }
