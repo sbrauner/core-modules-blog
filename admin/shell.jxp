@@ -309,10 +309,22 @@ lastIndexOf = function(ary, v){
 
 function checkRun(el){
     var usr = el.value;
+    // Strip strings and regexps
+    var repeat = function(s, f){
+        var new_s = s;
+        do{
+            s = new_s;
+            new_s = f(s);
+        }while(new_s != s);
+        return s;
+    }
+    var newusr = repeat(usr, function(s) { return s.replace(/'.*\\'/, "'$"); });
+    newusr = repeat(newusr, function(s) { return s.replace(/".*\\"/, '"$'); });
+    newusr = repeat(newusr, function(s) { return s.replace(/\/.*\\\//, "/$"); });
+    newusr = newusr.replace(/".*"/g, "").replace(/'.*'/g, "").replace(/\/.*\/[igm]/g, "");
+
     // simple check right now -- count {/}, [/], (/) and make sure they're equal
-    // Obviously this will fail if you have a string like "[".
-    // We need to exclude strings and regexps here!
-    var checkMatch = function(left, right){
+    var checkMatch = function(usr, left, right){
         var leftMatch = usr.match(new RegExp(left, "g"));
         if (leftMatch) leftMatch = leftMatch.length;
         else leftMatch = 0;
@@ -321,9 +333,9 @@ function checkRun(el){
         else rightMatch = 0;
         return leftMatch == rightMatch;
     };
-    if(! checkMatch("{", "}") ) return false;
-    if(! checkMatch("\\[", "\\]") ) return false;
-    if(! checkMatch("\\(", "\\)") ) return false;
+    if(! checkMatch(newusr, "{", "}") ) return false;
+    if(! checkMatch(newusr, "\\[", "\\]") ) return false;
+    if(! checkMatch(newusr, "\\(", "\\)") ) return false;
     return true;
 }
 
