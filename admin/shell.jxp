@@ -131,8 +131,10 @@ if( ! session ){
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
-                       doRun(t);
-                       e.preventDefault();
+                       if(checkRun(t)) {
+                           doRun(t);
+                           e.preventDefault();
+                       }
                    }
                });
 
@@ -304,6 +306,27 @@ lastIndexOf = function(ary, v){
     }
     return -1;
 };
+
+function checkRun(el){
+    var usr = el.value;
+    // simple check right now -- count {/}, [/], (/) and make sure they're equal
+    // Obviously this will fail if you have a string like "[".
+    // We need to exclude strings and regexps here!
+    var checkMatch = function(left, right){
+        var leftMatch = usr.match(new RegExp(left, "g"));
+        if (leftMatch) leftMatch = leftMatch.length;
+        else leftMatch = 0;
+        var rightMatch = usr.match(new RegExp(right, "g"));
+        if (rightMatch) rightMatch = rightMatch.length;
+        else rightMatch = 0;
+        return leftMatch == rightMatch;
+    };
+    if(! checkMatch("{", "}") ) return false;
+    if(! checkMatch("\\[", "\\]") ) return false;
+    if(! checkMatch("\\(", "\\)") ) return false;
+    return true;
+}
+
 shellId = "shell-" + Math.random();
 function doRun(el){
     var command = el;
