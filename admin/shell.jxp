@@ -32,16 +32,16 @@ if( ! session ){
 
                var t = document.createElement("textarea");
                var commandcontainer = document.createElement("div");
+               var acdiv = document.createElement("div");
+               acdiv.appendChild(t);
+               acdiv.appendChild(commandcontainer);
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false, 
                    footerEnabled: true,
                    _initFooterEl: function(){
                        this._elFt = this._elContainer.appendChild(document.createElement("div"));
                        this._elFt.className = "yui-log-ft";
-                       var acdiv = document.createElement("div");
                        this._elFt.appendChild(acdiv);
-                       acdiv.appendChild(t);
-                       acdiv.appendChild(commandcontainer);
                    }});
 
                var sources = this.myLogReader.getSources();
