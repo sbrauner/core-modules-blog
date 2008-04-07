@@ -28,6 +28,11 @@ var queryForms = {
         var user = db.users.findOne({name: u});
         if(user) return user;
         return -1;
+    },
+    targetRelease: function(r){
+        var rel = db.bugtracker.releases.findOne({text: r});
+        if(rel) return rel;
+        return -1;
     }
 };
 
@@ -101,7 +106,8 @@ print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id",
                                                   area: true,
                                                   reporter: function(p) { return p? p.name: "none"},
                                                   dependency: true,
-                                                  dependencyType: true
+                                                  dependencyType: true,
+                                                  targetRelease: Ext.pluck("text")
                                                  }
                                 )
                }

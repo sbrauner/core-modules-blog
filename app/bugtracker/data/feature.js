@@ -43,10 +43,10 @@ app.bugtracker.data.Feature = function() {
 };
 
 app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',
-						 REVIEWED: 'reviewed',
-						 NOT_REPRODUCABLE : 'not reproducable' ,
-						 FIXED: 'fixed',
-						 CLOSED: 'closed' };
+                                                 REVIEWED: 'reviewed',
+                                                 NOT_REPRODUCABLE : 'not reproducable' ,
+                                                 FIXED: 'fixed',
+                                                 CLOSED: 'closed' };
 
 app.bugtracker.data.Feature.prototype.SEVERITY = { NORMAL: 'normal',
                                     HIGH: 'high',
@@ -64,7 +64,6 @@ app.bugtracker.data.Feature.prototype.presave = function(){
     this.number = parseInt(this.number);
     this.description = this.description.trim();
     this.title = this.title.trim();
-    this.targetRelease = this.targetRelease.trim();
 };
 
 if(db){

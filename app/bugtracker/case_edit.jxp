@@ -29,11 +29,10 @@ if (request.action == "Delete"){
     return;
 }
 
+db.bugtracker.releases.ensureIndex({text: true});
 
-if(request.search && request.page)
-    var link = "./?search=" + escape(request.search) + "&page=" + request.page;
-else
-    var link = "./";
+var link = "./?search=" + escape(request.search) + "&page=" + request.page + "&showClosed=" + request.showClosed;
+
 
 
 var postTarget = new URL(request.getURL());
@@ -55,12 +54,15 @@ if(request.fstatus && request.ftitle == ""){
     error = "A bug report must have a title!";
 }
 else if(request.fstatus){
-     var targetRel = request.ftargetrelease;
-     if(targetRel == "newRel") {
-          db.bugtracker.releases.save({text: request.extra_ftargetrelease });
-          targetRel = request.extra_ftargetrelease;
-     }
-     feature.targetRelease = targetRel;
+    var targetRel = request.ftargetrelease;
+    if(targetRel == "newRel") {
+        var rel = {text: request.extra_ftargetrelease};
+        db.bugtracker.releases.save(rel);
+        feature.targetRelease = rel;
+    }
+    else {
+        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel});
+    }
 
     if(typeof feature.project == "string") {
         feature.project = db.bugtracker.projects.findOne({_id: feature.project});
@@ -248,6 +250,7 @@ function ObjectId(){ return null; }
     <input type="hidden" name="starttime" value="<%= timestamp %>"/>
 <input type="hidden" name="search" value="<%= request.search ? request.search : "" %>"/>
 <input type="hidden" name="page" value="<%= request.page ? request.page : "" %>"/>
+<input type="hidden" name="showClosed" value="<%= request.showClosed ? request.showClosed : "" %>"/>
     <table>
         <tr>
             <td class="label case_title">Title</td>
@@ -326,10 +329,10 @@ if(project.areas.length > 0){
         <tr valign="top">
             <td class="label">Target Release</td>
             <td class="value"><select name="ftargetrelease" onchange="enableInput('ftargetrelease')"><option value="none">None</option>
-<% var rels = db.bugtracker.releases.find().toArray();
+<% var rels = db.bugtracker.releases.find().sort({text: 1}).toArray();
 print(rels.map(function(p) { return '<option value="'+p._id+'">'+p.text+"</option>" }).join(","));
 %>
-                <option value="newRel">New Release</option>
+                <option value="newRel">New release</option>
               </select>
               <input name="extra_ftargetrelease" disabled/>
             </td>

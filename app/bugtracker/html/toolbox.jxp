@@ -2,7 +2,7 @@
 <table>
   <tr>
     <td>
-      <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" checked>Show Closed</span>
+      <span><input id="show_closed" type="checkbox" onclick="toggleClosed()" <%= request.showClosed != "false" ? "checked" : "" %>>Show Closed</span>
     </td>
 
     <td>
@@ -11,7 +11,9 @@
           <% db.bugtracker.searches.find({user: user}).forEach(function(search){
              core.app.bugtracker.html.search(search, request.getURL());
              }); %>
-      </select></fieldset>
+      </select>
+      <div class="link" onclick="document.getElementById('editsearches').style.display='block'; oMenu.bringToTop(); oMenu.show()">Edit Saved Searches</div>
+      </fieldset>
     </td>
 
     <td>
@@ -193,6 +195,7 @@ function assignArea() {
 handleSaveSearch = function(){
     var u = lastSearch;
     var name = document.getElementById("saveSearchName").value;
+    if(! name.trim() ){ alert("You can't save a search without a name."); return; }
     var passData = (u? u+"&": "") + "name="+encodeURIComponent(name);
     ajax(passData, "search_save", function(response) {
         var r = YAHOO.lang.JSON.parse(response);
