@@ -310,6 +310,37 @@ lastIndexOf = function(ary, v){
 function checkRun(el){
     var usr = el.value;
     // Strip strings and regexps
+    /* OK, so, when checking for [](){}, first strip regexps and quotes.
+
+       "...." and '....' go away.
+       "...\"..." go away. So do '...\'...' and '..."...'.
+
+       We don't care what happens in the place of these strings; we're 
+       not doing any syntax analysis. For the time being, replace them with 
+       the empty string.
+
+       /.../[gim] has to go away.
+
+       Be careful of 12 / 1 + [ 1 / 12 ].
+
+       Also, watch out (as usual) for /..\/../.
+
+       A regular expression can't begin after a number or identifier. So we
+       could just look for a pair of slashes and then afterwards post-process
+       them to skip any that start after a digit or letter.. except that
+       there's no way to get the locations of the matches. So..
+
+       /(\d|\w)\s*\// -> "$"
+
+       HA HA HA
+
+       /\/.*\\\// -> "/$"
+
+       THIS IS HOW WE DO SOPHISTICATED SYNTAX ANALYSIS IN JS
+
+       /\/.+\// -> ""
+
+    */
     var repeat = function(s, f){
         var new_s = s;
         do{
