@@ -69,7 +69,7 @@ if( ! session ){
                    if(msg.category == "response"){
                        if(!msg.msg) return "";
                        var obj = eval("(" + msg.msg + ")");
-                       if(typeof obj == "object"){
+                       if(typeof obj == "object" && obj != null){
                            var i = objectList.push(obj);
                            var treenode = new YAHOO.widget.TextNode("Object " + i,
                                loader.objectTreeView.getRoot(), false);
