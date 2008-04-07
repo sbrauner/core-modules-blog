@@ -37,11 +37,18 @@ if( ! session ){
                acdiv.appendChild(commandcontainer);
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false, 
-                   footerEnabled: true,
-                   _initFooterEl: function(){
-                       this._elFt = this._elContainer.appendChild(document.createElement("div"));
-                       this._elFt.className = "yui-log-ft";
-                       this._elFt.appendChild(acdiv);
+                   footerEnabled: false,
+                   _initConsoleEl: function(){
+                       YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
+                       this._elBd = this._elConsole;
+                       this._elConsole = document.createElement("div");
+                       this._elBd.appendChild(this._elConsole);
+                       this._elBd.appendChild(acdiv);
+
+                   },
+                   _printBuffer: function(){
+                       YAHOO.widget.LogReader.prototype._printBuffer.call(this);
+                       this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
 
                var sources = this.myLogReader.getSources();
