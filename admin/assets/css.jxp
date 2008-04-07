@@ -98,6 +98,11 @@ ul#admin_menu, ul#module_menu {
     padding: 0px;
 }
 
+#console .exception {
+    color: #f00;
+    font-style: italic;
+}
+
 #admin_header li {
     float: left;
     border-right: 1px solid <%= background %>;

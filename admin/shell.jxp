@@ -79,7 +79,7 @@ if( ! session ){
                            s += "<span class=\"output\">" + obj.$printed + "</span><br/>";
                        }
                        if(obj.$exception){
-                           s += "<span class=\"error\">" + obj.$exception + "</span><br/>";
+                           s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
                            return s;
                        }
                        
