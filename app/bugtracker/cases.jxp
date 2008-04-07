@@ -413,6 +413,7 @@ var loader = new YAHOO.util.YUILoader( {
              {label: addForm("type",3), children: [{ key: "type", label: "Type", sortable:true }]},
              {label: addForm("project",3), children: [{ key: "project", label: "Project", sortable:true }]},
              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
+             {label: addForm("targetRelease", 3), children: [{ key: "targetRelease", label: "Release", sortable:true }]},
              {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
              {label: "", children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
          ];
@@ -444,7 +445,7 @@ var loader = new YAHOO.util.YUILoader( {
          myDataSource.connXhrMode = "queueRequests";
          myDataSource.responseSchema = {
              resultsList: "rows",
-             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "id", "dependency" ]
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency" ]
          };
          var oConfigs = {
              paginator: myPaginator,

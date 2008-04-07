@@ -54,12 +54,14 @@ if(request.fstatus && request.ftitle == ""){
     error = "A bug report must have a title!";
 }
 else if(request.fstatus){
-     var targetRel = request.ftargetrelease;
-     if(targetRel == "newRel") {
-          db.bugtracker.releases.save({text: request.extra_ftargetrelease });
-          targetRel = request.extra_ftargetrelease;
-     }
-     feature.targetRelease = targetRel;
+    var targetRel = request.ftargetrelease;
+    if(targetRel == "newRel") {
+        db.bugtracker.releases.save({text: request.extra_ftargetrelease });
+        targetRel = request.extra_ftargetrelease;
+    }
+    else {
+        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel}).text;
+    }
 
     if(typeof feature.project == "string") {
         feature.project = db.bugtracker.projects.findOne({_id: feature.project});
