@@ -165,7 +165,7 @@ div#customer_body {
     border: none;
 }
 
-form.command {
+.clear {
     clear: both;
 }
 
