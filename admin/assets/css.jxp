@@ -199,6 +199,10 @@ div#customer_body {
     font-size: 100%;
 }
 
+#console .yui-log-bd {
+    height: 80%;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
