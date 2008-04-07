@@ -101,6 +101,7 @@ ul#admin_menu, ul#module_menu {
 #console .exception {
     color: #f00;
     font-style: italic;
+    font-weight: bold;
 }
 
 #admin_header li {
