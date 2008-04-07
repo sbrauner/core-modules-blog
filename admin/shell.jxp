@@ -31,8 +31,13 @@ if( ! session ){
                loader.objectNodes = [];
 
                var t = document.createElement("textarea");
+               t.id = "commandac";
                var commandcontainer = document.createElement("div");
                var acdiv = document.createElement("div");
+               prompt = document.createElement("span");
+               prompt.className = "prompt";
+               prompt.appendChild(document.createTextNode("js> "));
+               acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
                this.myLogReader = new YAHOO.widget.LogReader('console', {
@@ -109,8 +114,6 @@ if( ! session ){
 
                this.myLogReader._printBuffer();
 
-               YAHOO.util.Event.addListener(t,"keydown",function(){ doRun('commandac') });
-
                // Install this handler before the autocompleter because it will
                // grab up/down key events
                YAHOO.util.Event.addListener(t,"keydown",blockYUIParen);
@@ -127,7 +130,9 @@ if( ! session ){
                // with a gibberish !!!!!! query.
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
+                       window.lastSent = encodeURIComponent(t.value);
+                       doRun(t);
+                       e.preventDefault();
                    }
                });
 
@@ -233,11 +238,6 @@ var histfunc = function( e ) {
     }
 };
      </script>
-     <form class="command" onSubmit="return doRun('commandac');">
-       Command: <div id="commandautocomplete"><input id="commandac2" size=70><div id="commandcontainer2"></div></div><input type="submit" value="run">
-       <div onclick="showHistory()">Show history</div>
-    </form>
-
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>
        <div class="bd">
@@ -303,7 +303,7 @@ lastIndexOf = function(ary, v){
 };
 shellId = "shell-" + Math.random();
 function doRun(el){
-    var command = document.getElementById( el );
+    var command = el;
     var usr = command.value;
     var save = "";
     command.value = "";

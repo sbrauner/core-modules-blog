@@ -198,17 +198,13 @@ form.command {
     margin-right: auto;
 }
 
-/* For the single-terminal-window look, force the textarea to be 
-   position: relative so as to be part of the footer.
-   Also, get rid of the footer's top margin. */
-
+/* For the single-terminal-window look */
 textarea.yui-ac-input {
-    position: relative !important;
-    border: 0px;
+    width: 90% !important;
 }
 
-#console .yui-log-ft {
-    margin-top: 0em;
+.prompt {
+    color: #f0f;
 }
 
 #login_status {
