@@ -29,7 +29,21 @@ if( ! session ){
                objectList = [];
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
-               this.myLogReader = new YAHOO.widget.LogReader('console', {newestOnTop: false, footerEnabled: false});
+
+               var t = document.createElement("textarea");
+               var commandcontainer = document.createElement("div");
+               this.myLogReader = new YAHOO.widget.LogReader('console', {
+                   newestOnTop: false, 
+                   footerEnabled: true,
+                   _initFooterEl: function(){
+                       this._elFt = this._elContainer.appendChild(document.createElement("div"));
+                       this._elFt.className = "yui-log-ft";
+                       var acdiv = document.createElement("div");
+                       this._elFt.appendChild(acdiv);
+                       acdiv.appendChild(t);
+                       acdiv.appendChild(commandcontainer);
+                   }});
+
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
@@ -85,13 +99,18 @@ if( ! session ){
                }
                YAHOO.log("</span>", "format", "shell");
                YAHOO.log("<hr/>", "format", "shell");
+
+               this.myLogReader._printBuffer();
+
+               YAHOO.util.Event.addListener(t,"keydown",function(){ doRun('commandac') });
+
                // Install this handler before the autocompleter because it will
                // grab up/down key events
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",blockYUIParen);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keypress",blockYUIParen);
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keyup",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keydown",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keypress",blockYUIParen);
+               YAHOO.util.Event.addListener(t,"keyup",blockYUIParen);
 
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",histfunc);
+               YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -99,17 +118,16 @@ if( ! session ){
                // variable with the last complete command we've sent and
                // if we get a query for that exact command, we replace it
                // with a gibberish !!!!!! query.
-               YAHOO.util.Event.addListener(document.getElementById('commandac'),"keydown",function(e){
+               YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(document.getElementById('commandac').value);
                    }
                });
 
-
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
                    this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
-                   this.oAutoComp = new YAHOO.widget.AutoComplete("commandac", "commandcontainer", this.oACDS);
+                   this.oAutoComp = new YAHOO.widget.AutoComplete(t, commandcontainer, this.oACDS);
                    this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
                    this.oAutoComp.typeAhead = true;
                    this.oAutoComp.useShadow = true;
@@ -209,7 +227,7 @@ var histfunc = function( e ) {
 };
      </script>
      <form class="command" onSubmit="return doRun('commandac');">
-       Command: <div id="commandautocomplete"><input id="commandac" size=70><div id="commandcontainer"></div></div><input type="submit" value="run">
+       Command: <div id="commandautocomplete"><input id="commandac2" size=70><div id="commandcontainer2"></div></div><input type="submit" value="run">
        <div onclick="showHistory()">Show history</div>
     </form>
 
