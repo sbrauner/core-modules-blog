@@ -26,7 +26,7 @@ else rows = collection.find().toArray();
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
-function printEditableField(x, id, path) {
+/*function printEditableField(x, id, path) {
     if(typeof x == "string") {
         if( x.length<=20 )
             x = content.HTML.escape_html(x);
@@ -40,7 +40,7 @@ function printEditableField(x, id, path) {
 
     text +='<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>";
     fieldcount++;
-}
+ }
 
 var text = "";
 
@@ -82,10 +82,18 @@ function printObj(cursor, field, id, path) {
         text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
     }
 }
+*/
 
 var done = false;
 function outp(x, id, name) {
-    if(typeof x == "object") {
+//    if(typeof x == "number" || typeof x == "string") {
+//        return x;
+//    }
+//    else
+        return (typeof x)+":"+x;
+}
+
+/*    if(typeof x == "object") {
         text = "";
         // make x an obj of the form cursor[field]
         x = {"...": x};
@@ -93,8 +101,8 @@ function outp(x, id, name) {
         return text;
     }
     else
-        return x;
-}
+        return '"'+x+'"';
+}*/
 
   // top == show all collections
   var top = request.ns == null;
@@ -141,7 +149,7 @@ else {
 
 
 var dbTable = { rows: [] };
-
+print('{ "rows" : [ ');
 var k = 0;
 for( var i=0; i < rows.length; i++ ) {
     var j=0;
@@ -164,23 +172,44 @@ for( var i=0; i < rows.length; i++ ) {
     } else {
         for( h in f ) {
 	    if( f[h]>thresh && !ignore[h] ) {
-	        dbTable.rows[k][fields[j++]] = outp(obj[h], rows[i]._id, h);
+                log(h+": "+obj[h]);
+                if(h == "_id"){
+	            dbTable.rows[k][h] = obj[h];
+                }
+                else if(obj[h] == null)
+                    dbTable.rows[k][h] = "null";
+                else if(typeof obj[h] == "string") {
+                    if(obj[h].indexOf("\n") > 0) {
+                        dbTable.rows[k][h] = obj[h].substring(0, obj[h].indexOf("\n")-1)+"...";
+                    }
+                    else
+                        dbTable.rows[k][h] = (obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
+                }
+                else
+                    dbTable.rows[k][h] = obj[h].toString();
+//
+//                    dbTable.rows[k][h] = '"'+obj[h]+'"';
+//	        dbTable.rows[k][fields[j++]] = outp(obj[h], rows[i]._id, h);
 	    }
         }
         var first = true;
-        dbTable.rows[k][fields[j]] = "";
+        dbTable.rows[k].other = "";
         for( x in obj ) {
             if( f[x]<= thresh ) {
 	        if( !first )
-		    dbTable.rows[k][fields[j]] += ", ";
+		    dbTable.rows[k].other += ", ";
 	        first = false;
-	        dbTable.rows[k][fields[j]] = x + ": " + outp(tojson(obj[x]));
+	        dbTable.rows[k].other = x + ": " + outp(tojson(obj[x]));
             }
         }
     }
+    print(tojson_u(dbTable.rows[k]));
+    print(",");
     k++;
 }
-print(tojson_u(dbTable));
+
+print("] }");
+//print(tojson_u(dbTable));
 
 /*fields = {};
 if(!liveDataCursor) return fields;
