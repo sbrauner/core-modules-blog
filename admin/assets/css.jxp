@@ -233,6 +233,7 @@ div#customer_body {
    right: 0px;
 }
 
+/*
 div.obj {
     display: none;
     position: absolute;
@@ -240,6 +241,8 @@ div.obj {
     padding: 10px;
     border: 1px black solid;
 }
+*/
+
 div.parent {
     cursor: pointer;
 }
