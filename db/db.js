@@ -170,3 +170,73 @@ _count = function() {
 function count(collection, query) {
     return dbEval(_count, collection, query);
 }
+
+// see group() below
+_group = function() {
+    var parms = args[0];
+    var c = db[parms.ns].find(parms.cond||{});
+    var map = new Map();
+
+    while( c.hasNext() ) {
+	var obj = c.next();
+
+	var key = {};
+	if( parms.key ) {
+	    for( var i in parms.key )
+		key[i] = obj[i];
+	}
+	else {
+	    key = parms.$keyf(obj);
+	}
+
+	var aggObj = map[key];
+	if( aggObj == null ) {
+	    var newObj = Object.extend({}, key); // clone
+	    aggObj = map[key] = Object.extend(newObj, parms.initial);
+	}
+	parms.$reduce(obj, aggObj);
+    }
+
+    var ret = map.values();
+    return ret;
+}
+
+/* group()
+   
+   Similar to SQL group by.  For example:
+
+     select a,b,sum(c) csum from coll where active=1 group by a,b
+
+   corresponds to the following in 10gen:
+
+     group(
+       { 
+         ns: "coll",
+         key: { a:true, b:true },
+	 // keyf: ...,
+	 cond: { active:1 },
+	 reduce: { function(obj,prev) { prev.csum += obj.c; } },
+	 initial: { csum: 0 }
+	 });
+
+   An array of grouped items is returned.  The array must fit in RAM, thus this function is not 
+   suitable when the return set is extremely large.
+
+   To order the grouped data, simply sort it client side upon return.
+
+   Defaults
+     cond may be null if you want to run against all rows in the collection
+     keyf is a function which takes an object and returns the desired key.  set either key or keyf (not both).
+*/
+function group(parmsObj) { 
+    var parms = Object.extend({}, parmsObj);
+    if( parms.reduce ) {
+	parms.$reduce = parms.reduce; // must have $ to pass to db
+	delete parms.reduce;
+    }
+    if( parms.keyf ) {
+	parms.$keyf = parms.keyf;
+	delete parms.keyf;
+    }
+    return dbEval(_group, parms);
+}
