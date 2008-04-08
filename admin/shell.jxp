@@ -37,7 +37,7 @@ if( ! session ){
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
-               prompt.appendChild(document.createTextNode("js> "));
+               prompt.appendChild(document.createTextNode("js>"));
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
@@ -68,7 +68,7 @@ if( ! session ){
                        return msg.msg;
 
                    if(msg.category == "user"){
-                       return "<span class=\"pastprompt\">js&gt;</span> <a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                       return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
                        var string = function(msg){

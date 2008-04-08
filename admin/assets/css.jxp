@@ -175,6 +175,11 @@ div#customer_body {
     clear: both;
 }
 
+.prompt {
+    color: #f0f;
+    margin-right: .75em;
+}
+
 .pastprompt {
     color: #888;
 }
@@ -220,10 +225,6 @@ div#customer_body {
 #console textarea {
     width: 90% !important;
     border: none;
-}
-
-.prompt {
-    color: #f0f;
 }
 
 #login_status {
