@@ -344,6 +344,10 @@ function doSearch() {
     refreshTable();
 }
 function clearSearch() {
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value = "";
+    }
     lastSearch = "";
     refreshTable();
 }
