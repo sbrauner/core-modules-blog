@@ -1,6 +1,6 @@
-<% 
+<%
 // We load this module here, rather than in _shell.jxp, because we "know" that
-// this file will always be run first, and because this way it reduces the 
+// this file will always be run first, and because this way it reduces the
 // amount of code that _shell has to run (i.e. improves latency of response.
 // Also, we need it here. (oops)
 core.admin.data.shellsession();
@@ -42,7 +42,7 @@ if( ! session ){
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
                this.myLogReader = new YAHOO.widget.LogReader('console', {
-                   newestOnTop: false, 
+                   newestOnTop: false,
                    footerEnabled: false,
                    _initConsoleEl: function(){
                        YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
@@ -89,17 +89,17 @@ if( ! session ){
                            s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
                            return s;
                        }
-                       
+
                        obj = obj["$"];
                        return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
-               
+
                var inputs = <%= tojson(session.getCommands()) %>;
 
                historyAry = []; // indexes of input used on each line
                pastCommands = []; // commands themselves; unique for YUI AC
-               
+
                // translate non-unique strings into YUI-friendly format
                for(var i = 0; i < inputs.length; i++){
                    var cmd = inputs[i];
@@ -262,7 +262,7 @@ var setHistoryLocation = function( i, cmd ){
     }
 
     highlightHistory();
-    
+
 };
 
 var setcmd = function () {
@@ -404,8 +404,8 @@ function checkRun(el){
        "...." and '....' go away.
        "...\"..." go away. So do '...\'...' and '..."...'.
 
-       We don't care what happens in the place of these strings; we're 
-       not doing any syntax analysis. For the time being, replace them with 
+       We don't care what happens in the place of these strings; we're
+       not doing any syntax analysis. For the time being, replace them with
        the empty string.
 
        /.../[gim] has to go away.
@@ -447,7 +447,7 @@ function checkRun(el){
     // Strip strings
     newusr = newusr.replace(/".*?"/g, '""').replace(/'.*?'/g, '""');
 
-    // Replace / after char or digit (division operator) with nonexistent $ 
+    // Replace / after char or digit (division operator) with nonexistent $
     // operator
     newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
     // Strip regexes
