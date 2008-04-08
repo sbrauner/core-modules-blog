@@ -44,10 +44,11 @@ finally{
     print = oldprint;
 }
 
-res = { $ : res, $printed : buffer.getBuffer(), $exception : exc};
+res = { $ : res, $printed : buffer.getBuffer(), $exception : exc,
+        $scope: Object.extend({}, theScope)};
 print( tojson( res ) );
 
-if(request.save != "true"){
+if(request.save == "true"){
     // Only the client knows whether to save this command.
     var session = db.shell.sessions.findOne({user: user});
     session.push(request.command, tojson(res));
