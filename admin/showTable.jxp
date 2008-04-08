@@ -164,7 +164,7 @@ for( var i=0; i < rows.length; i++ ) {
             var idx=top ? obj.name.indexOf("$") : -1;
             if( obj.name && idx>=0 ) {
 	        var idxname = obj.name.substring(idx+1);
-                dbTable.rows[k][fields[j]] += "index "+idxname+" ";
+                dbTable.rows[k][fields[j]] += '<input type="checkbox" name="'+rows[i].name.substring(0, rows[i].name.lastIndexOf("."))+'" value="'+idxname+'" /> index '+idxname+" ";
 	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
 	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
@@ -172,7 +172,6 @@ for( var i=0; i < rows.length; i++ ) {
     } else {
         for( h in f ) {
 	    if( f[h]>thresh && !ignore[h] ) {
-                log(h+": "+obj[h]);
                 if(h == "_id"){
 	            dbTable.rows[k][h] = obj[h];
                 }

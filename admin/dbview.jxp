@@ -81,7 +81,10 @@ function outp(x, id, name) {
   if( top ) collection = db["system.namespaces"];
   else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
-  var hdr = top ? "All collections for database " + db.getName() : "Collection: " + request.ns;
+var appName = request.getHost();
+appName = (appName.indexOf(".") == -1) ? appName : appName.substring(0, appName.indexOf("."));
+
+  var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
   if( top ) {
     // we'll sort by collection name
     collection.ensureIndex( {name:true} );
@@ -141,12 +144,18 @@ function hideObj(i) {
 }
 
 function deleteRow(id) {
-    var passData = "db=<%= request.ns %>&action=delete&id="+id;
+    var passData = "ns=<%= request.ns %>&action=delete&id="+id;
     ajax(passData, "editDb", function(response) {
         alert("Row successfully deleted");
         document.getElementById("row"+id).style.display = "none";
     });
 }
+
+function editRow(id) {
+    var passData = "ns=<%= request.ns %>&id="+id;
+    location="editRow?"+passData;
+}
+
 
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
@@ -168,7 +177,7 @@ function editField(id, type, dbid, path) {
 function saveValue(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
 
-    passData = "db=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
+    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
     if(type == "boolean") {
         ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
             if(response != "") {
@@ -318,7 +327,7 @@ var myLogReader = new YAHOO.widget.LogReader();
 
 <%
 if(top) {
-    var cols = [ "name", "index" ]; //, "Create Date", "Creator", "Modified Date", "Modifier", "Size", "Rows"];
+    var cols = [ "name", "index" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
 }
 %>
 
@@ -336,29 +345,95 @@ function doSearch() {
     refreshTable();
 }
 
-<% if(top) { %>
-             var handleOkay = function() {
-                 this.hide();
-             }
+<%
+if(top) {
+    %>
+    var tablename = "";
 
-function getValidation(tablename) {
-    ajax("action=validation&ns="+tablename, "showTable", function(response) {
-        var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+    var handleDrop = function() {
+        ajax("action=drop&ns="+tablename, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var handleIDrop = function() {
+        var idxes = document.getElementsByName(tablename);
+        var list = [];
+        for(var i=0; i<idxes.length; i++) {
+            if (idxes[i].checked)
+                list.push( idxes[i].value );
+        }
+        list = list.join(",");
+
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var handleNo = function() {
+        this.hide();
+    }
+
+
+    function getValidation(tablename) {
+        ajax("action=validation&ns="+tablename, "showTable", function(response) {
+            var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+                { width: "300px",
+                fixedcenter: true,
+                draggable: true,
+                visible: false,
+                close: true,
+                icon: YAHOO.widget.SimpleDialog.ICON_INFO,
+                text: response,
+                buttons: [ { text:"Okay", handler:handleNo, isDefault:true } ]
+                } );
+            simpledialog1.setHeader("Validation");
+            simpledialog1.render("myMarkedUpContainer");
+            simpledialog1.show();
+        });
+    }
+
+    function dropTable(tname) {
+        tablename = tname;
+        var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
             { width: "300px",
             fixedcenter: true,
             draggable: true,
             visible: false,
             close: true,
-            icon: YAHOO.widget.SimpleDialog.ICON_INFO,
-            text: response,
-            buttons: [ { text:"Okay", handler:handleOkay, isDefault:true } ]
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+            text: "Are you sure you want to drop this table?",
+            buttons: [ { text:"Yes", handler:handleDrop },
+            { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Validation");
+        simpledialog1.setHeader("Drop Table");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
-    });
+    }
+
+    function dropIndicies(tname) {
+        tablename = tname;
+        var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+            { width: "300px",
+            fixedcenter: true,
+            draggable: true,
+            visible: false,
+            close: true,
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+            text: "Are you sure you want to drop the selected indicies from "+tablename+"?",
+            buttons: [ { text:"Yes", handler:handleIDrop },
+            { text:"No", handler:handleNo, isDefault:true } ]
+            } );
+        simpledialog1.setHeader("Drop Indicies");
+        simpledialog1.render("myMarkedUpContainer");
+        simpledialog1.show();
+    }
+
+    <%
 }
-             <% } %>
+%>
 
 function refreshTable(passData){
     if(passData) passData = passData+"&";
@@ -426,12 +501,13 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: addSearchForm("'+cols[0]+'"), children: [{key: '+ tojson(cols[0]) + ', label: "Name", formatter: "nameLink", sortable: true}]},');
-    print('{ label: addSearchForm("'+cols[1]+'"), children: [{key: '+ tojson(cols[1]) + ', label: "Indicies", sortable: true}]},');
-    print('{ label: "", children: [{key: "validate", label: "Validate", formatter: "validateBtn" }]},');
+    print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
+    print('{ label: "Inidicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
+    print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
+    print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
 } else {
     %>
-    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]},
+    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
@@ -442,8 +518,12 @@ var myColumnDefs = [ <% if(top) {
             print(', sortable: true } ] },');
         }
     }
+    %>
+    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
+    <%
 }
                      %>
+
                    ];
 
 
@@ -459,20 +539,37 @@ updateCaseTable = {
 
 myDataSource.liveData = "showTable?";
 
-<% if(top) { %>
-nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
-}
-validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
-}
+<%
+if(top) {
+    %>
+    dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
+        if(oRecord.getData("index").length > 0)
+            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndicies(\''+oRecord.getData("name")+'\')" value="Drop Selected">';
+        else
+            elCell.innerHTML = oRecord.getData("index");
+    }
+    nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
+    }
+    validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
+    }
+    dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Drop" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+    }
 
-YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
-YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
+    YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
+    YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
 <% } else { %>
 deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
     elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
 }
+editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+    elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+}
+YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
 YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
 <% } %>
 </script>
