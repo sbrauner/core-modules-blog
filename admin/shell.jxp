@@ -382,10 +382,10 @@ lastIndexOf = function(ary, v){
 function checkRun(el){
     var usr = el.value;
 
-    // This is a bad idea. What if we actually invoke client code, like 
+    // This is a bad idea. What if we actually invoke client code, like
     // print() or something else horrible?
     try {
-        eval(usr);
+        //eval(usr);
     }
     catch(e){
         if(e.toString().match(/SyntaxError/)) return false;
@@ -393,13 +393,11 @@ function checkRun(el){
         // client-side that would be there on server-side. So send it over.
     }
     // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
-    return true;
+    //return true;
 
     // FIXME: unterminated strings? Should we treat these differently, perhaps
     // not add a newline?
 
-    // This is a more sophisticated approach which might be handy if you want
-    // to actually parse the text, but probably not.
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
 
