@@ -124,8 +124,8 @@ else {
 
 <h3><%=hdr%></h3>
 <% if(!top) { %>
-<!--<a href="dbview" style="display: block;">Back to Collection View</a>
-   <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
+<a href="dbview" style="display: block;">Back to Collection View</a>
+   <!--<form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
       <%
@@ -135,6 +135,8 @@ else {
 
 
 <script type="text/javascript">
+var lastSearch = "";
+
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }
@@ -144,11 +146,28 @@ function hideObj(i) {
 }
 
 function deleteRow(id) {
-    var passData = "ns=<%= request.ns %>&action=delete&id="+id;
-    ajax(passData, "editDb", function(response) {
-        alert("Row successfully deleted");
-        document.getElementById("row"+id).style.display = "none";
-    });
+    var handleDeleteRow = function() {
+        var passData = "ns=<%= request.ns %>&action=delete&id="+id;
+        ajax(passData, "editDb", function(response) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+        text: "Are you sure you want to delete this row?",
+        buttons: [ { text:"Yes", handler:handleDeleteRow },
+        { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Delete Row");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
 }
 
 function editRow(id) {
@@ -215,90 +234,68 @@ function saveValue(id, type, dbid, path) {
 
 }
 
+var createRecordPanel;
+
+function createRecord() {
+    createRecordPanel.show();
+}
+
 
 </script>
 
 <%
 core.db.db();
-
-print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
-/*print('\n<table class="dbview" id="dbview_table">');
-print("<thead><tr>");
-
-if( top ) {
-    print("<tr><th>Name</th><th>Indices</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
+if(top) {
+    %>
+    <input type="button" value="Create Table" onclick="createTable()" />
+    <%
+} else {
+    %>
+    <input type="button" value="Add Record" onclick="createRecord()" />
+    <%
 }
-else {
-    print("<th>Delete Row</th>");
-    for( h in f ) {
-        if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
-    }
-    print("<th>(other)</th></tr>\n");
-}
-print("</thead><tbody>");
+%>
 
-for( var i=0; i < rows.length; i++ ) {
-    print('<tr id="row'+rows[i]._id+'">');
-    var obj=rows[i];
-    if( top ) {
-        %>
-        <td><a href="?ns=<%=obj.name%>"><%=obj.name.substring(obj.name.indexOf(".")+1)%></a></td>
-        <%
-        var dbinfo = validate(obj.name.substring(obj.name.indexOf(".")+1));
-        print("<td>");
-        while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
-            obj = rows[++i];
-            var idx=top ? obj.name.indexOf("$") : -1;
-            if( obj.name && idx>=0 ) {
-	        var idxname = obj.name.substring(idx+1);
-                print("index "); print(idxname); print(' ');
-	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
-	        print(idxobj?tojson(idxobj.key):"null");
-                print("<br />");
-            }
-        }
-	print("</td><td></td><td></td><td></td><td></td>");
-        dbinfo = dbinfo.result.split(/\s+/);
-        var sizeidx = dbinfo.indexOf("size:")+1;
-        print("<td>" + (dbinfo[sizeidx]) + "</td>");
-        print("<td>" + dbinfo[2] + "</td>");
-    } else {
-        print('<td><input type="button" onclick="deleteRow(\''+rows[i]._id+'\')" value="x" />');
-        for( h in f ) {
-	    if( f[h]>thresh && !ignore[h] ) {
-	        print("<td>");
-	        outp(obj[h], rows[i]._id, h);
-	        print("</td>");
-	    }
-        }
-        print("<td>");
-        var first = true;
-        for( x in obj ) {
-            if( f[x]<= thresh ) {
-	        if( !first )
-		    print(", ");
-	        first = false;
-	        print(x); print(": "); outp(tojson(obj[x]));
-            }
-        }
-        print("</td>\n");
-    }
-    print("</tr>");
-}
 
-print("</tbody></table></div>");*/
-print("</div>");
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+</div>
 
+<%
 if( rows.length >= max )
     print("<br>Only first " + max + " displayed");
 
 %>
+
+<div id="createRecord" class="yui-skin-sam">
+<div class="hd">Add Record</div>
+<div class="bd">
+  <table>
+    <tr>
+<%
+for(var b in fields) {
+    if(!ignore[fields[b]] && fields[b] != "_id")
+        print("<th>"+fields[b]+"</th>");
+}
+print("</tr><tr>");
+for(var b in fields) {
+    if(!ignore[fields[b]] && fields[b] != "_id")
+        print("<td><input type='text' /></td>");
+}
+%>
+</tr>
+</table>
+<input type="button" value="Save" />
+<input type="button" value="Cancel" />
+</div>
+<!--<div class="ft"><input type="button"/></div>-->
+</div>
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/logger/assets/skins/sam/logger.css">
 <link rel="stylesheet" type="text/css" href="/@@/yui/current/button/assets/skins/sam/button.css" />
 <link rel="stylesheet" type="text/css" href="/@@/yui/current/container/assets/skins/sam/container.css" />
+
 
 <!-- Dependencies -->
 <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
@@ -352,6 +349,10 @@ function clearSearch() {
     refreshTable();
 }
 
+var handleNo = function() {
+    this.hide();
+}
+
 <%
 if(top) {
     %>
@@ -379,10 +380,6 @@ if(top) {
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
             refreshTable();
         });
-        this.hide();
-    }
-
-    var handleNo = function() {
         this.hide();
     }
 
@@ -537,16 +534,10 @@ var myColumnDefs = [ <% if(top) {
     for(var i in rows[0]) {
         if(!ignore[i]) {
             print('{ key: "'+i+'", sortable: true, children: [{ key: "'+i+'", label: addSearchForm("'+i+ '"), sortable: false } ] },');
-/*            if(typeof rows[0][i] == "number") {
-                print(', formatter: "number"');
-            }
-*/
-
-//            print(' } ] },');
         }
     }
     %>
-    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
+    { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
     <%
 }
                      %>
@@ -597,7 +588,7 @@ if(top) {
 else {
     %>
     deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
     }
     editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
@@ -607,4 +598,8 @@ else {
     <%
 }
 %>
+
+createRecordPanel = new YAHOO.widget.Panel("createRecord", { width: "500px", fixedcenter: true, visible:false, constraintoviewport:true } );
+createRecordPanel.render("myMarkedUpContainer");
+
 </script>
