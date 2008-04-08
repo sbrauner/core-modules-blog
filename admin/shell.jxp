@@ -333,6 +333,9 @@ lastIndexOf = function(ary, v){
 
 function checkRun(el){
     var usr = el.value;
+
+    // This is a bad idea. What if we actually invoke client code, like 
+    // print() or something else horrible?
     try {
         eval(usr);
     }
