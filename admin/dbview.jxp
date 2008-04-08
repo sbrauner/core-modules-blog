@@ -124,12 +124,12 @@ else {
 
 <h3><%=hdr%></h3>
 <% if(!top) { %>
-<a href="dbview" style="display: block;">Back to Collection View</a>
+<!--<a href="dbview" style="display: block;">Back to Collection View</a>
    <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
       <%
-   } %>
+   } %>-->
 <% } %>
 
 
@@ -226,7 +226,7 @@ print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
 print("<thead><tr>");
 
 if( top ) {
-    print("<tr><th>Name</th><th>Indicies</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
+    print("<tr><th>Name</th><th>Indices</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
 }
 else {
     print("<th>Delete Row</th>");
@@ -343,13 +343,21 @@ function doSearch() {
     lastSearch = passData;
     refreshTable();
 }
+function clearSearch() {
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value = "";
+    }
+    lastSearch = "";
+    refreshTable();
+}
 
 <%
 if(top) {
     %>
     var tablename = "";
 
-    function getSelectedIndicies(separator) {
+    function getSelectedIndices(separator) {
         var idxes = document.getElementsByName(tablename);
         var list = [];
         for(var i=0; i<idxes.length; i++) {
@@ -367,7 +375,7 @@ if(top) {
     }
 
     var handleIDrop = function() {
-        var list = getSelectedIndicies(",");
+        var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
             refreshTable();
         });
@@ -389,7 +397,7 @@ if(top) {
                 close: true,
                 icon: YAHOO.widget.SimpleDialog.ICON_INFO,
                 text: response,
-                buttons: [ { text:"Okay", handler:handleNo, isDefault:true } ]
+                buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
                 } );
             simpledialog1.setHeader("Validation");
             simpledialog1.render("myMarkedUpContainer");
@@ -415,9 +423,9 @@ if(top) {
         simpledialog1.show();
     }
 
-    function dropIndicies(tname) {
+    function dropIndices(tname) {
         tablename = tname;
-        var prettyList = getSelectedIndicies(", ");
+        var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
             return;
@@ -433,7 +441,7 @@ if(top) {
             buttons: [ { text:"Yes", handler:handleIDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Indicies");
+        simpledialog1.setHeader("Drop Indices");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -443,9 +451,11 @@ if(top) {
 %>
 
 function refreshTable(passData){
-    if(passData) passData = passData+"&";
-    else passData = "";
-    myDataSource.sendRequest(passData + "&"+lastSearch, updateCaseTable);
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    myDataSource.sendRequest("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&"+passData+lastSearch, updateCaseTable);
 }
 
 
@@ -477,8 +487,15 @@ function getSearchArgs() {
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
+
+var myPaginator = new YAHOO.widget.Paginator({
+    rowsPerPage: 20,
+    alwaysVisible : false
+});
+
 oConfigs = {
     initialRequest: "",
+    paginator: myPaginator,
     <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
 };
 
@@ -508,22 +525,24 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
-    print('{ label: "Indicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
-    print('{ label: "Fixed", children: [{key: '+ tojson(cols[2]) + ', label: addSearchForm("'+cols[2]+'"), sortable: true}]},');
-    print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
-    print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
+    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
+    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
+    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
+    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
+    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
-    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
+    { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
-       print('{ label: addSearchForm("'+i+'"), children: [{ key: "'+i+'" ');
-            if(typeof rows[0][i] == "number") {
+            print('{ key: "'+i+'", sortable: true, children: [{ key: "'+i+'", label: addSearchForm("'+i+ '"), sortable: false } ] },');
+/*            if(typeof rows[0][i] == "number") {
                 print(', formatter: "number"');
             }
-            print(', sortable: true } ] },');
+*/
+
+//            print(' } ] },');
         }
     }
     %>
@@ -539,11 +558,14 @@ var myColumnDefs = [ <% if(top) {
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
+
 updateCaseTable = {
     success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
     failure : myDataTable.onDataReturnInitializeTable,
     scope : myDataTable
 };
+
+
 
 myDataSource.liveData = "showTable?";
 
@@ -552,32 +574,37 @@ if(top) {
     %>
     dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
         if(oRecord.getData("index").length > 0)
-            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndicies(\''+oRecord.getData("name")+'\')" value="Drop Selected">';
+            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndices(\''+oRecord.getData("name")+'\')" value="Drop Index">';
         else
             elCell.innerHTML = oRecord.getData("index");
     }
     nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
     }
-    validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
+    statsBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
     YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
-    YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.statsBtn = statsBtnFormatter;
     YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
-<% } else { %>
-deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    <%
 }
-editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+else {
+    %>
+    deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+    <%
 }
-YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
-YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-<% } %>
+%>
 </script>
