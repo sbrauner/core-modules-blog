@@ -175,8 +175,12 @@ div#customer_body {
     clear: both;
 }
 
+.pastprompt {
+    color: #888;
+}
+
 .usercmd {
-    color: #f00;
+    color: #000;
 }
 
 .response {
