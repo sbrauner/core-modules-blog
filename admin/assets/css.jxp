@@ -175,6 +175,11 @@ div#customer_body {
     clear: both;
 }
 
+.prompt {
+    color: #f0f;
+    margin-right: .75em;
+}
+
 .pastprompt {
     color: #888;
 }
@@ -217,13 +222,9 @@ div#customer_body {
 }
 
 /* For the single-terminal-window look */
-textarea.yui-ac-input {
+#console textarea {
     width: 90% !important;
     border: none;
-}
-
-.prompt {
-    color: #f0f;
 }
 
 #login_status {

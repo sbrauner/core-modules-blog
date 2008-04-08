@@ -1,6 +1,6 @@
-<% 
+<%
 // We load this module here, rather than in _shell.jxp, because we "know" that
-// this file will always be run first, and because this way it reduces the 
+// this file will always be run first, and because this way it reduces the
 // amount of code that _shell has to run (i.e. improves latency of response.
 // Also, we need it here. (oops)
 core.admin.data.shellsession();
@@ -37,12 +37,12 @@ if( ! session ){
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
-               prompt.appendChild(document.createTextNode("js> "));
+               prompt.appendChild(document.createTextNode("js>"));
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
                this.myLogReader = new YAHOO.widget.LogReader('console', {
-                   newestOnTop: false, 
+                   newestOnTop: false,
                    footerEnabled: false,
                    _initConsoleEl: function(){
                        YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
@@ -58,6 +58,8 @@ if( ! session ){
                    }});
                this.myLogReader.setTitle("10gen Shell");
 
+               var replay = false;
+
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
@@ -66,7 +68,7 @@ if( ! session ){
                        return msg.msg;
 
                    if(msg.category == "user"){
-                       return "<span class=\"pastprompt\">js&gt;</span> <a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                       return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
                        var string = function(msg){
@@ -79,21 +81,25 @@ if( ! session ){
                        if(obj.$printed){
                            s += "<span class=\"output\">" + obj.$printed + "</span><br/>";
                        }
+                       if(obj.$scope && ! replay){
+                           refreshScope(loader.objectTreeView, obj.$scope);
+                       }
+
                        if(obj.$exception){
                            s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
                            return s;
                        }
-                       
+
                        obj = obj["$"];
                        return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
-               
+
                var inputs = <%= tojson(session.getCommands()) %>;
 
                historyAry = []; // indexes of input used on each line
                pastCommands = []; // commands themselves; unique for YUI AC
-               
+
                // translate non-unique strings into YUI-friendly format
                for(var i = 0; i < inputs.length; i++){
                    var cmd = inputs[i];
@@ -109,6 +115,7 @@ if( ! session ){
                var outputs = <%= tojson(session.getResults()) %>;
 
                // re-log all the old commands and responses
+               replay = true;
                YAHOO.log("<span class='faded'>", "format", "shell");
                for(var i = 0; i < inputs.length; i++){
                    YAHOO.log(inputs[i], 'user', 'shell');
@@ -118,6 +125,7 @@ if( ! session ){
                YAHOO.log("<hr/>", "format", "shell");
 
                this.myLogReader._printBuffer();
+               replay = false;
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
@@ -127,8 +135,16 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
-               YAHOO.util.Event.addListener("console", "click", 
-                                            function(){ t.focus(); });
+               YAHOO.util.Event.addListener(window, "keydown",
+                                            function(){
+                                                focusTextIfSelecting(t);
+                                            });
+
+               YAHOO.util.Event.addListener("console", "click",
+                                            function(){
+                                                focusTextIfNotSelecting(t);
+                                            });
+
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -200,6 +216,22 @@ var restoreDefault = function(e){
     e.preventDefault = function(){};
 };
 
+var focusTextIfNotSelecting = function(t){
+    // If there's a click in the console, we focus the textarea, unless there
+    // is a selection, in which case we don't want to lose it.
+    // FIXME: Check if there's selected text
+    if(window.getSelection().isCollapsed == true)
+        return t.focus();
+};
+
+var focusTextIfSelecting = function(t){
+    // But if someone selects text and then types something, they probably mean
+    // to type into the console. Unless they don't??? Maybe they're
+    // trying to scroll the page up or down or something.
+    if(window.getSelection().isCollapsed == false)
+        return t.focus();
+};
+
 // historyLocation starts at 0, and goes negative; -1 is the previous command,
 // -2 is the one before that, etc.
 // The earliest command is -historyAry.length.
@@ -220,7 +252,7 @@ var setHistoryLocation = function( i, cmd ){
     }
 
     highlightHistory();
-    
+
 };
 
 var setcmd = function () {
@@ -234,13 +266,23 @@ var setcmd = function () {
 }
 
 var histfunc = function( e ) {
-    var cmd = document.getElementById('commandac').value;
-    if(cmd.match(/\n/)){
-        restoreDefault(e);
-        return;
-    }
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
+
+    var t = document.getElementById("commandac");
+    var cmd = document.getElementById('commandac').value;
+    if(cmd.match(/\n/)){
+        var startpos = t.selectionStart;
+        var endpos = t.selectionEnd;
+        var firstLine = !cmd.substring(0, startpos).match(/\n/);
+        var lastLine = !cmd.substring(endpos).match(/\n/);
+        if((! firstLine  && key == 38) || // up arrow but we can go up
+           (! lastLine && key == 40)) {   // down arrow but we can go down
+            restoreDefault(e);
+            return;
+        }
+    }
+
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
@@ -284,6 +326,12 @@ function Text(cursor, field){
 }
 function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
+}
+
+function refreshScope(tree, scope) {
+    tree.removeChildren(tree.getRoot());
+    populateTree(tree.getRoot(), scope);
+    tree.draw();
 }
 
 function populateTree(treenode, obj) {
@@ -334,10 +382,10 @@ lastIndexOf = function(ary, v){
 function checkRun(el){
     var usr = el.value;
 
-    // This is a bad idea. What if we actually invoke client code, like 
+    // This is a bad idea. What if we actually invoke client code, like
     // print() or something else horrible?
     try {
-        eval(usr);
+        //eval(usr);
     }
     catch(e){
         if(e.toString().match(/SyntaxError/)) return false;
@@ -345,21 +393,19 @@ function checkRun(el){
         // client-side that would be there on server-side. So send it over.
     }
     // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
-    return true;
+    //return true;
 
     // FIXME: unterminated strings? Should we treat these differently, perhaps
     // not add a newline?
 
-    // This is a more sophisticated approach which might be handy if you want
-    // to actually parse the text, but probably not.
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
 
        "...." and '....' go away.
        "...\"..." go away. So do '...\'...' and '..."...'.
 
-       We don't care what happens in the place of these strings; we're 
-       not doing any syntax analysis. For the time being, replace them with 
+       We don't care what happens in the place of these strings; we're
+       not doing any syntax analysis. For the time being, replace them with
        the empty string.
 
        /.../[gim] has to go away.
@@ -401,7 +447,7 @@ function checkRun(el){
     // Strip strings
     newusr = newusr.replace(/".*?"/g, '""').replace(/'.*?'/g, '""');
 
-    // Replace / after char or digit (division operator) with nonexistent $ 
+    // Replace / after char or digit (division operator) with nonexistent $
     // operator
     newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
     // Strip regexes
