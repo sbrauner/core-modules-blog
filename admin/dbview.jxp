@@ -443,9 +443,11 @@ if(top) {
 %>
 
 function refreshTable(passData){
-    if(passData) passData = passData+"&";
-    else passData = "";
-    myDataSource.sendRequest(passData + "&"+lastSearch, updateCaseTable);
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    myDataSource.sendRequest("action=search&"+passData+lastSearch, updateCaseTable);
 }
 
 
@@ -508,10 +510,10 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
-    print('{ label: "Indicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
-    print('{ label: "Fixed", children: [{key: '+ tojson(cols[2]) + ', label: addSearchForm("'+cols[2]+'"), sortable: true}]},');
-    print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
+    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
+    print('{ label: "Indicies", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
+    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
+    print('{ label: "Validate", children: [{key: "validate", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "validateBtn" }]},');
     print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
 } else {
     %>
@@ -540,10 +542,12 @@ var myColumnDefs = [ <% if(top) {
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
 updateCaseTable = {
-    success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
+    success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); },
     failure : myDataTable.onDataReturnInitializeTable,
     scope : myDataTable
 };
+
+
 
 myDataSource.liveData = "showTable?";
 
@@ -570,14 +574,19 @@ if(top) {
     YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
     YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
     YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
-<% } else { %>
-deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    <%
 }
-editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+else {
+    %>
+    deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+    <%
 }
-YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
-YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-<% } %>
+%>
 </script>

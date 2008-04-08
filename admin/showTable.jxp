@@ -17,11 +17,60 @@ if(request.action == "validation") {
     return;
 }
 
-collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
-if(request.limit) {
-    rows = collection.find().limit(request.limit).toArray();
+var top = request.ns == null;
+
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
+
+var rows;
+var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
+
+if(request.action == "search") {
+    collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
+    var searchobj = {};
+    var tempLive;
+    if(top) {
+        if(request.name && request.index)
+            q = request.name+".*"+request.index;
+        else if(request.name || request.index)
+            q = request.name || request.index;
+        var query = new RegExp(".*"+q+".*", "i");
+        searchobj["name"] = query;
+    }
+    for(q in request) {
+        if(q == "action")
+            continue;
+        if(top && (q == "index" || q == "name"))
+            continue;
+
+        var query = new RegExp(".*"+request[q]+".*", "i");
+        searchobj[q] = query;
+    }
+    rows = collection.find(searchobj).sort({number: 1}).toArray();
 }
-else rows = collection.find().toArray();
+else {
+    collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
+    if(request.limit) {
+        rows = collection.find().limit(request.limit).toArray();
+    }
+    else rows = collection.find().toArray();
+
+    var collection;
+    if( top ) collection = db["system.namespaces"];
+    else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+
+    if( top ) {
+        // we'll sort by collection name
+        collection.ensureIndex( {name:true} );
+    }
+
+    if(request.all) {
+        rows = collection.find().sort( { name : 1 } ).toArray();
+    }
+    else {
+        rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
+    }
+}
 
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
@@ -105,28 +154,6 @@ function outp(x, id, name) {
 }*/
 
   // top == show all collections
-  var top = request.ns == null;
-  var collection;
-  if( top ) collection = db["system.namespaces"];
-  else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
-
-  if( top ) {
-    // we'll sort by collection name
-    collection.ensureIndex( {name:true} );
-  }
-
-  // ignore internal transient variables
-  var ignore= { _ns:1, _save:1, _update:1 };
-
-var rows, max;
-if(request.all) {
-    rows = collection.find().sort( { name : 1 } ).toArray();
-    max = rows.length+1;
-}
-else {
-    max = top?1000:(request.max ? parseInt(request.max) : 100);
-    rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
-}
 
   var fields;
   // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
@@ -170,7 +197,6 @@ for( var i=0; i < rows.length; i++ ) {
 	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        log("rows["+k+"]: " + currentRow.fixed);
         dbTable.rows[k].fixed = currentRow.fixed;
     } else {
         for( h in f ) {
