@@ -266,13 +266,23 @@ var setcmd = function () {
 }
 
 var histfunc = function( e ) {
-    var cmd = document.getElementById('commandac').value;
-    if(cmd.match(/\n/)){
-        restoreDefault(e);
-        return;
-    }
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
+
+    var t = document.getElementById("commandac");
+    var cmd = document.getElementById('commandac').value;
+    if(cmd.match(/\n/)){
+        var startpos = t.selectionStart;
+        var endpos = t.selectionEnd;
+        var firstLine = !cmd.substring(0, startpos).match(/\n/);
+        var lastLine = !cmd.substring(endpos).match(/\n/);
+        if((! firstLine  && key == 38) || // up arrow but we can go up
+           (! lastLine && key == 40)) {   // down arrow but we can go down
+            restoreDefault(e);
+            return;
+        }
+    }
+
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
