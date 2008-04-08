@@ -74,7 +74,7 @@ ws.xmlrpc.Client.prototype._processResponse = function(responseText) {
         return null;
     }
     
-    response = xml.fromString(responseText);
+    var response = xml.fromString(responseText);
     this.lastResponse = response;
     if (response) {
         if (response._name == 'methodResponse') {

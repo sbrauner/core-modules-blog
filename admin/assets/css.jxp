@@ -98,6 +98,12 @@ ul#admin_menu, ul#module_menu {
     padding: 0px;
 }
 
+#console .exception {
+    color: #f00;
+    font-style: italic;
+    font-weight: bold;
+}
+
 #admin_header li {
     float: left;
     border-right: 1px solid <%= background %>;
@@ -169,8 +175,17 @@ div#customer_body {
     clear: both;
 }
 
+.prompt {
+    color: #f0f;
+    margin-right: .75em;
+}
+
+.pastprompt {
+    color: #888;
+}
+
 .usercmd {
-    color: #f00;
+    color: #000;
 }
 
 .response {
@@ -189,6 +204,14 @@ div#customer_body {
     opacity: 0.5;
 }
 
+#console {
+    font-size: 100%;
+}
+
+#console .yui-log-bd {
+    height: 80%;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
@@ -199,12 +222,9 @@ div#customer_body {
 }
 
 /* For the single-terminal-window look */
-textarea.yui-ac-input {
+#console textarea {
     width: 90% !important;
-}
-
-.prompt {
-    color: #f0f;
+    border: none;
 }
 
 #login_status {
@@ -213,6 +233,7 @@ textarea.yui-ac-input {
    right: 0px;
 }
 
+/*
 div.obj {
     display: none;
     position: absolute;
@@ -220,6 +241,8 @@ div.obj {
     padding: 10px;
     border: 1px black solid;
 }
+*/
+
 div.parent {
     cursor: pointer;
 }

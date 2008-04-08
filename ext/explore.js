@@ -23,12 +23,14 @@ Ext.explore.helper = function(obj, spec, endfunc, options, fieldname, parent){
 
     if(obj instanceof Array){
         results = [];
+        var this_spec = spec;
         for(var i = 0; i < obj.length; i++){
             if(! filter(i, obj[i])) continue;
-            results.push(Ext.explore.helper(obj[i], spec, endfunc, options, fieldname, parent));
+            if(spec instanceof Array) this_spec = spec[i];
+            results.push(Ext.explore.helper(obj[i], this_spec, endfunc, options, fieldname, parent));
         }
     }
-    else if(typeof spec == "number" || typeof spec == "string" || typeof spec == "boolean"){
+    else if(spec == null || typeof spec == "number" || typeof spec == "string" || typeof spec == "boolean" || typeof spec == "native"){
         results = endfunc(obj, fieldname, spec, options, parent);
     }
     else if(spec instanceof Function){

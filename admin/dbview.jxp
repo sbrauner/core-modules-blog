@@ -1,6 +1,6 @@
 <%
 /* dbview.jxp - database content viewer utility */
-head.push('<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
 
 core.content.html();
 
@@ -81,7 +81,10 @@ function outp(x, id, name) {
   if( top ) collection = db["system.namespaces"];
   else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
-  var hdr = top ? "All collections for database " + db.getName() : "Collection: " + request.ns;
+var appName = request.getHost();
+appName = (appName.indexOf(".") == -1) ? appName : appName.substring(0, appName.indexOf("."));
+
+  var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
   if( top ) {
     // we'll sort by collection name
     collection.ensureIndex( {name:true} );
@@ -120,13 +123,15 @@ else {
 %>
 
 <h3><%=hdr%></h3>
-<% if (!top) { %>
+<% if(!top) { %>
+<a href="dbview" style="display: block;">Back to Collection View</a>
    <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
       <%
    } %>
 <% } %>
+
 
 
 <script type="text/javascript">
@@ -139,12 +144,18 @@ function hideObj(i) {
 }
 
 function deleteRow(id) {
-    var passData = "db=<%= request.ns %>&action=delete&id="+id;
+    var passData = "ns=<%= request.ns %>&action=delete&id="+id;
     ajax(passData, "editDb", function(response) {
         alert("Row successfully deleted");
         document.getElementById("row"+id).style.display = "none";
     });
 }
+
+function editRow(id) {
+    var passData = "ns=<%= request.ns %>&id="+id;
+    location="editRow?"+passData;
+}
+
 
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
@@ -166,7 +177,7 @@ function editField(id, type, dbid, path) {
 function saveValue(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
 
-    passData = "db=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
+    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
     if(type == "boolean") {
         ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
             if(response != "") {
@@ -208,13 +219,14 @@ function saveValue(id, type, dbid, path) {
 </script>
 
 <%
+core.db.db();
 
-print('<div id="myMarkedUpContainer">');
-print('\n<table class="dbview" id="dbview_table">');
+print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
+/*print('\n<table class="dbview" id="dbview_table">');
 print("<thead><tr>");
 
 if( top ) {
-    print("<tr><th>Name</th><th>Indicies</th></tr>");
+    print("<tr><th>Name</th><th>Indicies</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
 }
 else {
     print("<th>Delete Row</th>");
@@ -232,6 +244,7 @@ for( var i=0; i < rows.length; i++ ) {
         %>
         <td><a href="?ns=<%=obj.name%>"><%=obj.name.substring(obj.name.indexOf(".")+1)%></a></td>
         <%
+        var dbinfo = validate(obj.name.substring(obj.name.indexOf(".")+1));
         print("<td>");
         while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
             obj = rows[++i];
@@ -244,7 +257,11 @@ for( var i=0; i < rows.length; i++ ) {
                 print("<br />");
             }
         }
-	print("</td>");
+	print("</td><td></td><td></td><td></td><td></td>");
+        dbinfo = dbinfo.result.split(/\s+/);
+        var sizeidx = dbinfo.indexOf("size:")+1;
+        print("<td>" + (dbinfo[sizeidx]) + "</td>");
+        print("<td>" + dbinfo[2] + "</td>");
     } else {
         print('<td><input type="button" onclick="deleteRow(\''+rows[i]._id+'\')" value="x" />');
         for( h in f ) {
@@ -269,7 +286,8 @@ for( var i=0; i < rows.length; i++ ) {
     print("</tr>");
 }
 
-print("</tbody></table></div>");
+print("</tbody></table></div>");*/
+print("</div>");
 
 if( rows.length >= max )
     print("<br>Only first " + max + " displayed");
@@ -277,79 +295,289 @@ if( rows.length >= max )
 %>
 
 <!--CSS file (default YUI Sam Skin) -->
-<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/datatable/assets/skins/sam/datatable.css">
-<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/logger/assets/skins/sam/logger.css">
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/logger/assets/skins/sam/logger.css">
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/container/assets/skins/sam/container.css" />
 
 <!-- Dependencies -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/element/element-beta-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datasource/datasource-beta-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/datasource/datasource-beta-debug.js"></script>
 
 <!-- OPTIONAL: JSON Utility -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/json/json-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/json/json-min.js"></script>
 
 <!-- OPTIONAL: Drag Drop (enables resizeable or reorderable columns) -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>
 
 <!-- Source files -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datatable/datatable-beta-debug.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/logger/logger-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/datatable/datatable-beta-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
+
+<!--<script type="text/javascript">
+var myLogReader = new YAHOO.widget.LogReader();
+</script>
+-->
 
 <script type="text/javascript">
-//var myContainer = document.body.appendChild(document.createElement("div"));
-//var myLogReader = new YAHOO.widget.LogReader(myContainer);
 
-myDataSource = new YAHOO.util.DataSource(
-    YAHOO.util.Dom.get("dbview_table"),
-    {
-        responseType : YAHOO.util.DataSource.TYPE_HTMLTABLE,
-        responseSchema: {
-            fields: [ <% if(top) { %>
-                                   { key: "Name" },
-                                   { key: "Indicies"}
-                                   <%
-                                 } else {
-                                     %>
+<%
+if(top) {
+    var cols = [ "name", "index", "fixed" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
+}
+%>
 
-                                   {key: "delete"}, <%
-                                               for(var i in rows[0]) {
-                                                   if(!ignore[i]) {
-                                                       print('{ key: "'+i+'"');
-                                                       print(', parser:YAHOO.util.DataSource.parseString');
-                                                       print('},');
-                                                   }
-                                               }
-                                             }
-                      %>
+addSearchForm = function(n) {
+    var str = '<input type="text" name="'+n+'" class="minisearch"';
+    if(n == "Name") {
+        return '<nobr><input type="button" name="action" onclick="doSearch()" value="Search" />'+str+"></nobr>";
+    }
+    return str+' style="width:100%;">';
+}
 
-                    ]
+function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    refreshTable();
+}
+
+<%
+if(top) {
+    %>
+    var tablename = "";
+
+    function getSelectedIndicies(separator) {
+        var idxes = document.getElementsByName(tablename);
+        var list = [];
+        for(var i=0; i<idxes.length; i++) {
+            if (idxes[i].checked)
+                list.push( idxes[i].value );
         }
-    });
+        return list.join(separator);
+    }
 
-var myColumnDefs = [ <% if(top) { %>
-                                   { key: "Name" },
-                                   { key: "Indicies"}
-                                   <%
-                                 } else {
-                                     %>
-                                     {key: "delete"},
-                                     <%
-                                     for(var i in rows[0]) {
-                                         if(!ignore[i]) {
-                                             print('{ key: "'+i+'" ');
-                                             if(typeof rows[0][i] == "number") {
-                                                 print(', formatter: "number"');
-                                             }
-                                             print(', sortable: true },');
-                                         }
-                                     }
-                                 }
+    var handleDrop = function() {
+        ajax("action=drop&ns="+tablename, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var handleIDrop = function() {
+        var list = getSelectedIndicies(",");
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var handleNo = function() {
+        this.hide();
+    }
+
+
+    function getValidation(tablename) {
+        ajax("action=validation&ns="+tablename, "showTable", function(response) {
+            var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+                { width: "300px",
+                fixedcenter: true,
+                draggable: true,
+                visible: false,
+                close: true,
+                icon: YAHOO.widget.SimpleDialog.ICON_INFO,
+                text: response,
+                buttons: [ { text:"Okay", handler:handleNo, isDefault:true } ]
+                } );
+            simpledialog1.setHeader("Validation");
+            simpledialog1.render("myMarkedUpContainer");
+            simpledialog1.show();
+        });
+    }
+
+    function dropTable(tname) {
+        tablename = tname;
+        var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+            { width: "300px",
+            fixedcenter: true,
+            draggable: true,
+            visible: false,
+            close: true,
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+            text: "Are you sure you want to drop this table?",
+            buttons: [ { text:"Yes", handler:handleDrop },
+            { text:"No", handler:handleNo, isDefault:true } ]
+            } );
+        simpledialog1.setHeader("Drop Table");
+        simpledialog1.render("myMarkedUpContainer");
+        simpledialog1.show();
+    }
+
+    function dropIndicies(tname) {
+        tablename = tname;
+        var prettyList = getSelectedIndicies(", ");
+        if(prettyList.length == 0) {
+            alert("You must check at least one index.");
+            return;
+        }
+        var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+            { width: "300px",
+            fixedcenter: true,
+            draggable: true,
+            visible: false,
+            close: true,
+            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+            text: "Are you sure you want to drop "+prettyList+" from "+tablename+"?",
+            buttons: [ { text:"Yes", handler:handleIDrop },
+            { text:"No", handler:handleNo, isDefault:true } ]
+            } );
+        simpledialog1.setHeader("Drop Indicies");
+        simpledialog1.render("myMarkedUpContainer");
+        simpledialog1.show();
+    }
+
+    <%
+}
+%>
+
+function refreshTable(passData){
+    if(passData) passData = passData+"&";
+    else passData = "";
+    myDataSource.sendRequest(passData + "&"+lastSearch, updateCaseTable);
+}
+
+
+function getSearchArgs() {
+    var passData = "";
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    var dict = {};
+    // FIXME:
+    // This looks convoluted, but YUI inserts bonus accessibility fields
+    // that get duplicate headers (i.e. input boxes) and so need to be
+    // stripped out. I'd love to use whichever field was changed most
+    // recently, but that's hard, and this hack is easy.
+    // Overwrite earlier input fields with the values from later ones.
+
+    for(var i=0; i<myarr.length; i++) {
+        if(myarr[i].value != "") {
+            dict[myarr[i].name] = myarr[i].value;
+        }
+    }
+    var pairs = [];
+    for(var key in dict){
+        pairs.push(key+"="+dict[key]);
+    }
+
+    passData = pairs.join('&');
+    return passData;
+}
+
+myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+myDataSource.connXhrMode = "queueRequests";
+oConfigs = {
+    initialRequest: "",
+    <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
+};
+
+myDataSource.responseSchema = {
+    resultsList: "rows",
+    fields: [ <% if(top) {
+        for(var i in cols) {
+            print('{ key: '+tojson(cols[i])+", parser:YAHOO.util.DataSource.parseString },");
+        }
+    } else {
+        %>
+
+        {key: "delete"}, <%
+        for(var i in rows[0]) {
+            if(!ignore[i]) {
+                print('{ key: "'+i+'"');
+                print(', parser:YAHOO.util.DataSource.parseString');
+                print('},');
+            }
+        }
+    }
+              %>
+
+            ]
+};
+
+
+
+var myColumnDefs = [ <% if(top) {
+    print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
+    print('{ label: "Indicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
+    print('{ label: "Fixed", children: [{key: '+ tojson(cols[2]) + ', label: addSearchForm("'+cols[2]+'"), sortable: true}]},');
+    print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
+    print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
+} else {
+    %>
+    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
+    <%
+    for(var i in rows[0]) {
+        if(!ignore[i]) {
+       print('{ label: addSearchForm("'+i+'"), children: [{ key: "'+i+'" ');
+            if(typeof rows[0][i] == "number") {
+                print(', formatter: "number"');
+            }
+            print(', sortable: true } ] },');
+        }
+    }
+    %>
+    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
+    <%
+}
                      %>
+
                    ];
 
 
-var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource);
 
 
+var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
+updateCaseTable = {
+    success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
+    failure : myDataTable.onDataReturnInitializeTable,
+    scope : myDataTable
+};
+
+myDataSource.liveData = "showTable?";
+
+<%
+if(top) {
+    %>
+    dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
+        if(oRecord.getData("index").length > 0)
+            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndicies(\''+oRecord.getData("name")+'\')" value="Drop Selected">';
+        else
+            elCell.innerHTML = oRecord.getData("index");
+    }
+    nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
+    }
+    validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
+    }
+    dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Drop" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+    }
+
+    YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
+    YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
+    YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
+<% } else { %>
+deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+    elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+}
+editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+    elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+}
+YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+<% } %>
 </script>

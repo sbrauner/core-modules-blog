@@ -31,7 +31,16 @@ if (request.action == "Delete"){
 
 db.bugtracker.releases.ensureIndex({text: true});
 
-var link = "./?search=" + escape(request.search) + "&page=" + request.page + "&showClosed=" + request.showClosed;
+var args = [];
+if(request.search)
+    args.push("search=" + escape(request.search));
+if(request.page)
+    args.push("page=" + request.page);
+if(request.showClosed)
+    args.push("showClosed=" + request.showClosed);
+
+var link = "./?" + args.join("&");
+
 
 
 
@@ -56,11 +65,15 @@ if(request.fstatus && request.ftitle == ""){
 else if(request.fstatus){
     var targetRel = request.ftargetrelease;
     if(targetRel == "newRel") {
-        db.bugtracker.releases.save({text: request.extra_ftargetrelease });
-        targetRel = request.extra_ftargetrelease;
+        var rel = {text: request.extra_ftargetrelease};
+        db.bugtracker.releases.save(rel);
+        feature.targetRelease = rel;
+    }
+    else if(targetRel != "none"){
+        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel});
     }
     else {
-        feature.targetRelease = db.bugtracker.releases.findOne({_id: targetRel}).text;
+        feature.targetRelease = "";
     }
 
     if(typeof feature.project == "string") {
