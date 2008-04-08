@@ -22,6 +22,10 @@ if ( ! theScope ){
     holder[ shellId ] = theScope;
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
+
+    theScope.__clear = function(){
+        db.shell.sessions.remove({user: user});
+    }
 }
 theScope.setGlobal( true );
 var res = null;
@@ -43,7 +47,7 @@ finally{
 res = { $ : res, $printed : buffer.getBuffer(), $exception : exc};
 print( tojson( res ) );
 
-if(request.save){
+if(request.save != "true"){
     // Only the client knows whether to save this command.
     var session = db.shell.sessions.findOne({user: user});
     session.push(request.command, tojson(res));

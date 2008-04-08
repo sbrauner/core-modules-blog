@@ -150,7 +150,12 @@ if( ! session ){
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
+                       var value = t.value;
                        if(checkRun(t)) {
+                           if(value.trim() == "clear" || value.trim() == "clear()"){
+                               doRun(t, "__clear()", "false");
+                               location.reload();
+                           }
                            doRun(t);
                            e.preventDefault();
                        }
@@ -427,10 +432,10 @@ function checkRun(el){
 }
 
 shellId = "shell-" + Math.random();
-function doRun(el){
+function doRun(el, value, save){
     var command = el;
-    var usr = command.value;
-    var save = "";
+    var usr = value || command.value;
+    save = save || "";
     command.value = "";
     if(indexOf(pastCommands, usr) == -1){
         // This behavior is inspired by the history functionality in bash.
