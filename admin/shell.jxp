@@ -58,6 +58,8 @@ if( ! session ){
                    }});
                this.myLogReader.setTitle("10gen Shell");
 
+               var replay = false;
+
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
@@ -79,6 +81,10 @@ if( ! session ){
                        if(obj.$printed){
                            s += "<span class=\"output\">" + obj.$printed + "</span><br/>";
                        }
+                       if(obj.$scope && ! replay){
+                           refreshScope(loader.objectTreeView, obj.$scope);
+                       }
+
                        if(obj.$exception){
                            s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
                            return s;
@@ -109,6 +115,7 @@ if( ! session ){
                var outputs = <%= tojson(session.getResults()) %>;
 
                // re-log all the old commands and responses
+               replay = true;
                YAHOO.log("<span class='faded'>", "format", "shell");
                for(var i = 0; i < inputs.length; i++){
                    YAHOO.log(inputs[i], 'user', 'shell');
@@ -118,6 +125,7 @@ if( ! session ){
                YAHOO.log("<hr/>", "format", "shell");
 
                this.myLogReader._printBuffer();
+               replay = false;
 
                // Install this handler before the autocompleter because it will
                // grab up/down key events
@@ -284,6 +292,12 @@ function Text(cursor, field){
 }
 function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
+}
+
+function refreshScope(tree, scope) {
+    tree.removeChildren(tree.getRoot());
+    populateTree(tree.getRoot(), scope);
+    tree.draw();
 }
 
 function populateTree(treenode, obj) {
