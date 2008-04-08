@@ -1,0 +1,45 @@
+<%
+/*
+ *   DJANG10 - core mapper
+ *   Invokes the projects url file
+  * first, get the url patterns from the project "urls" file
+  *
+  *  each URL pattern is an array of [ regex, fn] where
+  *
+  *  fn = <site>.<app>.<filename>.<functionname>
+  */
+
+urlpatterns = djang10.invokeSandboxPackage([ core.djang10.conf.urls.defaults ], jxp.urls, "urlpatterns");
+
+// now go through each pattern and see if it matches
+
+invoker = null;
+
+for (p in urlpatterns) {
+
+    if (request.getURI().match(urlpatterns[p][0]) != null) {
+       invoker = urlpatterns[p][1];
+        break;
+    }
+}
+
+// if we don't have an invoker,do whatever show a framework error page
+// @TODO - figure out what django really does
+
+if (invoker == null) {
+    core.djang10.conf.errorPage("No invoker specified for " + request.getURI());
+}
+else {
+    pkg = invoker.substring(0, invoker.lastIndexOf("."));
+    func = invoker.substring(invoker.lastIndexOf(".")+1);
+
+    pkg = "jxp.myapp.views";
+    
+    djang10.invokeSandboxFunction([], pkg, func);
+
+    print (" root = " + pkg + " : func = " + func);
+
+}
+
+
+%>
