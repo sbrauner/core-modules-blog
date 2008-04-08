@@ -85,18 +85,7 @@ if( ! session ){
                        }
                        
                        obj = obj["$"];
-                       if(typeof obj == "object" && obj != null){
-                           var i = objectList.push(obj);
-                           var treenode = new YAHOO.widget.TextNode("Object " + i,
-                               loader.objectTreeView.getRoot(), false);
-                           populateTree(treenode, obj);
-                           loader.objectNodes.push(treenode);
-                           loader.objectTreeView.draw();
-                           s += "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span><br/>";
-                           return s;
-                       }
-                       else
-                           return s += string(YAHOO.lang.JSON.stringify(obj));
+                       return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
                
@@ -164,7 +153,7 @@ if( ! session ){
 
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
-                   this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
+                   this.oACDS = new YAHOO.widget.DS_JSArray([]);
                    this.oAutoComp = new YAHOO.widget.AutoComplete(t, commandcontainer, this.oACDS);
                    this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
                    this.oAutoComp.typeAhead = true;
