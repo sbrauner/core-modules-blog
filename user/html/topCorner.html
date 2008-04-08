@@ -6,7 +6,13 @@ var login = User.findMyLocation();
 <div id="login_status">
 
   <if user >
-    Logged in as <%= user.name %> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
+    <span>
+      <nobr>
+        Logged in as <%= user.name %> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
+        <if user.isAdmin()>
+          <a href="/admin/">*</a>
+        </if>
+    </span>
   </if>
   
   <if ( ! user )  >
