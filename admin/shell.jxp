@@ -135,8 +135,16 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
-               YAHOO.util.Event.addListener("console", "click", 
-                                            function(){ t.focus(); });
+               YAHOO.util.Event.addListener(window, "keydown",
+                                            function(){
+                                                focusTextIfSelecting(t);
+                                            });
+
+               YAHOO.util.Event.addListener("console", "click",
+                                            function(){
+                                                focusTextIfNotSelecting(t);
+                                            });
+
 
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
@@ -206,6 +214,32 @@ var blockYUIParen = function ( e ) {
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
+};
+
+var focusTextIfNotSelecting = function(t){
+    // If there's a click in the console, we focus the textarea, unless there
+    // is a selection, in which case we don't want to lose it.
+    // FIXME: Check if there's selected text
+    var s = window.getSelection();
+    if(s.rangeCount == 0)
+        return t.focus();
+
+    var r1 = s.getRangeAt(0);
+    if(r1.collapsed == true)
+        return t.focus();
+};
+
+var focusTextIfSelecting = function(t){
+    // But if someone selects text and then types something, they probably mean
+    // to type into the console. Unless they don't??? Maybe they're
+    // trying to scroll the page up or down or something.
+    var s = window.getSelection();
+    if(s.rangeCount == 0)
+        return;
+
+    var r1 = s.getRangeAt(0);
+    if(r1.collapsed == false)
+        return t.focus();
 };
 
 // historyLocation starts at 0, and goes negative; -1 is the previous command,
