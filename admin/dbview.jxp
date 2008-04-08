@@ -121,6 +121,7 @@ else {
 
 <h3><%=hdr%></h3>
 <% if(!top) { %>
+<a href="dbview" style="display: block;">Back to Collection View</a>
    <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
