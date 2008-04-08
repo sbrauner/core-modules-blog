@@ -5,6 +5,7 @@ core.io.marshal();
 core.io.encode.json();
 core.app.bugtracker.data.feature();
 
+core.content.html();
 
 var liveDataCursor, query;
 
@@ -97,21 +98,25 @@ if(!showClosed) {
      });
 }
 
+var rows = io.Marshal(liveDataCursor, {id: "_id",
+    number: true,
+    title: true, 
+    owner: function(p){ return p? p.name: "none"},
+    status: true, severity: true, type: true,
+    project: function(p){ return p? p.name: "none"},
+    area: true,
+    reporter: function(p) { return p? p.name: "none"},
+    dependency: true,
+    dependencyType: true,
+    targetRelease: Ext.pluck("text"),
+    });
 
-print(tojson_u({rows: io.Marshal(liveDataCursor, {id: "_id",
-                                                  number: true,
-                                                  title: true, owner: function(p){ return p? p.name: "none"},
-                                                  status: true, severity: true, type: true,
-                                                  project: function(p){ return p? p.name: "none"},
-                                                  area: true,
-                                                  reporter: function(p) { return p? p.name: "none"},
-                                                  dependency: true,
-                                                  dependencyType: true,
-                                                  targetRelease: Ext.pluck("text")
-                                                 }
-                                )
-               }
-              )
-     );
+rows = Ext.explore(rows, rows, function(o) { 
+    if (typeof o == "string")
+        return content.HTML.escape(o);
+    return o;
+});
+
+print(tojson_u({rows: rows}));
 %>
 
