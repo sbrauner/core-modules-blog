@@ -193,9 +193,13 @@ var blockYUIParen = function ( e ) {
         // the same keycode. Because of this, YUI blocks lparen.
         // This is no good, so we block YUI's block by sabotaging the event's
         // preventDefault method.
-        e.preventDefault = function(){};
+        restoreDefault(e);
         return;
     }
+};
+
+var restoreDefault = function(e){
+    e.preventDefault = function(){};
 };
 
 // historyLocation starts at 0, and goes negative; -1 is the previous command,
@@ -232,6 +236,11 @@ var setcmd = function () {
 }
 
 var histfunc = function( e ) {
+    var cmd = document.getElementById('commandac').value;
+    if(cmd.match(/\n/)){
+        restoreDefault(e);
+        return;
+    }
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
     if( key == 38 ) { // up arrow
@@ -358,6 +367,9 @@ function checkRun(el){
        /\/.+\// -> ""
 
     */
+    // FIXME?: Eliot/Geir say this should be a call to client-side eval(), and
+    // we should keep it as long as there's a syntax error.
+
     var repeat = function(s, f){
         var new_s = s;
         do{
