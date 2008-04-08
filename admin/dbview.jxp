@@ -1,6 +1,6 @@
 <%
 /* dbview.jxp - database content viewer utility */
-head.push('<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
 
 core.content.html();
 
@@ -221,7 +221,7 @@ function saveValue(id, type, dbid, path) {
 <%
 core.db.db();
 
-print('<div id="myMarkedUpContainer">');
+print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
 /*print('\n<table class="dbview" id="dbview_table">');
 print("<thead><tr>");
 
@@ -295,28 +295,27 @@ if( rows.length >= max )
 %>
 
 <!--CSS file (default YUI Sam Skin) -->
-<link rel="stylesheet" type="text/css" href="http://developer.yahoo.com/yui/assets/yui.css" >
-<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/datatable/assets/skins/sam/datatable.css">
-<link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/logger/assets/skins/sam/logger.css">
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.1/build/button/assets/skins/sam/button.css" />
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.1/build/container/assets/skins/sam/container.css" />
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/logger/assets/skins/sam/logger.css">
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/container/assets/skins/sam/container.css" />
 
 <!-- Dependencies -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/element/element-beta-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/button/button-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datasource/datasource-beta-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/datasource/datasource-beta-debug.js"></script>
 
 <!-- OPTIONAL: JSON Utility -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/json/json-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/json/json-min.js"></script>
 
 <!-- OPTIONAL: Drag Drop (enables resizeable or reorderable columns) -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>
 
 <!-- Source files -->
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/datatable/datatable-beta-debug.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/logger/logger-debug.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.5.1/build/container/container-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/datatable/datatable-beta-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
 
 <!--<script type="text/javascript">
 var myLogReader = new YAHOO.widget.LogReader();
@@ -350,6 +349,16 @@ if(top) {
     %>
     var tablename = "";
 
+    function getSelectedIndicies(separator) {
+        var idxes = document.getElementsByName(tablename);
+        var list = [];
+        for(var i=0; i<idxes.length; i++) {
+            if (idxes[i].checked)
+                list.push( idxes[i].value );
+        }
+        return list.join(separator);
+    }
+
     var handleDrop = function() {
         ajax("action=drop&ns="+tablename, "editDb", function(x) {
             refreshTable();
@@ -358,14 +367,7 @@ if(top) {
     }
 
     var handleIDrop = function() {
-        var idxes = document.getElementsByName(tablename);
-        var list = [];
-        for(var i=0; i<idxes.length; i++) {
-            if (idxes[i].checked)
-                list.push( idxes[i].value );
-        }
-        list = list.join(",");
-
+        var list = getSelectedIndicies(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
             refreshTable();
         });
@@ -415,6 +417,11 @@ if(top) {
 
     function dropIndicies(tname) {
         tablename = tname;
+        var prettyList = getSelectedIndicies(", ");
+        if(prettyList.length == 0) {
+            alert("You must check at least one index.");
+            return;
+        }
         var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
             { width: "300px",
             fixedcenter: true,
@@ -422,7 +429,7 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop the selected indicies from "+tablename+"?",
+            text: "Are you sure you want to drop "+prettyList+" from "+tablename+"?",
             buttons: [ { text:"Yes", handler:handleIDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
