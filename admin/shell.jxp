@@ -56,6 +56,7 @@ if( ! session ){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
+               this.myLogReader.setTitle("10gen Shell");
 
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -65,7 +66,7 @@ if( ! session ){
                        return msg.msg;
 
                    if(msg.category == "user"){
-                       return "js&gt; <a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                       return "<span class=\"pastprompt\">js&gt;</span> <a class=\"usercmd\">" + msg.msg + "</a><br/>";
                    }
                    if(msg.category == "response"){
                        var string = function(msg){
@@ -84,18 +85,7 @@ if( ! session ){
                        }
                        
                        obj = obj["$"];
-                       if(typeof obj == "object" && obj != null){
-                           var i = objectList.push(obj);
-                           var treenode = new YAHOO.widget.TextNode("Object " + i,
-                               loader.objectTreeView.getRoot(), false);
-                           populateTree(treenode, obj);
-                           loader.objectNodes.push(treenode);
-                           loader.objectTreeView.draw();
-                           s += "<span class=\"response\" onclick=\"expandObject("+i+")\">object "+i+"</span><br/>";
-                           return s;
-                       }
-                       else
-                           return s += string(YAHOO.lang.JSON.stringify(obj));
+                       return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
                
@@ -137,6 +127,9 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
+               YAHOO.util.Event.addListener("console", "click", 
+                                            function(){ t.focus(); });
+
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
                // We block this by keeping a "lastSent"
@@ -146,7 +139,12 @@ if( ! session ){
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
+                       var value = t.value;
                        if(checkRun(t)) {
+                           if(value.trim() == "clear" || value.trim() == "clear()" || value.trim() == "__clear()"){
+                               doRun(t, "__clear()", "false");
+                               location.reload();
+                           }
                            doRun(t);
                            e.preventDefault();
                        }
@@ -155,7 +153,7 @@ if( ! session ){
 
                // Set up autocompletion stuff
                YAHOO.ACJSArray = new function(){ // Object construction
-                   this.oACDS = new YAHOO.widget.DS_JSArray(pastCommands);
+                   this.oACDS = new YAHOO.widget.DS_JSArray([]);
                    this.oAutoComp = new YAHOO.widget.AutoComplete(t, commandcontainer, this.oACDS);
                    this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
                    this.oAutoComp.typeAhead = true;
@@ -193,9 +191,13 @@ var blockYUIParen = function ( e ) {
         // the same keycode. Because of this, YUI blocks lparen.
         // This is no good, so we block YUI's block by sabotaging the event's
         // preventDefault method.
-        e.preventDefault = function(){};
+        restoreDefault(e);
         return;
     }
+};
+
+var restoreDefault = function(e){
+    e.preventDefault = function(){};
 };
 
 // historyLocation starts at 0, and goes negative; -1 is the previous command,
@@ -232,6 +234,11 @@ var setcmd = function () {
 }
 
 var histfunc = function( e ) {
+    var cmd = document.getElementById('commandac').value;
+    if(cmd.match(/\n/)){
+        restoreDefault(e);
+        return;
+    }
     if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
     if( key == 38 ) { // up arrow
@@ -326,6 +333,25 @@ lastIndexOf = function(ary, v){
 
 function checkRun(el){
     var usr = el.value;
+
+    // This is a bad idea. What if we actually invoke client code, like 
+    // print() or something else horrible?
+    try {
+        eval(usr);
+    }
+    catch(e){
+        if(e.toString().match(/SyntaxError/)) return false;
+        // We assume that other errors are probably because we're missing stuff
+        // client-side that would be there on server-side. So send it over.
+    }
+    // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
+    return true;
+
+    // FIXME: unterminated strings? Should we treat these differently, perhaps
+    // not add a newline?
+
+    // This is a more sophisticated approach which might be handy if you want
+    // to actually parse the text, but probably not.
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
 
@@ -358,6 +384,9 @@ function checkRun(el){
        /\/.+\// -> ""
 
     */
+    // FIXME?: Eliot/Geir say this should be a call to client-side eval(), and
+    // we should keep it as long as there's a syntax error.
+
     var repeat = function(s, f){
         var new_s = s;
         do{
@@ -395,10 +424,10 @@ function checkRun(el){
 }
 
 shellId = "shell-" + Math.random();
-function doRun(el){
+function doRun(el, value, save){
     var command = el;
-    var usr = command.value;
-    var save = "";
+    var usr = value || command.value;
+    save = save || "";
     command.value = "";
     if(indexOf(pastCommands, usr) == -1){
         // This behavior is inspired by the history functionality in bash.

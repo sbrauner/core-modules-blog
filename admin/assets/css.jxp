@@ -175,8 +175,12 @@ div#customer_body {
     clear: both;
 }
 
+.pastprompt {
+    color: #888;
+}
+
 .usercmd {
-    color: #f00;
+    color: #000;
 }
 
 .response {
@@ -215,6 +219,7 @@ div#customer_body {
 /* For the single-terminal-window look */
 textarea.yui-ac-input {
     width: 90% !important;
+    border: none;
 }
 
 .prompt {

@@ -121,6 +121,7 @@ else {
 
 <h3><%=hdr%></h3>
 <% if(!top) { %>
+<a href="dbview" style="display: block;">Back to Collection View</a>
    <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
@@ -399,8 +400,6 @@ oConfigs = {
     <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
 };
 
-//    YAHOO.util.Dom.get("dbview_table"),
-
 myDataSource.responseSchema = {
     resultsList: "rows",
     fields: [ <% if(top) {
@@ -436,7 +435,7 @@ var myColumnDefs = [ <% if(top) {
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
-       print('{ label: addSearchForm("'+rows[0][i]+'"), children: [{ key: "'+i+'" ');
+       print('{ label: addSearchForm("'+i+'"), children: [{ key: "'+i+'" ');
             if(typeof rows[0][i] == "number") {
                 print(', formatter: "number"');
             }
