@@ -152,7 +152,7 @@ if( ! session ){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
                        if(checkRun(t)) {
-                           if(value.trim() == "clear" || value.trim() == "clear()"){
+                           if(value.trim() == "clear" || value.trim() == "clear()" || value.trim() == "__clear()"){
                                doRun(t, "__clear()", "false");
                                location.reload();
                            }
