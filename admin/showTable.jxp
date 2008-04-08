@@ -1,0 +1,194 @@
+<%
+core.ext.pluck();
+core.io.marshal();
+core.io.encode.json();
+core.db.db();
+core.content.html();
+
+
+if(request.action == "validation") {
+    if(request.ns == "") {
+        print("No table chosen.");
+        return;
+    }
+
+    var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
+    print(x.result ? x.result : x.errmsg);
+    return;
+}
+
+collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
+if(request.limit) {
+    rows = collection.find().limit(request.limit).toArray();
+}
+else rows = collection.find().toArray();
+
+var objcount = 0; // unique id for each object's div
+var fieldcount = 0;
+
+function printEditableField(x, id, path) {
+    if(typeof x == "string") {
+        if( x.length<=20 )
+            x = content.HTML.escape_html(x);
+        else {
+	    x = content.HTML.escape_html(x)
+            // put extra text in a hidden div
+            text += '<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>';
+            x = x.substring(0,18)+"...";
+        }
+    }
+
+    text +='<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>";
+    fieldcount++;
+}
+
+var text = "";
+
+function printObj(cursor, field, id, path) {
+    if(!cursor || !cursor[field]) return;
+
+    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+    }
+    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+        text += '<div><label class="obj">'+field+':</label>';
+        printEditableField(cursor[field], id, path);
+        text += '</div>';
+    } else if(typeof cursor[field] == "object") {
+        var name;
+        var desc;
+        if(cursor[field] instanceof Date) {
+            name = "Date";
+            desc = cursor[field].toString();
+        }
+        else if(cursor[field] instanceof Array) {
+            name = "Array";
+            desc = "["+cursor[field].length+"]";
+        }
+        else {
+            name = "Object";
+            desc = field;
+        }
+        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+        var tempobj = objcount;
+        objcount++;
+        for(var name in cursor[field]) {
+            path.push(name);
+            printObj(cursor[field], name, id, path);
+            path.pop();
+        }
+        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>";
+    } else {
+        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+    }
+}
+
+var done = false;
+function outp(x, id, name) {
+    if(typeof x == "object") {
+        text = "";
+        // make x an obj of the form cursor[field]
+        x = {"...": x};
+        printObj(x, "...", id, [name]);
+        return text;
+    }
+    else
+        return x;
+}
+
+  // top == show all collections
+  var top = request.ns == null;
+  var collection;
+  if( top ) collection = db["system.namespaces"];
+  else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+
+  if( top ) {
+    // we'll sort by collection name
+    collection.ensureIndex( {name:true} );
+  }
+
+  // ignore internal transient variables
+  var ignore= { _ns:1, _save:1, _update:1 };
+
+var rows, max;
+if(request.all) {
+    rows = collection.find().sort( { name : 1 } ).toArray();
+    max = rows.length+1;
+}
+else {
+    max = top?1000:(request.max ? parseInt(request.max) : 100);
+    rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
+}
+
+  var fields;
+  // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
+  var thresh = rows.length < 4 ? 0 : rows.length / 2;
+if( top ) {
+    fields = [ 'name', 'index' ];
+}
+else {
+    fields = [];
+    var f = {};
+    for( var i=0; i < rows.length; i++ ) {
+        for( var e in rows[i] ) {
+	    if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
+        }
+    }
+    for( var g in f ) {
+	if( f[g] >= thresh ) fields.push(g);
+    }
+}
+
+
+var dbTable = { rows: [] };
+
+var k = 0;
+for( var i=0; i < rows.length; i++ ) {
+    var j=0;
+    dbTable.rows[k] = {};
+
+    var obj=rows[i];
+    if( top ) {
+        dbTable.rows[k][fields[j++]] = obj.name;
+        dbTable.rows[k][fields[j]] = "";
+        while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
+            obj = rows[++i];
+            var idx=top ? obj.name.indexOf("$") : -1;
+            if( obj.name && idx>=0 ) {
+	        var idxname = obj.name.substring(idx+1);
+                dbTable.rows[k][fields[j]] += "index "+idxname+" ";
+	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
+	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
+            }
+        }
+    } else {
+        for( h in f ) {
+	    if( f[h]>thresh && !ignore[h] ) {
+	        dbTable.rows[k][fields[j++]] = outp(obj[h], rows[i]._id, h);
+	    }
+        }
+        var first = true;
+        dbTable.rows[k][fields[j]] = "";
+        for( x in obj ) {
+            if( f[x]<= thresh ) {
+	        if( !first )
+		    dbTable.rows[k][fields[j]] += ", ";
+	        first = false;
+	        dbTable.rows[k][fields[j]] = x + ": " + outp(tojson(obj[x]));
+            }
+        }
+    }
+    k++;
+}
+print(tojson_u(dbTable));
+
+/*fields = {};
+if(!liveDataCursor) return fields;
+for(prop in liveDataCursor[0]) {
+   fields[prop] = true;
+}
+
+print(tojson_u({rows: io.Marshal(liveDataCursor, fields)}));
+*/
+
+%>
