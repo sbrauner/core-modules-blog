@@ -33,9 +33,9 @@ djang10.invokeSandboxFunction = function(pkg_arr, target, func) {
     // invoke the target file
 
     print("Invokgin " + target);
-    target();
+    scope.eval(target)();
 
     //now return the result of calling the required function
     
-    return func();
+    return scope.eval(func)();
 }
