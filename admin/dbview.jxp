@@ -327,7 +327,7 @@ var myLogReader = new YAHOO.widget.LogReader();
 
 <%
 if(top) {
-    var cols = [ "name", "index" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
+    var cols = [ "name", "index", "fixed" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
 }
 %>
 
@@ -502,7 +502,8 @@ myDataSource.responseSchema = {
 
 var myColumnDefs = [ <% if(top) {
     print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
-    print('{ label: "Inidicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
+    print('{ label: "Indicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
+    print('{ label: "Fixed", children: [{key: '+ tojson(cols[2]) + ', label: addSearchForm("'+cols[2]+'"), sortable: true}]},');
     print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
     print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
 } else {

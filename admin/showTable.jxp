@@ -157,6 +157,7 @@ for( var i=0; i < rows.length; i++ ) {
 
     var obj=rows[i];
     if( top ) {
+        var currentRow = obj;
         dbTable.rows[k][fields[j++]] = obj.name;
         dbTable.rows[k][fields[j]] = "";
         while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
@@ -169,6 +170,8 @@ for( var i=0; i < rows.length; i++ ) {
 	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
+        log("rows["+k+"]: " + currentRow.fixed);
+        dbTable.rows[k].fixed = currentRow.fixed;
     } else {
         for( h in f ) {
 	    if( f[h]>thresh && !ignore[h] ) {
