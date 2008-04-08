@@ -215,6 +215,7 @@ div#customer_body {
 /* For the single-terminal-window look */
 textarea.yui-ac-input {
     width: 90% !important;
+    border: none;
 }
 
 .prompt {

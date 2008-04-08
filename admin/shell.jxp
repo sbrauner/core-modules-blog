@@ -137,6 +137,9 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
+               YAHOO.util.Event.addListener("console", "click", 
+                                            function(){ t.focus(); });
+
                // YUI autocomplete tries to autocomplete even if there's been
                // an intervening "Enter" and the input field has been cleared.
                // We block this by keeping a "lastSent"
