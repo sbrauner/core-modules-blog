@@ -56,6 +56,7 @@ if( ! session ){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
+               this.myLogReader.setTitle("10gen Shell");
 
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
