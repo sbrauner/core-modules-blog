@@ -220,12 +220,7 @@ var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
     // FIXME: Check if there's selected text
-    var s = window.getSelection();
-    if(s.rangeCount == 0)
-        return t.focus();
-
-    var r1 = s.getRangeAt(0);
-    if(r1.collapsed == true)
+    if(window.getSelection().isCollapsed() == true)
         return t.focus();
 };
 
@@ -233,12 +228,7 @@ var focusTextIfSelecting = function(t){
     // But if someone selects text and then types something, they probably mean
     // to type into the console. Unless they don't??? Maybe they're
     // trying to scroll the page up or down or something.
-    var s = window.getSelection();
-    if(s.rangeCount == 0)
-        return;
-
-    var r1 = s.getRangeAt(0);
-    if(r1.collapsed == false)
+    if(window.getSelection().isCollapsed() == false)
         return t.focus();
 };
 
