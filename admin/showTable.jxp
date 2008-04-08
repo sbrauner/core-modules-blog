@@ -39,7 +39,7 @@ if(request.action == "search") {
         searchobj["name"] = query;
     }
     for(q in request) {
-        if(q == "action")
+        if(q == "action" || q == "ns")
             continue;
         if(top && (q == "index" || q == "name"))
             continue;

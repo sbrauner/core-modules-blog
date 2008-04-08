@@ -455,7 +455,7 @@ function refreshTable(passData){
         passData = passData+"&";
     else
         passData = "";
-    myDataSource.sendRequest("action=search&"+passData+lastSearch, updateCaseTable);
+    myDataSource.sendRequest("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&"+passData+lastSearch, updateCaseTable);
 }
 
 
@@ -525,7 +525,7 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
-    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
+    { label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
