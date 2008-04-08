@@ -343,6 +343,10 @@ function doSearch() {
     lastSearch = passData;
     refreshTable();
 }
+function clearSearch() {
+    lastSearch = "";
+    refreshTable();
+}
 
 <%
 if(top) {
@@ -389,7 +393,7 @@ if(top) {
                 close: true,
                 icon: YAHOO.widget.SimpleDialog.ICON_INFO,
                 text: response,
-                buttons: [ { text:"Okay", handler:handleNo, isDefault:true } ]
+                buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
                 } );
             simpledialog1.setHeader("Validation");
             simpledialog1.render("myMarkedUpContainer");
@@ -514,7 +518,7 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
     print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
     print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'refreshTable()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
     { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
