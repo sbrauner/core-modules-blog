@@ -12,7 +12,7 @@ if(request.email){
     // Send a mail to the user
     var subj = "[" + siteName + "] Your username";
 
-    var body = "Dear "+(u.nickname || u.name)+ "\n" +
+    var body = "Dear "+(u.getDisplayName())+ "\n" +
         "\n"+
         "Someone requested that we send your username to you. It is:\n"+
         "\n"+
