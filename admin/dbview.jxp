@@ -226,7 +226,7 @@ print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
 print("<thead><tr>");
 
 if( top ) {
-    print("<tr><th>Name</th><th>Indicies</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
+    print("<tr><th>Name</th><th>Indices</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
 }
 else {
     print("<th>Delete Row</th>");
@@ -349,7 +349,7 @@ if(top) {
     %>
     var tablename = "";
 
-    function getSelectedIndicies(separator) {
+    function getSelectedIndices(separator) {
         var idxes = document.getElementsByName(tablename);
         var list = [];
         for(var i=0; i<idxes.length; i++) {
@@ -367,7 +367,7 @@ if(top) {
     }
 
     var handleIDrop = function() {
-        var list = getSelectedIndicies(",");
+        var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
             refreshTable();
         });
@@ -415,9 +415,9 @@ if(top) {
         simpledialog1.show();
     }
 
-    function dropIndicies(tname) {
+    function dropIndices(tname) {
         tablename = tname;
-        var prettyList = getSelectedIndicies(", ");
+        var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
             return;
@@ -433,7 +433,7 @@ if(top) {
             buttons: [ { text:"Yes", handler:handleIDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Indicies");
+        simpledialog1.setHeader("Drop Indices");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -511,10 +511,10 @@ myDataSource.responseSchema = {
 
 var myColumnDefs = [ <% if(top) {
     print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
-    print('{ label: "Indicies", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
+    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
     print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
-    print('{ label: "Validate", children: [{key: "validate", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "validateBtn" }]},');
-    print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
+    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
+    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'refreshTable()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
     { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
@@ -556,23 +556,23 @@ if(top) {
     %>
     dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
         if(oRecord.getData("index").length > 0)
-            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndicies(\''+oRecord.getData("name")+'\')" value="Drop Selected">';
+            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndices(\''+oRecord.getData("name")+'\')" value="Drop Index">';
         else
             elCell.innerHTML = oRecord.getData("index");
     }
     nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
     }
-    validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
+    statsBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
     YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
-    YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.statsBtn = statsBtnFormatter;
     YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
     <%
 }

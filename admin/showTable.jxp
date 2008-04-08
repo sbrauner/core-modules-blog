@@ -30,10 +30,11 @@ if(request.action == "search") {
     var searchobj = {};
     var tempLive;
     if(top) {
-        if(request.name && request.index)
-            q = request.name+".*"+request.index;
-        else if(request.name || request.index)
-            q = request.name || request.index;
+        q = "";
+        if(request.name)
+            q = request.name;
+        if(request.index)
+            q = q+"\\$.*"+request.index;
         var query = new RegExp(".*"+q+".*", "i");
         searchobj["name"] = query;
     }
