@@ -16,7 +16,7 @@ if( ! session ){
  %>
 
 <div style="text-align:center;" class="yui-skin-sam">
-     Shell (do not refresh page or anything crazy like that)<br>
+     Shell (do not refresh page)<br>
      <div id="console"></div>
      <div id="treeview"></div>
      <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
@@ -133,10 +133,20 @@ if( ! session ){
                    maxHeight: max
                });
 
+               oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
                resize.on('resize', function(ev) {
+                   var oldScrollHeight = row1.scrollHeight, 
+                       oldScrollTop = row1.scrollTop;
                    var w = ev.height;
                    Dom.setStyle(scratchText, "height", w);
-                   Dom.setStyle(row1, "height", (size - w - 20));
+                   var newHeight = (size - w - 20);
+                   Dom.setStyle(row1, "height", newHeight);
+
+                   if(oldHeight + oldScrollTop >= oldScrollHeight) {
+                       // row1 was scrolled all the way down
+                       row1.scrollTop = row1.scrollHeight;
+                   }
+                   oldHeight = newHeight;
                });
 
 
@@ -177,12 +187,6 @@ if( ! session ){
                this.myLogReader._printBuffer();
                replay = false;
 
-               // Install this handler before the autocompleter because it will
-               // grab up/down key events
-               YAHOO.util.Event.addListener(t,"keydown",blockYUIParen);
-               YAHOO.util.Event.addListener(t,"keypress",blockYUIParen);
-               YAHOO.util.Event.addListener(t,"keyup",blockYUIParen);
-
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                YAHOO.util.Event.addListener(window, "keydown",
@@ -190,7 +194,7 @@ if( ! session ){
                                                 focusTextIfSelecting(t);
                                             });
 
-               YAHOO.util.Event.addListener(t,"keydown",function(e){
+               YAHOO.util.Event.addListener(t,"keypress",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
@@ -223,18 +227,6 @@ if( ! session ){
 
            }
        });
-
-var blockYUIParen = function ( e ) {
-    var key = e.keyCode || e.which;
-    if(e.shiftKey){
-        // In Konqueror and Safari, the keys for lparen and up-arrow generate
-        // the same keycode. Because of this, YUI blocks lparen.
-        // This is no good, so we block YUI's block by sabotaging the event's
-        // preventDefault method.
-        restoreDefault(e);
-        return;
-    }
-};
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
