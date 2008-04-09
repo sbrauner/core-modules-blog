@@ -210,7 +210,10 @@ div#customer_body {
 }
 
 #console .scratch {
-    height: 40%;
+    overflow: hidden;
+}
+#console .scratchtext {
+    margin-top: 6px;
     width: 100%;
 }
 

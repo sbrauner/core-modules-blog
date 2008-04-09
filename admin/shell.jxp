@@ -24,7 +24,7 @@ if( ! session ){
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event'],
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
            base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
@@ -53,6 +53,7 @@ if( ! session ){
                    _initConsoleEl: function(){
                        YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
                        this._elBd = this._elConsole;
+                       this._elBd.id = "consolebody";
                        this._elConsole = document.createElement("div");
                        this._elConsole.id = "transcript";
                        this._elBd.appendChild(this._elConsole);
@@ -65,8 +66,9 @@ if( ! session ){
 
                        scratch = document.createElement("div");
                        scratchText = document.createElement("textarea");
-                       scratchText.className = "scratch";
+                       scratchText.className = "scratchtext";
                        scratch.appendChild(scratchText);
+                       scratch.className = "scratch";
                        this._elContainer.appendChild(scratch);
                    },
                    _printBuffer: function(){
@@ -74,6 +76,29 @@ if( ! session ){
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
                this.myLogReader.setTitle("10gen Shell");
+
+               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+                   row1 = null, row2 = null;
+               row1 = Dom.get("consolebody");
+               row2 = scratchText;
+               var size = parseInt(Dom.getStyle("console", "height"), 10);
+               scratchText.style.height = size;
+
+               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
+
+               var resize = new YAHOO.util.Resize(scratch, {
+                   handles: "t",
+                   height: 0,
+                   maxHeight: max
+               });
+
+               resize.on('resize', function(ev) {
+                   var w = ev.height;
+                   Dom.setStyle(row1, "height", (size - w - 20));
+               });
+
+
+               resize.resize(null, 10, 0, 0, 0, true);
 
                var replay = false;
 
