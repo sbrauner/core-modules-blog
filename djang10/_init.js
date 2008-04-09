@@ -40,3 +40,17 @@ djang10.invokeSandboxFunction = function(pkg_arr, target, func, arg_array) {
 
     return f.apply(null, arg_array);
 }
+
+
+//
+// junk functions
+//
+
+djang10.isApp = function(name) {
+
+    //
+    // see if this is a directory
+    //
+
+    if ()
+}
