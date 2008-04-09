@@ -21,7 +21,9 @@ Captcha = {
 
 	    while ( true ){
 		var s = words.getRandomWord();
-		
+		s = s.replace( /[^\w]+/g , "" );
+		s = s.toLowerCase();
+
 		if ( s.length >= min && s.length <= max )
 		    return s;
 	    }
