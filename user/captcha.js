@@ -14,8 +14,8 @@ Captcha = {
 	    
 	    assert( words );
 	    
-	    var min = minLen || 6;
-	    var max = maxLen || min;
+	    var min = minLen || 3
+	    var max = maxLen || 5;
 
 	    assert( max >= min );
 
