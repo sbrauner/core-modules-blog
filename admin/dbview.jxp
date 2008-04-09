@@ -462,15 +462,6 @@ if(top) {
         this.hide();
     }
 
-    var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
-        this.hide();
-    }
-
-
     function getValidation(tablename) {
         ajax("action=validation&ns="+tablename, "showTable", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
@@ -509,6 +500,13 @@ if(top) {
 
     function dropIndices(tname) {
         tablename = tname;
+    var handleIDrop = function() {
+        var list = getSelectedIndices(",");
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
         var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");

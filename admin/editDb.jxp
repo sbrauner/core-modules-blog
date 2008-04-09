@@ -13,7 +13,7 @@ else if(request.action == "drop") {
 else if(request.action == "dropI") {
     var idx = request.idx.split(",");
     for(var i in idx) {
-        deleteIndex(collection, idx[i]);
+        deleteIndex(request.ns.substring( request.ns.indexOf('.')+1), idx[i]);
     }
 }
 else if(request.action == "edit") {
