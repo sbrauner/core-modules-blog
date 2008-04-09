@@ -209,7 +209,7 @@ var restoreDefault = function(e){
 
 var specialCommandsMap = {
     "clearAll": function(t){
-        doRun(t, "__clearAll()", "False");
+        doRun(t, "__clearAll()", "false");
         location.reload();
         return true;
     },
