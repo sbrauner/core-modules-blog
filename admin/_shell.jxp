@@ -26,12 +26,32 @@ if ( ! theScope ){
     theScope.__clearAll = function(){
         db.shell.sessions.remove({user: user});
     }
+
+    theScope.clear = function(){
+        print.termCommand("clear");
+        return "";
+    }
 }
 theScope.setGlobal( true );
 var res = null;
 var exc = null;
 var oldprint = print;
-var buffer = Ext.buffer();
+
+var Buffer = function(){
+    var _buffer = [];
+    return Object.extend(function(s){
+        _buffer.push(s);
+    }, {
+        termCommand: function(command){
+            _buffer.push({$command: command});
+        },
+        getBuffer: function(){
+            return _buffer;
+        }
+    });
+};
+
+var buffer = Buffer();
 print = buffer;
 try {
     res = theScope.eval( request.command , "aaaa" + shellId , null );
