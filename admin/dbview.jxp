@@ -125,16 +125,18 @@ else {
 <h3><%=hdr%></h3>
 <% if(!top) { %>
 <a href="dbview" style="display: block;">Back to Collection View</a>
-   <form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
+   <!--<form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
    <% if(!request.all) { %>
       <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
       <%
-   } %>
+   } %>-->
 <% } %>
 
 
 
 <script type="text/javascript">
+var lastSearch = "";
+
 function showObj(i) {
          document.getElementById(i).style.display = "block";
 }
@@ -144,11 +146,28 @@ function hideObj(i) {
 }
 
 function deleteRow(id) {
-    var passData = "ns=<%= request.ns %>&action=delete&id="+id;
-    ajax(passData, "editDb", function(response) {
-        alert("Row successfully deleted");
-        document.getElementById("row"+id).style.display = "none";
-    });
+    var handleDeleteRow = function() {
+        var passData = "ns=<%= request.ns %>&action=delete&id="+id;
+        ajax(passData, "editDb", function(response) {
+            refreshTable();
+        });
+        this.hide();
+    }
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+        text: "Are you sure you want to delete this row?",
+        buttons: [ { text:"Yes", handler:handleDeleteRow },
+        { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Delete Row");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
 }
 
 function editRow(id) {
@@ -215,90 +234,93 @@ function saveValue(id, type, dbid, path) {
 
 }
 
+var createRecordPanel;
+var createTablePanel;
+
+function createRecord() {
+    createRecordPanel.show();
+}
+function createTable() {
+    createTablePanel.show();
+}
+
 
 </script>
 
 <%
 core.db.db();
-
-print('<div id="myMarkedUpContainer" class="yui-skin-sam">');
-/*print('\n<table class="dbview" id="dbview_table">');
-print("<thead><tr>");
-
-if( top ) {
-    print("<tr><th>Name</th><th>Indicies</th><th>Create Date</th><th>Creator</th><th>Modified Date</th><th>Modifier</th><th>Size</th><th>Rows</th></tr>");
+if(top) {
+    %>
+    <input type="button" value="Create Table" onclick="createTable()" />
+    <%
+} else {
+    %>
+    <input type="button" value="Add Record" onclick="createRecord()" />
+    <%
 }
-else {
-    print("<th>Delete Row</th>");
-    for( h in f ) {
-        if( f[h]>thresh && !ignore[h] ) { print("<th>");print(h);print("</th>"); }
-    }
-    print("<th>(other)</th></tr>\n");
-}
-print("</thead><tbody>");
+%>
 
-for( var i=0; i < rows.length; i++ ) {
-    print('<tr id="row'+rows[i]._id+'">');
-    var obj=rows[i];
-    if( top ) {
-        %>
-        <td><a href="?ns=<%=obj.name%>"><%=obj.name.substring(obj.name.indexOf(".")+1)%></a></td>
-        <%
-        var dbinfo = validate(obj.name.substring(obj.name.indexOf(".")+1));
-        print("<td>");
-        while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
-            obj = rows[++i];
-            var idx=top ? obj.name.indexOf("$") : -1;
-            if( obj.name && idx>=0 ) {
-	        var idxname = obj.name.substring(idx+1);
-                print("index "); print(idxname); print(' ');
-	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
-	        print(idxobj?tojson(idxobj.key):"null");
-                print("<br />");
-            }
-        }
-	print("</td><td></td><td></td><td></td><td></td>");
-        dbinfo = dbinfo.result.split(/\s+/);
-        var sizeidx = dbinfo.indexOf("size:")+1;
-        print("<td>" + (dbinfo[sizeidx]) + "</td>");
-        print("<td>" + dbinfo[2] + "</td>");
-    } else {
-        print('<td><input type="button" onclick="deleteRow(\''+rows[i]._id+'\')" value="x" />');
-        for( h in f ) {
-	    if( f[h]>thresh && !ignore[h] ) {
-	        print("<td>");
-	        outp(obj[h], rows[i]._id, h);
-	        print("</td>");
-	    }
-        }
-        print("<td>");
-        var first = true;
-        for( x in obj ) {
-            if( f[x]<= thresh ) {
-	        if( !first )
-		    print(", ");
-	        first = false;
-	        print(x); print(": "); outp(tojson(obj[x]));
-            }
-        }
-        print("</td>\n");
-    }
-    print("</tr>");
-}
 
-print("</tbody></table></div>");*/
-print("</div>");
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+</div>
 
+<%
 if( rows.length >= max )
     print("<br>Only first " + max + " displayed");
 
+if(top) {
+    %>
+<div id="createTable">
+<div class="hd">Create Table</div>
+<div class="bd">
+<form>
+    <label>Table name: </label><input type="text" name="tablename">
+    <label>Fixed: </label><input type="checkbox" name="fixed">
+</form>
+</div>
+<div class="ft"><input type="button" value="Save" onclick="addRecord()"/>
+<input type="button" value="Cancel" onclick="handleNo" />
+</div>
+</div>
+
+</div>
+<%
+} else {
+   %>
+<div id="createRecord">
+<div class="hd">Add Record</div>
+<div class="bd">
+  Enter fields at your own risk!  All text will all be processed as strings.
+  <table>
+    <tr>
+<%
+for(var b in fields) {
+    if(!ignore[fields[b]] && fields[b] != "_id")
+        print("<th>"+fields[b]+"</th>");
+}
+print("</tr><tr>");
+for(var b in fields) {
+    if(!ignore[fields[b]] && fields[b] != "_id")
+        print("<td><input type='text' name='"+fields[b]+"' /></td>");
+}
 %>
+</tr>
+</table>
+</div>
+<div class="ft">
+<input type="button" value="Save" onclick="addRecord()"/>
+<input type="button" value="Cancel" onclick="handleNo" />
+</div>
+</div>
+
+<% } %>
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/logger/assets/skins/sam/logger.css">
 <link rel="stylesheet" type="text/css" href="/@@/yui/current/button/assets/skins/sam/button.css" />
 <link rel="stylesheet" type="text/css" href="/@@/yui/current/container/assets/skins/sam/container.css" />
+
 
 <!-- Dependencies -->
 <script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
@@ -343,13 +365,25 @@ function doSearch() {
     lastSearch = passData;
     refreshTable();
 }
+function clearSearch() {
+    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
+    for(var i in myarr) {
+        myarr[i].value = "";
+    }
+    lastSearch = "";
+    refreshTable();
+}
+
+var handleNo = function() {
+    this.hide();
+}
 
 <%
 if(top) {
     %>
     var tablename = "";
 
-    function getSelectedIndicies(separator) {
+    function getSelectedIndices(separator) {
         var idxes = document.getElementsByName(tablename);
         var list = [];
         for(var i=0; i<idxes.length; i++) {
@@ -367,14 +401,10 @@ if(top) {
     }
 
     var handleIDrop = function() {
-        var list = getSelectedIndicies(",");
+        var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
             refreshTable();
         });
-        this.hide();
-    }
-
-    var handleNo = function() {
         this.hide();
     }
 
@@ -389,7 +419,7 @@ if(top) {
                 close: true,
                 icon: YAHOO.widget.SimpleDialog.ICON_INFO,
                 text: response,
-                buttons: [ { text:"Okay", handler:handleNo, isDefault:true } ]
+                buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
                 } );
             simpledialog1.setHeader("Validation");
             simpledialog1.render("myMarkedUpContainer");
@@ -415,9 +445,9 @@ if(top) {
         simpledialog1.show();
     }
 
-    function dropIndicies(tname) {
+    function dropIndices(tname) {
         tablename = tname;
-        var prettyList = getSelectedIndicies(", ");
+        var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
             return;
@@ -433,7 +463,7 @@ if(top) {
             buttons: [ { text:"Yes", handler:handleIDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Indicies");
+        simpledialog1.setHeader("Drop Indices");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -443,9 +473,11 @@ if(top) {
 %>
 
 function refreshTable(passData){
-    if(passData) passData = passData+"&";
-    else passData = "";
-    myDataSource.sendRequest(passData + "&"+lastSearch, updateCaseTable);
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    myDataSource.sendRequest("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&"+passData+lastSearch, updateCaseTable);
 }
 
 
@@ -474,11 +506,28 @@ function getSearchArgs() {
     return passData;
 }
 
+// Custom sorters
+var sortHex = function(a, b, desc) {
+    return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
+}
+
+var sortDate = function(a, b, desc) {
+
+}
+
+
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
+
+var myPaginator = new YAHOO.widget.Paginator({
+    rowsPerPage: 20,
+    alwaysVisible : false
+});
+
 oConfigs = {
     initialRequest: "",
+    paginator: myPaginator,
     <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
 };
 
@@ -508,26 +557,28 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", children: [{key: '+ tojson(cols[0]) + ', label: addSearchForm("'+cols[0]+'"), formatter: "nameLink", sortable: true}]},');
-    print('{ label: "Indicies", children: [{key: '+ tojson(cols[1]) + ', label: addSearchForm("'+cols[1]+'"), formatter: "dropIdx", sortable: true}]},');
-    print('{ label: "Fixed", children: [{key: '+ tojson(cols[2]) + ', label: addSearchForm("'+cols[2]+'"), sortable: true}]},');
-    print('{ label: "Validate", children: [{key: "validate", label: "", formatter: "validateBtn" }]},');
-    print('{ label: "Drop", children: [{key: "drop", label: "", formatter: "dropBtn" }]},');
+    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
+    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
+    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
+    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
+    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
-    { label: '<input type="button" value="Search" onclick="doSearch()">', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
+    { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
-       print('{ label: addSearchForm("'+i+'"), children: [{ key: "'+i+'" ');
-            if(typeof rows[0][i] == "number") {
-                print(', formatter: "number"');
+            // Special cases:
+            // if _id, the column needs to be converted to hexidecimal and sorted that way
+            if(i == "_id") {
+                print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
             }
-            print(', sortable: true } ] },');
+            else
+                print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
         }
     }
     %>
-    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
+    { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
     <%
 }
                      %>
@@ -535,15 +586,16 @@ var myColumnDefs = [ <% if(top) {
                    ];
 
 
-
-
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
+
 
 updateCaseTable = {
     success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
     failure : myDataTable.onDataReturnInitializeTable,
     scope : myDataTable
 };
+
+
 
 myDataSource.liveData = "showTable?";
 
@@ -552,32 +604,45 @@ if(top) {
     %>
     dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
         if(oRecord.getData("index").length > 0)
-            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndicies(\''+oRecord.getData("name")+'\')" value="Drop Selected">';
+            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndices(\''+oRecord.getData("name")+'\')" value="Drop Index">';
         else
             elCell.innerHTML = oRecord.getData("index");
     }
     nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
     }
-    validateBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Validate" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
+    statsBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
     YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
-    YAHOO.widget.DataTable.Formatter.validateBtn = validateBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.statsBtn = statsBtnFormatter;
     YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
-<% } else { %>
-deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="X" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    <%
 }
-editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-    elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+else {
+    %>
+    deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+    }
+
+    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+    <%
 }
-YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
-YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-<% } %>
+%>
+
+createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
+createRecordPanel.render("myMarkedUpContainer");
+
+createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true } );
+createTablePanel.render("myMarkedUpContainer");
+
 </script>
