@@ -170,10 +170,54 @@ function deleteRow(id) {
     simpledialog1.show();
 }
 
-function editRow(id) {
-    var passData = "ns=<%= request.ns %>&id="+id;
-    location="editRow?"+passData;
+function customSplit(str, num) {
+    var a = str.split(":");
+    for(var i=num; i<a.length; i++) {
+        a[num-1] += ":"+a[i];
+    }
+    return a;
 }
+
+function printDiv(fields, bd) {
+    f = customSplit(fields, 3);
+    if(f[0] == "_id") return;
+
+    bd.innerHTML += '<div class="elem"><label class="obj">'+f[0]+': </label>';
+    if(f[1] == "object") {
+        subobj = f[2].substring(f[2].indexOf("{")+1, f[2].lastIndexOf("}"));
+        subobj = subobj.split("&");
+        var outerDiv = document.createElement("div");
+        outerDiv.setAttribute("class", "obj");
+        for(var j=0; j<subobj.length-1; j++) {
+            printDiv(subobj[j], outerDiv);
+        }
+        bd.appendChild(outerDiv);
+    }
+    else {
+        bd.innerHTML += '<input type="text" value="'+f[2]+'"></div>';
+    }
+}
+
+function editRow(id) {
+    ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
+        // get bd div
+        var bd = document.getElementById("editRecord");
+        bd = YAHOO.util.Dom.getChildrenBy(bd, function(node) {
+            return node.id == "bd" ? true : false;
+        });
+        bd = bd[0];
+
+        var fields = response.split("&&");
+        // for each field, display the relevant input type
+        for(var i=0; i<fields.length-1; i++) {
+            printDiv(fields[i], bd);
+        }
+        editRowPanel.bringToTop();
+        editRowPanel.show();
+    });
+}
+
+
 
 
 function editField(id, type, dbid, path) {
@@ -244,6 +288,13 @@ function createTable() {
     createTablePanel.show();
 }
 
+function addTable() {
+
+}
+
+function closeCreateTableDlg() {
+createTablePanel.hide();
+}
 
 </script>
 
@@ -274,12 +325,14 @@ if(top) {
 <div class="hd">Create Table</div>
 <div class="bd">
 <form>
-    <label>Table name: </label><input type="text" name="tablename">
-    <label>Fixed: </label><input type="checkbox" name="fixed">
+    <div><label>Table name: </label><input type="text" name="tablename"></div>
+    <div><label>Fixed: </label><input type="checkbox" name="fixed"></div>
+    <div><label>Size: </lable><input type="text" name="size"></div>
+<div><label>Max: </label><input type="text" name="max"></div>
 </form>
 </div>
-<div class="ft"><input type="button" value="Save" onclick="addRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<div class="ft"><input type="button" value="Save" onclick="addTable()"/>
+<input type="button" value="Cancel" onclick="closeCreateTableDlg()" />
 </div>
 </div>
 
@@ -308,12 +361,21 @@ for(var b in fields) {
 </table>
 </div>
 <div class="ft">
-<input type="button" value="Save" onclick="addRecord()"/>
+<input type="button" value="Save" onclick="saveRecord()"/>
+<input type="button" value="Cancel" onclick="handleNo" />
+</div>
+</div>
+
+<div id="editRecord" style="background:gainsboro;">
+<div id="hd">Edit Record</div>
+<div id="bd"></div>
+<div id="ft"><input type="button" value="Save" onclick="saveRecord()"/>
 <input type="button" value="Cancel" onclick="handleNo" />
 </div>
 </div>
 
 <% } %>
+
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
@@ -511,9 +573,8 @@ var sortHex = function(a, b, desc) {
     return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
 }
 
-var sortDate = function(a, b, desc) {
-
-}
+// Todo: write date sort
+var sortDate = function(a, b, desc) {}
 
 
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
@@ -644,5 +705,8 @@ createRecordPanel.render("myMarkedUpContainer");
 
 createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true } );
 createTablePanel.render("myMarkedUpContainer");
+
+editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+editRowPanel.render("myMarkedUpContainer");
 
 </script>

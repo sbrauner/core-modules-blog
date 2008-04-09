@@ -41,7 +41,7 @@ function _dbCommand( cmdObj ) {
    Example:
      createCollection("movies", { size: 10 * 1024 * 1024, capped:true } );
 */
-function createCollection(name, options) { 
+function createCollection(name, options) {
     var cmd = { create: name, capped: options.capped, size: options.size, max: options.max };
     var res = _dbCommand(cmd);
     return res;
@@ -59,9 +59,9 @@ function deleteIndexes( collection ) {
     return res;
 }
 
-/* Delete one index.  
+/* Delete one index.
 
-   Name is the name of the index in the system.indexes name field. (Run db.system.indexes.find() to 
+   Name is the name of the index in the system.indexes name field. (Run db.system.indexes.find() to
    see example data.)
 
    alpha: space is not reclaimed
@@ -83,13 +83,13 @@ function validate( collection ) {
 }
 
 /* Set profiling level for your db.  Profiling gathers stats on query performance.
-   Default is off, and resets to off on a database restart -- so if you want it on, 
+   Default is off, and resets to off on a database restart -- so if you want it on,
    turn it on periodically.
      0=off
      1=log very slow (>100ms) operations
      2=log all
 */
-function setDbProfilingLevel(p) { 
+function setDbProfilingLevel(p) {
     if( p ) {
 	// if already exists does nothing
 	createCollection("system.profile", { capped: true, size: 128 * 1024 } );
@@ -98,6 +98,7 @@ function setDbProfilingLevel(p) {
 }
 
 /* drops all rows.  alpha: space not reclaimed.
+   "collection" is a string
  */
 function drop( collection )
 {
@@ -135,7 +136,7 @@ dbutil = {
    Use _dbEval() if you would like a return code for the evaluation.  _dbEval returns
    { retval: functionReturnValue, ok: num [, errno: num] [, errmsg: str] }
 
-   dbEval() simply returns the return value of the function that was invoked at the 
+   dbEval() simply returns the return value of the function that was invoked at the
    server.  If invocation fails (an exception occurs for example) null is returned.
 
    Example:
@@ -160,9 +161,9 @@ _count = function() {
     return db[args[0]].find(args[1]||{}, {_id:ObjId()}).length();
 }
 
-/* count - count # of objects in a collection 
+/* count - count # of objects in a collection
 
-   Second parameter is optional and specifies condition that must be true for the objects to 
+   Second parameter is optional and specifies condition that must be true for the objects to
    be counted.  Example:
 
      c = count("videos", {active:true});
@@ -202,7 +203,7 @@ _group = function() {
 }
 
 /* group()
-   
+
    Similar to SQL group by.  For example:
 
      select a,b,sum(c) csum from coll where active=1 group by a,b
@@ -210,7 +211,7 @@ _group = function() {
    corresponds to the following in 10gen:
 
      group(
-       { 
+       {
          ns: "coll",
          key: { a:true, b:true },
 	 // keyf: ...,
@@ -219,7 +220,7 @@ _group = function() {
 	 initial: { csum: 0 }
 	 });
 
-   An array of grouped items is returned.  The array must fit in RAM, thus this function is not 
+   An array of grouped items is returned.  The array must fit in RAM, thus this function is not
    suitable when the return set is extremely large.
 
    To order the grouped data, simply sort it client side upon return.
@@ -228,7 +229,7 @@ _group = function() {
      cond may be null if you want to run against all rows in the collection
      keyf is a function which takes an object and returns the desired key.  set either key or keyf (not both).
 */
-function group(parmsObj) { 
+function group(parmsObj) {
     var parms = Object.extend({}, parmsObj);
     if( parms.reduce ) {
 	parms.$reduce = parms.reduce; // must have $ to pass to db
