@@ -49,17 +49,6 @@ if(request.ns && request.id) {
     for(col in x) {
         if(ignore[col]) continue;
         printObj(x[col], col);
-
-/*        print(col+":"+(typeof x[col]) + ":" + x[col]);
-        if(typeof x[col] == "object") {
-            print("{");
-            for(prop in x[col]) {
-                print(prop+":"+(typeof x[col][prop]) +":"+x[col][prop]+"&");
-            }
-            print("}");
-        }
-*/
-
         print("&&");
     }
     return;

@@ -2,10 +2,17 @@
 
 core.db.db();
 
-var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
 if(request.action == "delete") {
+    var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
     collection.remove({_id : request.id});
+}
+else if(request.action == "create") {
+    var opts = {};
+    if(request.fixed) opts.fixed = true;
+    if(request.max) opts.max = parseInt(request.max);
+    if(request.size) opts.size = parseInt(request.size);
+    log(createCollection(request.tablename, opts));
 }
 else if(request.action == "drop") {
     drop(request.ns.substring( request.ns.indexOf('.')+1));
@@ -17,6 +24,8 @@ else if(request.action == "dropI") {
     }
 }
 else if(request.action == "edit") {
+    var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+
     var obj = collection.findOne({ _id : request.id });
 
     var val;
