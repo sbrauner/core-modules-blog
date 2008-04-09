@@ -31,16 +31,21 @@ if( ! session ){
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
 
+               // Log reader (the main console window)
+               // Dynamically create textarea for input:
+               // <div class="yui-ac">
+               //   <span class="prompt">js&gt;</span>
+               //   <textarea class="shellinput" id="commandac"></textarea>
+               // </div>
+
                var t = document.createElement("textarea");
                t.id = "commandac";
-               var commandcontainer = document.createElement("div");
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
                prompt.appendChild(document.createTextNode("js>"));
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
-               acdiv.appendChild(commandcontainer);
                acdiv.className = "yui-ac";
                t.className = "shellinput";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
@@ -77,31 +82,6 @@ if( ! session ){
                    }});
                this.myLogReader.setTitle("10gen Shell");
 
-               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
-                   row1 = null, row2 = null;
-               row1 = Dom.get("consolebody");
-               row2 = scratchText;
-               var size = parseInt(Dom.getStyle("console", "height"), 10);
-               scratchText.style.height = size;
-
-               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
-
-               var resize = new YAHOO.util.Resize(scratch, {
-                   handles: "t",
-                   height: 0,
-                   maxHeight: max
-               });
-
-               resize.on('resize', function(ev) {
-                   var w = ev.height;
-                   Dom.setStyle(row1, "height", (size - w - 20));
-               });
-
-
-               resize.resize(null, 10, 0, 0, 0, true);
-
-               var replay = false;
-
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
@@ -136,6 +116,33 @@ if( ! session ){
                        return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
+
+               // resize handle on scratch area
+               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+                   row1 = null, row2 = null;
+               row1 = Dom.get("consolebody");
+               row2 = scratchText;
+               var size = parseInt(Dom.getStyle("console", "height"), 10);
+               scratchText.style.height = size;
+
+               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
+
+               var resize = new YAHOO.util.Resize(scratch, {
+                   handles: "t",
+                   height: 0,
+                   maxHeight: max
+               });
+
+               resize.on('resize', function(ev) {
+                   var w = ev.height;
+                   Dom.setStyle(row1, "height", (size - w - 20));
+               });
+
+
+               resize.resize(null, 10, 0, 0, 0, true);
+
+               var replay = false;
+
 
                var inputs = <%= tojson(session.getCommands()) %>;
 
