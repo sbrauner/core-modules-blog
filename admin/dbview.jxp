@@ -123,15 +123,25 @@ else {
 %>
 
 <h3><%=hdr%></h3>
-<% if(!top) { %>
-<a href="dbview" style="display: block;">Back to Collection View</a>
-   <!--<form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
-   <% if(!request.all) { %>
-      <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
-      <%
-   } %>-->
-<% } %>
-
+<% if(!top) {
+    %>
+    <a href="dbview" style="display: block;">Back to Collection View</a>
+    <div> Indices:
+    <%
+    var r = new RegExp(request.ns+".*");
+    var metarows = db["system.namespaces"].find({name: r}).toArray();
+    var i=0;
+    while(i<metarows.length-1 && metarows[i+1].name.indexOf("$") > 0) {
+        obj = metarows[++i];
+        var idx=obj.name.indexOf("$");
+        if( obj.name && idx>=0 ) {
+            print("<div>"+obj.name.substring(idx+1)+"</div>");
+        }
+    }
+    %>
+    </div>
+    <%
+} %>
 
 
 <script type="text/javascript">
@@ -652,7 +662,7 @@ var myColumnDefs = [ <% if(top) {
                 else
                     print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
             }
-        }
+       }
     }
     %>
     { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
