@@ -97,12 +97,13 @@ xml = {
     } ,
 
     fromString : function( s ){
+        s = s.replace(/<!--.*-->/m, "");
         return xml.from(xml._xmlTokenizerchar(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
     _re_space : /[ \t\n]/,
-    _re_word : /[^\w&;]/,
+    _re_word : /[^\w&;:]/,
     _re_close_cdata: /\]\]>/,
 
     _xmlTokenizerre : function( s ){
@@ -257,7 +258,7 @@ xml = {
                 }
                 if(!tagName){
                     i = 0;
-                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i]) || sub[i] == ":") ++i;
                     var s2 = i;
                     s = s.substring(start+s2, s.length);
                     tagName = true;
@@ -265,7 +266,7 @@ xml = {
                 }
                 if(!attrName){
                     i = 0;
-                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i]) || sub[i] == ":") ++i;
                     var s2 = i;
                     s = sub.substring(s2, sub.length);
                     attrName = true;

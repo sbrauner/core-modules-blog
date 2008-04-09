@@ -44,6 +44,8 @@ addToNotice = function(key, value){
         notice = {};
     }
 
+    log.addToNotice.debug("Got " + value);
+
     // Try to prevent XSS, at least.
     value = content.HTML.escape(value);
     notice[key] = value;
