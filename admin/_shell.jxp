@@ -23,7 +23,7 @@ if ( ! theScope ){
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
 
-    theScope.__clear = function(){
+    theScope.__clearAll = function(){
         db.shell.sessions.remove({user: user});
     }
 }

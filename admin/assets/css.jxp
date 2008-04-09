@@ -150,13 +150,6 @@ div#customer_body {
     background: <%= header_dark_red %>;
 }
 
-.transcript {
-    margin-left: auto;
-    margin-right: auto;
-    width: 75% !important;
-    float: left;
-}
-
 #treeview {
     float: right;
     width: 20%;
@@ -206,6 +199,10 @@ div#customer_body {
 
 #console {
     font-size: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75% !important;
+    float: left;
 }
 
 #console .yui-log-bd {

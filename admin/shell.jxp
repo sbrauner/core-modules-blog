@@ -17,7 +17,7 @@ if( ! session ){
 
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
-     <div id="console" class="transcript"></div>
+     <div id="console"></div>
      <div id="treeview"></div>
      <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
      <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
@@ -49,6 +49,7 @@ if( ! session ){
                        YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
                        this._elBd = this._elConsole;
                        this._elConsole = document.createElement("div");
+                       this._elConsole.id = "transcript";
                        this._elBd.appendChild(this._elConsole);
                        this._elBd.appendChild(acdiv);
                    },
@@ -157,18 +158,17 @@ if( ! session ){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
                        if(checkRun(t)) {
-                           if(value.trim() == "clear" || value.trim() == "clear()" || value.trim() == "__clear()"){
-                               doRun(t, "__clear()", "false");
-                               location.reload();
+                           e.preventDefault();
+                           if(handleSpecialCommands(t)){
+                               t.value = "";
+                               return;
                            }
                            doRun(t);
-                           e.preventDefault();
                        }
                    }
                });
 
-               // Set up autocompletion stuff
-
+               // Borrow the AC styling
                t.className = "yui-ac-input";
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
@@ -197,6 +197,28 @@ var blockYUIParen = function ( e ) {
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
+};
+
+var specialCommandsMap = {
+    "clearAll": function(t){
+        doRun(t, "__clearAll()", "False");
+        location.reload();
+        return true;
+    },
+    "clearConsole": function(t){
+        document.getElementById("transcript").innerHTML = "";
+        return true;
+    }
+};
+
+var handleSpecialCommands = function(t){
+    var value = t.value.trim();
+    for(var key in specialCommandsMap){
+        if(value == key || value == key+"()" || 
+           value == "__"+key || value == "__"+key +"()"){
+            return specialCommandsMap[key](t);
+        }
+    }
 };
 
 var focusTextIfNotSelecting = function(t){
