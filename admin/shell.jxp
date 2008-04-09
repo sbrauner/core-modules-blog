@@ -177,12 +177,6 @@ if( ! session ){
                this.myLogReader._printBuffer();
                replay = false;
 
-               // Install this handler before the autocompleter because it will
-               // grab up/down key events
-               YAHOO.util.Event.addListener(t,"keydown",blockYUIParen);
-               YAHOO.util.Event.addListener(t,"keypress",blockYUIParen);
-               YAHOO.util.Event.addListener(t,"keyup",blockYUIParen);
-
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                YAHOO.util.Event.addListener(window, "keydown",
@@ -223,18 +217,6 @@ if( ! session ){
 
            }
        });
-
-var blockYUIParen = function ( e ) {
-    var key = e.keyCode || e.which;
-    if(e.shiftKey){
-        // In Konqueror and Safari, the keys for lparen and up-arrow generate
-        // the same keycode. Because of this, YUI blocks lparen.
-        // This is no good, so we block YUI's block by sabotaging the event's
-        // preventDefault method.
-        restoreDefault(e);
-        return;
-    }
-};
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
