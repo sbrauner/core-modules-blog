@@ -206,7 +206,7 @@ div#customer_body {
 }
 
 #console .yui-log-bd {
-    height: 80%;
+    height: 75%;
 }
 
 #console .scratch {
@@ -215,7 +215,7 @@ div#customer_body {
 #console .scratchtext {
     margin-top: 6px;
     width: 100%;
-    height: 0;
+    height: 0; /* resized dynamically */
 }
 
 /* Taken from the YUI docs */
