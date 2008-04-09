@@ -135,6 +135,7 @@ if( ! session ){
 
                resize.on('resize', function(ev) {
                    var w = ev.height;
+                   Dom.setStyle(scratchText, "height", w);
                    Dom.setStyle(row1, "height", (size - w - 20));
                });
 
