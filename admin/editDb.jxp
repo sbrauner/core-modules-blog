@@ -1,0 +1,57 @@
+<%
+
+core.db.db();
+
+var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+
+if(request.action == "delete") {
+    collection.remove({_id : request.id});
+}
+else if(request.action == "drop") {
+    drop(request.ns.substring( request.ns.indexOf('.')+1));
+}
+else if(request.action == "dropI") {
+    var idx = request.idx.split(",");
+    for(var i in idx) {
+        deleteIndex(collection, idx[i]);
+    }
+}
+else if(request.action == "edit") {
+    var obj = collection.findOne({ _id : request.id });
+
+    var val;
+    if(request.type == "boolean") {
+        val = (request.val == "true") ? true : false;
+    }
+    else if(request.type == "number") {
+        val = parseInt(request.val);
+    }
+    else { // string
+        val = request.val;
+    }
+
+    var path = request.path.split(",");
+    switch(path.length) {
+    case 1:
+        obj[path[0]] = val;
+        break;
+    case 2:
+        obj[path[0]][path[1]] = val;
+        break;
+    case 3:
+        obj[path[0]][path[1]][path[2]] = val;
+        break;
+    case 4:
+        obj[path[0]][path[1]][path[2]][path[3]] = val;
+        break;
+    case 5:
+        obj[path[0]][path[1]][path[2]][path[3]][path[4]] = val;
+        break;
+    default:
+        print(path.length);
+        return;
+    }
+
+    collection.save(obj);
+}
+%>
