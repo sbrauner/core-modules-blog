@@ -16,7 +16,7 @@ djang10.invokeSandboxPackage = function(pkg_arr, target, ret) {
     target();
 
     // now return the element in scope that's been asked for
-    
+
     return scope[ret];
 }
 
