@@ -41,6 +41,7 @@ if( ! session ){
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
+               acdiv.className = "yui-ac";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
@@ -50,7 +51,6 @@ if( ! session ){
                        this._elConsole = document.createElement("div");
                        this._elBd.appendChild(this._elConsole);
                        this._elBd.appendChild(acdiv);
-
                    },
                    _printBuffer: function(){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
@@ -168,25 +168,8 @@ if( ! session ){
                });
 
                // Set up autocompletion stuff
-               YAHOO.ACJSArray = new function(){ // Object construction
-                   this.oACDS = new YAHOO.widget.DS_JSArray([]);
-                   this.oAutoComp = new YAHOO.widget.AutoComplete(t, commandcontainer, this.oACDS);
-                   this.oAutoComp.prehighlightClassName = "yui-ac-prehighlight";
-                   this.oAutoComp.typeAhead = true;
-                   this.oAutoComp.useShadow = true;
-                   this.oAutoComp.minQueryLength = 1;
-                   //this.oAutoComp.queryDelay = 0;
-                   this.oAutoComp.doBeforeSendQuery = function(q){
-                       if(q == window.lastSent){
-                           // We only want to throw this away once.
-                           // Otherwise the user might type in the exact query
-                           // to try to complete a longer query..
-                           window.lastSent = "";
-                           return "!!!!!!";
-                       }
-                       return q;
-                   };
-               };
+
+               t.className = "yui-ac-input";
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
@@ -266,7 +249,6 @@ var setcmd = function () {
 }
 
 var histfunc = function( e ) {
-    if(YAHOO.ACJSArray.oAutoComp.isContainerOpen()) return;
     var key = e.keyCode || e.which;
 
     var t = document.getElementById("commandac");
