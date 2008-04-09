@@ -1,0 +1,1 @@
+ws.akismet = Object();

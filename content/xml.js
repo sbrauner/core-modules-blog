@@ -97,7 +97,7 @@ xml = {
     } ,
 
     fromString : function( s ){
-        s = s.replace(/<!--.*-->/m, "");
+        s = s.replace(/<!--.*?-->/gm, "");
         return xml.from(xml._xmlTokenizerchar(s));
     },
 

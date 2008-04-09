@@ -150,13 +150,6 @@ div#customer_body {
     background: <%= header_dark_red %>;
 }
 
-.transcript {
-    margin-left: auto;
-    margin-right: auto;
-    width: 75% !important;
-    float: left;
-}
-
 #treeview {
     float: right;
     width: 20%;
@@ -206,10 +199,22 @@ div#customer_body {
 
 #console {
     font-size: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75% !important;
+    float: left;
 }
 
 #console .yui-log-bd {
     height: 80%;
+}
+
+#console .scratch {
+    overflow: hidden;
+}
+#console .scratchtext {
+    margin-top: 6px;
+    width: 100%;
 }
 
 /* Taken from the YUI docs */
@@ -222,7 +227,7 @@ div#customer_body {
 }
 
 /* For the single-terminal-window look */
-#console textarea {
+#console textarea.shellinput {
     width: 90% !important;
     border: none;
 }

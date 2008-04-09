@@ -17,48 +17,70 @@ if( ! session ){
 
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page or anything crazy like that)<br>
-     <div id="console" class="transcript"></div>
+     <div id="console"></div>
      <div id="treeview"></div>
      <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
      <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json'],
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
            base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
 
+               // Log reader (the main console window)
+               // Dynamically create textarea for input:
+               // <div class="yui-ac">
+               //   <span class="prompt">js&gt;</span>
+               //   <textarea class="shellinput" id="commandac"></textarea>
+               // </div>
+
                var t = document.createElement("textarea");
                t.id = "commandac";
-               var commandcontainer = document.createElement("div");
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
                prompt.appendChild(document.createTextNode("js>"));
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
-               acdiv.appendChild(commandcontainer);
                acdiv.className = "yui-ac";
+               t.className = "shellinput";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
+                   _initHeaderEl: function(){
+                       YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
+                       this._elCollapse.style.display = "none";
+                   },
                    _initConsoleEl: function(){
                        YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
                        this._elBd = this._elConsole;
+                       this._elBd.id = "consolebody";
                        this._elConsole = document.createElement("div");
+                       this._elConsole.id = "transcript";
                        this._elBd.appendChild(this._elConsole);
                        this._elBd.appendChild(acdiv);
+                       YAHOO.util.Event.addListener(this._elBd, "click",
+                                                    function(){
+                                                        focusTextIfNotSelecting(t);
+                                                    });
+
+
+                       scratch = document.createElement("div");
+                       scratchText = document.createElement("textarea");
+                       scratchText.className = "scratchtext";
+                       scratch.appendChild(scratchText);
+                       scratch.className = "scratch";
+                       this._elContainer.appendChild(scratch);
                    },
                    _printBuffer: function(){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
                this.myLogReader.setTitle("10gen Shell");
-
-               var replay = false;
 
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
@@ -94,6 +116,34 @@ if( ! session ){
                        return s += string(YAHOO.lang.JSON.stringify(obj));
                    }
                };
+
+               // resize handle on scratch area
+               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+                   row1 = null, row2 = null;
+               row1 = Dom.get("consolebody");
+               row2 = scratchText;
+               var size = parseInt(Dom.getStyle("console", "height"), 10);
+               scratchText.style.height = size;
+
+               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
+
+               var resize = new YAHOO.util.Resize(scratch, {
+                   handles: "t",
+                   height: 0,
+                   maxHeight: max
+               });
+
+               resize.on('resize', function(ev) {
+                   var w = ev.height;
+                   Dom.setStyle(scratchText, "height", w);
+                   Dom.setStyle(row1, "height", (size - w - 20));
+               });
+
+
+               resize.resize(null, 10, 0, 0, 0, true);
+
+               var replay = false;
+
 
                var inputs = <%= tojson(session.getCommands()) %>;
 
@@ -140,36 +190,23 @@ if( ! session ){
                                                 focusTextIfSelecting(t);
                                             });
 
-               YAHOO.util.Event.addListener("console", "click",
-                                            function(){
-                                                focusTextIfNotSelecting(t);
-                                            });
-
-
-               // YUI autocomplete tries to autocomplete even if there's been
-               // an intervening "Enter" and the input field has been cleared.
-               // We block this by keeping a "lastSent"
-               // variable with the last complete command we've sent and
-               // if we get a query for that exact command, we replace it
-               // with a gibberish !!!!!! query.
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
                        if(checkRun(t)) {
-                           if(value.trim() == "clear" || value.trim() == "clear()" || value.trim() == "__clear()"){
-                               doRun(t, "__clear()", "false");
-                               location.reload();
+                           e.preventDefault();
+                           if(handleSpecialCommands(t)){
+                               t.value = "";
+                               return;
                            }
                            doRun(t);
-                           e.preventDefault();
                        }
                    }
                });
 
-               // Set up autocompletion stuff
-
-               t.className = "yui-ac-input";
+               // Borrow the AC styling
+               t.className += " yui-ac-input";
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
@@ -179,6 +216,10 @@ if( ! session ){
                historyPopup.render();
 
                t.focus();
+
+               sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
+
+               new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
            }
        });
@@ -199,6 +240,28 @@ var restoreDefault = function(e){
     e.preventDefault = function(){};
 };
 
+var specialCommandsMap = {
+    "clearAll": function(t){
+        doRun(t, "__clearAll()", "false");
+        location.reload();
+        return true;
+    },
+    "clearConsole": function(t){
+        document.getElementById("transcript").innerHTML = "";
+        return true;
+    }
+};
+
+var handleSpecialCommands = function(t){
+    var value = t.value.trim();
+    for(var key in specialCommandsMap){
+        if(value == key || value == key+"()" || 
+           value == "__"+key || value == "__"+key +"()"){
+            return specialCommandsMap[key](t);
+        }
+    }
+};
+
 var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
@@ -213,6 +276,12 @@ var focusTextIfSelecting = function(t){
     // trying to scroll the page up or down or something.
     if(window.getSelection().isCollapsed == false)
         return t.focus();
+};
+
+var sendScratch = function(e){
+    var scratch = scratchText;
+    var text = scratchText.value.substring(scratchText.selectionStart, scratchText.selectionEnd);
+    doRun(document.getElementById("commandac"), text);
 };
 
 // historyLocation starts at 0, and goes negative; -1 is the previous command,

@@ -14,14 +14,16 @@ Captcha = {
 	    
 	    assert( words );
 	    
-	    var min = minLen || 6;
-	    var max = maxLen || min;
+	    var min = minLen || 3
+	    var max = maxLen || 5;
 
 	    assert( max >= min );
 
 	    while ( true ){
 		var s = words.getRandomWord();
-		
+		s = s.replace( /[^\w]+/g , "" );
+		s = s.toLowerCase();
+
 		if ( s.length >= min && s.length <= max )
 		    return s;
 	    }
