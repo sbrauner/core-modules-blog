@@ -19,11 +19,17 @@ Template.prototype.render = function(context) {
 
     f = scope.eval("jxp." + this.template_name);
 
-    f.getScope(true).print = function(s) { myBuf += s;};
-
-    f(context.getRawStorageObject());
-    
-    f.clearScope();
+    if (f == null) {
+        f = scope.eval("core.djang10.templates.notemplatefound");
+        f.getScope(true).print = function(s) { myBuf += s;};
+        f({"template_name" : this.template_name});
+        f.clearScope();
+    }
+    else {
+        f.getScope(true).print = function(s) { myBuf += s;};
+        f(context.getRawStorageObject());
+        f.clearScope();
+    }
 
     return myBuf;
 }
