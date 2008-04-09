@@ -209,6 +209,11 @@ div#customer_body {
     height: 80%;
 }
 
+#console .scratch {
+    height: 40%;
+    width: 100%;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
@@ -219,7 +224,7 @@ div#customer_body {
 }
 
 /* For the single-terminal-window look */
-#console textarea {
+#console textarea.shellinput {
     width: 90% !important;
     border: none;
 }

@@ -24,7 +24,7 @@ if( ! session ){
      <script type="text/javascript">
        var loader = new YAHOO.util.YUILoader();
        loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json'],
+           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event'],
            base: '/@@/yui/2.5.1/',
            onSuccess: function(loader) {
                objectList = [];
@@ -42,6 +42,7 @@ if( ! session ){
                acdiv.appendChild(t);
                acdiv.appendChild(commandcontainer);
                acdiv.className = "yui-ac";
+               t.className = "shellinput";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
@@ -52,6 +53,17 @@ if( ! session ){
                        this._elConsole.id = "transcript";
                        this._elBd.appendChild(this._elConsole);
                        this._elBd.appendChild(acdiv);
+                       YAHOO.util.Event.addListener(this._elBd, "click",
+                                                    function(){
+                                                        focusTextIfNotSelecting(t);
+                                                    });
+
+
+                       scratch = document.createElement("div");
+                       scratchText = document.createElement("textarea");
+                       scratchText.className = "scratch";
+                       scratch.appendChild(scratchText);
+                       this._elContainer.appendChild(scratch);
                    },
                    _printBuffer: function(){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
@@ -141,12 +153,6 @@ if( ! session ){
                                                 focusTextIfSelecting(t);
                                             });
 
-               YAHOO.util.Event.addListener("console", "click",
-                                            function(){
-                                                focusTextIfNotSelecting(t);
-                                            });
-
-
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
@@ -163,7 +169,7 @@ if( ! session ){
                });
 
                // Borrow the AC styling
-               t.className = "yui-ac-input";
+               t.className += " yui-ac-input";
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
@@ -173,6 +179,10 @@ if( ! session ){
                historyPopup.render();
 
                t.focus();
+
+               sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
+
+               new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
            }
        });
@@ -229,6 +239,12 @@ var focusTextIfSelecting = function(t){
     // trying to scroll the page up or down or something.
     if(window.getSelection().isCollapsed == false)
         return t.focus();
+};
+
+var sendScratch = function(e){
+    var scratch = scratchText;
+    var text = scratchText.value.substring(scratchText.selectionStart, scratchText.selectionEnd);
+    doRun(document.getElementById("commandac"), text);
 };
 
 // historyLocation starts at 0, and goes negative; -1 is the previous command,
