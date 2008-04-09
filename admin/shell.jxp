@@ -16,7 +16,7 @@ if( ! session ){
  %>
 
 <div style="text-align:center;" class="yui-skin-sam">
-     Shell (do not refresh page or anything crazy like that)<br>
+     Shell (do not refresh page)<br>
      <div id="console"></div>
      <div id="treeview"></div>
      <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
