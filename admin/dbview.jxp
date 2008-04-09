@@ -289,7 +289,21 @@ function createTable() {
 }
 
 function addTable() {
+var tbl = document.getElementById("createTableForm");
 
+var passData = "";
+var children = YAHOO.util.Dom.getChildren(tbl);
+for(var i=0; i<children.length; i++) {
+var c = YAHOO.util.Dom.getLastChild(children[i]);
+if(c.getAttribute("type") == "text")
+                                if(c.value != "") passData += "&"+c.name+"="+c.value;
+if(c.getAttribute("type") == "checkbox")
+                                if(c.checked) passData += "&"+c.name;
+}
+ajax("action=create"+passData, "editDb", function(response) {
+refreshTable();
+});
+createTablePanel.hide();
 }
 
 function closeCreateTableDlg() {
@@ -324,10 +338,10 @@ if(top) {
 <div id="createTable">
 <div class="hd">Create Table</div>
 <div class="bd">
-<form>
-    <div><label>Table name: </label><input type="text" name="tablename"></div>
-    <div><label>Fixed: </label><input type="checkbox" name="fixed"></div>
-    <div><label>Size: </lable><input type="text" name="size"></div>
+<form id="createTableForm">
+    <div><label>Table name: </label><input type="text"  name="tablename"></div>
+    <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
+    <div><label>Size: </label><input type="text" name="size"></div>
 <div><label>Max: </label><input type="text" name="max"></div>
 </form>
 </div>
@@ -462,15 +476,6 @@ if(top) {
         this.hide();
     }
 
-    var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
-        this.hide();
-    }
-
-
     function getValidation(tablename) {
         ajax("action=validation&ns="+tablename, "showTable", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
@@ -509,6 +514,13 @@ if(top) {
 
     function dropIndices(tname) {
         tablename = tname;
+    var handleIDrop = function() {
+        var list = getSelectedIndices(",");
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
         var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
@@ -602,11 +614,13 @@ myDataSource.responseSchema = {
         %>
 
         {key: "delete"}, <%
-        for(var i in rows[0]) {
-            if(!ignore[i]) {
-                print('{ key: "'+i+'"');
-                print(', parser:YAHOO.util.DataSource.parseString');
-                print('},');
+        if(rows && rows[0]) {
+            for(var i in rows[0]) {
+                if(!ignore[i]) {
+                    print('{ key: "'+i+'"');
+                    print(', parser:YAHOO.util.DataSource.parseString');
+                    print('},');
+                }
             }
         }
     }
@@ -627,15 +641,17 @@ var myColumnDefs = [ <% if(top) {
     %>
     { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
     <%
-    for(var i in rows[0]) {
-        if(!ignore[i]) {
-            // Special cases:
-            // if _id, the column needs to be converted to hexidecimal and sorted that way
-            if(i == "_id") {
-                print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+    if(rows && rows[0]) {
+        for(var i in rows[0]) {
+            if(!ignore[i]) {
+                // Special cases:
+                // if _id, the column needs to be converted to hexidecimal and sorted that way
+                if(i == "_id") {
+                    print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+                }
+                else
+                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
             }
-            else
-                print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
         }
     }
     %>
