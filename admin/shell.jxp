@@ -133,10 +133,20 @@ if( ! session ){
                    maxHeight: max
                });
 
+               oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
                resize.on('resize', function(ev) {
+                   var oldScrollHeight = row1.scrollHeight, 
+                       oldScrollTop = row1.scrollTop;
                    var w = ev.height;
                    Dom.setStyle(scratchText, "height", w);
-                   Dom.setStyle(row1, "height", (size - w - 20));
+                   var newHeight = (size - w - 20);
+                   Dom.setStyle(row1, "height", newHeight);
+
+                   if(oldHeight + oldScrollTop >= oldScrollHeight) {
+                       // row1 was scrolled all the way down
+                       row1.scrollTop = row1.scrollHeight;
+                   }
+                   oldHeight = newHeight;
                });
 
 
