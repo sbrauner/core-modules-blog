@@ -21,10 +21,11 @@ var populate = function(theScope){
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
 
-    theScope.__startFresh = function(){
+    theScope.clearCommandHistory = function(){
         db.shell.sessions.remove({user: user});
+        print.termCommand("reload");
     };
-    
+
     theScope.clearScope = function(){
         for(var key in theScope){
             delete theScope[key];
@@ -35,6 +36,11 @@ var populate = function(theScope){
     theScope.clearTranscript = function(){
         print.termCommand("clear");
         return "";
+    };
+
+    theScope.clearAll = function(){
+        theScope.clearScope();
+        theScope.clearTranscript();
     };
 }
 
@@ -85,6 +91,9 @@ print( tojson( res ) );
 if(request.save == "true"){
     // Only the client knows whether to save this command.
     var session = db.shell.sessions.findOne({user: user});
+    if(session == null) 
+        // Is this an error? or is it because the session was just removed?
+        return;
     session.push(request.command, tojson(res));
     db.shell.sessions.save(session);
 }

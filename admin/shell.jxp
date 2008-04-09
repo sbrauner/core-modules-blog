@@ -112,6 +112,9 @@ if( ! session ){
                                    s = "";
                                    clearTranscript();
                                }
+                               else if(p.$command == "reload"){
+                                   location.reload();
+                               }
                            }
                        }
                        if(obj.$scope && ! replay){
