@@ -101,7 +101,18 @@ if( ! session ){
                        var s = "";
                        var obj = eval("(" + msg.msg + ")");
                        if(obj.$printed){
-                           s += "<span class=\"output\">" + obj.$printed + "</span><br/>";
+                           if(typeof obj.$printed == "string")
+                               obj.$printed = [obj.$printed];
+                           for(var i = 0; i < obj.$printed.length; i++){
+                               var p = obj.$printed[i];
+                               
+                               if(typeof(p) == "string")
+                                   s += "<span class=\"output\">" + p + "</span><br/>";
+                               else if(p.$command == "clear"){
+                                   s = "";
+                                   clearTranscript();
+                               }
+                           }
                        }
                        if(obj.$scope && ! replay){
                            refreshScope(loader.objectTreeView, obj.$scope);
@@ -232,6 +243,10 @@ var restoreDefault = function(e){
     e.preventDefault = function(){};
 };
 
+var clearTranscript = function(){
+    document.getElementById("transcript").innerHTML = "";
+};
+
 var specialCommandsMap = {
     "clearAll": function(t){
         doRun(t, "__clearAll()", "false");
@@ -239,7 +254,7 @@ var specialCommandsMap = {
         return true;
     },
     "clearConsole": function(t){
-        document.getElementById("transcript").innerHTML = "";
+        clearTranscript();
         return true;
     }
 };
