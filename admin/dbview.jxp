@@ -506,6 +506,16 @@ function getSearchArgs() {
     return passData;
 }
 
+// Custom sorters
+var sortHex = function(a, b, desc) {
+    return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
+}
+
+var sortDate = function(a, b, desc) {
+
+}
+
+
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
@@ -558,7 +568,13 @@ var myColumnDefs = [ <% if(top) {
     <%
     for(var i in rows[0]) {
         if(!ignore[i]) {
-            print('{ key: "'+i+'", sortable: true, children: [{ key: "'+i+'", label: addSearchForm("'+i+ '"), sortable: false } ] },');
+            // Special cases:
+            // if _id, the column needs to be converted to hexidecimal and sorted that way
+            if(i == "_id") {
+                print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+            }
+            else
+                print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
         }
     }
     %>
@@ -568,8 +584,6 @@ var myColumnDefs = [ <% if(top) {
                      %>
 
                    ];
-
-
 
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
@@ -618,6 +632,7 @@ else {
     editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
+
     YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
     <%
