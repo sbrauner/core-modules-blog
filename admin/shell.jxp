@@ -196,6 +196,7 @@ if( ! session ){
                YAHOO.log("<hr/>", "format", "shell");
 
                this.myLogReader._printBuffer();
+
                replay = false;
 
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
@@ -539,10 +540,10 @@ function doRun(el, value, save){
         // This behavior is inspired by the history functionality in bash.
         // If you retype the last command, or re-run it, it doesn't get
         // entered into the history twice.
-        save = "true";
         pastCommands.push(usr);
     }
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
+        save = "true";
         historyAry.push(indexOf(pastCommands,usr));
     }
 
