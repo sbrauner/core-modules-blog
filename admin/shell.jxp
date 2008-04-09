@@ -118,7 +118,7 @@ if( ! session ){
                };
 
                // resize handle on scratch area
-               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event,
                    row1 = null, row2 = null;
                row1 = Dom.get("consolebody");
                row2 = scratchText;
