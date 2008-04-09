@@ -184,7 +184,7 @@ if( ! session ){
                                                 focusTextIfSelecting(t);
                                             });
 
-               YAHOO.util.Event.addListener(t,"keydown",function(e){
+               YAHOO.util.Event.addListener(t,"keypress",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
