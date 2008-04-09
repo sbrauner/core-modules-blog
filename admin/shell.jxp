@@ -147,12 +147,6 @@ if( ! session ){
                                             });
 
 
-               // YUI autocomplete tries to autocomplete even if there's been
-               // an intervening "Enter" and the input field has been cleared.
-               // We block this by keeping a "lastSent"
-               // variable with the last complete command we've sent and
-               // if we get a query for that exact command, we replace it
-               // with a gibberish !!!!!! query.
                YAHOO.util.Event.addListener(t,"keydown",function(e){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
