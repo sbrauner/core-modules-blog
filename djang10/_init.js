@@ -20,7 +20,7 @@ djang10.invokeSandboxPackage = function(pkg_arr, target, ret) {
     return scope[ret];
 }
 
-djang10.invokeSandboxFunction = function(pkg_arr, target, func) {
+djang10.invokeSandboxFunction = function(pkg_arr, target, func, arg_array) {
 
     // lock this lock scope as global to prevent leakage upwards
 
@@ -32,10 +32,11 @@ djang10.invokeSandboxFunction = function(pkg_arr, target, func) {
 
     // invoke the target file
 
-    print("Invokgin " + target);
     scope.eval(target)();
 
     //now return the result of calling the required function
-    
-    return scope.eval(func)();
+
+    f = scope.eval(func);
+
+    return f.apply(null, arg_array);
 }

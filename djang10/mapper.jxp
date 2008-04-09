@@ -9,17 +9,20 @@
   *  fn = <site>.<app>.<filename>.<functionname>
   */
 
+core.djang10.http();
+
 urlpatterns = djang10.invokeSandboxPackage([ core.djang10.conf.urls.defaults ], jxp.urls, "urlpatterns");
 
 // now go through each pattern and see if it matches
 
 invoker = null;
-
+match_array = null;
 for (p in urlpatterns) {
 
-    if (request.getURI().match(urlpatterns[p][0]) != null) {
+    match_array = request.getURI().match(urlpatterns[p][0]);
+    if (match_array != null) {
        invoker = urlpatterns[p][1];
-        break;
+       break;
     }
 }
 
@@ -30,16 +33,21 @@ if (invoker == null) {
     core.djang10.conf.errorPage("No invoker specified for " + request.getURI());
 }
 else {
-    pkg = invoker.substring(0, invoker.lastIndexOf("."));
+
+    // extract the package name (really the <app>.<file> section - ignore the leading <project>
+    // and get the function to call in that package as well
+
+    pkg = "jxp" + invoker.substring(invoker.indexOf("."), invoker.lastIndexOf("."));
     func = invoker.substring(invoker.lastIndexOf(".")+1);
 
-    pkg = "jxp.myapp.views";
+    // now  invoke the function in the package in a private global scope.  We can shove the
+    // request object as the first arg, just replacing the full match string that's there
+    // rather than waste the time of getting a new arg array
+
+    match_array[0] = new HttpRequest(request);
     
-    djang10.invokeSandboxFunction([], pkg, func);
+    httpresp = djang10.invokeSandboxFunction([], pkg, func, match_array);
 
-    print (" root = " + pkg + " : func = " + func);
-
+    print(httpresp.getContent());
 }
-
-
 %>
