@@ -5,7 +5,12 @@ core.io.encode.json();
 core.db.db();
 core.content.html();
 
+var collection;
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
 
+
+// Print validation information
 if(request.action == "validation") {
     if(request.ns == "") {
         print("No table chosen.");
@@ -17,11 +22,50 @@ if(request.action == "validation") {
     return;
 }
 
+// Return one row
+if(request.ns && request.id) {
+    collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+    x = collection.findOne({ _id : request.id });
+    if(!x) {
+        print("-1");
+        return;
+    }
+
+    var printObj = function(obj, name) {
+        if(ignore[name]) return;
+        print(name+":"+(typeof obj) + ":" + obj);
+        if(typeof obj == "object") {
+            print("{");
+            for(prop in obj) {
+                if(typeof obj[prop] == "object")
+                    printObj(obj[prop]);
+                else
+                    print(prop+":"+(typeof obj[prop]) +":"+obj[prop]+"&");
+            }
+            print("}");
+        }
+    }
+
+    for(col in x) {
+        if(ignore[col]) continue;
+        printObj(x[col], col);
+
+/*        print(col+":"+(typeof x[col]) + ":" + x[col]);
+        if(typeof x[col] == "object") {
+            print("{");
+            for(prop in x[col]) {
+                print(prop+":"+(typeof x[col][prop]) +":"+x[col][prop]+"&");
+            }
+            print("}");
+        }
+*/
+
+        print("&&");
+    }
+    return;
+}
+
 var top = request.ns == null;
-
-// ignore internal transient variables
-var ignore= { _ns:1, _save:1, _update:1 };
-
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 

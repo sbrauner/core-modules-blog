@@ -242,7 +242,9 @@ div.obj {
     border: 1px black solid;
 }
 */
-
+div.obj {
+padding-left: 20px;
+}
 div.parent {
     cursor: pointer;
 }
