@@ -294,15 +294,17 @@ var histfunc = function( e ) {
             setHistoryLocation(historyLocation);
         }
     }
-    else if( key == 40 ) { // down arrow
+    else if( key == 40 && historyLocation != 0) { // down arrow
         historyLocation += 1;
-        if (historyLocation >= 0){
-            historyLocation = 0;
+        if (historyLocation == 0){
             setHistoryLocation(historyLocation, currentCommand);
         }
         else {
             setHistoryLocation(historyLocation);
         }
+        var newline = t.value.indexOf('\n');
+        if(newline != -1)
+            t.selectionStart = t.selectionEnd = newline;
     }
 };
      </script>
