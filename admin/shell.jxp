@@ -249,7 +249,8 @@ var clearTranscript = function(){
 };
 
 var specialCommandsMap = {
-    "clearAll": function(t){
+}
+blah ={    "clearAll": function(t){
         doRun(t, "__clearAll()", "false");
         location.reload();
         return true;

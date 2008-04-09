@@ -15,23 +15,37 @@ if ( ! holder ){
     gg.setTLPreferred( s );
 }
 
+
 var theScope = holder[ shellId ];
-if ( ! theScope ){
-    theScope = gg.child( "_shell scope : " + shellId );
-    theScope.setGlobal( true );
-    holder[ shellId ] = theScope;
+var populate = function(theScope){
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
 
-    theScope.__clearAll = function(){
+    theScope.__startFresh = function(){
         db.shell.sessions.remove({user: user});
-    }
+    };
+    
+    theScope.clearScope = function(){
+        for(var key in theScope){
+            delete theScope[key];
+        }
+        populate(theScope);
+    };
 
-    theScope.clear = function(){
+    theScope.clearTranscript = function(){
         print.termCommand("clear");
         return "";
-    }
+    };
 }
+
+if ( ! theScope ){
+    log("Creating scope for " + shellId);
+    theScope = gg.child( "_shell scope : " + shellId );
+    theScope.setGlobal( true );
+    holder[ shellId ] = theScope;
+    populate(theScope);
+}
+
 theScope.setGlobal( true );
 var res = null;
 var exc = null;
