@@ -19,266 +19,277 @@ if( ! session ){
      Shell (do not refresh page)<br>
      <div id="console"></div>
      <div id="treeview"></div>
-     <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
-     <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
-     <script type="text/javascript">
-       var loader = new YAHOO.util.YUILoader();
-       loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
-           base: '/@@/yui/2.5.1/',
-           onSuccess: function(loader) {
-               objectList = [];
-               loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
-               loader.objectNodes = [];
+     <div class="clear"></div>
+     <div onclick="showHistory()">Show history</div>
+     <div id="history_popup" style="display: none;">
+       <div class="hd">History</div>
+       <div class="bd">
+         <div id="history_links"><% /* filled in by JS */ %></div>
+       </div>
+       <div class="ft"></div>
+     </div>
+</div>
 
-               // ***** Console widget *****
+<script type="text/javascript" src="/~~/ui/js/compat.js"></script>
+<script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript">
+var loader = new YAHOO.util.YUILoader();
+loader.insert({
+    require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
+    base: '/@@/yui/2.5.1/',
+    onSuccess: function(loader) {
+        objectList = [];
+        loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
+        loader.objectNodes = [];
+        
+        // ***** Console widget *****
+        
+        // Log reader (the main console window)
+        // Dynamically create textarea for input:
+        // <div class="yui-ac">
+        //   <span class="prompt">js&gt;</span>
+        //   <textarea class="shellinput" id="commandac"></textarea>
+        // </div>
+        
+        var t = document.createElement("textarea");
+        t.id = "commandac";
+        t.focus();
+        t.className = "shellinput";
+        // Borrow the AC styling
+        t.className += " yui-ac-input";
+        t.rows = 1;
+        
+        var acdiv = document.createElement("div");
+        prompt = document.createElement("span");
+        prompt.className = "prompt";
+        prompt.appendChild(document.createTextNode("js>"));
+        acdiv.appendChild(prompt);
+        acdiv.appendChild(t);
+        acdiv.className = "yui-ac";
+        this.myLogReader = new YAHOO.widget.LogReader('console', {
+            newestOnTop: false,
+            footerEnabled: false,
+            draggable: false,
+            _initHeaderEl: function(){
+                YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
+                this._elCollapse.style.display = "none";
+            },
+            _initConsoleEl: function(){
+                YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
+                this._elBd = this._elConsole;
+                this._elBd.id = "consolebody";
+                this._elConsole = document.createElement("div");
+                this._elConsole.id = "transcript";
+                this._elBd.appendChild(this._elConsole);
+                this._elBd.appendChild(acdiv);
+                YAHOO.util.Event.addListener(this._elBd, "click",
+                                             function(){
+                                                 focusTextIfNotSelecting(t);
+                                             });
+                
+                
+                scratch = document.createElement("div");
+                scratchText = document.createElement("textarea");
+                scratchText.className = "scratchtext";
+                scratch.appendChild(scratchText);
+                scratch.className = "scratch";
+                this._elContainer.appendChild(scratch);
+            },
+            _printBuffer: function(){
+                YAHOO.widget.LogReader.prototype._printBuffer.call(this);
+                this._elBd.scrollTop = this._elBd.scrollHeight;
+            }});
+        
+        var sources = this.myLogReader.getSources();
+        this.myLogReader.hideSource("global");
+        this.myLogReader.hideSource("LogReader");
+        this.myLogReader.setTitle("10gen Shell");
+        YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        
+        YAHOO.util.Event.addListener(window, "keydown",
+                                     function(e){
+                                         focusTextIfSelecting(t, e);
+                                     });
+        
+        YAHOO.util.Event.addListener(t,"keypress",function(e){
+            if(e.keyCode == 13){
+                window.lastSent = encodeURIComponent(t.value);
+                var value = t.value;
+                var check = checkRun(t);
+                if(check == true) {
+                    t.rows = 1;
+                    e.preventDefault();
+                    doRun(t);
+                }
+                else if(check == false){
+                    resizeRows(t, value, true);
+                }
+                else {
+                    // check is a result of match
+                    // unterminated string literal :(
+                    if(check.index+1 == t.value.length){
+                        t.selectionStart = check.index;
+                        t.selectionEnd = check.index+1;
+                    }
+                    else {
+                        t.selectionStart = check.index + 1;
+                        t.selectionEnd = t.value.length;
+                    }
+                    e.preventDefault();
+                }
+            }
+        });
 
-               // Log reader (the main console window)
-               // Dynamically create textarea for input:
-               // <div class="yui-ac">
-               //   <span class="prompt">js&gt;</span>
-               //   <textarea class="shellinput" id="commandac"></textarea>
-               // </div>
+        this.myLogReader.formatMsg = function(msg){
+            if(msg.category == "format")
+                return msg.msg;
 
-               var t = document.createElement("textarea");
-               t.id = "commandac";
-               t.focus();
-               t.className = "shellinput";
-               // Borrow the AC styling
-               t.className += " yui-ac-input";
-               t.rows = 1;
+            if(msg.category == "user"){
+                return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
+            }
+            if(msg.category == "response"){
+                var string = function(msg){
+                    return "<span class=\"response\">" + msg + "</span><br/>";
+                }
+                if(!msg.msg) return "";
 
-               var acdiv = document.createElement("div");
-               prompt = document.createElement("span");
-               prompt.className = "prompt";
-               prompt.appendChild(document.createTextNode("js>"));
-               acdiv.appendChild(prompt);
-               acdiv.appendChild(t);
-               acdiv.className = "yui-ac";
-               this.myLogReader = new YAHOO.widget.LogReader('console', {
-                   newestOnTop: false,
-                   footerEnabled: false,
-                   draggable: false,
-                   _initHeaderEl: function(){
-                       YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
-                       this._elCollapse.style.display = "none";
-                   },
-                   _initConsoleEl: function(){
-                       YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
-                       this._elBd = this._elConsole;
-                       this._elBd.id = "consolebody";
-                       this._elConsole = document.createElement("div");
-                       this._elConsole.id = "transcript";
-                       this._elBd.appendChild(this._elConsole);
-                       this._elBd.appendChild(acdiv);
-                       YAHOO.util.Event.addListener(this._elBd, "click",
-                                                    function(){
-                                                        focusTextIfNotSelecting(t);
-                                                    });
+                var s = "";
+                var obj = eval("(" + msg.msg + ")");
+                if(obj.$printed){
+                    if(typeof obj.$printed == "string")
+                        obj.$printed = [obj.$printed];
+                    for(var i = 0; i < obj.$printed.length; i++){
+                        var p = obj.$printed[i];
+                        
+                        if(typeof(p) == "string")
+                            s += "<span class=\"output\">" + p + "</span><br/>";
+                        else if(p.$command == "clear"){
+                            s = "";
+                            clearTranscript();
+                        }
+                        else if(p.$command == "reload"){
+                            location.reload();
+                        }
+                    }
+                }
+                if(obj.$scope && ! replay){
+                    refreshScope(loader.objectTreeView, obj.$scope);
+                }
 
+                if(obj.$exception){
+                    s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
+                    return s;
+                }
 
-                       scratch = document.createElement("div");
-                       scratchText = document.createElement("textarea");
-                       scratchText.className = "scratchtext";
-                       scratch.appendChild(scratchText);
-                       scratch.className = "scratch";
-                       this._elContainer.appendChild(scratch);
-                   },
-                   _printBuffer: function(){
-                       YAHOO.widget.LogReader.prototype._printBuffer.call(this);
-                       this._elBd.scrollTop = this._elBd.scrollHeight;
-                   }});
+                obj = obj["$"];
+                if(obj instanceof Function) obj = string(obj.toString());
+                else obj = string(YAHOO.lang.JSON.stringify(obj));
+                return s += obj;
+            }
+        };
 
-               var sources = this.myLogReader.getSources();
-               this.myLogReader.hideSource("global");
-               this.myLogReader.hideSource("LogReader");
-               this.myLogReader.setTitle("10gen Shell");
-               YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        // resize handle on scratch area
+        var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event,
+            row1 = null, row2 = null;
+        row1 = Dom.get("consolebody");
+        row2 = scratchText;
+        var size = parseInt(Dom.getStyle("console", "height"), 10);
+        scratchText.style.height = size;
 
-               YAHOO.util.Event.addListener(window, "keydown",
-                                            function(e){
-                                                focusTextIfSelecting(t, e);
-                                            });
+        var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
 
-               YAHOO.util.Event.addListener(t,"keypress",function(e){
-                   if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(t.value);
-                       var value = t.value;
-                       var check = checkRun(t);
-                       if(check == true) {
-                           t.rows = 1;
-                           e.preventDefault();
-                           doRun(t);
-                       }
-                       else if(check == false){
-                           resizeRows(t, value, true);
-                       }
-                       else {
-                           // check is a result of match
-                           // unterminated string literal :(
-                           if(check.index+1 == t.value.length){
-                               t.selectionStart = check.index;
-                               t.selectionEnd = check.index+1;
-                           }
-                           else {
-                               t.selectionStart = check.index + 1;
-                               t.selectionEnd = t.value.length;
-                           }
-                           e.preventDefault();
-                       }
-                   }
-               });
+        var resize = new YAHOO.util.Resize(scratch, {
+            handles: "t",
+            height: 0,
+            maxHeight: max
+        });
 
-               this.myLogReader.formatMsg = function(msg){
-                   if(msg.category == "format")
-                       return msg.msg;
+        var markScratchEvent = function(e){
+            e.inScratchText = true;
+        }
 
-                   if(msg.category == "user"){
-                       return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
-                   }
-                   if(msg.category == "response"){
-                       var string = function(msg){
-                           return "<span class=\"response\">" + msg + "</span><br/>";
-                       }
-                       if(!msg.msg) return "";
+        Event.addListener(scratchText, "keydown", markScratchEvent);
+        Event.addListener(scratchText, "keyup", markScratchEvent);
+        Event.addListener(scratchText, "keypress", markScratchEvent);
 
-                       var s = "";
-                       var obj = eval("(" + msg.msg + ")");
-                       if(obj.$printed){
-                           if(typeof obj.$printed == "string")
-                               obj.$printed = [obj.$printed];
-                           for(var i = 0; i < obj.$printed.length; i++){
-                               var p = obj.$printed[i];
-                               
-                               if(typeof(p) == "string")
-                                   s += "<span class=\"output\">" + p + "</span><br/>";
-                               else if(p.$command == "clear"){
-                                   s = "";
-                                   clearTranscript();
-                               }
-                               else if(p.$command == "reload"){
-                                   location.reload();
-                               }
-                           }
-                       }
-                       if(obj.$scope && ! replay){
-                           refreshScope(loader.objectTreeView, obj.$scope);
-                       }
+        oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
+        resize.on('resize', function(ev) {
+            var oldScrollHeight = row1.scrollHeight, 
+                oldScrollTop = row1.scrollTop;
+            var w = ev.height;
 
-                       if(obj.$exception){
-                           s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
-                           return s;
-                       }
+            // The height here has to be enough for the resize handle
+            // and the textarea size. So we set the size of the 
+            // textarea to the size of the div, minus the margin the
+            // textarea has.
+            Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
+            var newHeight = (size - w - 20);
+            Dom.setStyle(row1, "height", newHeight);
 
-                       obj = obj["$"];
-                       if(obj instanceof Function) obj = string(obj.toString());
-                       else obj = string(YAHOO.lang.JSON.stringify(obj));
-                       return s += obj;
-                   }
-               };
-
-               // resize handle on scratch area
-               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event,
-                   row1 = null, row2 = null;
-               row1 = Dom.get("consolebody");
-               row2 = scratchText;
-               var size = parseInt(Dom.getStyle("console", "height"), 10);
-               scratchText.style.height = size;
-
-               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
-
-               var resize = new YAHOO.util.Resize(scratch, {
-                   handles: "t",
-                   height: 0,
-                   maxHeight: max
-               });
-
-               var markScratchEvent = function(e){
-                   e.inScratchText = true;
-               }
-
-               Event.addListener(scratchText, "keydown", markScratchEvent);
-               Event.addListener(scratchText, "keyup", markScratchEvent);
-               Event.addListener(scratchText, "keypress", markScratchEvent);
-
-               oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
-               resize.on('resize', function(ev) {
-                   var oldScrollHeight = row1.scrollHeight, 
-                       oldScrollTop = row1.scrollTop;
-                   var w = ev.height;
-
-                   // The height here has to be enough for the resize handle
-                   // and the textarea size. So we set the size of the 
-                   // textarea to the size of the div, minus the margin the
-                   // textarea has.
-                   Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
-                   var newHeight = (size - w - 20);
-                   Dom.setStyle(row1, "height", newHeight);
-
-                   if(oldHeight + oldScrollTop >= oldScrollHeight) {
-                       // row1 was scrolled all the way down
-                       row1.scrollTop = row1.scrollHeight;
-                   }
-                   oldHeight = newHeight;
-               });
+            if(oldHeight + oldScrollTop >= oldScrollHeight) {
+                // row1 was scrolled all the way down
+                row1.scrollTop = row1.scrollHeight;
+            }
+            oldHeight = newHeight;
+        });
 
 
-               resize.resize(null, 10, 0, 0, 0, true);
+        resize.resize(null, 10, 0, 0, 0, true);
 
-               var replay = false;
+        var replay = false;
 
 
-               var inputs = <%= tojson(session.getCommands()) %>;
+        var inputs = <%= tojson(session.getCommands()) %>;
 
-               historyAry = []; // indexes of input used on each line
-               pastCommands = []; // commands themselves; unique for YUI AC
+        historyAry = []; // indexes of input used on each line
+        pastCommands = []; // commands themselves; unique for YUI AC
 
-               // translate non-unique strings into YUI-friendly format
-               for(var i = 0; i < inputs.length; i++){
-                   var cmd = inputs[i];
-                   if(inputs.indexOf(cmd) < i) {
-                       // duplicate command!
-                   }
-                   else {
-                       pastCommands.push(cmd);
-                   }
-                   historyAry.push(pastCommands.indexOf(cmd));
-               }
+        // translate non-unique strings into YUI-friendly format
+        for(var i = 0; i < inputs.length; i++){
+            var cmd = inputs[i];
+            if(inputs.indexOf(cmd) < i) {
+                // duplicate command!
+            }
+            else {
+                pastCommands.push(cmd);
+            }
+            historyAry.push(pastCommands.indexOf(cmd));
+        }
 
-               var outputs = <%= tojson(session.getResults()) %>;
+        var outputs = <%= tojson(session.getResults()) %>;
 
-               // re-log all the old commands and responses
-               replay = true;
-               YAHOO.log("<span class='faded'>", "format", "shell");
-               for(var i = 0; i < inputs.length; i++){
-                   YAHOO.log(inputs[i], 'user', 'shell');
-                   YAHOO.log(outputs[i], 'response', 'shell');
-               }
-               YAHOO.log("</span>", "format", "shell");
-               YAHOO.log("<hr/>", "format", "shell");
+        // re-log all the old commands and responses
+        replay = true;
+        YAHOO.log("<span class='faded'>", "format", "shell");
+        for(var i = 0; i < inputs.length; i++){
+            YAHOO.log(inputs[i], 'user', 'shell');
+            YAHOO.log(outputs[i], 'response', 'shell');
+        }
+        YAHOO.log("</span>", "format", "shell");
+        YAHOO.log("<hr/>", "format", "shell");
 
-               this.myLogReader._printBuffer();
+        this.myLogReader._printBuffer();
 
-               replay = false;
+        replay = false;
 
-               // History popup
+        // History popup
 
-               historyPopup = new YAHOO.widget.Dialog('history_popup', {
-                   fixedcenter: true,
-                   draggable: true,
-                   visible: false,
-               });
-               historyPopup.render();
+        historyPopup = new YAHOO.widget.Dialog('history_popup', {
+            fixedcenter: true,
+            draggable: true,
+            visible: false,
+        });
+        historyPopup.render();
 
-               // Key listener for "send from scratch"
+        // Key listener for "send from scratch"
 
-               // In OS X, "Enter" is spelled "77".
-               sendKey = {ctrl: true, keys: [YAHOO.util.KeyListener.KEY.ENTER, 77]};
+        // In OS X, "Enter" is spelled "77".
+        sendKey = {ctrl: true, keys: [YAHOO.util.KeyListener.KEY.ENTER, 77]};
 
-               new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
+        new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
-           }
-       });
+    }
+});
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
@@ -415,20 +426,7 @@ var histfunc = function( e ) {
         e.preventDefault();
     }
 };
-     </script>
 
-     <div class="clear"></div>
-     <div onclick="showHistory()">Show history</div>
-     <div id="history_popup" style="display: none;">
-       <div class="hd">History</div>
-       <div class="bd">
-         <div id="history_links"><% /* filled in by JS */ %></div>
-       </div>
-       <div class="ft"></div>
-     </div>
-</div>
-
-<script>
 var count = 0;
 var objcount = 0;
 // Unused code from when I borrowed Kristina's object explorer
