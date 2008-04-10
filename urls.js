@@ -231,6 +231,7 @@ Blog.handlePosts = function( request , thePost , user ){
 
             comment.ts = new Date();
             comment.text = request.txt;
+	    comment.ip = request.getRemoteIP();
 
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
