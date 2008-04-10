@@ -58,6 +58,7 @@ if( ! session ){
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
+                   draggable: false,
                    _initHeaderEl: function(){
                        YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
                        this._elCollapse.style.display = "none";
