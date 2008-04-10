@@ -96,8 +96,9 @@ if( ! session ){
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                YAHOO.util.Event.addListener(window, "keydown",
-                                            function(){
-                                                focusTextIfSelecting(t);
+                                            function(e){
+       lastKey = e;
+                                                focusTextIfSelecting(t, e);
                                             });
 
                YAHOO.util.Event.addListener(t,"keypress",function(e){
@@ -272,7 +273,8 @@ if( ! session ){
 
                // Key listener for "send from scratch"
 
-               sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
+               // In OS X, "Enter" is spelled "77".
+               sendKey = {ctrl: true, keys: [YAHOO.util.KeyListener.KEY.ENTER, 77]};
 
                new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
@@ -303,7 +305,7 @@ var focusTextIfNotSelecting = function(t){
         return t.focus();
 };
 
-var focusTextIfSelecting = function(t){
+var focusTextIfSelecting = function(t, e){
     // But if someone selects text and then types something, they probably mean
     // to type into the console. Unless they don't??? Maybe they're
     // trying to scroll the page up or down or something.
