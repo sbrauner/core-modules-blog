@@ -31,26 +31,25 @@ if(request.ns && request.id) {
         return;
     }
 
-    var printObj = function(obj, name) {
-        if(ignore[name]) return;
-        print(name+":"+(typeof obj) + ":" + obj);
-        if(typeof obj == "object") {
-            print("{");
-            for(prop in obj) {
-                if(typeof obj[prop] == "object")
-                    printObj(obj[prop]);
-                else
-                    print(prop+":"+(typeof obj[prop]) +":"+obj[prop]+"&");
-            }
-            print("}");
+    var getObjTypes = function(x) {
+        var type = {};
+        for(var i in x) {
+            if(x[i] == null)
+                type[i] = null;
+            else if( x[i] instanceof Date)
+                type[i] = "Date";
+            else if(typeof x[i] == "object")
+                type[i] = getObjTypes(x[i]);
+            else if(i != "_id" && !ignore[i])
+                type[i] = typeof x[i];
         }
+        return type;
     }
 
-    for(col in x) {
-        if(ignore[col]) continue;
-        printObj(x[col], col);
-        print("&&");
-    }
+    myObj = {};
+    myObj.val = x;
+    myObj.type = getObjTypes(x);
+    print(tojson_u(myObj));
     return;
 }
 

@@ -188,27 +188,50 @@ function customSplit(str, num) {
     return a;
 }
 
-function printDiv(fields, bd) {
-    f = customSplit(fields, 3);
-    if(f[0] == "_id") return;
+function toggleVisible(i) {
+     var elem = document.getElementById("div"+i);
+     if(elem.style.display == "block")
+         elem.style.display = "none";
+     else
+         elem.style.display = "block";
+}
 
-    bd.innerHTML += '<div class="elem"><label class="obj">'+f[0]+': </label>';
-    if(f[1] == "object") {
-        subobj = f[2].substring(f[2].indexOf("{")+1, f[2].lastIndexOf("}"));
-        subobj = subobj.split("&");
+var fcount = 0;
+function printDiv(val, type, i, bd, id, path) {
+    if(i == "_id") return;
+
+    bd.innerHTML += '<div class="elem"><label class="obj">'+i+': </label>';
+    if(val[i] != null && typeof val[i] == "object") {
+        bd.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><br />';
+
         var outerDiv = document.createElement("div");
         outerDiv.setAttribute("class", "obj");
-        for(var j=0; j<subobj.length-1; j++) {
-            printDiv(subobj[j], outerDiv);
+        outerDiv.setAttribute("id", "div"+fcount++);
+        outerDiv.setAttribute("style", "display:block;");
+
+        var subobj = val[i];
+        for(var j in subobj) {
+            path.push("'"+j+"'");
+            printDiv(val[i], type[i], j, outerDiv, id, path);
+            path.pop();
         }
         bd.appendChild(outerDiv);
     }
-    else {
-        bd.innerHTML += '<input type="text" value="'+f[2]+'"></div>';
+    else if(type[i] == "boolean") {
+        var check = val[i] == "true" ? "checked" : "";
+        bd.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'>';
+                               fcount++;
     }
+    else {
+        bd.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">';
+                               fcount++;
+    }
+    bd.innerHTML += '</div>';
 }
 
+var currentObj = {};
 function editRow(id) {
+document.getElementById("saveRowBtn").setAttribute("id", id);
     ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
         // get bd div
         var bd = document.getElementById("editRecord");
@@ -217,17 +240,54 @@ function editRow(id) {
         });
         bd = bd[0];
 
-        var fields = response.split("&&");
+var obj = YAHOO.lang.JSON.parse(response);
+currentObj = obj.val;
         // for each field, display the relevant input type
-        for(var i=0; i<fields.length-1; i++) {
-            printDiv(fields[i], bd);
-        }
+        for(var i in obj.val)
+            printDiv(obj.val, obj.type, i, bd, id, ["'"+i+"'"]);
+
         editRowPanel.bringToTop();
         editRowPanel.show();
     });
 }
 
+function saveValue(type, fcount, path) {
+var val;
+    if(type == "boolean") {
+        val = document.getElementById("f"+fcount).checked;
+    }
+    else if(type == "number") {
+        val = parseInt(document.getElementById("f"+fcount).value);
+    }
+    else if(type == "Date") {
+        val = new Date(document.getElementById("f"+fcount).value);
+    }
+    else { // string
+        val = document.getElementById("f"+fcount).value;
+    }
 
+var tempObj = currentObj;
+for(var i=0; i<path.length-1; i++) {
+    tempObj = tempObj[path[i]];
+}
+tempObj[path[path.length-1]] = val;
+}
+
+function saveRow() {
+//var rowId = document.getElementById("saveRowBtn").id;
+//alert(YAHOO.lang.JSON.stringify(currentObj));
+ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
+refreshTable();
+});
+
+}
+
+function addField() {
+    var bd = document.getElementById("editRecord");
+    var id = bd.getAttribute("class");
+    var newField = document.createElement("div");
+    newField.innerHTML = 'Type:<select><option>String</option><option>Number</option><option>Boolean</option></select>';
+}
 
 
 function editField(id, type, dbid, path) {
@@ -247,7 +307,7 @@ function editField(id, type, dbid, path) {
     }
 }
 
-function saveValue(id, type, dbid, path) {
+/*function saveValue(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
 
     passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
@@ -284,9 +344,8 @@ function saveValue(id, type, dbid, path) {
             });
         }
     }
-
-
 }
+*/
 
 var createRecordPanel;
 var createTablePanel;
@@ -390,11 +449,13 @@ for(var b in fields) {
 </div>
 </div>
 
-<div id="editRecord" style="background:gainsboro;">
-<div id="hd">Edit Record</div>
-<div id="bd"></div>
-<div id="ft"><input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<div id="editRecord">
+<div class="hd">Edit Record</div>
+<div class="bd" id="bd"></div>
+<div class="ft">
+  <input type="button" value="Add Field" onclick="addField()" />
+  <input type="button" value="Save" id="saveRowBtn" onclick="saveRow()"/>
+  <input type="button" value="Cancel" onclick="handleNo" />
 </div>
 </div>
 
@@ -729,7 +790,7 @@ else {
 createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
 createRecordPanel.render("myMarkedUpContainer");
 
-createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true } );
+createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createTablePanel.render("myMarkedUpContainer");
 
 editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });

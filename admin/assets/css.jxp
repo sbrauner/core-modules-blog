@@ -242,17 +242,9 @@ div#customer_body {
    right: 0px;
 }
 
-/*
 div.obj {
-    display: none;
-    position: absolute;
-    background: white;
-    padding: 10px;
-    border: 1px black solid;
-}
-*/
-div.obj {
-padding-left: 20px;
+    display: block;
+    padding-left: 20px;
 }
 div.parent {
     cursor: pointer;
