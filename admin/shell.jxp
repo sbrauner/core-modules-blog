@@ -31,6 +31,8 @@ if( ! session ){
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
 
+               // ***** Console widget *****
+
                // Log reader (the main console window)
                // Dynamically create textarea for input:
                // <div class="yui-ac">
@@ -40,6 +42,12 @@ if( ! session ){
 
                var t = document.createElement("textarea");
                t.id = "commandac";
+               t.focus();
+               t.className = "shellinput";
+               // Borrow the AC styling
+               t.className += " yui-ac-input";
+               t.rows = 1;
+
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
@@ -47,10 +55,10 @@ if( ! session ){
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.className = "yui-ac";
-               t.className = "shellinput";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
+                   draggable: false,
                    _initHeaderEl: function(){
                        YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
                        this._elCollapse.style.display = "none";
@@ -80,11 +88,38 @@ if( ! session ){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
-               this.myLogReader.setTitle("10gen Shell");
 
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
+               this.myLogReader.setTitle("10gen Shell");
+               YAHOO.util.Event.addListener(t,"keydown",histfunc);
+
+               YAHOO.util.Event.addListener(window, "keydown",
+                                            function(){
+                                                focusTextIfSelecting(t);
+                                            });
+
+               YAHOO.util.Event.addListener(t,"keypress",function(e){
+                   if(e.keyCode == 13){
+                       window.lastSent = encodeURIComponent(t.value);
+                       var value = t.value;
+                       var check = checkRun(t);
+                       if(check == true) {
+                           t.rows = 1;
+                           e.preventDefault();
+                           doRun(t);
+                       }
+                       else if(check == false){
+                           resizeRows(t, value);
+                       }
+                       else if(check == -1){
+                           // unterminated newline :(
+                           e.preventDefault();
+                       }
+                   }
+               });
+
                this.myLogReader.formatMsg = function(msg){
                    if(msg.category == "format")
                        return msg.msg;
@@ -112,6 +147,9 @@ if( ! session ){
                                    s = "";
                                    clearTranscript();
                                }
+                               else if(p.$command == "reload"){
+                                   location.reload();
+                               }
                            }
                        }
                        if(obj.$scope && ! replay){
@@ -124,7 +162,9 @@ if( ! session ){
                        }
 
                        obj = obj["$"];
-                       return s += string(YAHOO.lang.JSON.stringify(obj));
+                       if(obj instanceof Function) obj = string(obj.toString());
+                       else obj = string(YAHOO.lang.JSON.stringify(obj));
+                       return s += obj;
                    }
                };
 
@@ -149,7 +189,12 @@ if( ! session ){
                    var oldScrollHeight = row1.scrollHeight, 
                        oldScrollTop = row1.scrollTop;
                    var w = ev.height;
-                   Dom.setStyle(scratchText, "height", w);
+
+                   // The height here has to be enough for the resize handle
+                   // and the textarea size. So we set the size of the 
+                   // textarea to the size of the div, minus the margin the
+                   // textarea has.
+                   Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
                    var newHeight = (size - w - 20);
                    Dom.setStyle(row1, "height", newHeight);
 
@@ -199,30 +244,7 @@ if( ! session ){
 
                replay = false;
 
-               YAHOO.util.Event.addListener(t,"keydown",histfunc);
-
-               YAHOO.util.Event.addListener(window, "keydown",
-                                            function(){
-                                                focusTextIfSelecting(t);
-                                            });
-
-               YAHOO.util.Event.addListener(t,"keypress",function(e){
-                   if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(t.value);
-                       var value = t.value;
-                       if(checkRun(t)) {
-                           e.preventDefault();
-                           if(handleSpecialCommands(t)){
-                               t.value = "";
-                               return;
-                           }
-                           doRun(t);
-                       }
-                   }
-               });
-
-               // Borrow the AC styling
-               t.className += " yui-ac-input";
+               // History popup
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
@@ -231,7 +253,7 @@ if( ! session ){
                });
                historyPopup.render();
 
-               t.focus();
+               // Key listener for "send from scratch"
 
                sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
 
@@ -248,33 +270,18 @@ var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
 };
 
-var specialCommandsMap = {
-}
-blah ={    "clearAll": function(t){
-        doRun(t, "__clearAll()", "false");
-        location.reload();
-        return true;
-    },
-    "clearConsole": function(t){
-        clearTranscript();
-        return true;
-    }
-};
+var resizeRows = function(t, value){
+    var newlines = value.match(/\n/g);
+    newlines = newlines? newlines.length: 0;
+    t.rows = newlines+1;
 
-var handleSpecialCommands = function(t){
-    var value = t.value.trim();
-    for(var key in specialCommandsMap){
-        if(value == key || value == key+"()" || 
-           value == "__"+key || value == "__"+key +"()"){
-            return specialCommandsMap[key](t);
-        }
-    }
+    var row1 = document.getElementById("consolebody");
+    row1.scrollTop = row1.scrollHeight;
 };
 
 var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
-    // FIXME: Check if there's selected text
     if(window.getSelection().isCollapsed == true)
         return t.focus();
 };
@@ -324,6 +331,8 @@ var setcmd = function () {
     else {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
+    resizeRows(cmd, cmd.value);
+    
 }
 
 var histfunc = function( e ) {
@@ -343,6 +352,12 @@ var histfunc = function( e ) {
         }
     }
 
+    // We check for up and down arrows.
+    // If we replace the currently edited command, then call preventDefault
+    // on the event to prevent them scrolling.
+    // We scroll ourselves if we move to a new multi-line command
+    // (by default, replacing the text of the textarea moves the cursor to
+    // the end?).
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
@@ -353,6 +368,7 @@ var histfunc = function( e ) {
         else {
             setHistoryLocation(historyLocation);
         }
+        e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
         historyLocation += 1;
@@ -365,6 +381,7 @@ var histfunc = function( e ) {
         var newline = t.value.indexOf('\n');
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
+        e.preventDefault();
     }
 };
      </script>
@@ -383,12 +400,14 @@ var histfunc = function( e ) {
 <script>
 var count = 0;
 var objcount = 0;
+// Unused code from when I borrowed Kristina's object explorer
+/*
 function Text(cursor, field){
     return "<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+typeof cursor[field]+"','"+count+"')\">";
 }
 function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
-}
+}*/
 
 function refreshScope(tree, scope) {
     tree.removeChildren(tree.getRoot());
@@ -426,13 +445,13 @@ function expandObj(i){
     loader.objectNodes[i].expand();
 }
 
-    indexOf = function(ary, v){
-        for(var i=0; i<ary.length; ++i){
-            if(ary[i] == v)
-                return i;
-        }
-        return -1;
-    };
+indexOf = function(ary, v){
+    for(var i=0; i<ary.length; ++i){
+        if(ary[i] == v)
+            return i;
+    }
+    return -1;
+};
 lastIndexOf = function(ary, v){
     for(var i=ary.length-1; i>=0; --i){
         if(ary[i] == v)
@@ -513,7 +532,7 @@ function checkRun(el){
     // operator
     newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
     // Strip regexes
-    newusr = newusr.replace(/\/.*?\/[igm]?/g, "''");
+    newusr = newusr.replace(/\/.*?\/[igm]?/g, '""');
 
     // simple check right now -- count {/}, [/], (/) and make sure they're equal
     var checkMatch = function(usr, left, right){
@@ -528,21 +547,28 @@ function checkRun(el){
     if(! checkMatch(newusr, "{", "}") ) return false;
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
+
+    if(newusr.replace(/""/, "").match(/[\'\"].*$/))
+        return -1;
+
     return true;
 }
 
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
+    // Send a command to the server, retreive response, and dump both to
+    // the transcript
     var command = el;
     var usr = value || command.value;
+    // Should this command go into the history?
     save = save || "";
     command.value = "";
     if(indexOf(pastCommands, usr) == -1){
-        // This behavior is inspired by the history functionality in bash.
-        // If you retype the last command, or re-run it, it doesn't get
-        // entered into the history twice.
         pastCommands.push(usr);
     }
+    // This behavior is inspired by the history functionality in bash.
+    // If you retype the last command, or re-run it, it doesn't get
+    // entered into the history twice.
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
         save = "true";
         historyAry.push(indexOf(pastCommands,usr));

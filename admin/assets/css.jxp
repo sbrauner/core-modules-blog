@@ -212,10 +212,12 @@ div#customer_body {
 #console .scratch {
     overflow: hidden;
 }
+
 #console .scratchtext {
     margin-top: 6px;
     width: 100%;
     height: 0; /* resized dynamically */
+    border: 0px;
 }
 
 /* Taken from the YUI docs */
@@ -231,6 +233,7 @@ div#customer_body {
 #console textarea.shellinput {
     width: 90% !important;
     border: none;
+    overflow: hidden;
 }
 
 #login_status {
