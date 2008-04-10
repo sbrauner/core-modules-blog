@@ -233,6 +233,7 @@ div#customer_body {
 #console textarea.shellinput {
     width: 90% !important;
     border: none;
+    overflow: hidden;
 }
 
 #login_status {
