@@ -97,7 +97,6 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(window, "keydown",
                                             function(e){
-       lastKey = e;
                                                 focusTextIfSelecting(t, e);
                                             });
 
@@ -320,7 +319,7 @@ var focusTextIfSelecting = function(t, e){
     // trying to scroll the page up or down or something.
     if(window.getSelection().isCollapsed == true)
         return;
-    if(e.isScratchText)
+    if(e.inScratchText)
         return;
     
     return t.focus();
