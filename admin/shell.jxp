@@ -193,6 +193,14 @@ if( ! session ){
                    maxHeight: max
                });
 
+               var markScratchEvent = function(e){
+                   e.inScratchText = true;
+               }
+
+               Event.addListener(scratchText, "keydown", markScratchEvent);
+               Event.addListener(scratchText, "keyup", markScratchEvent);
+               Event.addListener(scratchText, "keypress", markScratchEvent);
+
                oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
                resize.on('resize', function(ev) {
                    var oldScrollHeight = row1.scrollHeight, 
@@ -299,8 +307,12 @@ var focusTextIfSelecting = function(t){
     // But if someone selects text and then types something, they probably mean
     // to type into the console. Unless they don't??? Maybe they're
     // trying to scroll the page up or down or something.
-    if(window.getSelection().isCollapsed == false)
-        return t.focus();
+    if(window.getSelection().isCollapsed == true)
+        return;
+    if(e.isScratchText)
+        return;
+    
+    return t.focus();
 };
 
 var sendScratch = function(e){
