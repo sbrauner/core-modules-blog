@@ -46,6 +46,7 @@ if( ! session ){
                t.className = "shellinput";
                // Borrow the AC styling
                t.className += " yui-ac-input";
+               t.rows = 1;
 
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
@@ -103,8 +104,12 @@ if( ! session ){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
                        if(checkRun(t)) {
+                           t.rows = 1;
                            e.preventDefault();
                            doRun(t);
+                       }
+                       else {
+                           resizeRows(t, value);
                        }
                    }
                });
@@ -257,6 +262,16 @@ var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
 };
 
+var resizeRows = function(t, value){
+    var newlines = value.match(/\n/g);
+    newlines = newlines? newlines.length: 0;
+    if(newlines >= t.rows){
+        t.rows = newlines+1;
+    }
+    var row1 = document.getElementById("consolebody");
+    row1.scrollTop = row1.scrollHeight;
+};
+
 var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
@@ -310,6 +325,8 @@ var setcmd = function () {
     else {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
+    resizeRows(cmd, cmd.value);
+    
 }
 
 var histfunc = function( e ) {
