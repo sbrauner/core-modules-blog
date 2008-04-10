@@ -471,7 +471,7 @@ createTablePanel.hide();
 core.db.db();
 if(top) {
     %>
-    <input type="button" value="Create Table" onclick="createTable()" />
+    <input type="button" value="Create Collection" onclick="createTable()" />
     <%
 } else {
     %>
@@ -491,10 +491,10 @@ if( rows.length >= max )
 if(top) {
     %>
 <div id="createTable">
-<div class="hd">Create Table</div>
+<div class="hd">Create Collection</div>
 <div class="bd">
 <form id="createTableForm">
-    <div><label>Table name: </label><input type="text"  name="tablename"></div>
+    <div><label>Collection name: </label><input type="text"  name="tablename"></div>
     <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
     <div><label>Size: </label><input type="text" name="size"></div>
 <div><label>Max: </label><input type="text" name="max"></div>
@@ -668,11 +668,11 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop this table?",
+            text: "Are you sure you want to drop this collection?",
             buttons: [ { text:"Yes", handler:handleDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Table");
+        simpledialog1.setHeader("Drop Collection");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -801,7 +801,7 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
     print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
     print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: "Drop Collection", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
     { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
@@ -857,7 +857,7 @@ if(top) {
         elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Collection" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
