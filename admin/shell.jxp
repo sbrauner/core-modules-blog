@@ -215,10 +215,6 @@ if( ! session ){
                        var value = t.value;
                        if(checkRun(t)) {
                            e.preventDefault();
-                           if(handleSpecialCommands(t)){
-                               t.value = "";
-                               return;
-                           }
                            doRun(t);
                        }
                    }
@@ -249,29 +245,6 @@ var restoreDefault = function(e){
 
 var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
-};
-
-var specialCommandsMap = {
-}
-blah ={    "clearAll": function(t){
-        doRun(t, "__clearAll()", "false");
-        location.reload();
-        return true;
-    },
-    "clearConsole": function(t){
-        clearTranscript();
-        return true;
-    }
-};
-
-var handleSpecialCommands = function(t){
-    var value = t.value.trim();
-    for(var key in specialCommandsMap){
-        if(value == key || value == key+"()" || 
-           value == "__"+key || value == "__"+key +"()"){
-            return specialCommandsMap[key](t);
-        }
-    }
 };
 
 var focusTextIfNotSelecting = function(t){
