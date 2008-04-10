@@ -176,7 +176,8 @@ if( ! session ){
                    var oldScrollHeight = row1.scrollHeight, 
                        oldScrollTop = row1.scrollTop;
                    var w = ev.height;
-                   Dom.setStyle(scratchText, "height", w);
+
+                   Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
                    var newHeight = (size - w - 20);
                    Dom.setStyle(row1, "height", newHeight);
 
