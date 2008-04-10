@@ -96,8 +96,9 @@ if( ! session ){
                YAHOO.util.Event.addListener(t,"keydown",histfunc);
 
                YAHOO.util.Event.addListener(window, "keydown",
-                                            function(){
-                                                focusTextIfSelecting(t);
+                                            function(e){
+       lastKey = e;
+                                                focusTextIfSelecting(t, e);
                                             });
 
                YAHOO.util.Event.addListener(t,"keypress",function(e){
@@ -113,8 +114,17 @@ if( ! session ){
                        else if(check == false){
                            resizeRows(t, value);
                        }
-                       else if(check == -1){
-                           // unterminated newline :(
+                       else {
+                           // check is a result of match
+                           // unterminated string literal :(
+                           if(check.index+1 == t.value.length){
+                               t.selectionStart = check.index;
+                               t.selectionEnd = check.index+1;
+                           }
+                           else {
+                               t.selectionStart = check.index + 1;
+                               t.selectionEnd = t.value.length;
+                           }
                            e.preventDefault();
                        }
                    }
@@ -184,6 +194,14 @@ if( ! session ){
                    maxHeight: max
                });
 
+               var markScratchEvent = function(e){
+                   e.inScratchText = true;
+               }
+
+               Event.addListener(scratchText, "keydown", markScratchEvent);
+               Event.addListener(scratchText, "keyup", markScratchEvent);
+               Event.addListener(scratchText, "keypress", markScratchEvent);
+
                oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
                resize.on('resize', function(ev) {
                    var oldScrollHeight = row1.scrollHeight, 
@@ -249,13 +267,14 @@ if( ! session ){
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
                    draggable: true,
-                   visible: false
+                   visible: false,
                });
                historyPopup.render();
 
                // Key listener for "send from scratch"
 
-               sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
+               // In OS X, "Enter" is spelled "77".
+               sendKey = {ctrl: true, keys: [YAHOO.util.KeyListener.KEY.ENTER, 77]};
 
                new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
@@ -286,12 +305,16 @@ var focusTextIfNotSelecting = function(t){
         return t.focus();
 };
 
-var focusTextIfSelecting = function(t){
+var focusTextIfSelecting = function(t, e){
     // But if someone selects text and then types something, they probably mean
     // to type into the console. Unless they don't??? Maybe they're
     // trying to scroll the page up or down or something.
-    if(window.getSelection().isCollapsed == false)
-        return t.focus();
+    if(window.getSelection().isCollapsed == true)
+        return;
+    if(e.isScratchText)
+        return;
+    
+    return t.focus();
 };
 
 var sendScratch = function(e){
@@ -463,6 +486,9 @@ lastIndexOf = function(ary, v){
 function checkRun(el){
     var usr = el.value;
 
+    // Eliot/Geir say this should be a call to client-side eval(), and
+    // we should keep it as long as there's a syntax error.
+
     // This is a bad idea. What if we actually invoke client code, like
     // print() or something else horrible?
     try {
@@ -475,9 +501,6 @@ function checkRun(el){
     }
     // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
     //return true;
-
-    // FIXME: unterminated strings? Should we treat these differently, perhaps
-    // not add a newline?
 
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
@@ -511,9 +534,6 @@ function checkRun(el){
        /\/.+\// -> ""
 
     */
-    // FIXME?: Eliot/Geir say this should be a call to client-side eval(), and
-    // we should keep it as long as there's a syntax error.
-
     var repeat = function(s, f){
         var new_s = s;
         do{
@@ -548,8 +568,9 @@ function checkRun(el){
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
 
-    if(newusr.replace(/""/, "").match(/[\'\"].*$/))
-        return -1;
+    var match = newusr.replace(/""/, "").match(/[\'\"].*$/);
+    if(match)
+        return match;
 
     return true;
 }
@@ -601,7 +622,7 @@ addHistoryLink = function(i){
 makeHistoryLink = function(i){
     var cmd = pastCommands[historyAry[i]];
     var divclass = "class='historyLink'";
-    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
+    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'><div class=\"number\">"+i+"</div>: "+cmd+"</div>";
     return thisdiv;
 };
 
@@ -610,6 +631,7 @@ showHistory = function(){
     for(var i = 0; i < historyAry.length; i++){
         s += makeHistoryLink(i);
     }
+
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
     highlightHistory();

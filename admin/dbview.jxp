@@ -733,7 +733,7 @@ myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
 var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 20,
+    rowsPerPage: 50,
     alwaysVisible : false
 });
 
