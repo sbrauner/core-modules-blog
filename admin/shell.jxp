@@ -274,7 +274,6 @@ var resizeRows = function(t, value){
 var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
-    // FIXME: Check if there's selected text
     if(window.getSelection().isCollapsed == true)
         return t.focus();
 };
@@ -393,12 +392,14 @@ var histfunc = function( e ) {
 <script>
 var count = 0;
 var objcount = 0;
+// Unused code from when I borrowed Kristina's object explorer
+/*
 function Text(cursor, field){
     return "<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+typeof cursor[field]+"','"+count+"')\">";
 }
 function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
-}
+}*/
 
 function refreshScope(tree, scope) {
     tree.removeChildren(tree.getRoot());
@@ -436,13 +437,13 @@ function expandObj(i){
     loader.objectNodes[i].expand();
 }
 
-    indexOf = function(ary, v){
-        for(var i=0; i<ary.length; ++i){
-            if(ary[i] == v)
-                return i;
-        }
-        return -1;
-    };
+indexOf = function(ary, v){
+    for(var i=0; i<ary.length; ++i){
+        if(ary[i] == v)
+            return i;
+    }
+    return -1;
+};
 lastIndexOf = function(ary, v){
     for(var i=ary.length-1; i>=0; --i){
         if(ary[i] == v)
@@ -543,16 +544,19 @@ function checkRun(el){
 
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
+    // Send a command to the server, retreive response, and dump both to
+    // the transcript
     var command = el;
     var usr = value || command.value;
+    // Should this command go into the history?
     save = save || "";
     command.value = "";
     if(indexOf(pastCommands, usr) == -1){
-        // This behavior is inspired by the history functionality in bash.
-        // If you retype the last command, or re-run it, it doesn't get
-        // entered into the history twice.
         pastCommands.push(usr);
     }
+    // This behavior is inspired by the history functionality in bash.
+    // If you retype the last command, or re-run it, it doesn't get
+    // entered into the history twice.
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
         save = "true";
         historyAry.push(indexOf(pastCommands,usr));
