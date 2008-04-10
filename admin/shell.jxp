@@ -104,13 +104,18 @@ if( ! session ){
                    if(e.keyCode == 13){
                        window.lastSent = encodeURIComponent(t.value);
                        var value = t.value;
-                       if(checkRun(t)) {
+                       var check = checkRun(t);
+                       if(check == true) {
                            t.rows = 1;
                            e.preventDefault();
                            doRun(t);
                        }
-                       else {
+                       else if(check == false){
                            resizeRows(t, value);
+                       }
+                       else if(check == -1){
+                           // unterminated newline :(
+                           e.preventDefault();
                        }
                    }
                });
@@ -527,7 +532,7 @@ function checkRun(el){
     // operator
     newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
     // Strip regexes
-    newusr = newusr.replace(/\/.*?\/[igm]?/g, "''");
+    newusr = newusr.replace(/\/.*?\/[igm]?/g, '""');
 
     // simple check right now -- count {/}, [/], (/) and make sure they're equal
     var checkMatch = function(usr, left, right){
@@ -542,6 +547,10 @@ function checkRun(el){
     if(! checkMatch(newusr, "{", "}") ) return false;
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
+
+    if(newusr.replace(/""/, "").match(/[\'\"].*$/))
+        return -1;
+
     return true;
 }
 
