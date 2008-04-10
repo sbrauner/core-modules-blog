@@ -463,6 +463,9 @@ lastIndexOf = function(ary, v){
 function checkRun(el){
     var usr = el.value;
 
+    // Eliot/Geir say this should be a call to client-side eval(), and
+    // we should keep it as long as there's a syntax error.
+
     // This is a bad idea. What if we actually invoke client code, like
     // print() or something else horrible?
     try {
@@ -475,9 +478,6 @@ function checkRun(el){
     }
     // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
     //return true;
-
-    // FIXME: unterminated strings? Should we treat these differently, perhaps
-    // not add a newline?
 
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
@@ -511,9 +511,6 @@ function checkRun(el){
        /\/.+\// -> ""
 
     */
-    // FIXME?: Eliot/Geir say this should be a call to client-side eval(), and
-    // we should keep it as long as there's a syntax error.
-
     var repeat = function(s, f){
         var new_s = s;
         do{
