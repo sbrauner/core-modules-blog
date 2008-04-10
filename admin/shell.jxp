@@ -345,6 +345,12 @@ var histfunc = function( e ) {
         }
     }
 
+    // We check for up and down arrows.
+    // If we replace the currently edited command, then call preventDefault
+    // on the event to prevent them scrolling.
+    // We scroll ourselves if we move to a new multi-line command
+    // (by default, replacing the text of the textarea moves the cursor to
+    // the end?).
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
