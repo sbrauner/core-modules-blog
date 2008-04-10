@@ -177,6 +177,10 @@ if( ! session ){
                        oldScrollTop = row1.scrollTop;
                    var w = ev.height;
 
+                   // The height here has to be enough for the resize handle
+                   // and the textarea size. So we set the size of the 
+                   // textarea to the size of the div, minus the margin the
+                   // textarea has.
                    Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
                    var newHeight = (size - w - 20);
                    Dom.setStyle(row1, "height", newHeight);
