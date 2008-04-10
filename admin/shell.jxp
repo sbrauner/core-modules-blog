@@ -97,7 +97,6 @@ if( ! session ){
 
                YAHOO.util.Event.addListener(window, "keydown",
                                             function(e){
-       lastKey = e;
                                                 focusTextIfSelecting(t, e);
                                             });
 
@@ -112,7 +111,7 @@ if( ! session ){
                            doRun(t);
                        }
                        else if(check == false){
-                           resizeRows(t, value);
+                           resizeRows(t, value, true);
                        }
                        else {
                            // check is a result of match
@@ -289,10 +288,19 @@ var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
 };
 
-var resizeRows = function(t, value){
+var resizeRows = function(t, value, newlinepressed){
+    // Safari sometimes runs this binding before the key is processed, sometimes
+    // afterwards.. why???
     var newlines = value.match(/\n/g);
     newlines = newlines? newlines.length: 0;
-    t.rows = newlines+1;
+    // Usually this runs before the textarea is updated, so add a newline if one
+    // was pressed
+    newlines = newlines + (newlinepressed? 1 : 0);
+
+    // if I have one newline, I have two rows: rows = newlines + 1
+    // firefox seems to make textareas with 1 row have two lines??
+    // no way to make a one-line textarea in firefox??
+    t.rows = newlines + 1 - (YAHOO.env.ua.gecko?1:0);
 
     var row1 = document.getElementById("consolebody");
     row1.scrollTop = row1.scrollHeight;
@@ -311,7 +319,7 @@ var focusTextIfSelecting = function(t, e){
     // trying to scroll the page up or down or something.
     if(window.getSelection().isCollapsed == true)
         return;
-    if(e.isScratchText)
+    if(e.inScratchText)
         return;
     
     return t.focus();
@@ -354,7 +362,7 @@ var setcmd = function () {
     else {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
-    resizeRows(cmd, cmd.value);
+    resizeRows(cmd, cmd.value, false);
     
 }
 
