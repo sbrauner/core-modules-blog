@@ -240,17 +240,10 @@ for( var i=0; i < rows.length; i++ ) {
                 else if(obj[h] == null)
                     dbTable.rows[k][h] = "null";
                 else if(typeof obj[h] == "string") {
-                    if(obj[h].indexOf("\n") > 0) {
-                        dbTable.rows[k][h] = obj[h].substring(0, obj[h].indexOf("\n")-1)+"...";
-                    }
-                    else
                         dbTable.rows[k][h] = (obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
                 else
                     dbTable.rows[k][h] = obj[h].toString();
-//
-//                    dbTable.rows[k][h] = '"'+obj[h]+'"';
-//	        dbTable.rows[k][fields[j++]] = outp(obj[h], rows[i]._id, h);
 	    }
         }
         var first = true;
