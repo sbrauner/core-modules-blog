@@ -156,7 +156,9 @@ if( ! session ){
                        }
 
                        obj = obj["$"];
-                       return s += string(YAHOO.lang.JSON.stringify(obj));
+                       if(obj instanceof Function) obj = string(obj.toString());
+                       else obj = string(YAHOO.lang.JSON.stringify(obj));
+                       return s += obj;
                    }
                };
 
