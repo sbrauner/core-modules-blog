@@ -222,12 +222,17 @@ div#customer_body {
 
 #history_popup .bd {
     text-align: left;
+    overflow: scroll;
 }
 
 #history_popup .bd .number {
     width: 2em;
     float: left;
     text-align: right;
+}
+
+#history_popup .bd {
+    max-height: 30em;
 }
 
 /* Taken from the YUI docs */

@@ -258,7 +258,7 @@ if( ! session ){
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
                    draggable: true,
-                   visible: false
+                   visible: false,
                });
                historyPopup.render();
 
@@ -617,6 +617,7 @@ showHistory = function(){
     for(var i = 0; i < historyAry.length; i++){
         s += makeHistoryLink(i);
     }
+
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
     highlightHistory();
