@@ -31,6 +31,8 @@ if( ! session ){
                loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
                loader.objectNodes = [];
 
+               // ***** Console widget *****
+
                // Log reader (the main console window)
                // Dynamically create textarea for input:
                // <div class="yui-ac">
@@ -40,6 +42,11 @@ if( ! session ){
 
                var t = document.createElement("textarea");
                t.id = "commandac";
+               t.focus();
+               t.className = "shellinput";
+               // Borrow the AC styling
+               t.className += " yui-ac-input";
+
                var acdiv = document.createElement("div");
                prompt = document.createElement("span");
                prompt.className = "prompt";
@@ -47,7 +54,6 @@ if( ! session ){
                acdiv.appendChild(prompt);
                acdiv.appendChild(t);
                acdiv.className = "yui-ac";
-               t.className = "shellinput";
                this.myLogReader = new YAHOO.widget.LogReader('console', {
                    newestOnTop: false,
                    footerEnabled: false,
@@ -80,11 +86,29 @@ if( ! session ){
                        YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                        this._elBd.scrollTop = this._elBd.scrollHeight;
                    }});
-               this.myLogReader.setTitle("10gen Shell");
 
                var sources = this.myLogReader.getSources();
                this.myLogReader.hideSource("global");
                this.myLogReader.hideSource("LogReader");
+               this.myLogReader.setTitle("10gen Shell");
+               YAHOO.util.Event.addListener(t,"keydown",histfunc);
+
+               YAHOO.util.Event.addListener(window, "keydown",
+                                            function(){
+                                                focusTextIfSelecting(t);
+                                            });
+
+               YAHOO.util.Event.addListener(t,"keypress",function(e){
+                   if(e.keyCode == 13){
+                       window.lastSent = encodeURIComponent(t.value);
+                       var value = t.value;
+                       if(checkRun(t)) {
+                           e.preventDefault();
+                           doRun(t);
+                       }
+                   }
+               });
+
                this.myLogReader.formatMsg = function(msg){
                    if(msg.category == "format")
                        return msg.msg;
@@ -202,26 +226,7 @@ if( ! session ){
 
                replay = false;
 
-               YAHOO.util.Event.addListener(t,"keydown",histfunc);
-
-               YAHOO.util.Event.addListener(window, "keydown",
-                                            function(){
-                                                focusTextIfSelecting(t);
-                                            });
-
-               YAHOO.util.Event.addListener(t,"keypress",function(e){
-                   if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(t.value);
-                       var value = t.value;
-                       if(checkRun(t)) {
-                           e.preventDefault();
-                           doRun(t);
-                       }
-                   }
-               });
-
-               // Borrow the AC styling
-               t.className += " yui-ac-input";
+               // History popup
 
                historyPopup = new YAHOO.widget.Dialog('history_popup', {
                    fixedcenter: true,
@@ -230,7 +235,7 @@ if( ! session ){
                });
                historyPopup.render();
 
-               t.focus();
+               // Key listener for "send from scratch"
 
                sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
 
