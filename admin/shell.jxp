@@ -265,9 +265,8 @@ var clearTranscript = function(){
 var resizeRows = function(t, value){
     var newlines = value.match(/\n/g);
     newlines = newlines? newlines.length: 0;
-    if(newlines >= t.rows){
-        t.rows = newlines+1;
-    }
+    t.rows = newlines+1;
+
     var row1 = document.getElementById("consolebody");
     row1.scrollTop = row1.scrollHeight;
 };
