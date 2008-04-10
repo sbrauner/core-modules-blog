@@ -112,7 +112,7 @@ if( ! session ){
                            doRun(t);
                        }
                        else if(check == false){
-                           resizeRows(t, value);
+                           resizeRows(t, value, true);
                        }
                        else {
                            // check is a result of match
@@ -289,10 +289,17 @@ var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
 };
 
-var resizeRows = function(t, value){
+var resizeRows = function(t, value, newlinepressed){
+    // Safari sometimes runs this binding before the key is processed, sometimes
+    // afterwards.. why???
     var newlines = value.match(/\n/g);
     newlines = newlines? newlines.length: 0;
-    t.rows = newlines+1;
+    // Usually this runs before the textarea is updated, so add a newline if one
+    // was pressed
+    newlines = newlines + (newlinepressed? 1 : 0);
+
+    // firefox seems to make textareas with 1 row have two lines??
+    t.rows = newlines + 1 - (YAHOO.env.ua.gecko?1:0);
 
     var row1 = document.getElementById("consolebody");
     row1.scrollTop = row1.scrollHeight;
@@ -354,7 +361,7 @@ var setcmd = function () {
     else {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
-    resizeRows(cmd, cmd.value);
+    resizeRows(cmd, cmd.value, false);
     
 }
 
