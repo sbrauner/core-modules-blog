@@ -668,7 +668,7 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop this collection?",
+            text: "Are you sure you want to drop the collection "+tname+"?",
             buttons: [ { text:"Yes", handler:handleDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
