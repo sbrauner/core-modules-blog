@@ -298,7 +298,9 @@ var resizeRows = function(t, value, newlinepressed){
     // was pressed
     newlines = newlines + (newlinepressed? 1 : 0);
 
+    // if I have one newline, I have two rows: rows = newlines + 1
     // firefox seems to make textareas with 1 row have two lines??
+    // no way to make a one-line textarea in firefox??
     t.rows = newlines + 1 - (YAHOO.env.ua.gecko?1:0);
 
     var row1 = document.getElementById("consolebody");
