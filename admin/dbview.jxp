@@ -200,9 +200,11 @@ var fcount = 0;
 function printDiv(val, type, i, bd, id, path) {
     if(i == "_id") return;
 
-    bd.innerHTML += '<div class="elem"><label class="obj">'+i+': </label>';
+    var fieldDiv = document.createElement("div");
+    fieldDiv.setAttribute("class", "elem");
+    fieldDiv.innerHTML = '<label class="obj">'+i+': </label>';
     if(val[i] != null && typeof val[i] == "object") {
-        bd.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><br />';
+        fieldDiv.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><br />';
 
         var outerDiv = document.createElement("div");
         outerDiv.setAttribute("class", "obj");
@@ -215,23 +217,22 @@ function printDiv(val, type, i, bd, id, path) {
             printDiv(val[i], type[i], j, outerDiv, id, path);
             path.pop();
         }
-        bd.appendChild(outerDiv);
+        fieldDiv.appendChild(outerDiv);
     }
     else if(type[i] == "boolean") {
         var check = val[i] == "true" ? "checked" : "";
-        bd.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'>';
+        fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'>';
                                fcount++;
     }
     else {
-        bd.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">';
+        fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">';
                                fcount++;
     }
-    bd.innerHTML += '</div>';
+    bd.appendChild(fieldDiv);
 }
 
 var currentObj = {};
 function editRow(id) {
-document.getElementById("saveRowBtn").setAttribute("id", id);
     ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
         // get bd div
         var bd = document.getElementById("editRecord");
@@ -240,8 +241,9 @@ document.getElementById("saveRowBtn").setAttribute("id", id);
         });
         bd = bd[0];
 
-var obj = YAHOO.lang.JSON.parse(response);
-currentObj = obj.val;
+        bd.innerHTML = "";
+        var obj = YAHOO.lang.JSON.parse(response);
+        currentObj = obj.val;
         // for each field, display the relevant input type
         for(var i in obj.val)
             printDiv(obj.val, obj.type, i, bd, id, ["'"+i+"'"]);
@@ -252,7 +254,7 @@ currentObj = obj.val;
 }
 
 function saveValue(type, fcount, path) {
-var val;
+    var val;
     if(type == "boolean") {
         val = document.getElementById("f"+fcount).checked;
     }
@@ -266,29 +268,91 @@ var val;
         val = document.getElementById("f"+fcount).value;
     }
 
-var tempObj = currentObj;
-for(var i=0; i<path.length-1; i++) {
-    tempObj = tempObj[path[i]];
-}
-tempObj[path[path.length-1]] = val;
+    var tempObj = currentObj;
+    for(var i=0; i<path.length-1; i++) {
+        tempObj = tempObj[path[i]];
+    }
+    tempObj[path[path.length-1]] = val;
 }
 
 function saveRow() {
-//var rowId = document.getElementById("saveRowBtn").id;
-//alert(YAHOO.lang.JSON.stringify(currentObj));
-ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
-refreshTable();
-});
+    // check for added fields
+    var min = parseInt(document.getElementById("newFieldDiv").className);
 
+    for(var i=min+1; i<fcount; i++) {
+        var label = document.getElementById("label"+i).value;
+        if(label.trim() == "") continue;
+
+        var val = document.getElementById("f"+i);
+        if(val.className == "boolean")
+            currentObj[label] = val.checked;
+        else if(val.className == "number")
+            currentObj[label] = parseInt(val.value);
+        else
+            currentObj[label] = val.value;
+    }
+    alert(YAHOO.lang.JSON.stringify(currentObj));
+
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
+        refreshTable();
+    });
+    editRowPanel.hide();
 }
 
+// This is called when someone clicks "Add Field" in the Edit Record Dialog
 function addField() {
+    // Let the user choose the field type
     var bd = document.getElementById("editRecord");
-    var id = bd.getAttribute("class");
-    var newField = document.createElement("div");
-    newField.innerHTML = 'Type:<select><option>String</option><option>Number</option><option>Boolean</option></select>';
+    bd = YAHOO.util.Dom.getChildrenBy(bd, function(node) {
+        return node.id == "bd" ? true : false;
+    });
+    bd = bd[0];
+
+    var chooser = document.getElementById("chooseTypeDiv");
+    if(!chooser) {
+        var newField = document.createElement("div");
+        newField.setAttribute("id", "newFieldDiv");
+        newField.setAttribute("style", "margin-top: 10px;");
+        bd.appendChild(newField);
+
+        chooser = document.createElement("div");
+        chooser.setAttribute("id", "chooseTypeDiv");
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField()"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select>';
+        bd.appendChild(chooser);
+    }
+    else {
+        chooser.style.display = "block";
+    }
 }
 
+function makeField() {
+    // get the field type
+    var selectFT = document.getElementById("selectFieldType");
+    var type = selectFT.value;
+    if(type=="") return;
+    // zero and hide the select
+    for(var i=0; i<selectFT.options.length; i++) {
+        selectFT.options[i].selected = false;
+    }
+    document.getElementById("chooseTypeDiv").style.display = "none";
+
+    // get the new field container
+    var con = document.getElementById("newFieldDiv");
+    con.setAttribute("class", fcount++);
+
+    // put a label/val field in the container
+    var elem = document.createElement("div");
+    elem.setAttribute("class", "elem");
+    elem.innerHTML = '<label class="obj"><nobr><input type="text" id="label'+fcount+'" style="width: 90px;" />: </nobr></label>';
+    if(type == "boolean") {
+        elem.innerHTML += '<input type="checkbox" id="f'+fcount+'" class="boolean"><br />';
+    }
+    else {
+        elem.innerHTML += '<input type="text" id="f'+fcount+'" class="'+type+'">';
+    }
+    fcount++;
+    con.appendChild(elem);
+}
 
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
@@ -375,6 +439,10 @@ refreshTable();
 createTablePanel.hide();
 }
 
+function closeEditRowPanel() {
+
+}
+
 function closeCreateTableDlg() {
 createTablePanel.hide();
 }
@@ -445,7 +513,7 @@ for(var b in fields) {
 </div>
 <div class="ft">
 <input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<input type="button" value="Cancel" onclick="editRowPanel.hide()" />
 </div>
 </div>
 
@@ -455,7 +523,7 @@ for(var b in fields) {
 <div class="ft">
   <input type="button" value="Add Field" onclick="addField()" />
   <input type="button" value="Save" id="saveRowBtn" onclick="saveRow()"/>
-  <input type="button" value="Cancel" onclick="handleNo" />
+  <input type="button" value="Cancel" onclick="editRowPanel.hide()" />
 </div>
 </div>
 
