@@ -220,6 +220,16 @@ div#customer_body {
     border: 0px;
 }
 
+#history_popup .bd {
+    text-align: left;
+}
+
+#history_popup .bd .number {
+    width: 2em;
+    float: left;
+    text-align: right;
+}
+
 /* Taken from the YUI docs */
 #commandautocomplete {
     text-align: left;
