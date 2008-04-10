@@ -270,6 +270,9 @@ label.obj {
     margin-right: 5px;
     text-align: left;
 }
+div.bd div.elem {
+    padding-bottom: 10px;
+}
 
 /* xgenAdminTopNav start */
 #filemenu.visible .yuimenuitemlabel, #editmenu.visible .yuimenuitemlabel { *zoom: 1; }
