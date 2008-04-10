@@ -1,0 +1,17 @@
+<%
+
+collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+
+//
+// Main
+//
+
+////////////////////////////
+//        FIX!!!!         //
+// Add validator for json //
+////////////////////////////
+if(request.action == "save_row") {
+    collection.save(scope.eval("("+request.val+")"));
+}
+
+%>
