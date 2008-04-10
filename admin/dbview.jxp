@@ -307,6 +307,7 @@ function saveValue(type, fcount, path) {
     tempObj[path[path.length-1]] = val;
 }
 
+// save an edited value
 function saveRow() {
     // check for added fields
     if(document.getElementById("newFieldDiv")) {
@@ -329,6 +330,30 @@ function saveRow() {
         refreshTable();
     });
     editRowPanel.hide();
+}
+
+// Save a new value
+function saveRecord() {
+    var bd = document.getElementById("createRecordBd");
+    var children = YAHOO.util.Dom.getChildren(bd);
+    var newObj = {};
+    for(var i in children) {
+        if(children[i].style.display == "none") continue;
+        var label = YAHOO.util.Dom.getFirstChild(children[i]);
+        var val = YAHOO.util.Dom.getNextSibling(label);
+        if(val.className == "boolean")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.checked;
+        if(val.className == "number")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = parseInt(val.value);
+        if(val.className == "string")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.value;
+        if(val.className == "object")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = null;
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(newObj), "editRow", function(response) {
+        refreshTable();
+    });
+    createRecordPanel.hide();
 }
 
 // This is called when someone clicks "Add Field" in the Edit Record Dialog
@@ -403,51 +428,12 @@ function editField(id, type, dbid, path) {
     }
 }
 
-/*function saveValue(id, type, dbid, path) {
-    var editSpan = document.getElementById("f"+id);
-
-    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
-    if(type == "boolean") {
-        ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
-            if(response != "") {
-                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                return;
-            }
-            editSpan.innerHTML = document.getElementById("in"+id).checked;
-            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-        });
-    }
-    if(type == "number" || type == "string") {
-        var xtra = document.getElementById("extra"+id);
-        if(xtra) {
-            ajax(passData+document.getElementById("in"+id).innerHTML, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).innerHTML;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-        else {
-            ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).value;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-    }
-}
-*/
 
 var createRecordPanel;
 var createTablePanel;
 
-function createRecord() {
-    createRecordPanel.show();
+function addRecord() {
+    createRecordPanel.show()
 }
 function createTable() {
     createTablePanel.show();
@@ -489,7 +475,7 @@ if(top) {
     <%
 } else {
     %>
-    <input type="button" value="Add Record" onclick="createRecord()" />
+    <input type="button" value="Add Record" onclick="addRecord()" />
     <%
 }
 %>
@@ -525,27 +511,35 @@ if(top) {
    %>
 <div id="createRecord">
 <div class="hd">Add Record</div>
-<div class="bd">
-  Enter fields at your own risk!  All text will all be processed as strings.
-  <table>
-    <tr>
-<%
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<th>"+fields[b]+"</th>");
-}
-print("</tr><tr>");
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<td><input type='text' name='"+fields[b]+"' /></td>");
-}
+<div class="bd" id="createRecordBd">
+    <%
+    var x = collection.findOne();
+    var fcount = 0;
+    for(var b in fields) {
+        if(ignore[fields[b]] || fields[b] == "_id")
+            continue;
+
+
+        print('<div class="elem" id="div'+fcount+'"><label class="obj">'+fields[b]+': </label>');
+        if(x[fields[b]] == null)
+            print('<span class="object">(type unknown)</span>');
+        else if(x[fields[b]] instanceof Date)
+            print('<input type="text" class="date" id="'+fields[b]+'">');
+        else if(typeof x[fields[b]] == "object")
+            print('<span class="object">(null object)</span>');
+        else if(typeof x[fields[b]] == "boolean")
+            print('<input type="checkbox" class="boolean" id="'+fields[b]+'">');
+        else
+            print('<input type="text" class="'+(typeof x[fields[b]])+'" id="'+fields[b]+'">');
+
+        print('<input type="button" value="x" onclick="deleteProp('+(fcount++)+', [])" />');
+        print('</div>');
+    }
 %>
-</tr>
-</table>
 </div>
 <div class="ft">
 <input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="editRowPanel.hide()" />
+<input type="button" value="Cancel" onclick="createRecordPanel.hide()" />
 </div>
 </div>
 
@@ -887,7 +881,7 @@ else {
 }
 %>
 
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
+createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createRecordPanel.render("myMarkedUpContainer");
 
 createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
