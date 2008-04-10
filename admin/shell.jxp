@@ -355,6 +355,7 @@ var histfunc = function( e ) {
         else {
             setHistoryLocation(historyLocation);
         }
+        e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
         historyLocation += 1;
@@ -367,6 +368,7 @@ var histfunc = function( e ) {
         var newline = t.value.indexOf('\n');
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
+        e.preventDefault();
     }
 };
      </script>
