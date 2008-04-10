@@ -202,13 +202,14 @@ function printDiv(val, type, i, bd, id, path) {
 
     var fieldDiv = document.createElement("div");
     fieldDiv.setAttribute("class", "elem");
+    fieldDiv.setAttribute("id", "div"+(++fcount))
     fieldDiv.innerHTML = '<label class="obj">'+i+': </label>';
     if(val[i] != null && typeof val[i] == "object") {
-        fieldDiv.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><br />';
+        fieldDiv.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])"><br />';
 
         var outerDiv = document.createElement("div");
         outerDiv.setAttribute("class", "obj");
-        outerDiv.setAttribute("id", "div"+fcount++);
+        outerDiv.setAttribute("id", "div"+(++fcount));
         outerDiv.setAttribute("style", "display:block;");
 
         var subobj = val[i];
@@ -221,17 +222,48 @@ function printDiv(val, type, i, bd, id, path) {
     }
     else if(type[i] == "boolean") {
         var check = val[i] == "true" ? "checked" : "";
-        fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'>';
+        fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
                                fcount++;
     }
     else {
-        fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">';
+        fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
                                fcount++;
     }
     bd.appendChild(fieldDiv);
 }
 
+// alright, so what really should be done is checkboxes, but this will work for now
+function deleteProp(num, path) {
+    var deleteThis = function() {
+        var tempObj = currentObj;
+        for(var i=0; i<path.length-1; i++) {
+            tempObj = tempObj[path[i]];
+        }
+        delete tempObj[path[path.length-1]];
+        document.getElementById("div"+num).style.display = "none";
+        this.hide();
+//      refreshTable();
+    }
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+        { width: "300px",
+          fixedcenter: true,
+          draggable: true,
+          visible: false,
+          close: true,
+          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+          text: "Are you sure you want to delete this field?",
+          buttons: [ { text:"Yes", handler:deleteThis }, { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Delete Field");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.bringToTop();
+    simpledialog1.show();
+}
+
+// currentObj stores edits to the fields
 var currentObj = {};
+
 function editRow(id) {
     ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
         // get bd div
@@ -277,22 +309,22 @@ function saveValue(type, fcount, path) {
 
 function saveRow() {
     // check for added fields
-    var min = parseInt(document.getElementById("newFieldDiv").className);
+    if(document.getElementById("newFieldDiv")) {
+        var min = parseInt(document.getElementById("newFieldDiv").className);
 
-    for(var i=min+1; i<fcount; i++) {
-        var label = document.getElementById("label"+i).value;
-        if(label.trim() == "") continue;
+        for(var i=min+1; i<fcount; i++) {
+            var label = document.getElementById("label"+i).value;
+            if(label.trim() == "") continue;
 
-        var val = document.getElementById("f"+i);
-        if(val.className == "boolean")
-            currentObj[label] = val.checked;
-        else if(val.className == "number")
-            currentObj[label] = parseInt(val.value);
-        else
-            currentObj[label] = val.value;
+            var val = document.getElementById("f"+i);
+            if(val.className == "boolean")
+                currentObj[label] = val.checked;
+            else if(val.className == "number")
+                currentObj[label] = parseInt(val.value);
+            else
+                currentObj[label] = val.value;
+        }
     }
-    alert(YAHOO.lang.JSON.stringify(currentObj));
-
     ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
         refreshTable();
     });
