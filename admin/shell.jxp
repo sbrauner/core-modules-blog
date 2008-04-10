@@ -113,8 +113,17 @@ if( ! session ){
                        else if(check == false){
                            resizeRows(t, value);
                        }
-                       else if(check == -1){
-                           // unterminated newline :(
+                       else {
+                           // check is a result of match
+                           // unterminated string literal :(
+                           if(check.index+1 == t.value.length){
+                               t.selectionStart = check.index;
+                               t.selectionEnd = check.index+1;
+                           }
+                           else {
+                               t.selectionStart = check.index + 1;
+                               t.selectionEnd = t.value.length;
+                           }
                            e.preventDefault();
                        }
                    }
@@ -545,8 +554,9 @@ function checkRun(el){
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
 
-    if(newusr.replace(/""/, "").match(/[\'\"].*$/))
-        return -1;
+    var match = newusr.replace(/""/, "").match(/[\'\"].*$/);
+    if(match)
+        return match;
 
     return true;
 }
