@@ -68,7 +68,8 @@ Blog.handleRequest = function( request , arg ){
         page = uri.match(/\/page\/([0-9]*)$/);
         if (page) {
             pageNumber = parseInt( page[1] );
-            pageNumber = Math.min(Math.max(1, pageNumber), 20); // make sure we can't go below 1
+	    pageNumber = Math.max( 1, pageNumber ); // make sure we can't go below 1
+            //pageNumber = Math.min( pageNumber, 20 ); 
 
             // don't forget to strip out the page from the processed uri
             uri = uri.replace( /\/page\/[0-9]*/ , '');
@@ -114,7 +115,8 @@ Blog.handleRequest = function( request , arg ){
 
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
-        uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '').replace(/^.rss/ , "/" );
+        uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '');
+	uri = uri.replace(/^.rss\b/ , "/" );
         uri = uri.replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
         Blog.log.debug("base URI: [" + uri + "]" );
