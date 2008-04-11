@@ -112,7 +112,6 @@ function customSplit(str, num) {
 }
 
 function toggleVisible(i) {
-     alert(i);
      var elem = document.getElementById("div"+i);
      if(elem.style.display == "block")
          elem.style.display = "none";
@@ -721,11 +720,11 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
-    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
-    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
-    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Collection", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
+    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
+    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
+    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
+    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
     %>
     { label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
@@ -757,7 +756,6 @@ var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs
 var currentSort = "_id";
 var currentSortDir = "yui-dt-asc";
 myDataTable.onEventSortColumn = function(e, target) {
-    console.log(YAHOO.lang.JSON.stringify(e));
     currentSort = e.column.children[0].key;
     currentSortDir = e.dir;
 }
@@ -830,21 +828,28 @@ else {
 
     YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-YAHOO.widget.DataTable.Formatter.str = strFormatter;
+    YAHOO.widget.DataTable.Formatter.str = strFormatter;
+    <%
+}
+
+if(top) {
+    %>
+    createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createTablePanel.render("myMarkedUpContainer");
+    document.getElementById("createTable").style.display = "block";
+    <%
+}
+else {
+       %>
+    createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createRecordPanel.render("myMarkedUpContainer");
+    document.getElementById("createRecord").style.display = "block";
+
+    editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+    editRowPanel.render("myMarkedUpContainer");
+    document.getElementById("editRecord").style.display = "block";
     <%
 }
 %>
-
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
-createRecordPanel.render("myMarkedUpContainer");
-document.getElementById("createRecord").style.display = "block";
-
-createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
-createTablePanel.render("myMarkedUpContainer");
-document.getElementById("createTable").style.display = "block";
-
-editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
-editRowPanel.render("myMarkedUpContainer");
-document.getElementById("editRecord").style.display = "block";
 
 </script>
