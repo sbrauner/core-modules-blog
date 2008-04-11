@@ -13,8 +13,8 @@ if( ! session ){
     session.save();
 }
 
+head.addCSS("/~~/admin/assets/shell.css");
  %>
-
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page)<br>
      <div id="console"></div>
@@ -222,9 +222,9 @@ loader.insert({
             // and the textarea size. So we set the size of the 
             // textarea to the size of the div, minus the margin the
             // textarea has.
-            Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10));
+            Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10)+"px");
             var newHeight = (size - w - 20);
-            Dom.setStyle(row1, "height", newHeight);
+            Dom.setStyle(row1, "height", newHeight + "px");
 
             if(oldHeight + oldScrollTop >= oldScrollHeight) {
                 // row1 was scrolled all the way down

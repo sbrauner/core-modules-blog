@@ -1,0 +1,83 @@
+.prompt {
+    color: #f0f;
+    margin-right: .75em;
+}
+
+.pastprompt {
+    color: #888;
+}
+
+.usercmd {
+    color: #000;
+}
+
+.response {
+    color: #00f;
+}
+
+.historyLink {
+    cursor: pointer;
+}
+
+.historyLink[class~="highlight"] {
+    border: 1px #0bb solid;
+}
+
+.faded {
+    opacity: 0.5;
+}
+
+#console {
+    font-size: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 75% !important;
+    float: left;
+}
+
+#console .yui-log-bd {
+    height: 75%;
+}
+
+#console .scratch {
+    overflow: hidden;
+}
+
+#console .scratchtext {
+    margin-top: 6px;
+    width: 100%;
+    height: 0; /* resized dynamically */
+    border: 0px;
+}
+
+#history_popup .bd {
+    text-align: left;
+    overflow: scroll;
+}
+
+#history_popup .bd .number {
+    width: 2em;
+    float: left;
+    text-align: right;
+}
+
+#history_popup .bd {
+    max-height: 30em;
+}
+
+/* Taken from the YUI docs */
+#commandautocomplete {
+    text-align: left;
+    padding-bottom: 2em;
+    width: 70% !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* For the single-terminal-window look */
+#console textarea.shellinput {
+    width: 90% !important;
+    border: none;
+    overflow: hidden;
+}
+
