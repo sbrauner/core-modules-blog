@@ -35,6 +35,11 @@
     float: left;
 }
 
+#treeview {
+    height: 100%;
+    overflow: auto;
+}
+
 #console .yui-log-bd {
     height: 75%;
 }
