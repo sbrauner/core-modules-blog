@@ -35,6 +35,8 @@ function _dbCommand( cmdObj ) {
 
    Options:
      size: desired initial extent size for the collection.  Must be <= 1000000000.
+           for fixed size (capped) collections, this size is the total/max size of the 
+           collection.
      capped: if true, this is a capped collection (where old data rolls out).
      max: maximum number of objects if capped (optional).
 
