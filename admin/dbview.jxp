@@ -189,6 +189,7 @@ function customSplit(str, num) {
 }
 
 function toggleVisible(i) {
+     alert(i);
      var elem = document.getElementById("div"+i);
      if(elem.style.display == "block")
          elem.style.display = "none";
@@ -196,7 +197,6 @@ function toggleVisible(i) {
          elem.style.display = "block";
 }
 
-var fcount = 0;
 function printDiv(val, type, i, bd, id, path) {
     if(i == "_id") return;
 
@@ -205,7 +205,7 @@ function printDiv(val, type, i, bd, id, path) {
     fieldDiv.setAttribute("id", "div"+(++fcount))
     fieldDiv.innerHTML = '<label class="obj">'+i+': </label>';
     if(val[i] != null && typeof val[i] == "object") {
-        fieldDiv.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])"><br />';
+        fieldDiv.innerHTML += '<span onclick="toggleVisible('+(fcount+1)+')" style="cursor: default">(click to toggle object view)</span><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])"><br />';
 
         var outerDiv = document.createElement("div");
         outerDiv.setAttribute("class", "obj");
@@ -580,12 +580,10 @@ if(top) {
 <script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
 
-<!--<script type="text/javascript">
-var myLogReader = new YAHOO.widget.LogReader();
-</script>
--->
-
 <script type="text/javascript">
+
+var fcount = <%= fcount+1 %>;
+
 
 <%
 if(top) {
