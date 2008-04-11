@@ -30,7 +30,6 @@ var populate = function(theScope){
         for(var key in theScope){
             delete theScope[key];
         }
-        populate(theScope);
     };
 
     theScope.clearTranscript = function(){
@@ -53,10 +52,11 @@ var populate = function(theScope){
 
 if ( ! theScope ){
     log("Creating scope for " + shellId);
-    theScope = gg.child( "_shell scope : " + shellId );
+    parent = gg.child( "_shell scope parent : " + shellId );
+    populate(parent);
+    theScope = parent.child( "_shell scope : " + shellId );
     theScope.setGlobal( true );
     holder[ shellId ] = theScope;
-    populate(theScope);
 }
 
 theScope.setGlobal( true );

@@ -39,6 +39,7 @@ var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
 var getUserPrompt = function(){ return userPrompt; };
 var getUserPromptHTML = function(){
     return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+    "\"";
 }
 
 var loader = new YAHOO.util.YUILoader();
@@ -116,6 +117,16 @@ loader.insert({
         this.myLogReader.hideSource("LogReader");
         this.myLogReader.setTitle("10gen Shell");
         YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        // On Linux, keydown handles cursor up/down
+        // On OS X, keypress handles it
+        // We process keydowns in histfunc, and then have to block
+        // the keypresses too.
+        blockOne = false;
+        YAHOO.util.Event.addListener(t, "keypress", function(e){
+            if(blockOne)
+                e.preventDefault();
+            blockOne = false;
+        });
         
         YAHOO.util.Event.addListener(window, "keydown",
                                      function(e){
@@ -274,19 +285,22 @@ loader.insert({
         var outputs = <%= tojson(session.getResults()) %>;
 
         // re-log all the old commands and responses
-        replay = true;
-        YAHOO.log("<span class='faded'>", "format", "shell");
-        for(var i = 0; i < inputs.length; i++){
+        shouldReplay = false;
+        // Disabled for now; we may want this later
+        if(shouldReplay){
+            replay = true;
+            YAHOO.log("<span class='faded'>", "format", "shell");
+            for(var i = 0; i < inputs.length; i++){
             YAHOO.log(inputs[i], 'user', 'shell');
-            YAHOO.log(outputs[i], 'response', 'shell');
+                YAHOO.log(outputs[i], 'response', 'shell');
+            }
+            YAHOO.log("</span>", "format", "shell");
+            YAHOO.log("<hr/>", "format", "shell");
+            
+            this.myLogReader._printBuffer();
+            
+            replay = false;
         }
-        YAHOO.log("</span>", "format", "shell");
-        YAHOO.log("<hr/>", "format", "shell");
-
-        this.myLogReader._printBuffer();
-
-        replay = false;
-
         // History popup
 
         historyPopup = new YAHOO.widget.Dialog('history_popup', {
@@ -295,6 +309,11 @@ loader.insert({
             visible: false,
         });
         historyPopup.render();
+        historyPopup.subscribe("hide", function(){
+            // Firefox on OS X bug; scrollbars on a visibility: hidden element
+            // aren't hidden...
+            document.getElementById("history_popup").style.display = "none";
+        })
 
         // Key listener for "send from scratch"
 
@@ -432,6 +451,8 @@ var histfunc = function( e ) {
         else {
             setHistoryLocation(historyLocation);
         }
+        t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
         e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
@@ -445,6 +466,8 @@ var histfunc = function( e ) {
         var newline = t.value.indexOf('\n');
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
+        else t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
         e.preventDefault();
     }
 };
