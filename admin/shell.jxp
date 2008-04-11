@@ -435,6 +435,7 @@ var histfunc = function( e ) {
         else {
             setHistoryLocation(historyLocation);
         }
+        t.selectionStart = t.selectionEnd = t.value.length;
         e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
@@ -448,6 +449,7 @@ var histfunc = function( e ) {
         var newline = t.value.indexOf('\n');
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
+        else t.selectionStart = t.selectionEnd = t.value.length;
         e.preventDefault();
     }
 };
