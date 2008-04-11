@@ -2,6 +2,7 @@ core.content.xml();
 s = "<thingy attr='name'>hi</thingy>";
 
 function dump(s){
+    s = s.replace(/<!--.*?-->/gm, "");
     f = xml._xmlTokenizerchar(s);
     while(true){
         tok = f();
@@ -131,3 +132,15 @@ var s = "<ctest>&lt;greeting&gt;</ctest>";
 var x = xml.fromString(s);
 assert(x.$ == "<greeting>");
 
+var s = "<?xml version=\"1.0\"?><!-- ignore me\n--><result/>";
+var x = xml.fromString(s);
+assert(x._name == "result");
+
+var s = "<?xml version=\"1.0\"?><ns:whoo f:attr=\"namespace\">test</ns:whoo>";
+var x = xml.fromString(s);
+assert(x._name == "ns:whoo");
+assert(x.$ == "test");
+
+var s = "<?xml version=\"1.0\"?><result><!-- comment 1 -->hi<!-- comment 2 --></result>";
+var x = xml.fromString(s);
+assert(x.$ == "hi");

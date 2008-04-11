@@ -5,7 +5,12 @@ core.io.encode.json();
 core.db.db();
 core.content.html();
 
+var collection;
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
 
+
+// Print validation information
 if(request.action == "validation") {
     if(request.ns == "") {
         print("No table chosen.");
@@ -17,11 +22,38 @@ if(request.action == "validation") {
     return;
 }
 
+// Return one row
+if(request.ns && request.id) {
+    collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+    x = collection.findOne({ _id : request.id });
+    if(!x) {
+        print("-1");
+        return;
+    }
+
+    var getObjTypes = function(x) {
+        var type = {};
+        for(var i in x) {
+            if(x[i] == null)
+                type[i] = null;
+            else if( x[i] instanceof Date)
+                type[i] = "Date";
+            else if(typeof x[i] == "object")
+                type[i] = getObjTypes(x[i]);
+            else if(i != "_id" && !ignore[i])
+                type[i] = typeof x[i];
+        }
+        return type;
+    }
+
+    myObj = {};
+    myObj.val = x;
+    myObj.type = getObjTypes(x);
+    print(tojson_u(myObj));
+    return;
+}
+
 var top = request.ns == null;
-
-// ignore internal transient variables
-var ignore= { _ns:1, _save:1, _update:1 };
-
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
@@ -208,17 +240,10 @@ for( var i=0; i < rows.length; i++ ) {
                 else if(obj[h] == null)
                     dbTable.rows[k][h] = "null";
                 else if(typeof obj[h] == "string") {
-                    if(obj[h].indexOf("\n") > 0) {
-                        dbTable.rows[k][h] = obj[h].substring(0, obj[h].indexOf("\n")-1)+"...";
-                    }
-                    else
                         dbTable.rows[k][h] = (obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
                 else
                     dbTable.rows[k][h] = obj[h].toString();
-//
-//                    dbTable.rows[k][h] = '"'+obj[h]+'"';
-//	        dbTable.rows[k][fields[j++]] = outp(obj[h], rows[i]._id, h);
 	    }
         }
         var first = true;

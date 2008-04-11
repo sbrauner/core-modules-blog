@@ -123,15 +123,25 @@ else {
 %>
 
 <h3><%=hdr%></h3>
-<% if(!top) { %>
-<a href="dbview" style="display: block;">Back to Collection View</a>
-   <!--<form style="display: inline;">Show first <input type="hidden" name="ns" value="<%= request.ns %>"><input type="text" name="max" /> rows <input type="submit" value="Go"></form>
-   <% if(!request.all) { %>
-      <form style="padding-left: 15px; display: inline;"><input type="hidden" name="ns" value="<%= request.ns %>"><input type="submit" name="all" value="Show All" /></form>
-      <%
-   } %>-->
-<% } %>
-
+<% if(!top) {
+    %>
+    <a href="dbview" style="display: block;">Back to Collection View</a>
+    <div> Indices:
+    <%
+    var r = new RegExp(request.ns+".*");
+    var metarows = db["system.namespaces"].find({name: r}).toArray();
+    var i=0;
+    while(i<metarows.length-1 && metarows[i+1].name.indexOf("$") > 0) {
+        obj = metarows[++i];
+        var idx=obj.name.indexOf("$");
+        if( obj.name && idx>=0 ) {
+            print("<div>"+obj.name.substring(idx+1)+"</div>");
+        }
+    }
+    %>
+    </div>
+    <%
+} %>
 
 
 <script type="text/javascript">
@@ -170,11 +180,236 @@ function deleteRow(id) {
     simpledialog1.show();
 }
 
-function editRow(id) {
-    var passData = "ns=<%= request.ns %>&id="+id;
-    location="editRow?"+passData;
+function customSplit(str, num) {
+    var a = str.split(":");
+    for(var i=num; i<a.length; i++) {
+        a[num-1] += ":"+a[i];
+    }
+    return a;
 }
 
+function toggleVisible(i) {
+     var elem = document.getElementById("div"+i);
+     if(elem.style.display == "block")
+         elem.style.display = "none";
+     else
+         elem.style.display = "block";
+}
+
+var fcount = 0;
+function printDiv(val, type, i, bd, id, path) {
+    if(i == "_id") return;
+
+    var fieldDiv = document.createElement("div");
+    fieldDiv.setAttribute("class", "elem");
+    fieldDiv.setAttribute("id", "div"+(++fcount))
+    fieldDiv.innerHTML = '<label class="obj">'+i+': </label>';
+    if(val[i] != null && typeof val[i] == "object") {
+        fieldDiv.innerHTML += '<span onclick="toggleVisible('+fcount+')">(click to toggle object view)</span><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])"><br />';
+
+        var outerDiv = document.createElement("div");
+        outerDiv.setAttribute("class", "obj");
+        outerDiv.setAttribute("id", "div"+(++fcount));
+        outerDiv.setAttribute("style", "display:block;");
+
+        var subobj = val[i];
+        for(var j in subobj) {
+            path.push("'"+j+"'");
+            printDiv(val[i], type[i], j, outerDiv, id, path);
+            path.pop();
+        }
+        fieldDiv.appendChild(outerDiv);
+    }
+    else if(type[i] == "boolean") {
+        var check = val[i] == "true" ? "checked" : "";
+        fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+                               fcount++;
+    }
+    else {
+        fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+                               fcount++;
+    }
+    bd.appendChild(fieldDiv);
+}
+
+// alright, so what really should be done is checkboxes, but this will work for now
+function deleteProp(num, path) {
+    var deleteThis = function() {
+        var tempObj = currentObj;
+        for(var i=0; i<path.length-1; i++) {
+            tempObj = tempObj[path[i]];
+        }
+        delete tempObj[path[path.length-1]];
+        document.getElementById("div"+num).style.display = "none";
+        this.hide();
+//      refreshTable();
+    }
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+        { width: "300px",
+          fixedcenter: true,
+          draggable: true,
+          visible: false,
+          close: true,
+          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+          text: "Are you sure you want to delete this field?",
+          buttons: [ { text:"Yes", handler:deleteThis }, { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Delete Field");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.bringToTop();
+    simpledialog1.show();
+}
+
+// currentObj stores edits to the fields
+var currentObj = {};
+
+function editRow(id) {
+    ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
+        // get bd div
+        var bd = document.getElementById("editRecord");
+        bd = YAHOO.util.Dom.getChildrenBy(bd, function(node) {
+            return node.id == "bd" ? true : false;
+        });
+        bd = bd[0];
+
+        bd.innerHTML = "";
+        var obj = YAHOO.lang.JSON.parse(response);
+        currentObj = obj.val;
+        // for each field, display the relevant input type
+        for(var i in obj.val)
+            printDiv(obj.val, obj.type, i, bd, id, ["'"+i+"'"]);
+
+        editRowPanel.bringToTop();
+        editRowPanel.show();
+    });
+}
+
+function saveValue(type, fcount, path) {
+    var val;
+    if(type == "boolean") {
+        val = document.getElementById("f"+fcount).checked;
+    }
+    else if(type == "number") {
+        val = parseInt(document.getElementById("f"+fcount).value);
+    }
+    else if(type == "Date") {
+        val = new Date(document.getElementById("f"+fcount).value);
+    }
+    else { // string
+        val = document.getElementById("f"+fcount).value;
+    }
+
+    var tempObj = currentObj;
+    for(var i=0; i<path.length-1; i++) {
+        tempObj = tempObj[path[i]];
+    }
+    tempObj[path[path.length-1]] = val;
+}
+
+// save an edited value
+function saveRow() {
+    // check for added fields
+    if(document.getElementById("newFieldDiv")) {
+        var min = parseInt(document.getElementById("newFieldDiv").className);
+
+        for(var i=min+1; i<fcount; i++) {
+            var label = document.getElementById("label"+i).value;
+            if(label.trim() == "") continue;
+
+            var val = document.getElementById("f"+i);
+            if(val.className == "boolean")
+                currentObj[label] = val.checked;
+            else if(val.className == "number")
+                currentObj[label] = parseInt(val.value);
+            else
+                currentObj[label] = val.value;
+        }
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
+        refreshTable();
+    });
+    editRowPanel.hide();
+}
+
+// Save a new value
+function saveRecord() {
+    var bd = document.getElementById("createRecordBd");
+    var children = YAHOO.util.Dom.getChildren(bd);
+    var newObj = {};
+    for(var i in children) {
+        if(children[i].style.display == "none") continue;
+        var label = YAHOO.util.Dom.getFirstChild(children[i]);
+        var val = YAHOO.util.Dom.getNextSibling(label);
+        if(val.className == "boolean")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.checked;
+        if(val.className == "number")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = parseInt(val.value);
+        if(val.className == "string")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.value;
+        if(val.className == "object")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = null;
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(newObj), "editRow", function(response) {
+        refreshTable();
+    });
+    createRecordPanel.hide();
+}
+
+// This is called when someone clicks "Add Field" in the Edit Record Dialog
+function addField() {
+    // Let the user choose the field type
+    var bd = document.getElementById("editRecord");
+    bd = YAHOO.util.Dom.getChildrenBy(bd, function(node) {
+        return node.id == "bd" ? true : false;
+    });
+    bd = bd[0];
+
+    var chooser = document.getElementById("chooseTypeDiv");
+    if(!chooser) {
+        var newField = document.createElement("div");
+        newField.setAttribute("id", "newFieldDiv");
+        newField.setAttribute("style", "margin-top: 10px;");
+        bd.appendChild(newField);
+
+        chooser = document.createElement("div");
+        chooser.setAttribute("id", "chooseTypeDiv");
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField()"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select>';
+        bd.appendChild(chooser);
+    }
+    else {
+        chooser.style.display = "block";
+    }
+}
+
+function makeField() {
+    // get the field type
+    var selectFT = document.getElementById("selectFieldType");
+    var type = selectFT.value;
+    if(type=="") return;
+    // zero and hide the select
+    for(var i=0; i<selectFT.options.length; i++) {
+        selectFT.options[i].selected = false;
+    }
+    document.getElementById("chooseTypeDiv").style.display = "none";
+
+    // get the new field container
+    var con = document.getElementById("newFieldDiv");
+    con.setAttribute("class", fcount++);
+
+    // put a label/val field in the container
+    var elem = document.createElement("div");
+    elem.setAttribute("class", "elem");
+    elem.innerHTML = '<label class="obj"><nobr><input type="text" id="label'+fcount+'" style="width: 90px;" />: </nobr></label>';
+    if(type == "boolean") {
+        elem.innerHTML += '<input type="checkbox" id="f'+fcount+'" class="boolean"><br />';
+    }
+    else {
+        elem.innerHTML += '<input type="text" id="f'+fcount+'" class="'+type+'">';
+    }
+    fcount++;
+    con.appendChild(elem);
+}
 
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
@@ -193,57 +428,42 @@ function editField(id, type, dbid, path) {
     }
 }
 
-function saveValue(id, type, dbid, path) {
-    var editSpan = document.getElementById("f"+id);
-
-    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
-    if(type == "boolean") {
-        ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
-            if(response != "") {
-                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                return;
-            }
-            editSpan.innerHTML = document.getElementById("in"+id).checked;
-            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-        });
-    }
-    if(type == "number" || type == "string") {
-        var xtra = document.getElementById("extra"+id);
-        if(xtra) {
-            ajax(passData+document.getElementById("in"+id).innerHTML, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).innerHTML;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-        else {
-            ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).value;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-    }
-
-
-}
 
 var createRecordPanel;
 var createTablePanel;
 
-function createRecord() {
-    createRecordPanel.show();
+function addRecord() {
+    createRecordPanel.show()
 }
 function createTable() {
     createTablePanel.show();
 }
 
+function addTable() {
+var tbl = document.getElementById("createTableForm");
+
+var passData = "";
+var children = YAHOO.util.Dom.getChildren(tbl);
+for(var i=0; i<children.length; i++) {
+var c = YAHOO.util.Dom.getLastChild(children[i]);
+if(c.getAttribute("type") == "text")
+                                if(c.value != "") passData += "&"+c.name+"="+c.value;
+if(c.getAttribute("type") == "checkbox")
+                                if(c.checked) passData += "&"+c.name;
+}
+ajax("action=create"+passData, "editDb", function(response) {
+refreshTable();
+});
+createTablePanel.hide();
+}
+
+function closeEditRowPanel() {
+
+}
+
+function closeCreateTableDlg() {
+createTablePanel.hide();
+}
 
 </script>
 
@@ -251,11 +471,11 @@ function createTable() {
 core.db.db();
 if(top) {
     %>
-    <input type="button" value="Create Table" onclick="createTable()" />
+    <input type="button" value="Create Collection" onclick="createTable()" />
     <%
 } else {
     %>
-    <input type="button" value="Add Record" onclick="createRecord()" />
+    <input type="button" value="Add Record" onclick="addRecord()" />
     <%
 }
 %>
@@ -271,15 +491,17 @@ if( rows.length >= max )
 if(top) {
     %>
 <div id="createTable">
-<div class="hd">Create Table</div>
+<div class="hd">Create Collection</div>
 <div class="bd">
-<form>
-    <label>Table name: </label><input type="text" name="tablename">
-    <label>Fixed: </label><input type="checkbox" name="fixed">
+<form id="createTableForm">
+    <div><label>Collection name: </label><input type="text"  name="tablename"></div>
+    <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
+    <div><label>Size: </label><input type="text" name="size"></div>
+<div><label>Max: </label><input type="text" name="max"></div>
 </form>
 </div>
-<div class="ft"><input type="button" value="Save" onclick="addRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<div class="ft"><input type="button" value="Save" onclick="addTable()"/>
+<input type="button" value="Cancel" onclick="closeCreateTableDlg()" />
 </div>
 </div>
 
@@ -289,31 +511,50 @@ if(top) {
    %>
 <div id="createRecord">
 <div class="hd">Add Record</div>
-<div class="bd">
-  Enter fields at your own risk!  All text will all be processed as strings.
-  <table>
-    <tr>
-<%
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<th>"+fields[b]+"</th>");
-}
-print("</tr><tr>");
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<td><input type='text' name='"+fields[b]+"' /></td>");
-}
+<div class="bd" id="createRecordBd">
+    <%
+    var x = collection.findOne();
+    var fcount = 0;
+    for(var b in fields) {
+        if(ignore[fields[b]] || fields[b] == "_id")
+            continue;
+
+
+        print('<div class="elem" id="div'+fcount+'"><label class="obj">'+fields[b]+': </label>');
+        if(x[fields[b]] == null)
+            print('<span class="object">(type unknown)</span>');
+        else if(x[fields[b]] instanceof Date)
+            print('<input type="text" class="date" id="'+fields[b]+'">');
+        else if(typeof x[fields[b]] == "object")
+            print('<span class="object">(null object)</span>');
+        else if(typeof x[fields[b]] == "boolean")
+            print('<input type="checkbox" class="boolean" id="'+fields[b]+'">');
+        else
+            print('<input type="text" class="'+(typeof x[fields[b]])+'" id="'+fields[b]+'">');
+
+        print('<input type="button" value="x" onclick="deleteProp('+(fcount++)+', [])" />');
+        print('</div>');
+    }
 %>
-</tr>
-</table>
 </div>
 <div class="ft">
-<input type="button" value="Save" onclick="addRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<input type="button" value="Save" onclick="saveRecord()"/>
+<input type="button" value="Cancel" onclick="createRecordPanel.hide()" />
+</div>
+</div>
+
+<div id="editRecord">
+<div class="hd">Edit Record</div>
+<div class="bd" id="bd"></div>
+<div class="ft">
+  <input type="button" value="Add Field" onclick="addField()" />
+  <input type="button" value="Save" id="saveRowBtn" onclick="saveRow()"/>
+  <input type="button" value="Cancel" onclick="editRowPanel.hide()" />
 </div>
 </div>
 
 <% } %>
+
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
@@ -400,15 +641,6 @@ if(top) {
         this.hide();
     }
 
-    var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
-        this.hide();
-    }
-
-
     function getValidation(tablename) {
         ajax("action=validation&ns="+tablename, "showTable", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
@@ -436,17 +668,24 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop this table?",
+            text: "Are you sure you want to drop the collection "+tname+"?",
             buttons: [ { text:"Yes", handler:handleDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Table");
+        simpledialog1.setHeader("Drop Collection");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
 
     function dropIndices(tname) {
         tablename = tname;
+    var handleIDrop = function() {
+        var list = getSelectedIndices(",");
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            refreshTable();
+        });
+        this.hide();
+    }
         var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
@@ -506,12 +745,21 @@ function getSearchArgs() {
     return passData;
 }
 
+// Custom sorters
+var sortHex = function(a, b, desc) {
+    return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
+}
+
+// Todo: write date sort
+var sortDate = function(a, b, desc) {}
+
+
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
 var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 20,
+    rowsPerPage: 50,
     alwaysVisible : false
 });
 
@@ -531,11 +779,13 @@ myDataSource.responseSchema = {
         %>
 
         {key: "delete"}, <%
-        for(var i in rows[0]) {
-            if(!ignore[i]) {
-                print('{ key: "'+i+'"');
-                print(', parser:YAHOO.util.DataSource.parseString');
-                print('},');
+        if(rows && rows[0]) {
+            for(var i in rows[0]) {
+                if(!ignore[i]) {
+                    print('{ key: "'+i+'"');
+                    print(', parser:YAHOO.util.DataSource.parseString');
+                    print('},');
+                }
             }
         }
     }
@@ -551,15 +801,23 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
     print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
     print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: "Drop Collection", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
     { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
     <%
-    for(var i in rows[0]) {
-        if(!ignore[i]) {
-            print('{ key: "'+i+'", sortable: true, children: [{ key: "'+i+'", label: addSearchForm("'+i+ '"), sortable: false } ] },');
-        }
+    if(rows && rows[0]) {
+        for(var i in rows[0]) {
+            if(!ignore[i]) {
+                // Special cases:
+                // if _id, the column needs to be converted to hexidecimal and sorted that way
+                if(i == "_id") {
+                    print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+                }
+                else
+                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+            }
+       }
     }
     %>
     { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
@@ -568,8 +826,6 @@ var myColumnDefs = [ <% if(top) {
                      %>
 
                    ];
-
-
 
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
@@ -601,7 +857,7 @@ if(top) {
         elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Collection" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
@@ -618,16 +874,20 @@ else {
     editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
+
     YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
     <%
 }
 %>
 
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
+createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createRecordPanel.render("myMarkedUpContainer");
 
-createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true } );
+createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createTablePanel.render("myMarkedUpContainer");
+
+editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+editRowPanel.render("myMarkedUpContainer");
 
 </script>
