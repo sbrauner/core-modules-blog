@@ -307,6 +307,7 @@ function saveValue(type, fcount, path) {
     tempObj[path[path.length-1]] = val;
 }
 
+// save an edited value
 function saveRow() {
     // check for added fields
     if(document.getElementById("newFieldDiv")) {
@@ -329,6 +330,30 @@ function saveRow() {
         refreshTable();
     });
     editRowPanel.hide();
+}
+
+// Save a new value
+function saveRecord() {
+    var bd = document.getElementById("createRecordBd");
+    var children = YAHOO.util.Dom.getChildren(bd);
+    var newObj = {};
+    for(var i in children) {
+        if(children[i].style.display == "none") continue;
+        var label = YAHOO.util.Dom.getFirstChild(children[i]);
+        var val = YAHOO.util.Dom.getNextSibling(label);
+        if(val.className == "boolean")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.checked;
+        if(val.className == "number")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = parseInt(val.value);
+        if(val.className == "string")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.value;
+        if(val.className == "object")
+            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = null;
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(newObj), "editRow", function(response) {
+        refreshTable();
+    });
+    createRecordPanel.hide();
 }
 
 // This is called when someone clicks "Add Field" in the Edit Record Dialog
@@ -403,51 +428,12 @@ function editField(id, type, dbid, path) {
     }
 }
 
-/*function saveValue(id, type, dbid, path) {
-    var editSpan = document.getElementById("f"+id);
-
-    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
-    if(type == "boolean") {
-        ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
-            if(response != "") {
-                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                return;
-            }
-            editSpan.innerHTML = document.getElementById("in"+id).checked;
-            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-        });
-    }
-    if(type == "number" || type == "string") {
-        var xtra = document.getElementById("extra"+id);
-        if(xtra) {
-            ajax(passData+document.getElementById("in"+id).innerHTML, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).innerHTML;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-        else {
-            ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).value;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-    }
-}
-*/
 
 var createRecordPanel;
 var createTablePanel;
 
-function createRecord() {
-    createRecordPanel.show();
+function addRecord() {
+    createRecordPanel.show()
 }
 function createTable() {
     createTablePanel.show();
@@ -485,11 +471,11 @@ createTablePanel.hide();
 core.db.db();
 if(top) {
     %>
-    <input type="button" value="Create Table" onclick="createTable()" />
+    <input type="button" value="Create Collection" onclick="createTable()" />
     <%
 } else {
     %>
-    <input type="button" value="Add Record" onclick="createRecord()" />
+    <input type="button" value="Add Record" onclick="addRecord()" />
     <%
 }
 %>
@@ -505,10 +491,10 @@ if( rows.length >= max )
 if(top) {
     %>
 <div id="createTable">
-<div class="hd">Create Table</div>
+<div class="hd">Create Collection</div>
 <div class="bd">
 <form id="createTableForm">
-    <div><label>Table name: </label><input type="text"  name="tablename"></div>
+    <div><label>Collection name: </label><input type="text"  name="tablename"></div>
     <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
     <div><label>Size: </label><input type="text" name="size"></div>
 <div><label>Max: </label><input type="text" name="max"></div>
@@ -525,27 +511,35 @@ if(top) {
    %>
 <div id="createRecord">
 <div class="hd">Add Record</div>
-<div class="bd">
-  Enter fields at your own risk!  All text will all be processed as strings.
-  <table>
-    <tr>
-<%
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<th>"+fields[b]+"</th>");
-}
-print("</tr><tr>");
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<td><input type='text' name='"+fields[b]+"' /></td>");
-}
+<div class="bd" id="createRecordBd">
+    <%
+    var x = collection.findOne();
+    var fcount = 0;
+    for(var b in fields) {
+        if(ignore[fields[b]] || fields[b] == "_id")
+            continue;
+
+
+        print('<div class="elem" id="div'+fcount+'"><label class="obj">'+fields[b]+': </label>');
+        if(x[fields[b]] == null)
+            print('<span class="object">(type unknown)</span>');
+        else if(x[fields[b]] instanceof Date)
+            print('<input type="text" class="date" id="'+fields[b]+'">');
+        else if(typeof x[fields[b]] == "object")
+            print('<span class="object">(null object)</span>');
+        else if(typeof x[fields[b]] == "boolean")
+            print('<input type="checkbox" class="boolean" id="'+fields[b]+'">');
+        else
+            print('<input type="text" class="'+(typeof x[fields[b]])+'" id="'+fields[b]+'">');
+
+        print('<input type="button" value="x" onclick="deleteProp('+(fcount++)+', [])" />');
+        print('</div>');
+    }
 %>
-</tr>
-</table>
 </div>
 <div class="ft">
 <input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="editRowPanel.hide()" />
+<input type="button" value="Cancel" onclick="createRecordPanel.hide()" />
 </div>
 </div>
 
@@ -674,11 +668,11 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop this table?",
+            text: "Are you sure you want to drop the collection "+tname+"?",
             buttons: [ { text:"Yes", handler:handleDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Table");
+        simpledialog1.setHeader("Drop Collection");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -807,7 +801,7 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
     print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
     print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: "Drop Collection", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
 } else {
     %>
     { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
@@ -863,7 +857,7 @@ if(top) {
         elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Collection" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
@@ -887,7 +881,7 @@ else {
 }
 %>
 
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
+createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createRecordPanel.render("myMarkedUpContainer");
 
 createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
