@@ -112,7 +112,6 @@ function customSplit(str, num) {
 }
 
 function toggleVisible(i) {
-     alert(i);
      var elem = document.getElementById("div"+i);
      if(elem.style.display == "block")
          elem.style.display = "none";
@@ -721,14 +720,14 @@ myDataSource.responseSchema = {
 
 
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
-    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
-    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
-    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Collection", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
+    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
+    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
+    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
+    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
     %>
-    { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
+    { label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
     <%
     if(rows && rows[0]) {
         for(var i in rows[0]) {
@@ -736,15 +735,15 @@ var myColumnDefs = [ <% if(top) {
                 // Special cases:
                 // if _id, the column needs to be converted to hexidecimal and sorted that way
                 if(i == "_id") {
-                    print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+                    print('{  label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", sortable: true } ] },');
                 }
                 else
-                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", formatter: "str", sortable: false } ] },');
+                    print('{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] },');
             }
        }
     }
     %>
-    { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
+    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
     <%
 }
                      %>
@@ -757,14 +756,13 @@ var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs
 var currentSort = "_id";
 var currentSortDir = "yui-dt-asc";
 myDataTable.onEventSortColumn = function(e, target) {
-alert(YAHOO.lang.JSON.stringify());
     currentSort = e.column.children[0].key;
     currentSortDir = e.dir;
 }
 myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
 
 updateCaseTable = {
-    success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
+    success : function(){ myDataTable.onDataReturnInitializeTable; myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
     failure : myDataTable.onDataReturnInitializeTable,
     scope : myDataTable,
     argument : {
@@ -812,39 +810,46 @@ else {
         elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(oData.length >= 20) {
-var fullText = document.createElement("div");
-fullText.setAttribute("class","fullText");
-fullText.setAttribute("id", "fullText"+fcount);
-fullText.innerHTML = oData+'<br /><input type="button" onclick="document.getElementById(\'fullText'+fcount+'\').style.display = \'none\'" value="Close" />';
+        if(oData && oData.length >= 20) {
+            var fullText = document.createElement("div");
+            fullText.setAttribute("class","fullText");
+            fullText.setAttribute("id", "fullText"+fcount);
+            fullText.innerHTML = oData+'<br /><input type="button" onclick="document.getElementById(\'fullText'+fcount+'\').style.display = \'none\'" value="Close" />';
 
             var oData = '<span onclick="document.getElementById(\'fullText'+fcount+'\').style.display = \'block\'" style="cursor:default">'+oData.substring(0, 18)+"...</span>";
-fcount++;
-        elCell.innerHTML = oData;
-elCell.appendChild(fullText);
+            fcount++;
+            elCell.innerHTML = oData;
+            elCell.appendChild(fullText);
         }
-else
-        elCell.innerHTML = oData;
+        else
+            elCell.innerHTML = oData;
 
     }
 
     YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-YAHOO.widget.DataTable.Formatter.str = strFormatter;
+    YAHOO.widget.DataTable.Formatter.str = strFormatter;
+    <%
+}
+
+if(top) {
+    %>
+    createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createTablePanel.render("myMarkedUpContainer");
+    document.getElementById("createTable").style.display = "block";
+    <%
+}
+else {
+       %>
+    createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createRecordPanel.render("myMarkedUpContainer");
+    document.getElementById("createRecord").style.display = "block";
+
+    editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+    editRowPanel.render("myMarkedUpContainer");
+    document.getElementById("editRecord").style.display = "block";
     <%
 }
 %>
-
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
-createRecordPanel.render("myMarkedUpContainer");
-document.getElementById("createRecord").style.display = "block";
-
-createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
-createTablePanel.render("myMarkedUpContainer");
-document.getElementById("createTable").style.display = "block";
-
-editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
-editRowPanel.render("myMarkedUpContainer");
-document.getElementById("editRecord").style.display = "block";
 
 </script>
