@@ -258,22 +258,40 @@ function saveRow() {
 }
 
 // Save a new value
-function saveRecord() {
-    var bd = document.getElementById("createRecordBd");
+function saveRecord(elem) {
+    var bd = document.getElementById(elem);
     var children = YAHOO.util.Dom.getChildren(bd);
     var newObj = {};
+
+    var getVal = function(val) {
+        if(val.className == "boolean")
+            return val.checked;
+        if(val.className == "number")
+            return parseInt(val.value);
+        if(val.className == "string")
+            return val.value;
+        if(val.className == "object")
+            return null;
+    }
+
     for(var i in children) {
         if(children[i].style.display == "none") continue;
+
+        if(children[i].id == "newFieldDiv") {
+            var newFields = YAHOO.util.Dom.getChildren(children[i]);
+            for(var i in newFields) {
+                var label = YAHOO.util.Dom.getFirstChild(newFields[i]);
+                var labelVal = YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getFirstChild(label)).value;
+                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getFirstChild(label)).value.trim() == "") continue;
+                var val = YAHOO.util.Dom.getNextSibling(label);
+                newObj[labelVal] = getVal(val);
+            }
+            continue;
+        }
+
         var label = YAHOO.util.Dom.getFirstChild(children[i]);
         var val = YAHOO.util.Dom.getNextSibling(label);
-        if(val.className == "boolean")
-            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.checked;
-        if(val.className == "number")
-            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = parseInt(val.value);
-        if(val.className == "string")
-            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = val.value;
-        if(val.className == "object")
-            newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = null;
+        newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = getVal(val);
     }
     ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(newObj), "editRow", function(response) {
         refreshTable();
@@ -282,15 +300,11 @@ function saveRecord() {
 }
 
 // This is called when someone clicks "Add Field" in the Edit Record Dialog
-function addField() {
+function addField(elem) {
     // Let the user choose the field type
-    var bd = document.getElementById("editRecord");
-    bd = YAHOO.util.Dom.getChildrenBy(bd, function(node) {
-        return node.id == "bd" ? true : false;
-    });
-    bd = bd[0];
+    var bd = document.getElementById(elem);
 
-    var chooser = document.getElementById("chooseTypeDiv");
+    var chooser = document.getElementById("chooseTypeDiv"+elem);
     if(!chooser) {
         var newField = document.createElement("div");
         newField.setAttribute("id", "newFieldDiv");
@@ -298,8 +312,8 @@ function addField() {
         bd.appendChild(newField);
 
         chooser = document.createElement("div");
-        chooser.setAttribute("id", "chooseTypeDiv");
-        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField()"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select>';
+        chooser.setAttribute("id", "chooseTypeDiv"+elem);
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select>';
         bd.appendChild(chooser);
     }
     else {
@@ -307,7 +321,7 @@ function addField() {
     }
 }
 
-function makeField() {
+function makeField(elem) {
     // get the field type
     var selectFT = document.getElementById("selectFieldType");
     var type = selectFT.value;
@@ -316,7 +330,7 @@ function makeField() {
     for(var i=0; i<selectFT.options.length; i++) {
         selectFT.options[i].selected = false;
     }
-    document.getElementById("chooseTypeDiv").style.display = "none";
+    document.getElementById("chooseTypeDiv"+elem).style.display = "none";
 
     // get the new field container
     var con = document.getElementById("newFieldDiv");
@@ -463,7 +477,8 @@ if(top) {
 %>
 </div>
 <div class="ft">
-<input type="button" value="Save" onclick="saveRecord()"/>
+<input type="button" value="Add Field" onclick="addField('createRecordBd')" />
+<input type="button" value="Save" onclick="saveRecord('createRecordBd')"/>
 <input type="button" value="Cancel" onclick="createRecordPanel.hide()" />
 </div>
 </div>
@@ -472,7 +487,7 @@ if(top) {
 <div class="hd">Edit Record</div>
 <div class="bd" id="bd"></div>
 <div class="ft">
-  <input type="button" value="Add Field" onclick="addField()" />
+  <input type="button" value="Add Field" onclick="addField('bd')" />
   <input type="button" value="Save" id="saveRowBtn" onclick="saveRow()"/>
   <input type="button" value="Cancel" onclick="editRowPanel.hide()" />
 </div>
@@ -674,7 +689,9 @@ var sortHex = function(a, b, desc) {
 }
 
 // Todo: write date sort
-var sortDate = function(a, b, desc) {}
+var sortDate = function(a, b, desc) {
+
+}
 
 
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
