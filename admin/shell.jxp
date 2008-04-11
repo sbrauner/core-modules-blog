@@ -214,9 +214,17 @@ loader.insert({
             }
         };
 
+        var markScratchEvent = function(e){
+            e.inScratchText = true;
+        }
+
+        var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+        Event.addListener(scratchText, "keydown", markScratchEvent);
+        Event.addListener(scratchText, "keyup", markScratchEvent);
+        Event.addListener(scratchText, "keypress", markScratchEvent);
+
         // resize handle on scratch area
-        var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event,
-            row1 = null, row2 = null;
+        var row1 = null, row2 = null;
         row1 = Dom.get("consolebody");
         row2 = scratchText;
         var size = parseInt(Dom.getStyle("console", "height"), 10);
@@ -224,22 +232,14 @@ loader.insert({
 
         var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
 
-        var resize = new YAHOO.util.Resize(scratch, {
+        var scratchResize = new YAHOO.util.Resize(scratch, {
             handles: "t",
             height: 0,
             maxHeight: max
         });
 
-        var markScratchEvent = function(e){
-            e.inScratchText = true;
-        }
-
-        Event.addListener(scratchText, "keydown", markScratchEvent);
-        Event.addListener(scratchText, "keyup", markScratchEvent);
-        Event.addListener(scratchText, "keypress", markScratchEvent);
-
         oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
-        resize.on('resize', function(ev) {
+        scratchResize.on('resize', function(ev) {
             var oldScrollHeight = row1.scrollHeight, 
                 oldScrollTop = row1.scrollTop;
             var w = ev.height;
@@ -259,11 +259,9 @@ loader.insert({
             oldHeight = newHeight;
         });
 
-
-        resize.resize(null, 10, 0, 0, 0, true);
+        scratchResize.resize(null, 10, 0, 0, 0, true);
 
         var replay = false;
-
 
         var inputs = <%= tojson(session.getCommands()) %>;
 
