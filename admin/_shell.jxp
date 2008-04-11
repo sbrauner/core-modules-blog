@@ -45,6 +45,9 @@ var populate = function(theScope){
 
     theScope.setPrompt = function(prompt){
         print.termCommand("setprompt", {$prompt: prompt});
+        user.shell = user.shell || {};
+        user.shell.prompt = prompt;
+        db.users.save(user);
     };
 }
 
