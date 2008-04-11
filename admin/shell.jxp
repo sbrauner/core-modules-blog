@@ -274,19 +274,22 @@ loader.insert({
         var outputs = <%= tojson(session.getResults()) %>;
 
         // re-log all the old commands and responses
-        replay = true;
-        YAHOO.log("<span class='faded'>", "format", "shell");
-        for(var i = 0; i < inputs.length; i++){
+        shouldReplay = false;
+        // Disabled for now; we may want this later
+        if(shouldReplay){
+            replay = true;
+            YAHOO.log("<span class='faded'>", "format", "shell");
+            for(var i = 0; i < inputs.length; i++){
             YAHOO.log(inputs[i], 'user', 'shell');
-            YAHOO.log(outputs[i], 'response', 'shell');
+                YAHOO.log(outputs[i], 'response', 'shell');
+            }
+            YAHOO.log("</span>", "format", "shell");
+            YAHOO.log("<hr/>", "format", "shell");
+            
+            this.myLogReader._printBuffer();
+            
+            replay = false;
         }
-        YAHOO.log("</span>", "format", "shell");
-        YAHOO.log("<hr/>", "format", "shell");
-
-        this.myLogReader._printBuffer();
-
-        replay = false;
-
         // History popup
 
         historyPopup = new YAHOO.widget.Dialog('history_popup', {
