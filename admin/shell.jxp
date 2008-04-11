@@ -179,6 +179,10 @@ loader.insert({
                         else if(p.$command == "reload"){
                             location.reload();
                         }
+                        else if(p.$command == "setprompt"){
+                            userPrompt = p.$prompt;
+                            prompt.innerHTML = getUserPromptHTML();
+                        }
                     }
                 }
                 if(obj.$scope && ! replay){

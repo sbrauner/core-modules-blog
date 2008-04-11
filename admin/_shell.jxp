@@ -42,6 +42,10 @@ var populate = function(theScope){
         theScope.clearScope();
         theScope.clearTranscript();
     };
+
+    theScope.setPrompt = function(prompt){
+        print.termCommand("setprompt", {$prompt: prompt});
+    };
 }
 
 if ( ! theScope ){
@@ -66,8 +70,10 @@ var Buffer = function(){
             _buffer[_buffer.length-1] += s;
 
     }, {
-        termCommand: function(command){
-            _buffer.push({$command: command});
+        termCommand: function(command, args){
+            // args is an Object
+            args = args || {};
+            _buffer.push(Object.extend(args, {$command: command}));
         },
         getBuffer: function(){
             return _buffer;
