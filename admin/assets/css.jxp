@@ -190,6 +190,15 @@ label.obj {
 div.bd div.elem {
     padding-bottom: 10px;
 }
+div.fullText {
+    display: none;
+    position: absolute;
+    max-width: 400px;
+    padding: 5px;
+    border: 1px solid black;
+    background: white;
+}
+
 
 /* xgenAdminTopNav start */
 #filemenu.visible .yuimenuitemlabel, #editmenu.visible .yuimenuitemlabel { *zoom: 1; }
