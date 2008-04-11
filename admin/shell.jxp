@@ -40,6 +40,9 @@ loader.insert({
     onSuccess: function(loader) {
         objectList = [];
         loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
+        loader.objectTreeView.subscribe("expand", onNodeExpand);
+        loader.objectTreeView.subscribe("collapse", onNodeCollapse);
+        
         loader.objectNodes = [];
         
         // ***** Console widget *****
@@ -446,12 +449,14 @@ function Check(cursor, field) {
 }*/
 
 function refreshScope(tree, scope) {
+    removingChildren = true;
     tree.removeChildren(tree.getRoot());
-    populateTree(tree.getRoot(), scope);
+    removingChildren = false;
+    populateTree(tree.getRoot(), scope, "");
     tree.draw();
 }
 
-function populateTree(treenode, obj) {
+function populateTree(treenode, obj, name) {
     for(var field in obj){
         s = field + ": ";
         if(typeof obj[field] == "boolean") {
@@ -470,9 +475,11 @@ function populateTree(treenode, obj) {
             s += (typeof obj[field]);
         }
 
-        var tmpNode = new YAHOO.widget.TextNode(s, treenode, false);
+        var myname = name+field;
+        var tmpNode = new YAHOO.widget.TextNode(s, treenode, expandedNodes[myname]);
+        tmpNode.name = myname;
         if(typeof obj[field] == "object") {
-            populateTree(tmpNode, obj[field]);
+            populateTree(tmpNode, obj[field], name+field+".");
         }
     }
 }
@@ -658,6 +665,20 @@ activateHistory = function(i){
     setHistoryLocation( -(historyAry.length-i) );
     historyPopup.hide();
     document.getElementById( "commandac" ).focus();
+};
+
+
+// Map of which nodes are open
+expandedNodes = {};
+removingChildren = false;
+
+var onNodeExpand = function(node){
+    expandedNodes[node.name] = true;
+};
+
+var onNodeCollapse = function(node){
+    if(removingChildren) return;
+    expandedNodes[node.name] = false;
 };
 
 </script>
