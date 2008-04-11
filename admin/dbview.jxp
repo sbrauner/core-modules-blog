@@ -223,11 +223,11 @@ function printDiv(val, type, i, bd, id, path) {
     else if(type[i] == "boolean") {
         var check = val[i] == "true" ? "checked" : "";
         fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
-                               fcount++;
+        fcount++;
     }
     else {
         fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
-                               fcount++;
+        fcount++;
     }
     bd.appendChild(fieldDiv);
 }
@@ -813,7 +813,7 @@ var myColumnDefs = [ <% if(top) {
                     print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
                 }
                 else
-                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", formatter: "str", sortable: false } ] },');
             }
        }
     }
@@ -872,9 +872,26 @@ else {
     editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
+    strFormatter = function(elCell, oRecord, oColumn, oData) {
+        if(oData.length >= 20) {
+var fullText = document.createElement("div");
+fullText.setAttribute("class","fullText");
+fullText.setAttribute("id", "fullText"+fcount);
+fullText.innerHTML = oData+'<br /><input type="button" onclick="document.getElementById(\'fullText'+fcount+'\').style.display = \'none\'" value="Close" />';
+
+            var oData = '<span onclick="document.getElementById(\'fullText'+fcount+'\').style.display = \'block\'" style="cursor:default">'+oData.substring(0, 18)+"...</span>";
+fcount++;
+        elCell.innerHTML = oData;
+elCell.appendChild(fullText);
+        }
+else
+        elCell.innerHTML = oData;
+
+    }
 
     YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+YAHOO.widget.DataTable.Formatter.str = strFormatter;
     <%
 }
 %>

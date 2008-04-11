@@ -240,7 +240,7 @@ for( var i=0; i < rows.length; i++ ) {
                 else if(obj[h] == null)
                     dbTable.rows[k][h] = "null";
                 else if(typeof obj[h] == "string") {
-                        dbTable.rows[k][h] = (obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
+                    dbTable.rows[k][h] = obj[h]; //(obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
                 else
                     dbTable.rows[k][h] = obj[h].toString();
