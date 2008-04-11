@@ -21,6 +21,7 @@ head.addCSS("/~~/admin/assets/shell.css");
      <div id="treeview"></div>
      <div class="clear"></div>
      <div onclick="showHistory()">Show history</div>
+     <div onclick="toggleTreeView()">Hide object inspector</div>
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>
        <div class="bd">
@@ -690,6 +691,18 @@ showHistory = function(){
     highlightHistory();
 
     historyPopup.show();
+};
+
+var toggleTreeView = function(){
+    var tv = document.getElementById("treeview");
+    if(tv.style.display != "none"){
+        tv.style.display = "none";
+        document.getElementById("console").style.width = "95%";
+    }
+    else {
+        tv.style.display = "block";
+        document.getElementById("console").style.width = "";
+    }
 };
 
 activateHistory = function(i){
