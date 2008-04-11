@@ -33,6 +33,12 @@ head.addCSS("/~~/admin/assets/shell.css");
 <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
 <script type="text/javascript">
+var userPrompt = "js>";
+var getUserPrompt = function(){ return userPrompt; };
+var getUserPromptHTML = function(){
+    return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+}
+
 var loader = new YAHOO.util.YUILoader();
 loader.insert({
     require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
@@ -65,7 +71,7 @@ loader.insert({
         var acdiv = document.createElement("div");
         prompt = document.createElement("span");
         prompt.className = "prompt";
-        prompt.appendChild(document.createTextNode("js>"));
+        prompt.appendChild(document.createTextNode(getUserPrompt()));
         acdiv.appendChild(prompt);
         acdiv.appendChild(t);
         acdiv.className = "yui-ac";
@@ -148,7 +154,7 @@ loader.insert({
                 return msg.msg;
 
             if(msg.category == "user"){
-                return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML()+"</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
             }
             if(msg.category == "response"){
                 var string = function(msg){
