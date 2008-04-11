@@ -490,14 +490,14 @@ if( rows.length >= max )
 
 if(top) {
     %>
-<div id="createTable">
+<div id="createTable" style="display:none">
 <div class="hd">Create Collection</div>
 <div class="bd">
 <form id="createTableForm">
-    <div><label>Collection name: </label><input type="text"  name="tablename"></div>
-    <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
-    <div><label>Size: </label><input type="text" name="size"></div>
-<div><label>Max: </label><input type="text" name="max"></div>
+    <div class="elem"><label class="obj">Collection name: </label><input type="text"  name="tablename"></div>
+    <div class="elem"><label class="obj">Fixed: </label><input type="checkbox"  name="fixed"></div>
+    <div class="elem"><label class="obj">Size: </label><input type="text" name="size"></div>
+<div class="elem"><label class="obj">Max: </label><input type="text" name="max"></div>
 </form>
 </div>
 <div class="ft"><input type="button" value="Save" onclick="addTable()"/>
@@ -509,7 +509,7 @@ if(top) {
 <%
 } else {
    %>
-<div id="createRecord">
+<div id="createRecord" style="display:none">
 <div class="hd">Add Record</div>
 <div class="bd" id="createRecordBd">
     <%
@@ -543,7 +543,7 @@ if(top) {
 </div>
 </div>
 
-<div id="editRecord">
+<div id="editRecord" style="display:none">
 <div class="hd">Edit Record</div>
 <div class="bd" id="bd"></div>
 <div class="ft">
@@ -881,11 +881,14 @@ else {
 
 createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createRecordPanel.render("myMarkedUpContainer");
+document.getElementById("createRecord").style.display = "block";
 
 createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
 createTablePanel.render("myMarkedUpContainer");
+document.getElementById("createTable").style.display = "block";
 
 editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
 editRowPanel.render("myMarkedUpContainer");
+document.getElementById("editRecord").style.display = "block";
 
 </script>
