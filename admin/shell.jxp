@@ -31,8 +31,16 @@ head.addCSS("/~~/admin/assets/shell.css");
 </div>
 
 <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
-<script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
 <script type="text/javascript">
+// FIXME: this screws up the prompts shown in the transcript; they could have
+// been different in the past
+var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
+var getUserPrompt = function(){ return userPrompt; };
+var getUserPromptHTML = function(){
+    return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+}
+
 var loader = new YAHOO.util.YUILoader();
 loader.insert({
     require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
@@ -40,6 +48,9 @@ loader.insert({
     onSuccess: function(loader) {
         objectList = [];
         loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
+        loader.objectTreeView.subscribe("expand", onNodeExpand);
+        loader.objectTreeView.subscribe("collapse", onNodeCollapse);
+        
         loader.objectNodes = [];
         
         // ***** Console widget *****
@@ -62,7 +73,7 @@ loader.insert({
         var acdiv = document.createElement("div");
         prompt = document.createElement("span");
         prompt.className = "prompt";
-        prompt.appendChild(document.createTextNode("js>"));
+        prompt.appendChild(document.createTextNode(getUserPrompt()));
         acdiv.appendChild(prompt);
         acdiv.appendChild(t);
         acdiv.className = "yui-ac";
@@ -145,7 +156,7 @@ loader.insert({
                 return msg.msg;
 
             if(msg.category == "user"){
-                return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML()+"</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
             }
             if(msg.category == "response"){
                 var string = function(msg){
@@ -169,6 +180,10 @@ loader.insert({
                         }
                         else if(p.$command == "reload"){
                             location.reload();
+                        }
+                        else if(p.$command == "setprompt"){
+                            userPrompt = p.$prompt;
+                            prompt.innerHTML = getUserPromptHTML();
                         }
                     }
                 }
@@ -288,6 +303,9 @@ loader.insert({
 
         new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
+        abortKey = {ctrl: true, keys: 67}; // Ctrl-C
+        new YAHOO.util.KeyListener("commandac", abortKey, abortEntry).enable();
+
     }
 });
 
@@ -297,6 +315,10 @@ var restoreDefault = function(e){
 
 var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
+};
+
+var abortEntry = function(){
+    document.getElementById("commandac").value = "";
 };
 
 var resizeRows = function(t, value, newlinepressed){
@@ -439,12 +461,14 @@ function Check(cursor, field) {
 }*/
 
 function refreshScope(tree, scope) {
+    removingChildren = true;
     tree.removeChildren(tree.getRoot());
-    populateTree(tree.getRoot(), scope);
+    removingChildren = false;
+    populateTree(tree.getRoot(), scope, "");
     tree.draw();
 }
 
-function populateTree(treenode, obj) {
+function populateTree(treenode, obj, name) {
     for(var field in obj){
         s = field + ": ";
         if(typeof obj[field] == "boolean") {
@@ -463,9 +487,11 @@ function populateTree(treenode, obj) {
             s += (typeof obj[field]);
         }
 
-        var tmpNode = new YAHOO.widget.TextNode(s, treenode, false);
+        var myname = name+field;
+        var tmpNode = new YAHOO.widget.TextNode(s, treenode, expandedNodes[myname]);
+        tmpNode.name = myname;
         if(typeof obj[field] == "object") {
-            populateTree(tmpNode, obj[field]);
+            populateTree(tmpNode, obj[field], name+field+".");
         }
     }
 }
@@ -628,7 +654,7 @@ addHistoryLink = function(i){
 makeHistoryLink = function(i){
     var cmd = pastCommands[historyAry[i]];
     var divclass = "class='historyLink'";
-    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'><div class=\"number\">"+i+"</div>: "+cmd+"</div>";
+    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'><div class=\"number\">"+(i+1)+"</div>: "+cmd+"</div>";
     return thisdiv;
 };
 
@@ -651,6 +677,20 @@ activateHistory = function(i){
     setHistoryLocation( -(historyAry.length-i) );
     historyPopup.hide();
     document.getElementById( "commandac" ).focus();
+};
+
+
+// Map of which nodes are open
+expandedNodes = {};
+removingChildren = false;
+
+var onNodeExpand = function(node){
+    expandedNodes[node.name] = true;
+};
+
+var onNodeCollapse = function(node){
+    if(removingChildren) return;
+    expandedNodes[node.name] = false;
 };
 
 </script>
