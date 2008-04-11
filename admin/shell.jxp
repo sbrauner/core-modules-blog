@@ -39,6 +39,7 @@ var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
 var getUserPrompt = function(){ return userPrompt; };
 var getUserPromptHTML = function(){
     return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+    "\"";
 }
 
 var loader = new YAHOO.util.YUILoader();
@@ -116,6 +117,16 @@ loader.insert({
         this.myLogReader.hideSource("LogReader");
         this.myLogReader.setTitle("10gen Shell");
         YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        // On Linux, keydown handles cursor up/down
+        // On OS X, keypress handles it
+        // We process keydowns in histfunc, and then have to block
+        // the keypresses too.
+        blockOne = false;
+        YAHOO.util.Event.addListener(t, "keypress", function(e){
+            if(blockOne)
+                e.preventDefault();
+            blockOne = false;
+        });
         
         YAHOO.util.Event.addListener(window, "keydown",
                                      function(e){
@@ -441,6 +452,7 @@ var histfunc = function( e ) {
             setHistoryLocation(historyLocation);
         }
         t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
         e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
@@ -455,6 +467,7 @@ var histfunc = function( e ) {
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
         else t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
         e.preventDefault();
     }
 };
