@@ -20,8 +20,8 @@ head.addCSS("/~~/admin/assets/shell.css");
      <div id="console"></div>
      <div id="treeview"></div>
      <div class="clear"></div>
-     <div onclick="showHistory()">Show history</div>
-     <div onclick="toggleTreeView()">Hide object inspector</div>
+     <div class="button" onclick="showHistory()">Show history</div>
+     <div class="button" onclick="toggleTreeView()">Hide object inspector</div>
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>
        <div class="bd">
