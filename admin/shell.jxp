@@ -298,6 +298,11 @@ loader.insert({
             visible: false,
         });
         historyPopup.render();
+        historyPopup.subscribe("hide", function(){
+            // Firefox on OS X bug; scrollbars on a visibility: hidden element
+            // aren't hidden...
+            document.getElementById("history_popup").style.display = "none";
+        })
 
         // Key listener for "send from scratch"
 
