@@ -4,122 +4,45 @@ head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiload
 
 core.content.html();
 
-var objcount = 0; // unique id for each object's div
-var fieldcount = 0;
-
-function printEditableField(x, id, path) {
-    if(typeof x == "string") {
-        if( x.length<=20 )
-            x = content.HTML.escape_html(x);
-        else {
-	    x = content.HTML.escape_html(x)
-            // put extra text in a hidden div
-            print('<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>');
-            x = x.substring(0,18)+"...";
-        }
-    }
-
-    print('<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>");
-    fieldcount++;
-}
-
-function printObj(cursor, field, id, path) {
-    if(!cursor || !cursor[field]) return;
-
-    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
-        print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
-    }
-    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        print('<div><label class="obj">'+field+':</label>');
-        printEditableField(cursor[field], id, path);
-        print('</div>');
-    } else if(typeof cursor[field] == "object") {
-        var name;
-        var desc;
-        if(cursor[field] instanceof Date) {
-            name = "Date";
-            desc = cursor[field].toString();
-        }
-        else if(cursor[field] instanceof Array) {
-            name = "Array";
-            desc = "["+cursor[field].length+"]";
-        }
-        else {
-            name = "Object";
-            desc = field;
-        }
-        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
-        var tempobj = objcount;
-        objcount++;
-        for(var name in cursor[field]) {
-            path.push(name);
-            printObj(cursor[field], name, id, path);
-            path.pop();
-        }
-        print("<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>");
-    } else {
-        print('<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>");
-    }
-}
-
-var done = false;
-function outp(x, id, name) {
-    if(typeof x == "object") {
-        // make x an obj of the form cursor[field]
-        x = {"...": x};
-        printObj(x, "...", id, [name]);
-    }
-    else if(x == null || typeof x == "native" || typeof x == "function")
-        print(x);
-    else
-        printEditableField(x, id, [name]);
-}
-
-  // top == show all collections
-  var top = request.ns == null;
-  var collection;
-  if( top ) collection = db["system.namespaces"];
-  else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+// top == show all collections
+var top = request.ns == null;
+var collection;
+if( top ) collection = db["system.namespaces"];
+else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
 var appName = request.getHost();
 appName = (appName.indexOf(".") == -1) ? appName : appName.substring(0, appName.indexOf("."));
 
-  var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
-  if( top ) {
+var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
+if( top ) {
     // we'll sort by collection name
     collection.ensureIndex( {name:true} );
-  }
+}
 
-  // ignore internal transient variables
-  var ignore= { _ns:1, _save:1, _update:1 };
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
 
 var rows, max;
-if(request.all) {
-    rows = collection.find().sort( { name : 1 } ).toArray();
+rows = collection.find().limit(10).sort( { name : 1 } ).toArray();
     max = rows.length+1;
-}
-else {
-    max = top?1000:(request.max ? parseInt(request.max) : 100);
-    rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
-}
 
-  var fields;
-  // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
-  var thresh = rows.length < 4 ? 0 : rows.length / 2;
-  if( top )
+var fields;
+// thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
+var thresh = rows.length < 4 ? 0 : rows.length / 2;
+if( top )
     fields = [ 'name' ];
-  else {
+else {
     fields = [];
     var f = {};
     for( var i=0; i < rows.length; i++ ) {
-      for( var e in rows[i] ) {
-	  if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
-      }
+        for( var e in rows[i] ) {
+	    if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
+        }
     }
     for( var g in f ) {
 	if( f[g] >= thresh ) fields.push(g);
     }
-  }
+}
 %>
 
 <h3><%=hdr%></h3>
@@ -226,10 +149,10 @@ function printDiv(val, type, i, bd, id, path) {
         fcount++;
     }
     else {
-if(type[i] == "string" && val[i].length >= 20)
-fieldDiv.innerHTML += '<textarea id="f'+fcount+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">'+val[i]+'</textarea><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
-else
-        fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+        if(type[i] == "string" && val[i].length >= 20)
+            fieldDiv.innerHTML += '<textarea id="f'+fcount+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">'+val[i]+'</textarea><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+        else
+            fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
         fcount++;
     }
     bd.appendChild(fieldDiv);
@@ -767,7 +690,7 @@ var myPaginator = new YAHOO.widget.Paginator({
 oConfigs = {
     initialRequest: "",
     paginator: myPaginator,
-    <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
+    sortedBy: { <%= top ? 'key:"name"' : 'key:"_id"' %>, dir:YAHOO.widget.DataTable.CLASS_ASC }
 };
 
 myDataSource.responseSchema = {
@@ -831,13 +754,26 @@ var myColumnDefs = [ <% if(top) {
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
+var currentSort = "_id";
+var currentSortDir = "yui-dt-asc";
+myDataTable.onEventSortColumn = function(e, target) {
+alert(YAHOO.lang.JSON.stringify());
+    currentSort = e.column.children[0].key;
+    currentSortDir = e.dir;
+}
+myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
 
 updateCaseTable = {
     success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
     failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
+    scope : myDataTable,
+    argument : {
+        sorting : {
+            key: currentSort,
+            dir: (currentSortDir == "yui-dt-asc") ? YAHOO.widget.DataTable.CLASS_ASC : YAHOO.widget.DataTable.CLASS_DESC
+        }
+    }
 };
-
 
 
 myDataSource.liveData = "showTable?";

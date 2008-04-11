@@ -98,12 +98,7 @@ else {
         collection.ensureIndex( {name:true} );
     }
 
-    if(request.all) {
-        rows = collection.find().sort( { name : 1 } ).toArray();
-    }
-    else {
-        rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
-    }
+    rows = collection.find().sort( { name : 1 } ).toArray();
 }
 
 var objcount = 0; // unique id for each object's div
