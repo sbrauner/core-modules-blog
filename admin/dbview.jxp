@@ -226,6 +226,9 @@ function printDiv(val, type, i, bd, id, path) {
         fcount++;
     }
     else {
+if(type[i] == "string" && val[i].length >= 20)
+fieldDiv.innerHTML += '<textarea id="f'+fcount+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">'+val[i]+'</textarea><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+else
         fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
         fcount++;
     }
