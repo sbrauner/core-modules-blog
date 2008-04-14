@@ -229,6 +229,7 @@ Auth = {
             if ( hash != md5( prefix + ":" + u.pass_ha1_name ) &&
                  hash != md5( prefix + ":" + u.pass_ha1_email ) ){
                 log.user.auth.cookie.debug( " hashes don't match" );
+                return null;
             }
 
             log.user.auth.cookie.debug( "yay - got valid user : " + request.getURL() );
