@@ -4,6 +4,7 @@ core.io.marshal();
 core.io.encode.json();
 core.db.db();
 core.content.html();
+core.content.html();
 
 var collection;
 // ignore internal transient variables
@@ -97,12 +98,7 @@ else {
         collection.ensureIndex( {name:true} );
     }
 
-    if(request.all) {
-        rows = collection.find().sort( { name : 1 } ).toArray();
-    }
-    else {
-        rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
-    }
+    rows = collection.find().sort( { name : 1 } ).toArray();
 }
 
 var objcount = 0; // unique id for each object's div
@@ -240,7 +236,7 @@ for( var i=0; i < rows.length; i++ ) {
                 else if(obj[h] == null)
                     dbTable.rows[k][h] = "null";
                 else if(typeof obj[h] == "string") {
-                        dbTable.rows[k][h] = (obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
+                    dbTable.rows[k][h] = content.HTML.escape_html(obj[h]); //(obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
                 else
                     dbTable.rows[k][h] = obj[h].toString();
