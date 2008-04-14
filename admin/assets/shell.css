@@ -42,6 +42,7 @@
 #treeview {
     height: 75%;
     overflow: auto;
+    text-align: left;
 }
 
 #console .yui-log-bd {
