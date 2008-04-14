@@ -10,12 +10,12 @@
 }
 
 pre {
+	background-color: #e7e7e7;
     font-family: monospace;
     font-size: 100%;
     line-height: 130%;
-    margin-top: 0.7em;
-    margin-bottom: 1em;
-    padding-left: 20px;
+    margin: 0.7em 1em 1em 1em;
+    padding: .5em .5em .5em 1em;
 }
 
 .wiki_content ul {
