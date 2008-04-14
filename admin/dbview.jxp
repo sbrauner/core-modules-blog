@@ -211,7 +211,7 @@ function saveValue(type, fcount, path) {
         val = parseInt(document.getElementById("f"+fcount).value);
     }
     else if(type == "Date") {
-        val = new Date(document.getElementById("f"+fcount).value);
+        val = new Date('"'+document.getElementById("f"+fcount).value+'"');
     }
     else { // string
         val = document.getElementById("f"+fcount).value;
@@ -240,7 +240,7 @@ function saveRow() {
             else if(val.className == "number")
                 currentObj[label] = parseInt(val.value);
             else if(val.className == "date")
-                currentObj[label] = new Date(val.value);
+                currentObj[label] = new Date('"'+val.value+'"');
             else
                 currentObj[label] = val.value;
         }
@@ -309,7 +309,7 @@ function addField(elem) {
 
         chooser = document.createElement("div");
         chooser.setAttribute("id", "chooseTypeDiv"+elem);
-        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select><option value="date">Date</option>';
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option><!--<option value="date">Date</option>--></select>';
         bd.appendChild(chooser);
     }
     else {
@@ -523,7 +523,7 @@ var fcount = <%= fcount+1 %>;
 
 <%
 if(top) {
-    var cols = [ "name", "index", "fixed" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
+    var cols = [ "name", "index", "fixed" ];
 }
 %>
 
