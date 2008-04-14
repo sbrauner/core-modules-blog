@@ -35,4 +35,15 @@ var user = client.setURL().execute(function(){
 
 assert(user.name == "Ethan");
 
+// Disauthentication test; using a bad hash
+
+query = "/?username=Ethan&prefix="+prefix+"&hash=yo";
+client = new testing.Client();
+client.setAnswer("value");
+var user = client.setURL(query).execute(function(){
+    return Auth.cookie.getUser(request, response, "test");
+});
+
+assert(user == null);
+
 db.users.remove({});
