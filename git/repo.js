@@ -25,6 +25,9 @@ Object.extend(git.Repo.prototype, {
         return sysexec( cmd );
     },
     diff: function(files){
+        var cmd = "git diff ";
+        request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+        return sysexec( cmd );
     },
     commit: function(files, msg, user){
         if(!msg) throw "git commit needs a message";
