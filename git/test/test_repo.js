@@ -1,3 +1,4 @@
+
 u = {name: "Test Framework", email: "<test@10gen.com>"};
 
 
@@ -6,6 +7,7 @@ sysexec("mkdir -p /tmp/gitrepo/test");
 
 s = scopeWithRoot("/tmp/gitrepo/test");
 s.eval("core.git.repo()")
+s.eval("core.core.file()");
 
 var g = new git.Repo();
 
@@ -144,5 +146,13 @@ print(tojson(g.commit(["file1"], "test commit", u)));
 
 // All changes are gone
 assert(checkStatus({ }));
+
+var f = File.create("hi there\n");
+f.writeToLocalFile('/tmp/gitrepo/test/file1');
+
+assert(g.diff([]).out.match(/\n\+hi there\n/m));
+
+print(tojson(g.commit(["file1"], "test commit 2", u)));
+
 
 sysexec("rm -r /tmp/gitrepo/test");

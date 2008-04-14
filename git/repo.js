@@ -25,8 +25,9 @@ Object.extend(git.Repo.prototype, {
         return sysexec( cmd );
     },
     diff: function(files){
+        this._validate(files);
         var cmd = "git diff ";
-        request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
+        files.forEach( function( z ){ cmd += " " + z; } );
         return sysexec( cmd );
     },
     commit: function(files, msg, user){
