@@ -296,6 +296,9 @@ function getSearchArgs() {
           if(myarr[i].value != "") {
               dict[myarr[i].name] = myarr[i].value;
           }
+         else {
+             delete dict[myarr[i].name];
+         }
      }
      var pairs = [];
      for(var key in dict){
