@@ -103,14 +103,6 @@ function deleteRow(id) {
     simpledialog1.show();
 }
 
-function customSplit(str, num) {
-    var a = str.split(":");
-    for(var i=num; i<a.length; i++) {
-        a[num-1] += ":"+a[i];
-    }
-    return a;
-}
-
 function toggleVisible(i) {
      var elem = document.getElementById("div"+i);
      if(elem.style.display == "block")
@@ -247,6 +239,8 @@ function saveRow() {
                 currentObj[label] = val.checked;
             else if(val.className == "number")
                 currentObj[label] = parseInt(val.value);
+            else if(val.className == "date")
+                currentObj[label] = new Date(val.value);
             else
                 currentObj[label] = val.value;
         }
@@ -270,6 +264,8 @@ function saveRecord(elem) {
             return parseInt(val.value);
         if(val.className == "string")
             return val.value;
+        if(val.className == "date")
+            return new Date(val);
         if(val.className == "object")
             return null;
     }
@@ -313,7 +309,7 @@ function addField(elem) {
 
         chooser = document.createElement("div");
         chooser.setAttribute("id", "chooseTypeDiv"+elem);
-        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select>';
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option></select><option value="date">Date</option>';
         bd.appendChild(chooser);
     }
     else {
@@ -770,24 +766,29 @@ var myColumnDefs = [ <% if(top) {
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
-var currentSort = "_id";
-var currentSortDir = "yui-dt-asc";
+var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
 myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = e.column.children[0].key;
-    currentSortDir = e.dir;
+    currentSort = {};
+    currentSort.key = e.column.parent.children[0].key;
+    currentSort.dir = e.dir;
 }
 myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
 
 updateCaseTable = {
-    success : function(){ myDataTable.onDataReturnInitializeTable; myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable,
     argument : {
         sorting : {
-            key: currentSort,
-            dir: (currentSortDir == "yui-dt-asc") ? YAHOO.widget.DataTable.CLASS_ASC : YAHOO.widget.DataTable.CLASS_DESC
+    key : currentSort.key,
+    dir : currentSort.dir
         }
-    }
+    },
+    success : function(){
+        updateCaseTable.argument.sorting.key = currentSort.key;
+        updateCaseTable.argument.sorting.dir = currentSort.dir;
+        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
+        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
+    },
+    failure : myDataTable.onDataReturnInitializeTable,
+    scope : myDataTable
 };
 
 
