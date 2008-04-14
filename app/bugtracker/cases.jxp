@@ -589,7 +589,6 @@ var loader = new YAHOO.util.YUILoader( {
 
          <% if(request.search){ %>
          fillInForm(mapping);
-             console.log("setting", getSearchArgs());
          lastSearch = getSearchArgs();
          <% } %>
 
