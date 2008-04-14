@@ -80,9 +80,10 @@ div.post_meta_field_value {
 }
 
 div.scrollable {
-    height: 150px;
+    height: 300px;
     overflow: scroll;
-    width: 250px;
+    width: 100%;
+    font-size: .8em;
 }
 
 div#post_title input {

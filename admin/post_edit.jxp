@@ -261,7 +261,7 @@ tinyMCE.init({
         <div class="post_meta_field">
             <div class="post_meta_field_name">Categories</div>
             <div class="post_meta_field_value ">
-                <input id="new_categories" name="new_categories" size="30" /><br/>
+                <input id="new_categories" name="new_categories" size="35" /><br/>
                 <div class="scrollable">
                 <%
                     categories.forEach( function(category) {
