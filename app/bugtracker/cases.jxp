@@ -442,7 +442,6 @@ var loader = new YAHOO.util.YUILoader( {
              }
          %>
          var mapping = <%= tojson(mapping) %>;
-         lastSearch = getSearchArgs();
          var pairs = [];
          for(var i in mapping){
              pairs.push(i+'='+mapping[i]);
@@ -590,6 +589,8 @@ var loader = new YAHOO.util.YUILoader( {
 
          <% if(request.search){ %>
          fillInForm(mapping);
+             console.log("setting", getSearchArgs());
+         lastSearch = getSearchArgs();
          <% } %>
 
           updateCaseTable = {
