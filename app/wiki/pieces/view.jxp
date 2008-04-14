@@ -17,9 +17,10 @@
       <% if(wikiPage.files){ 
           wikiPage.files.forEach(function(fileid){
               var file = db._files.findOne({_id: fileid});
-         %>
+	      if(file) {
+	      %>
       <li><a href="/~~/f?id=<%= fileid %>"><%= file.filename %></a></li>
-      <% }); %>
+      <% }}); %>
       <% } %>
 </ul>
 
