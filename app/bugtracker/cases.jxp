@@ -351,11 +351,15 @@ assignDep = function(x, xDependsOn, type) {
     });
 }
 
-showCase = function(id){
+var caseURL = function(id){
     var s = "case_edit?search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
     if(id)
         s += "&id="+id;
-    location = s;
+    return s;
+};
+
+showCase = function(id){
+    location = caseURL();
 };
 
 var oMenu, checkAll = false;
@@ -418,7 +422,7 @@ var loader = new YAHOO.util.YUILoader( {
          var myColumnDefs = [
              {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
              {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
-             {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+             {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true, formatter: "bugLink"}]},
              {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
              {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
              {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
@@ -492,6 +496,11 @@ var loader = new YAHOO.util.YUILoader( {
              }
          };
 
+         YAHOO.widget.DataTable.Formatter.bugLink = function(elCell, oRecord, oColumn, oData) {
+             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL()+"\">"+oRecord.getData("title")+"</a>";
+         };
+
+
          myDataTable.onEventSelectCell = function(e) {
              if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
                  return;
@@ -563,7 +572,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
 
-             showCase(myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id"));
+             //showCase(myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id"));
           }
 
          assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,
