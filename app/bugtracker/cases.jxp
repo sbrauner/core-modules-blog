@@ -434,6 +434,8 @@ var loader = new YAHOO.util.YUILoader( {
              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
              {label: addForm("targetRelease", 3), children: [{ key: "targetRelease", label: "Release", sortable:true }]},
              {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
+             {label: addForm("timeToComplete"), children: [{key: "timeToComplete", label: "Time to Complete", sortable: true}]},
+             {label: addForm("estimatedCompletionDate"), children: [{key: "estimatedCompletionDate", label: "Estimated Completion Date", sortable: true}]},
              {label: "", children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
          ];
 
@@ -463,7 +465,7 @@ var loader = new YAHOO.util.YUILoader( {
          myDataSource.connXhrMode = "queueRequests";
          myDataSource.responseSchema = {
              resultsList: "rows",
-             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency" ]
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency", "timeToComplete", "estimatedCompletionDate" ]
          };
          var oConfigs = {
              paginator: myPaginator,
@@ -500,7 +502,7 @@ var loader = new YAHOO.util.YUILoader( {
          };
 
          YAHOO.widget.DataTable.Formatter.bugLink = function(elCell, oRecord, oColumn, oData) {
-             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL()+"\">"+oRecord.getData("title")+"</a>";
+             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL(oRecord.getData("id"))+"\">"+oRecord.getData("title")+"</a>";
          };
 
 

@@ -40,6 +40,8 @@ app.bugtracker.data.Feature = function() {
     this.reporter = '';
     this.owner = null;  // db.users
     this.number = 0;
+    this.timeToComplete = "";
+    this.estimatedCompletionDate = null; // stored as a Date if it's actually set
 };
 
 app.bugtracker.data.Feature.prototype.STATUS = { NEW: 'new',

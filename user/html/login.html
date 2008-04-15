@@ -7,7 +7,7 @@ var login = User.findMyLocation();
 
   var url = "<%= login %>/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
-  var area = "<%= db.getName() %>";
+  var area = "<%= "11" == request.getCookie( "__sudo" ) ? "admin" : db.getName() %>";
 
   function processLoginForm( frm ){
 
@@ -17,14 +17,17 @@ var login = User.findMyLocation();
     if ( u.indexOf( "?" ) < 0 ) u += "?";
     u += "&prefix=" + prefix;
     u += "&username=" + frm.login_user.value;
-    u += "&hash=" + hex_md5( prefix + ":" + hex_md5( frm.login_user.value + ":" + area + ":" + frm.login_pass  ) );
+    
+    var thing = frm.login_user.value + ":" + area + ":" + frm.login_pass.value;
+
+    u += "&hash=" + hex_md5( prefix + ":" + hex_md5( thing  ) );
 
     if ( frm.login_remember.value == "yes" ) u += "&remember=t";
-
 
     location.href = u;
     return false;
   }
+
 </script>
 
 <div ? user >
