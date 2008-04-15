@@ -1,3 +1,5 @@
+// FIXME: hash (username, email) and -> not duplicating
+
 /**
  * User
  *   email
@@ -74,17 +76,21 @@ User.find = function( thing , theTable ){
     if ( ! thing )
         return null;
 
-    var u = null;
+    var u = { length: function(){ return 0; } }; // or DBCursor to db.users
     if ( thing.match( /@/ ) )
-        u = theTable.findOne( { email : thing } );
+        u = theTable.find( { email : thing } );
 
-    if ( ! u )
-        u = theTable.findOne( { name : thing } );
+    if ( u.length() == 0 )
+        u = theTable.find( { name : thing } );
 
-    if ( ! u && theTable.base != "admin" && thing.match( /@10gen.com/ ) )
+    if ( u.length() == 0 && theTable.base != "admin" && thing.match( /@10gen.com/ ) )
         return User.find( thing , db[".admin.users"] );
 
-    return u;
+    if ( u.length() == 0 ) return null;
+
+    if ( u.length() != 1 ) throw "duplicate users for " + thing;
+
+    return u[0];
 };
 
 if ( db ){
