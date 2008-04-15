@@ -248,9 +248,14 @@ Post.getMostPopular = function( num , articlesBack ){
 Post.getMostCommented = function( num , articlesBack ){
     
     var key = "__mostCommented_" + num + "_" + articlesBack;
-    var all = Post.cache.get( key );
+
+    var old = [];
+    var all = Post.cache.get( key , old );
     if ( all )
 	return all;
+
+    if ( old[0] )
+	Post.cache.add( key , old[0] );
 
     all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort( function( a , b ){
