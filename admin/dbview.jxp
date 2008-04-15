@@ -71,10 +71,6 @@ else {
 var lastSearch = "";
 
 function showFullText(count) {
-    var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
-    for(var i=0; i<divs.length; i++) {
-        divs[i].style.display = "none";
-    }
     document.getElementById('fullText'+count).style.display = "block";
 }
 
@@ -819,6 +815,16 @@ updateCaseTable = {
 
 myDataSource.liveData = "showTable?";
 
+function fnCallback(e) {
+    if(e.ctrlKey == false) {
+        var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
+        for(var i=0; i<divs.length; i++) {
+            divs[i].style.display = "none";
+        }
+    }
+    YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
+}
+
 <%
 if(top) {
     %>
@@ -859,10 +865,11 @@ else {
             fullText.setAttribute("id", "fullText"+fcount);
             fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
 
-            var oData = '<span onclick="showFullText('+fcount+')" style="cursor:default">'+oData.substring(0, 18)+"...</span>";
+            var oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
             fcount++;
             elCell.innerHTML = oData;
             elCell.appendChild(fullText);
+            YAHOO.util.Event.addListener(elCell, "click", fnCallback);
         }
         else
             elCell.innerHTML = oData;
