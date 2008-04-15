@@ -679,6 +679,25 @@ function getSearchArgs() {
     return passData;
 }
 
+function collapseCol(key) {
+    var col = myDataTable.getColumn(key);
+    var x = col.parent.parent._elTh;
+    var curWidth = YAHOO.util.Dom.getStyle(x, "width");
+    var arrow = document.getElementById("arrow"+key);
+    var oldWidth = arrow.getAttribute("oldWidth");
+
+    if(oldWidth && parseInt(oldWidth) > parseInt(curWidth)) {
+        var arrow = document.getElementById("arrow"+key);
+        var oldWidth = arrow.getAttribute("oldWidth");
+        myDataTable.setColumnWidth(col, parseInt(oldWidth));
+        arrow.setAttribute("oldWidth", "0");
+    }
+    else {
+        myDataTable.setColumnWidth(col, 10);
+        arrow.setAttribute("oldWidth", curWidth.substring(0, curWidth.length-2));
+    }
+}
+
 // Custom sorters
 var sortHex = function(a, b, desc) {
     return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
@@ -748,10 +767,10 @@ var myColumnDefs = [ <% if(top) {
                 // Special cases:
                 // if _id, the column needs to be converted to hexidecimal and sorted that way
                 if(i == "_id") {
-                    print('{  label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", sortable: true } ] },');
+       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')" id="arrow'+i+'"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", sortable: true }]}]},');
                 }
                 else
-                    print('{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] },');
+                    print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
             }
        }
     }
