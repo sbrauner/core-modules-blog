@@ -1,3 +1,4 @@
+
 djang10 = {};
 
 
@@ -54,7 +55,21 @@ djang10.isAppDir = function(z) {
 
 djang10.getAppDirs = function() {
 
-    return openFile( "/" ).listFiles().filter(function(z) { return z.isDirectory() && djang10.isAppDir(z) });
+    return openFile("/").listFiles().filter(function(z) { return z.isDirectory() && djang10.isAppDir(z) });
+}
+
+djang10.getFunctionDuples = function(modelFile) {
+    scope.setGlobal(true);
+
+    scope.eval(modelFile)();
+
+    var myArr = [];
+
+    for (i in scope) {
+        myArr.push({name : i, func : scope[i]});
+    }
+
+    return myArr;
 }
 
 djang10.prepModelForApp = function(appDir) {
@@ -63,23 +78,46 @@ djang10.prepModelForApp = function(appDir) {
 
     var modelFile = "local." + appDir.getName() + ".models";
 
-    scope.setGlobal(true);
-
     scope.eval(modelFile)();
 
-    for (i in scope) {
-        print(tojson(i));
-        print(scope[i].getClass());
-    }
+    var arr = djang10.getFunctionDuples(modelFile);
 
+    arr.forEach(function(z) { scope.eval(z.name + ".prototype.save = function() { db." +
+                                         appDir.getName() + "." + z.name + ".save(this)}") });
+
+
+    arr.forEach(function(z) { scope.eval(z.name + ".prototype.find = function(o) { return db." +
+                                         appDir.getName() + "." + z.name + ".find(o)}") });
+
+    arr.forEach(function(z) { scope.eval(z.name + ".prototype.objects =  {" +
+                                            " all : function() { return db." + appDir.getName() + "." + z.name + ".find() }" +
+                                         "}") });
+
+    arr.forEach(function(z) {print("    augmented class " + z.name) });
 }
 
 
 /*
+ *   APPLICATION PRE PROCESSING
+ *
  *  go find the apps
  */
 
 var appdirs = djang10.getAppDirs();
 
+/*
+ * for each app we find, augment the model
+ */
 
-appdirs.forEach(function(z) { djang10.prepModelForApp(z);});
+appdirs.forEach(function(z) {
+
+    djang10.prepModelForApp(z);
+});
+
+
+person = new Person();
+//person.setName("geir");
+//person.save();
+print(tojson(Person.objects.all()));
+
+
