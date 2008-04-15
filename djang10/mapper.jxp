@@ -35,20 +35,27 @@ if (invoker == null) {
 }
 else {
 
-    // extract the package name (really the <app>.<file> section - ignore the leading <project>
-    // and get the function to call in that package as well
+    <!--// extract the package name (really the <app>.<file> section - ignore the leading <project>-->
+    <!--// and get the function to call in that package as well-->
 
-    pkg = "jxp" + invoker.substring(invoker.indexOf("."), invoker.lastIndexOf("."));
-    func = invoker.substring(invoker.lastIndexOf(".")+1);
+    <!--pkg = "jxp" + invoker.substring(invoker.indexOf("."), invoker.lastIndexOf("."));-->
+    <!--func = invoker.substring(invoker.lastIndexOf(".")+1);-->
 
-    // now  invoke the function in the package in a private global scope.  We can shove the
-    // request object as the first arg, just replacing the full match string that's there
-    // rather than waste the time of getting a new arg array
+    <!--// now  invoke the function in the package in a private global scope.  We can shove the-->
+    <!--// request object as the first arg, just replacing the full match string that's there-->
+    <!--// rather than waste the time of getting a new arg array-->
 
-    match_array[0] = new HttpRequest(request);
+    <!--match_array[0] = new HttpRequest(request);-->
 
-    httpresp = djang10.invokeSandboxFunction([], pkg, func, match_array);
+    <!--httpresp = djang10.invokeSandboxFunction([], pkg, func, match_array);-->
 
-    print(httpresp.getContent());
+    <!--print(httpresp.getContent());-->
+
+
+    scp = djang10.retrieveAppScope("myapp");
+
+    print(scp["foo"](request).getContent());
+   
+
 }
 %>
