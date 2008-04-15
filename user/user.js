@@ -67,6 +67,34 @@ User.prototype.getDisplayName = function( ){
     return this.nickname;
 };
 
+User.prototype.presave = function( ){
+    log.user.presave.debug("calling presave on " + tojson(this));
+    if(this.uniqueness_hash == md5(this.name + ":" + this.email))
+        return;
+
+    log.user.presave.debug("hash is wrong");
+    // Either this.uniqueness_hash is missing or name/email has changed
+    // Either way, scan the DB for users with these attributes
+
+    if(this._id)
+        var isDuplicate = function(obj){
+            var matches = db.users.find(obj).toArray();
+            matches = matches.filter(function(u){ return u._id != this._id; });
+            return (matches.length != 0);
+        }
+    else
+        var isDuplicate = function(obj){
+            return db.users.findOne(obj);
+        }
+
+    log.user.presave.debug("using duplicate-checking function " + isDuplicate);
+
+    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}))
+        throw "trying to save duplicate user: " + tojson(this);
+
+    this.uniqueness_hash = md5(this.name + ":" + this.email);
+};
+
 User.find = function( thing , theTable ){
     if ( ! theTable )
         theTable = db.users;
@@ -112,3 +140,4 @@ User.statusLink = function(status){
         return new URL(User.findMyLocation()+"confirm_send").toString()
 };
 
+log.user.level = log.LEVEL.ERROR;
