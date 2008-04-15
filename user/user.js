@@ -76,10 +76,13 @@ User.prototype.presave = function( ){
     // Either this.uniqueness_hash is missing or name/email has changed
     // Either way, scan the DB for users with these attributes
 
-    if(this._id)
+    var t = this;
+
+    if(t._id)
         var isDuplicate = function(obj){
             var matches = db.users.find(obj).toArray();
-            matches = matches.filter(function(u){ return u._id != this._id; });
+            matches = matches.filter(function(u){ return u._id != t._id; });
+            log.user.presave.debug("matches: " + tojson(matches));
             return (matches.length != 0);
         }
     else

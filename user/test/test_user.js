@@ -102,5 +102,6 @@ try {
     // shouldn't raise an exception
 }
 catch(e){
+    print(e);
     assert(false);
 }
