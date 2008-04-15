@@ -14,6 +14,8 @@ if( !request.edit )
 if (!app.wiki.config.readOnly) 
     head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
 
+log.wiki.header_wikipage.debug("wiki page is " + tojson(wikiPage));
+
 %>
 <% htmlheader('Wiki | ' + wikiPage.getDisplayName()); %>
 <div id="wiki">

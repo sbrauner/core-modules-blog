@@ -56,9 +56,9 @@ else if(typeof feature.project == "string") {
     feature.project = db.bugtracker.projects.findOne({_id: feature.project});
 }
 
-log(tojson(feature.estimatedCompletionDate));
-log(parseInt(feature.estimatedCompletionDate));
-log(new Date(parseInt(feature.estimatedCompletionDate)));
+log.bugtracker.case_edit(tojson(feature.estimatedCompletionDate));
+log.bugtracker.case_edit(parseInt(feature.estimatedCompletionDate));
+log.bugtracker.case_edit(new Date(parseInt(feature.estimatedCompletionDate)));
 if(typeof feature.estimatedCompletionDate == "string")
     feature.estimatedCompletionDate = new Date(parseInt(feature.estimatedCompletionDate));
 
