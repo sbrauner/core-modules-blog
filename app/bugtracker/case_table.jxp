@@ -109,6 +109,8 @@ var rows = io.Marshal(liveDataCursor, {id: "_id",
     dependency: true,
     dependencyType: true,
     targetRelease: Ext.pluck("text"),
+    timeToComplete: true,
+    estimatedCompletionDate: function(d){ return d? d.format("yyyy-MM-dd") : "none"}
     });
 
 rows = Ext.explore(rows, rows, function(o) { 
