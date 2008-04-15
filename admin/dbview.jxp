@@ -528,7 +528,7 @@ if(top) {
 %>
 
 addSearchForm = function(n) {
-    var str = '<input type="text" name="'+n+'" class="minisearch"';
+    var str = '<form style="display:inline;" onsubmit="doSearch(); return false;"><input type="text" name="'+n+'" class="minisearch"';
     if(n == "Name") {
         return '<nobr><input type="button" name="action" onclick="doSearch()" value="Search" />'+str+"></nobr>";
     }
@@ -748,8 +748,6 @@ myDataSource.responseSchema = {
 
             ]
 };
-
-
 
 var myColumnDefs = [ <% if(top) {
     print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
