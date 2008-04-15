@@ -638,6 +638,12 @@ function doRun(el, value, save){
     // Should this command go into the history?
     save = save || "";
     command.value = "";
+    // Don't actually send on empty lines
+    if(usr == ''){
+        YAHOO.log(usr, "user", "shell");
+        return;
+    }
+
     if(indexOf(pastCommands, usr) == -1){
         pastCommands.push(usr);
     }
