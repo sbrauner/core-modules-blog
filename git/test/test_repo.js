@@ -1,21 +1,18 @@
+core.core.file();
 
 u = {name: "Test Framework", email: "<test@10gen.com>"};
 
+var repoAt = function(root){
+    var s = scopeWithRoot(root);
+    s.eval("core.git.repo()");
+    git.Repo.prototype.parseStatus = gr_parseStatus;
+    git.Repo.prototype.checkStatus = gr_checkStatus;
+    return new git.Repo();
+};
 
-sysexec("rm -r /tmp/gitrepo/test");
-sysexec("mkdir -p /tmp/gitrepo/test");
-
-s = scopeWithRoot("/tmp/gitrepo/test");
-s.eval("core.git.repo()")
-s.eval("core.core.file()");
-
-var g = new git.Repo();
-
-g._init();
-
-var parseStatus = function(){
+gr_parseStatus = function(){
     var info = {};
-    var stat = g.status().out.trim();
+    var stat = this.status().out.trim();
     var statlines = stat.split(/\n/g);
     var currentState = ""; // "untracked", "changed", "staged", ??
 
@@ -78,8 +75,8 @@ var parseStatus = function(){
     return info;
 };
 
-var checkStatus = function(spec){
-    var info = parseStatus();
+gr_checkStatus = function(spec){
+    var info = this.parseStatus();
 
     for(var field in spec){
         if(! (field in info) ){
@@ -132,20 +129,41 @@ var checkStatus = function(spec){
     return true;
 };
 
-assert(checkStatus({}));
+sysexec("rm -r /tmp/gitrepo");
+sysexec("mkdir -p /tmp/gitrepo/test");
+
+var g = repoAt("/tmp/gitrepo/test");
+
+g._init();
+
+assert(g.checkStatus({}));
 
 openFile("/tmp/gitrepo/test/file1").touch();
 
-assert(checkStatus({ untracked: ["file1"] }));
+assert(g.checkStatus({ untracked: ["file1"] }));
 
 print(tojson(g.add(["file1"])));
 
-assert(checkStatus({ staged: [{name: "file1", type: "new file"}] }));
+assert(g.checkStatus({ staged: [{name: "file1", type: "new file"}] }));
 
 print(tojson(g.commit(["file1"], "test commit", u)));
 
 // All changes are gone
-assert(checkStatus({ }));
+assert(g.checkStatus({ }));
+
+// Clone
+// easiest way to do that is to make a repo in the parent directory and use
+// the sysexec from the repo
+
+var g2 = repoAt("/tmp/gitrepo");
+print(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
+
+
+var g3 = repoAt("/tmp/gitrepo/test2");
+assert(g3.checkStatus({}));
+
+
+// Commit "upstream
 
 var f = File.create("hi there\n");
 f.writeToLocalFile('/tmp/gitrepo/test/file1');
@@ -154,5 +172,11 @@ assert(g.diff([]).out.match(/\n\+hi there\n/m));
 
 print(tojson(g.commit(["file1"], "test commit 2", u)));
 
+// Try a pull on g3
+
+print(tojson(g3.pull()));
+
+
 
 sysexec("rm -r /tmp/gitrepo/test");
+

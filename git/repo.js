@@ -13,9 +13,16 @@ Object.extend(git.Repo.prototype, {
         print(scope.getRoot());
         return sysexec("git init");
     },
+    _clone: function(from, as){
+        var cmd = "git clone " + from;
+        if(as) cmd += " " + as;
+        return sysexec( cmd );
+    },
     push: function(){
+        return sysexec( "git push" );
     },
     pull: function(){
+        return sysexec( "git pull" );
     },
     add: function(files){
         this._validate(files);
