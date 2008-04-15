@@ -63,13 +63,26 @@ if(u2.uniqueness_hash) delete u2.uniqueness_hash;
 assertException(function(){ db.users.save(u2); });
 assert(u2._id == null);
 
-u2.name = "Second User";
+// username is duplicated
+u2.name = "Test User";
+u2.email = "not_duplicate@10gen.com";
+u2.nickname = "Testaroo";
 
 assertException(function(){ db.users.save(u2); });
 assert(u2._id == null);
 
-u2.name = "Test User";
+// email is duplicated
+u2.name = "Second User";
+u2.email = "test@10gen.com";
+u2.nickname = "Testaroo";
+
+assertException(function(){ db.users.save(u2); });
+assert(u2._id == null);
+
+// nickname is duplicated
+u2.name = "Second User";
 u2.email = "not_duplicate@10gen.com";
+u2.nickname = "Testy";
 
 assertException(function(){ db.users.save(u2); });
 assert(u2._id == null);
@@ -84,14 +97,19 @@ u3.nickname = "Fred";
 
 db.users.save(u3);
 
+// name changes to be duplicate
 u3.name = "Test User";
 assertException(function(){ db.users.save(u3); });
 
+// email changes to be duplicate
 u3.name = "Freddy User";
 u3.email = "test@10gen.com";
 assertException(function(){ db.users.save(u3); });
 
-
+// nickname changes to be duplicate
+u3.email = "test3@10gen.com";
+u3.nickname = "Testy";
+assertException(function(){ db.users.save(u3); });
 
 // 4. re-saving a unique object without a uniqueness hash (this shouldn't fail)
 
@@ -105,3 +123,4 @@ catch(e){
     print(e);
     assert(false);
 }
+
