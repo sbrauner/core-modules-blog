@@ -1,6 +1,9 @@
 core.core.file();
 
-u = {name: "Test Framework", email: "<test@10gen.com>"};
+u = {name: "Test Framework", email: "test@10gen.com"};
+
+sysexec("rm -r /tmp/gitrepo");
+sysexec("mkdir -p /tmp/gitrepo/test");
 
 var repoAt = function(root){
     var s = scopeWithRoot(root);
@@ -129,9 +132,6 @@ gr_checkStatus = function(spec){
     return true;
 };
 
-sysexec("rm -r /tmp/gitrepo");
-sysexec("mkdir -p /tmp/gitrepo/test");
-
 var g = repoAt("/tmp/gitrepo/test");
 
 g._init();
@@ -168,7 +168,7 @@ assert(g3.checkStatus({}));
 var f = File.create("hi there\n");
 f.writeToLocalFile('/tmp/gitrepo/test/file1');
 
-assert(g.diff([]).out.match(/\n\+hi there\n/m));
+assert(g.diff([]).out.match(/\n\+hi there\n/));
 
 print(tojson(g.commit(["file1"], "test commit 2", u)));
 
@@ -176,7 +176,26 @@ print(tojson(g.commit(["file1"], "test commit 2", u)));
 
 print(tojson(g3.pull()));
 
+var s = File.open('/tmp/gitrepo/test2/file1').asString();
 
+assert(s == "hi there\n");
 
-sysexec("rm -r /tmp/gitrepo/test");
+// Commit to g3 and push to g1
+
+var f = File.create("hello there\n");
+f.writeToLocalFile('/tmp/gitrepo/test2/file1');
+
+assert(g3.diff([]).out.match(/\n\+hello there\n/));
+assert(g3.diff([]).out.match(/\n\-hi there\n/));
+
+print(tojson(g3.commit(["file1"], "test commit 3", u)));
+
+print(tojson(g3.push()));
+
+var s = File.open('/tmp/gitrepo/test/file1').asString();
+
+assert(s == "hello there\n");
+
+sysexec("rm -r /tmp/gitrepo");
+
 
