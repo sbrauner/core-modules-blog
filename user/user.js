@@ -69,7 +69,8 @@ User.prototype.getDisplayName = function( ){
 
 User.prototype.presave = function( ){
     log.user.presave.debug("calling presave on " + tojson(this));
-    if(this.uniqueness_hash == md5(this.name + ":" + this.email))
+    if(this.uniqueness_hash == md5(this.name + ":" + this.email + ":" +
+                                   this.nickname))
         return;
 
     log.user.presave.debug("hash is wrong");
@@ -92,10 +93,11 @@ User.prototype.presave = function( ){
 
     log.user.presave.debug("using duplicate-checking function " + isDuplicate);
 
-    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}))
+    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) ||
+       isDuplicate({nickname: this.nickname}))
         throw "trying to save duplicate user: " + tojson(this);
 
-    this.uniqueness_hash = md5(this.name + ":" + this.email);
+    this.uniqueness_hash = md5(this.name + ":" + this.email + ":" + this.nickname);
 };
 
 User.find = function( thing , theTable ){
