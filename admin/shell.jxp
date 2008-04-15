@@ -622,7 +622,7 @@ function checkRun(el){
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
 
-    var match = newusr.replace(/""/, "").match(/[\'\"].*$/);
+    var match = newusr.replace(/""/g, "").match(/[\'\"].*$/);
     if(match)
         return match;
 
