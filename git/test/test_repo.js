@@ -192,6 +192,8 @@ print(tojson(g3.commit(["file1"], "test commit 3", u)));
 
 print(tojson(g3.push()));
 
+print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
+
 var s = File.open('/tmp/gitrepo/test/file1').asString();
 
 assert(s == "hello there\n");
