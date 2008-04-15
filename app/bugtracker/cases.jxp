@@ -371,16 +371,20 @@ var dependency = null;
 var rec = null;
 var assignDep_dlg;
 
+
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
-    require: ["datatable", "json", "container", "dragdrop"],
+     require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
 
          var myPaginator = new YAHOO.widget.Paginator({
              rowsPerPage: 30,
+             totalRecords: <%= db.bugtracker.cases.find().length() %>,
+             initialPage: <%= request.page ? request.page : 1 %>,
              alwaysVisible : false
          });
+
 
          confirmDlg = new YAHOO.widget.Dialog("confirm", {
              width: "400px",
@@ -474,7 +478,6 @@ var loader = new YAHOO.util.YUILoader( {
          };
 
          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
-
 
 
          YAHOO.widget.DataTable.Formatter.myCustom = function(elCell, oRecord, oColumn, oData) {

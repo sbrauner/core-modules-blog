@@ -175,7 +175,7 @@ div#customer_body {
 }
 
 div.obj {
-    display: block;
+    display: none;
     padding-left: 20px;
 }
 div.parent {

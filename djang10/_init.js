@@ -43,16 +43,19 @@ djang10.invokeSandboxFunction = function(pkg_arr, target, func, arg_array) {
 }
 
 
+/**
+ *  determines if the given directory is an app directory - looks for __init__.jxp file in it
+ *
+ */
 djang10.isAppDir = function(z) {
-
-    //
-    // see if this is a directory
-    //
 
     return z.listFiles().filter(function(z) { return z.getName() == "__init__.jxp";}).length > 0;
 }
 
 
+/**
+ *   returns a list of all app directories for this django app
+ */
 djang10.getAppDirs = function() {
 
     return openFile("/").listFiles().filter(function(z) { return z.isDirectory() && djang10.isAppDir(z) });
@@ -72,35 +75,56 @@ djang10.getFunctionDuples = function(modelFile) {
     return myArr;
 }
 
-djang10.prepModelForApp = function(appDir) {
-
-    print("DJANG10 : prepping model for app " + appDir.getName());
-
-    var modelFile = "local." + appDir.getName() + ".models";
-
-    scope.eval(modelFile)();
-
-    var arr = djang10.getFunctionDuples(modelFile);
-
-    arr.forEach(function(z) { scope.eval(z.name + ".prototype.save = function() { db." +
-                                         appDir.getName() + "." + z.name + ".save(this)}") });
+djang10.prepModelForApp = function( appDir , appScope ) {
 
 
-    arr.forEach(function(z) { scope.eval(z.name + ".prototype.find = function(o) { return db." +
-                                         appDir.getName() + "." + z.name + ".find(o)}") });
+    log.djang10("prepping model for app " + appDir.getName());
 
-    arr.forEach(function(z) { scope.eval(z.name + ".prototype.objects =  {" +
-                                            " all : function() { return db." + appDir.getName() + "." + z.name + ".find() }" +
-                                         "}") });
+    var prev = scope.keySet();
 
-    arr.forEach(function(z) {print("    augmented class " + z.name) });
+    scope.setGlobal( true );
+    local[appDir.getName()].models();
+
+    for ( var i in scope ){
+        if ( prev.contains( i ) )
+            continue;
+        log.djang10( "added " + scope[i] + " to scope.  Coll is : " + db[appDir.getName()][i] + " : " + tojson(db[appDir.getName()][i]));;
+        appScope[i] = scope[i];
+        appScope[i].prototype.__collection = db[appDir.getName()][i];
+        appScope[i].prototype.save = function() { this.__collection.save(this); }
+        appScope[i].prototype.objects = {
+                                            __collection : appScope[i].prototype.__collection,
+            
+                                            all : function() { return this.__collection.find(); }
+        };
+    }
 }
 
+djang10.registerAppScope = function(appName, scp) {
 
-/*
- *   APPLICATION PRE PROCESSING
+    if (scopebag == null) {
+        scopebag = {};
+    }
+
+    scopebag[appName] = scp;
+}
+
+djang10.retrieveAppScope = function(appName) {
+
+    if (scopebag == null) {
+        return null;
+    }
+
+    return scopebag[appName];
+}
+
+/*****************************************************************************************
  *
- *  go find the apps
+ *   FRAMEWORK SETUP
+ *
+ *   1) go find the apps (@TODO - use the settings.js file
+ *   2) Create app scopes, and augment the model for each app in each scope
+ *   3) find all the view files, and invoke in the app context for each
  */
 
 var appdirs = djang10.getAppDirs();
@@ -111,13 +135,63 @@ var appdirs = djang10.getAppDirs();
 
 appdirs.forEach(function(z) {
 
-    djang10.prepModelForApp(z);
+    log.djang10("Processing : " + tojson(z));
+
+    // create a new scope for each app, and then lock it
+    appscope = globals.child();
+    appscope.setGlobal(true);
+    djang10.registerAppScope(z.getName(), appscope);
+
+    // now agument the model for the scope in the context of the scope
+    djang10.prepModelForApp(z, appscope);
 });
 
+/*
+ *  now get a list of all the view files, by getting the urlpatterns
+ */
 
-person = new Person();
-//person.setName("geir");
-//person.save();
-print(tojson(Person.objects.all()));
+
+var urlpatterns = djang10.invokeSandboxPackage([ core.djang10.conf.urls.defaults ], jxp.urls, "urlpatterns");
+
+for (p in urlpatterns) {
+
+    var invoker = urlpatterns[p][1];
+
+    var arr = invoker.split(/\./);
+
+    var scp = djang10.retrieveAppScope(arr[1]);
+
+    log.djang10("found invoker :" + invoker + " : app = " + arr[1] + " : " + scp);;
+
+    var pkg = "local";
+    arr.slice(1, -1).forEach(function(s) { pkg = pkg + "." + s; });
+
+    log.djang10("thing = " + pkg);
+    
+    scp.eval(pkg + "()");
+}
+
+
+
+
+
+
+//
+//print("RETROEVED" + scp);
+//
+//
+//p = scp.eval("new Person()");
+//
+//
+////scp.eval("local.myapp.router.")
+//
+//p.setName("geir");
+//
+//scp.eval("log.temp1(Person.prototype.__collection)");
+//
+//
+//print(p.objects.all());
+//
+//
 
 
