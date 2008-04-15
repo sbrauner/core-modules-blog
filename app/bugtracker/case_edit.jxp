@@ -359,7 +359,7 @@ if(project.areas.length > 0){
                    value="<%= feature.estimatedCompletionDate ? (feature.estimatedCompletionDate.getMonth() + '/' + feature.estimatedCompletionDate.getDay() + '/' + feature.estimatedCompletionDate.getYear()) : ""%>"/>
             <button id="show1up" type="button">Show calendar</button><div id="completeCal"></div>
           </td>
-          <input id="festimatedCompletionDate" name="festimatedCompletionDate" type="hidden" />
+          <input id="festimatedCompletionDate" name="festimatedCompletionDate" type="hidden" value="<%= feature.estimatedCompletionDate ? feature.estimatedCompletionDate.getTime() : "" %>"/>
         </tr>
         <tr valign="top">
             <td class="label">Target Release</td>
