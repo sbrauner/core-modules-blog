@@ -534,8 +534,9 @@ function handleSelect(type,args,obj) {
     txtDate1.value = month + "/" + day + "/" + year;
     
     var oDate = new Date();
-    oDate.setYear(year);
-    oDate.setMonth(month);
+    oDate.setFullYear(year);
+    // Because month is [1, 12] but setMonth takes [0, 11]
+    oDate.setMonth(month-1);
     oDate.setDate(day);
     document.getElementById("festimatedCompletionDate").value = oDate.valueOf();
     
