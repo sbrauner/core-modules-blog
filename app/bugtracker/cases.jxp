@@ -500,7 +500,7 @@ var loader = new YAHOO.util.YUILoader( {
          };
 
          YAHOO.widget.DataTable.Formatter.bugLink = function(elCell, oRecord, oColumn, oData) {
-             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL()+"\">"+oRecord.getData("title")+"</a>";
+             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL(oRecord.getData("id"))+"\">"+oRecord.getData("title")+"</a>";
          };
 
 
