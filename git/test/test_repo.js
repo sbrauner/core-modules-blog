@@ -2,8 +2,10 @@ core.core.file();
 
 u = {name: "Test Framework", email: "test@10gen.com"};
 
-sysexec("rm -r /tmp/gitrepo");
-sysexec("mkdir -p /tmp/gitrepo/test");
+sc = scopeWithRoot(".");
+
+sc.eval('sysexec("rm -r /tmp/gitrepo");');
+sc.eval('sysexec("mkdir -p /tmp/gitrepo/test");');
 
 var repoAt = function(root){
     var s = scopeWithRoot(root);
@@ -165,8 +167,9 @@ assert(g3.checkStatus({}));
 
 // Commit "upstream
 
-var f = File.create("hi there\n");
-f.writeToLocalFile('/tmp/gitrepo/test/file1');
+sc.eval('var f = File.create("hi there\\n");');
+sc.makeThreadLocal();
+sc.eval("f.writeToLocalFile('/tmp/gitrepo/test/file1');");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
 
@@ -182,8 +185,8 @@ assert(s == "hi there\n");
 
 // Commit to g3 and push to g1
 
-var f = File.create("hello there\n");
-f.writeToLocalFile('/tmp/gitrepo/test2/file1');
+sc.eval('var f = File.create("hello there\\n");');
+sc.eval("f.writeToLocalFile('/tmp/gitrepo/test2/file1');");
 
 assert(g3.diff([]).out.match(/\n\+hello there\n/));
 assert(g3.diff([]).out.match(/\n\-hi there\n/));
@@ -198,6 +201,6 @@ var s = File.open('/tmp/gitrepo/test/file1').asString();
 
 assert(s == "hello there\n");
 
-sysexec("rm -r /tmp/gitrepo");
+sc.eval('sysexec("rm -r /tmp/gitrepo");');
 
 
