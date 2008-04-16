@@ -217,6 +217,7 @@ Object.extend(git.Repo.prototype, {
         return info;
     },
     checkout: function(files, opts){
+        opts = opts || {};
         this._validate(files);
         var cmd = "git checkout ";
         if(opts.force) cmd += "-f ";
