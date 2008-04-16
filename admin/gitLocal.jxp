@@ -48,50 +48,14 @@ else if ( request.action == "checkout" && request.file ){
 }
 
 
-     var out = g.status().out;
+     var parsed = g.status().parsed;
+
+var buttons = {"changed": 'commit', 'untracked': 'add'};
  
- var types = {};
- var temp = null;
-
- out.split( /\n/ ).forEach( function( line ){
-	
-	if ( ! line.match( /^#/ ) )
-		return;
-	line = line.substring(1);
-	
-	if ( line.match( /^ [\w ]+:$/ ) ){
-		var foo = line.replace( /:\s*$/ , ""  ).trim();
-
-		if ( foo == "Changed but not updated" || foo == "Changes to be committed") foo = "commit";
-		else if ( foo == "Untracked files" ) foo = "add";
-		else throw "don't know what [" + foo + "] is";
-
-		temp = types[foo];		
-		if ( ! temp ){
-			temp = [];
-			types[ foo ] = temp;
-		}
-		return;
-	}
-	
-	if ( line.match( /^\s+$/ ) || line.match( /^\s+\(/ ) )
-		return;
-	
-	if ( ! temp )
-		return;
-		
-	line = line.trim().replace( /modified:/ , "" ).trim();
-	line = line.trim().replace( /new file:/ , "" ).trim();
-
-	if ( line.length == 0 ) return;
-
-	temp.push( line.trim() );
-
-	} );
  %>
 
 <table>
-<% for ( type in types ){ %>
+<% for ( type in parsed ){ %>
   
   <form>
 
@@ -99,14 +63,14 @@ else if ( request.action == "checkout" && request.file ){
     <td colspan="2"><%= type %></td>
   </tr>
 
-  <% types[type].forEach( function( z ){ %>
+  <% parsed[type].forEach( function( z ){ %>
   <tr>
-    <td><input type="checkbox" name="file" value="<%= z %>"></td>
-    <td><%= z %></td>
+    <td><input type="checkbox" name="file" value="<%= z.name %>"></td>
+    <td><%= z.name %></td>
   </tr>
   <% } ); %>
 	 
-  <% if ( type == "commit" ){ %>
+  <% if ( type == "changed" ){ %>
   <tr>
     <td colspan="2">Commit Message <input name="msg" value=""> </td>
   </tr>
@@ -116,7 +80,7 @@ else if ( request.action == "checkout" && request.file ){
   <% } %>
 
   <tr>
-    <td colspan="2"><input type="submit" name="action" value="<%=type  %>"> </td>
+    <td colspan="2"><input type="submit" name="action" value="<%= buttons[type] %>"> </td>
   </tr>
   
   </form>

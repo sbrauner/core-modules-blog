@@ -207,7 +207,7 @@ Object.extend(git.Repo.prototype, {
             }
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
-                file = exec[1];
+                file = {name: exec[1]};
             }
 
             if(! (currentState in info) ) info[currentState] = [];
