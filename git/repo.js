@@ -25,14 +25,78 @@ Object.extend(git.Repo.prototype, {
     },
     push: function(){
         var ret = this._exec( "git push" );
-
+        ret.parsed = this._parsePush(ret);
         return ret;
     },
+    _parsePush: function(exec){
+        var parsed = {};
+        var lines = exec.err.trim().split(/\n/);
+        if( lines[0].match(/pull first\?$/) ){
+            parsed.pullFirst = true;
+        }
+        else {
+            var fromrev = lines[1].substring(lines[1].lastIndexOf(' '));
+            var torev = lines[2].substring(lines[2].lastIndexOf(' '));
+            parsed.from = fromrev;
+            parsed.to = torev;
+        }
+
+        return parsed;
+    },
+
     pull: function(){
         var ret = this._exec( "git pull" );
-
+        ret.parsed = this._parsePull(ret);
         return ret;
     },
+    _parsePull: function(exec){
+        var parsed = {};
+        var lines = exec.out.trim().split(/\n/);
+
+        var fromrev = lines[0].substring(lines[0].lastIndexOf(" "),
+            lines[0].indexOf('.'));
+        var torev = lines[0].substring(lines[0].lastIndexOf("."));
+        var files = {};
+        var created = {};
+        var deleted = {};
+
+        // lines[1] should just be "Fast forward"
+
+        for(var i = 2; i < lines.length; i++){
+            if(lines[i].indexOf('|') == -1) break;
+            var pipes = lines[i].split('|');
+            var filename = pipes[0].trim();
+            var diffstat = pipes[1].trim();
+            files[filename] = diffstat;
+        }
+
+        // this line should be like:
+        // "9 files changed, 211 insertions(+), 65 delitions(-)"
+        ++i;
+
+        for(; i < lines.length; i++){
+            var line = lines[i];
+            if(line.match(/^ create/)){
+                // FIXME: implement String.split(..., limit)
+                var firstFieldEnd = line.indexOf(/ /, 1);
+                var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
+                var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
+                var filename = line.substring(thirdFieldEnd);
+                created[filename] = line;
+            }
+            else if( false ){ // FIXME: deleted files
+
+            }
+        }
+
+        parsed.from = fromrev;
+        parsed.to = torev;
+        parsed.files = files;
+
+        return parsed;
+    },
+
+
     add: function(files){
         this._validate(files);
 
@@ -68,14 +132,15 @@ Object.extend(git.Repo.prototype, {
     status: function(){
         var ret = this._exec("git status");
 
-        ret.parsed = this._parseStatus(ret.out);
+        ret.parsed = this._parseStatus(ret);
 
         return ret;
     },
-    _parseStatus: function(output){
+    _parseStatus: function(exec){
+        var output = exec.out;
         var info = {};
         var stat = output.trim();
-        var statlines = stat.split(/\n/g);
+        var statlines = stat.split(/\n/);
         var currentState = ""; // "untracked", "changed", "staged", ??
 
         var filename = "";
