@@ -88,7 +88,7 @@ djang10.prepModelForApp = function( appDir , appScope ) {
     for ( var i in scope ){
         if ( prev.contains( i ) )
             continue;
-        log.djang10( "added " + scope[i] + " to scope.  Coll is : " + db[appDir.getName()][i] + " : " + tojson(db[appDir.getName()][i]));;
+        log.djang10( "added class " + i + " to scope.  Coll is : " + db[appDir.getName()][i] + " : " + tojson(db[appDir.getName()][i]));;
         appScope[i] = scope[i];
         appScope[i].prototype.__collection = db[appDir.getName()][i];
         appScope[i].prototype.save = function() { this.__collection.save(this); }
@@ -162,7 +162,7 @@ var appdirs = djang10.getAppDirs();
 
 appdirs.forEach(function(z) {
 
-    log.djang10("Processing : " + tojson(z));
+    log.djang10("Processing application : " + z.getName());
 
     // create a new scope for each app, and then lock it
     appscope = globals.child();
@@ -190,11 +190,9 @@ for (p in urlpatterns) {
     var pkg = "local." + arr.slice(1 , -1).join(".");
 
     log.djang10("Found pattern invoker :" + invoker + " : app = " + arr[1]
-            + " : apppkg = " + pkg + " : func = " + func + " : "  + scp);;
+            + " : apppkg = " + pkg + " : func = " + func + " : pattern = " + urlpatterns[p][0] + " : "  + scp);;
     
     scp.eval(pkg + "()");
 
     djang10.getControllerMap().set(urlpatterns[p][0], { f : func, s : scp });
 }
-
-
