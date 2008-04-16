@@ -6,7 +6,9 @@ if ( config.onlyBase )
     config.noScriptTags = true;
 
 head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
-head.addScript( "/@@/yui/current/container/container-min.js" );
+head.addScript( "/@@/yui/current/event/event-min.js" );
+head.addScript( "/@@/yui/current/dom/dom-min.js" );
+head.addScript( "/@@/yui/current/container/container-debug.js" );
 
 var menu = [
 
