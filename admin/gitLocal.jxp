@@ -57,7 +57,7 @@ var buttons = {"changed": 'commit', 'untracked': 'add'};
 <table>
 <% for ( type in parsed ){ %>
   
-  <form>
+  <form method="POST">
 
   <tr>
     <td colspan="2"><%= type %></td>
