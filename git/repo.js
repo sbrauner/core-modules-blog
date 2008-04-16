@@ -64,7 +64,7 @@ Object.extend(git.Repo.prototype, {
 
         for(var i = 2; i < lines.length; i++){
             if(lines[i].indexOf('|') == -1) break;
-            var pipes = lines[i].split('|');
+            var pipes = lines[i].split(/\|/);
             var filename = pipes[0].trim();
             var diffstat = pipes[1].trim();
             files[filename] = diffstat;

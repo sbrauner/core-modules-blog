@@ -100,7 +100,7 @@ var g3 = repoAt("/tmp/gitrepo/test2");
 assert(g3.checkStatus({}));
 
 
-// Commit "upstream
+// Commit "upstream"
 
 sc.eval('var f = File.create("hi there\\n");');
 sc.makeThreadLocal();
@@ -112,11 +112,18 @@ print(tojson(g.commit(["file1"], "test commit 2", u)));
 
 // Try a pull on g3
 
-print(tojson(g3.pull()));
+var pull = g3.pull();
+
 
 var s = File.open('/tmp/gitrepo/test2/file1').asString();
 
 assert(s == "hi there\n");
+
+
+assert(pull.parsed);
+assert(pull.parsed.from);
+assert(pull.parsed.to);
+assert("file1" in pull.parsed.files);
 
 // Commit to g3 and push to g1
 
@@ -128,13 +135,18 @@ assert(g3.diff([]).out.match(/\n\-hi there\n/));
 
 print(tojson(g3.commit(["file1"], "test commit 3", u)));
 
-print(tojson(g3.push()));
+var push = g3.push();
 
 print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
 
 var s = File.open('/tmp/gitrepo/test/file1').asString();
 
 assert(s == "hello there\n");
+
+assert(push.parsed);
+assert(push.parsed.from);
+assert(push.parsed.to);
+assert(! push.parsed.pullFirst);
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 
