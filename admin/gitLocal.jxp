@@ -5,7 +5,7 @@ core.content.html();
 
 var g = new git.Repo(); 
 var output_command = function(foo){
-    print(foo.cmd + "<br>");
+    print(content.HTML.escape(foo.cmd) + "<br>");
     print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
           content.HTML.escape(foo.err) + "</pre>");
     print("<hr>");
