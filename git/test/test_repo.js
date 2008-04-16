@@ -10,78 +10,13 @@ sc.eval('sysexec("mkdir -p /tmp/gitrepo/test");');
 var repoAt = function(root){
     var s = scopeWithRoot(root);
     s.eval("core.git.repo()");
-    git.Repo.prototype.parseStatus = gr_parseStatus;
     git.Repo.prototype.checkStatus = gr_checkStatus;
     return new git.Repo();
 };
 
-gr_parseStatus = function(){
-    var info = {};
-    var stat = this.status().out.trim();
-    var statlines = stat.split(/\n/g);
-    var currentState = ""; // "untracked", "changed", "staged", ??
-
-    var filename = "";
-    var filetype = "";
-    for(var i = 0; i < statlines.length; ++i){
-        // Special cases for special lines:
-        if(statlines[i].match(/# On branch (.+)$/))
-            continue;
-
-        if(statlines[i].match(/# Initial commit/))
-            continue;
-
-        if(statlines[i].match(/#\s*$/)) continue;
-
-        if(statlines[i].match(/use \"git /))
-            // We don't need usage advice, thanks
-            continue;
-
-        if(statlines[i].match(/^\w/)){
-            // like "nothing to commit" or "nothing added to commit"
-            // we should probably handle this!
-
-            continue;
-        }
-        // END special cases
-
-
-        if(statlines[i].match(/# Changed but not updated:/)){
-            currentState = "changed";
-            continue;
-        }
-
-        if(statlines[i].match(/# Untracked files:/)){
-            currentState = "untracked";
-            continue;
-        }
-
-        if(statlines[i].match(/# Changes to be committed:/)){
-            currentState = "staged";
-            continue;
-        }
-
-
-        var exec = statlines[i].match(/#\s+(modified|new file):\s+(.+)$/);
-        if(exec){
-            filetype = exec[1];
-            filename = exec[2];
-            file = {name: filename, type: filetype};
-        }
-        else {
-            var exec = statlines[i].match(/#\s+(.+)$/);
-            file = exec[1];
-        }
-
-        if(! (currentState in info) ) info[currentState] = [];
-        info[currentState].push(file);
-    }
-
-    return info;
-};
 
 gr_checkStatus = function(spec){
-    var info = this.parseStatus();
+    var info = this.status().parsed;
 
     for(var field in spec){
         if(! (field in info) ){

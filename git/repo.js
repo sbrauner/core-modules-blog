@@ -24,10 +24,14 @@ Object.extend(git.Repo.prototype, {
         return this._exec( cmd );
     },
     push: function(){
-        return this._exec( "git push" );
+        var ret = this._exec( "git push" );
+
+        return ret;
     },
     pull: function(){
-        return this._exec( "git pull" );
+        var ret = this._exec( "git pull" );
+
+        return ret;
     },
     add: function(files){
         this._validate(files);
@@ -62,7 +66,75 @@ Object.extend(git.Repo.prototype, {
         return foo;
     },
     status: function(){
-        return this._exec("git status");
+        var ret = this._exec("git status");
+
+        ret.parsed = this._parseStatus(ret.out);
+
+        return ret;
+    },
+    _parseStatus: function(output){
+        var info = {};
+        var stat = output.trim();
+        var statlines = stat.split(/\n/g);
+        var currentState = ""; // "untracked", "changed", "staged", ??
+
+        var filename = "";
+        var filetype = "";
+        for(var i = 0; i < statlines.length; ++i){
+            // Special cases for special lines:
+            if(statlines[i].match(/# On branch (.+)$/))
+                continue;
+
+            if(statlines[i].match(/# Initial commit/))
+                continue;
+
+            if(statlines[i].match(/#\s*$/)) continue;
+
+            if(statlines[i].match(/use \"git /)){
+                // We don't need usage advice, thanks
+                continue;
+            }
+
+            if(statlines[i].match(/^\w/)){
+                // like "nothing to commit" or "nothing added to commit"
+                // we should probably handle this!
+
+                continue;
+            }
+            // END special cases
+
+
+            if(statlines[i].match(/# Changed but not updated:/)){
+                currentState = "changed";
+                continue;
+            }
+
+            if(statlines[i].match(/# Untracked files:/)){
+                currentState = "untracked";
+                continue;
+            }
+
+            if(statlines[i].match(/# Changes to be committed:/)){
+                currentState = "staged";
+                continue;
+            }
+
+            var exec = statlines[i].match(/#\s+(modified|new file):\s+(.+)$/);
+            if(exec){
+                filetype = exec[1];
+                filename = exec[2];
+                file = {name: filename, type: filetype};
+            }
+            else {
+                var exec = statlines[i].match(/#\s+(.+)$/);
+                file = exec[1];
+            }
+
+            if(! (currentState in info) ) info[currentState] = [];
+            info[currentState].push(file);
+        }
+
+        return info;
     },
     checkout: function(files, opts){
         this._validate(files);
