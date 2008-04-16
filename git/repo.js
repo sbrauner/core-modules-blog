@@ -57,6 +57,14 @@ Object.extend(git.Repo.prototype, {
     },
     status: function(){
         return sysexec("git status");
-    }
+    },
+    checkout: function(files, opts){
+        this._validate(files);
+        var cmd = "git checkout ";
+        if(opts.force) cmd += "-f ";
+        if(opts.rev) cmd += opts.rev + " ";
+        cmd += files.join(" ");
+        return sysexec( cmd );
+    },
 });
 

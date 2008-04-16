@@ -43,7 +43,7 @@ function mapUrlToJxpFileCore( uri , request , response ){
     
 };
 
+core.core.log(); 
 
-core.core.logMemoryAppender(); 
 if ( ! MemoryAppender.find( log ) )
     log.appenders.push( MemoryAppender.create() );
