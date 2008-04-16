@@ -50,8 +50,8 @@ Object.extend(git.Repo.prototype, {
             parsed.pullFirst = true;
         }
         else {
-            var fromrev = lines[1].substring(lines[1].lastIndexOf(' '));
-            var torev = lines[2].substring(lines[2].lastIndexOf(' '));
+            var fromrev = lines[1].substring(lines[1].lastIndexOf(' ')+1);
+            var torev = lines[2].substring(lines[2].lastIndexOf(' ')+1);
             parsed.from = fromrev;
             parsed.to = torev;
         }

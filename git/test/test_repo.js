@@ -142,6 +142,8 @@ assert(g3.diff([]).out.match(/\n\-hi there\n/));
 
 print(tojson(g3.commit(["file1"], "test commit 3", u)));
 
+var lastCommit = g3.getCurrentRev().parsed.rev;
+
 var push = g3.push();
 
 print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
@@ -151,8 +153,8 @@ var s = File.open('/tmp/gitrepo/test/file1').asString();
 assert(s == "hello there\n");
 
 assert(push.parsed);
-assert(push.parsed.from);
-assert(push.parsed.to);
+assert(push.parsed.from == endCommit);
+assert(push.parsed.to == lastCommit);
 assert(! push.parsed.pullFirst);
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
