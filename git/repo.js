@@ -42,7 +42,7 @@ Object.extend(git.Repo.prototype, {
 
     getCommit: function(rev){
         var ret = this._exec( "git log -n 1 "+rev );
-        parsed = {};
+        var parsed = {};
 
         var lines = ret.out.trim().split(/\n/);
         // lines[0] -> commit d3ce0cfde8ba...
