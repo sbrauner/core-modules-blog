@@ -59,7 +59,8 @@ var parsed = g.status().parsed;
 
 var buttons = {"changed": 'commit', 'untracked': 'add'};
 
-
+parsed.changed = parsed.changed.concat(parsed.staged || []);
+delete parsed.staged;
 
 %>
 
