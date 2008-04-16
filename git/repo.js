@@ -9,33 +9,38 @@ Object.extend(git.Repo.prototype, {
                 throw ("illegal absolute path: "+ files[i]);
         }
     },
+    _exec: function(cmd){
+        var foo = sysexec( cmd );
+        foo.cmd = cmd;
+        return foo;
+    },
     _init: function(){
         print(scope.getRoot());
-        return sysexec("git init");
+        return this._exec("git init");
     },
     _clone: function(from, as){
         var cmd = "git clone " + from;
         if(as) cmd += " " + as;
-        return sysexec( cmd );
+        return this._exec( cmd );
     },
     push: function(){
-        return sysexec( "git push" );
+        return this._exec( "git push" );
     },
     pull: function(){
-        return sysexec( "git pull" );
+        return this._exec( "git pull" );
     },
     add: function(files){
         this._validate(files);
 
         var cmd = "git add ";
         files.forEach( function( z ){ cmd += " " + z; } );
-        return sysexec( cmd );
+        return this._exec( cmd );
     },
     diff: function(files){
         this._validate(files);
         var cmd = "git diff ";
         files.forEach( function( z ){ cmd += " " + z; } );
-        return sysexec( cmd );
+        return this._exec( cmd );
     },
     commit: function(files, msg, user){
         if(!msg) throw "git commit needs a message";
@@ -53,10 +58,11 @@ Object.extend(git.Repo.prototype, {
         files.forEach( function( z ){ cmd += " " + z; } );
         log.git.repo.debug("committing; git command: " + cmd);
         var foo = sysexec( cmd , msg , env );
+        foo.cmd = cmd;
         return foo;
     },
     status: function(){
-        return sysexec("git status");
+        return this._exec("git status");
     },
     checkout: function(files, opts){
         this._validate(files);
@@ -64,7 +70,7 @@ Object.extend(git.Repo.prototype, {
         if(opts.force) cmd += "-f ";
         if(opts.rev) cmd += opts.rev + " ";
         cmd += files.join(" ");
-        return sysexec( cmd );
+        return this._exec( cmd );
     },
 });
 
