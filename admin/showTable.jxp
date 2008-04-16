@@ -104,63 +104,6 @@ else {
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;
 
-/*function printEditableField(x, id, path) {
-    if(typeof x == "string") {
-        if( x.length<=20 )
-            x = content.HTML.escape_html(x);
-        else {
-	    x = content.HTML.escape_html(x)
-            // put extra text in a hidden div
-            text += '<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>';
-            x = x.substring(0,18)+"...";
-        }
-    }
-
-    text +='<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>";
-    fieldcount++;
- }
-
-var text = "";
-
-function printObj(cursor, field, id, path) {
-    if(!cursor || !cursor[field]) return;
-
-    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
-        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
-    }
-    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        text += '<div><label class="obj">'+field+':</label>';
-        printEditableField(cursor[field], id, path);
-        text += '</div>';
-    } else if(typeof cursor[field] == "object") {
-        var name;
-        var desc;
-        if(cursor[field] instanceof Date) {
-            name = "Date";
-            desc = cursor[field].toString();
-        }
-        else if(cursor[field] instanceof Array) {
-            name = "Array";
-            desc = "["+cursor[field].length+"]";
-        }
-        else {
-            name = "Object";
-            desc = field;
-        }
-        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
-        var tempobj = objcount;
-        objcount++;
-        for(var name in cursor[field]) {
-            path.push(name);
-            printObj(cursor[field], name, id, path);
-            path.pop();
-        }
-        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>";
-    } else {
-        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
-    }
-}
-*/
 
 var done = false;
 function outp(x, id, name) {
@@ -238,8 +181,13 @@ for( var i=0; i < rows.length; i++ ) {
                 else if(typeof obj[h] == "string") {
                     dbTable.rows[k][h] = content.HTML.escape_html(obj[h]); //(obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
-                else
+                else if(typeof obj[h] == "number") {
+                    dbTable.rows[k][h] = obj[h] ;
+                }
+                else if(obj[h] instanceof Date)
                     dbTable.rows[k][h] = obj[h].toString();
+                else
+                    dbTable.rows[k][h] = tojson_u(obj[h]);
 	    }
         }
         var first = true;
@@ -259,15 +207,5 @@ for( var i=0; i < rows.length; i++ ) {
 }
 
 print("] }");
-//print(tojson_u(dbTable));
-
-/*fields = {};
-if(!liveDataCursor) return fields;
-for(prop in liveDataCursor[0]) {
-   fields[prop] = true;
-}
-
-print(tojson_u({rows: io.Marshal(liveDataCursor, fields)}));
-*/
 
 %>

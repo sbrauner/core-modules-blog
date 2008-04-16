@@ -70,8 +70,42 @@ else {
 <script type="text/javascript">
 var lastSearch = "";
 
-function showFullText(count) {
-    document.getElementById('fullText'+count).style.display = "block";
+var objcount = 0;
+function printObj(cursor, field) {
+    if(!cursor || !cursor[field]) return;
+    var text = "";
+
+    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+    }
+    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+    } else if(typeof cursor[field] == "object") {
+        var name;
+        var desc;
+        if(cursor[field] instanceof Date) {
+            name = field;
+            desc = cursor[field].toString();
+        }
+        else if(cursor[field] instanceof Array) {
+            name = field;
+            desc = "["+cursor[field].length+"]";
+        }
+        else {
+            name = field;
+            desc = "{...}";
+        }
+        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+        var tempobj = objcount;
+        objcount++;
+        for(var q in cursor[field]) {
+            text += printObj(cursor[field], q);
+        }
+        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+    } else {
+        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+    }
+    return text;
 }
 
 function showObj(i) {
@@ -816,13 +850,17 @@ updateCaseTable = {
 myDataSource.liveData = "showTable?";
 
 function fnCallback(e) {
+    if(e.target.className=="obj" || e.target.className == "button")
+        return;
+
     if(e.ctrlKey == false) {
         var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
         for(var i=0; i<divs.length; i++) {
             divs[i].style.display = "none";
         }
     }
-    YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
+    if(YAHOO.util.Dom.getNextSibling(e.target))
+        YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
 }
 
 <%
@@ -862,11 +900,19 @@ else {
         if(oData && oData.length >= 20) {
             var fullText = document.createElement("div");
             fullText.setAttribute("class","fullText");
-            fullText.setAttribute("id", "fullText"+fcount);
-            fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
+            fullText.setAttribute("id", "fullText"+fcount++);
 
-            var oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
-            fcount++;
+            if (YAHOO.lang.JSON.isValid(oData)) {
+                var x = YAHOO.lang.JSON.parse(oData);
+                fullText.innerHTML = "";
+                for(var q in x)
+                    fullText.innerHTML += printObj(x, q);
+                oData = '<span style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
+                oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
+            }
             elCell.innerHTML = oData;
             elCell.appendChild(fullText);
             YAHOO.util.Event.addListener(elCell, "click", fnCallback);

@@ -118,6 +118,33 @@ djang10.retrieveAppScope = function(appName) {
     return scopebag[appName];
 }
 
+djang10.setControllerDupleForRegex = function(regex, obj) {
+
+    if (regexMap == null) {
+        regexMap = new Map();
+    }
+
+    regexMap.put(regex, obj);
+}
+
+djang10.getControllerDupleForRegex = function(regex) {
+
+    if (regexMap == null) {
+        return null;
+    }
+
+    return regexMap.get(regex);
+}
+
+djang10.getControllerMap = function() {
+
+    if (controllerMap == null) {
+        controllerMap = new Map();
+    }
+
+    return controllerMap;
+}
+
 /*****************************************************************************************
  *
  *   FRAMEWORK SETUP
@@ -147,51 +174,27 @@ appdirs.forEach(function(z) {
 });
 
 /*
- *  now get a list of all the view files, by getting the urlpatterns
+ *  now get a list of all the controllers, by getting the urlpatterns, and register them in their app scopes
  */
 
-
-var urlpatterns = djang10.invokeSandboxPackage([ core.djang10.conf.urls.defaults ], jxp.urls, "urlpatterns");
+var urlpatterns = djang10.invokeSandboxPackage([core.djang10.conf.urls.defaults], jxp.urls, "urlpatterns");
 
 for (p in urlpatterns) {
 
     var invoker = urlpatterns[p][1];
-
     var arr = invoker.split(/\./);
 
     var scp = djang10.retrieveAppScope(arr[1]);
+    var func = arr[arr.length-1];
 
-    log.djang10("found invoker :" + invoker + " : app = " + arr[1] + " : " + scp);;
+    var pkg = "local." + arr.slice(1 , -1).join(".");
 
-    var pkg = "local";
-    arr.slice(1, -1).forEach(function(s) { pkg = pkg + "." + s; });
-
-    log.djang10("thing = " + pkg);
+    log.djang10("Found pattern invoker :" + invoker + " : app = " + arr[1]
+            + " : apppkg = " + pkg + " : func = " + func + " : "  + scp);;
     
     scp.eval(pkg + "()");
+
+    djang10.getControllerMap().set(urlpatterns[p][0], { f : func, s : scp });
 }
-
-
-
-
-
-
-//
-//print("RETROEVED" + scp);
-//
-//
-//p = scp.eval("new Person()");
-//
-//
-////scp.eval("local.myapp.router.")
-//
-//p.setName("geir");
-//
-//scp.eval("log.temp1(Person.prototype.__collection)");
-//
-//
-//print(p.objects.all());
-//
-//
 
 
