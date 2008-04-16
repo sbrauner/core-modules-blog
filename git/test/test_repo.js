@@ -114,10 +114,11 @@ assert(g.diff([]).out.match(/\n\+hi there\n/));
 
 print(tojson(g.commit(["file1"], "test commit 2", u)));
 
+var endCommit = g.getCurrentRev().parsed.rev;
+
 // Try a pull on g3
 
 var pull = g3.pull();
-
 
 var s = File.open('/tmp/gitrepo/test2/file1').asString();
 
@@ -125,9 +126,11 @@ assert(s == "hi there\n");
 
 
 assert(pull.parsed);
-assert(pull.parsed.from);
-assert(pull.parsed.to);
+assert(startCommit.match(pull.parsed.from));
+assert(endCommit.match(pull.parsed.to));
 assert("file1" in pull.parsed.files);
+
+
 
 // Commit to g3 and push to g1
 

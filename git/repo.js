@@ -70,7 +70,7 @@ Object.extend(git.Repo.prototype, {
 
         var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
             lines[0].indexOf('.'));
-        var torev = lines[0].substring(lines[0].lastIndexOf("."+1));
+        var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
         var files = {};
         var created = {};
         var deleted = {};
