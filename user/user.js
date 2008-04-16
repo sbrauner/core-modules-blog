@@ -1,5 +1,3 @@
-// FIXME: hash (username, email) and -> not duplicating
-
 /**
  * User
  *   email

@@ -47,7 +47,7 @@ app.wiki.WikiPage.prototype.formatText = function(text){
  */
 app.wiki.WikiPage.prototype.setText = function(newText) {
     if (!newText || newText.length == 0) return false;
-    if (app.wiki.config.readOnly) return false;
+    if (app.wiki.config && app.wiki.config.readOnly) return false;
 
     // get a diff of the text of the Wiki, and save it in a WikiHistory object.
     var textDiff = Util.Diff.diff(this.text, newText);
