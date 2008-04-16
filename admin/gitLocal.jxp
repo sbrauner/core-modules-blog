@@ -1,9 +1,16 @@
 <%
-
 core.git.repo();
 core.content.html();
 
 var g = new git.Repo(); 
+
+var revid = g.getCurrentRev().parsed.rev;
+var revmsg = g.getCommit(revid).parsed.message;
+revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
+
+core.admin.pieces.githeader({revid: revid, revmsg: revmsg,
+                            });
+
 var output_command = function(foo){
     log(tojson(foo));
     print(content.HTML.escape(foo.cmd) + "<br>");
@@ -52,12 +59,6 @@ var parsed = g.status().parsed;
 
 var buttons = {"changed": 'commit', 'untracked': 'add'};
 
-var revid = g.getCurrentRev().parsed.rev;
-var revmsg = g.getCommit(revid).parsed.message;
-revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
-
-core.admin.pieces.githeader({revid: revid, revmsg: revmsg,
-                            });
 
 
 %>
