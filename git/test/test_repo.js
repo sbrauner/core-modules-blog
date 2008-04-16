@@ -35,6 +35,7 @@ gr_checkStatus = function(spec){
             // Find a file in actual that matches the desired one
             for(var j = 0; j < actual.length; ++j){
                 if((desired == actual[j]) ||
+                   (desired == actual[j].name) ||
                    (desired.name && (desired.name == actual[j].name)))
                     break;
             }
