@@ -1,5 +1,6 @@
 <%
 core.git.repo();
+core.ext.pluck();
 core.content.html();
 
 var g = new git.Repo(); 
@@ -71,9 +72,15 @@ if(parsed.staged){
   <input type="submit" name="action" value="push">
 </form>
 
+<% for ( type in parsed ){ 
+   if(type == "untracked"){
+   core.admin.pieces.gitfilelist({title: type, actions: ["add"],
+                                  filenames: parsed[type].map(Ext.pluck('name')),
+                                  fileDiff: false });
+   continue;
+   }
+%>
 <table>
-<% for ( type in parsed ){ %>
-
   <form method="POST">
 
   <tr>
@@ -101,9 +108,8 @@ if(parsed.staged){
   </tr>
   
   </form>
-
-<% } %>
 </table>
+<% } %>
 
 <hr>
 
