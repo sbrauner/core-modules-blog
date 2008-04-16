@@ -85,6 +85,8 @@ assert(g.checkStatus({ staged: [{name: "file1", type: "new file"}] }));
 
 print(tojson(g.commit(["file1"], "test commit", u)));
 
+var startCommit = g.getCurrentRev().parsed.rev;
+
 // All changes are gone
 assert(g.checkStatus({ }));
 
@@ -98,6 +100,8 @@ print(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
 
 var g3 = repoAt("/tmp/gitrepo/test2");
 assert(g3.checkStatus({}));
+
+assert(startCommit == g3.getCurrentRev().parsed.rev);
 
 
 // Commit "upstream"

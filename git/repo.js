@@ -23,6 +23,21 @@ Object.extend(git.Repo.prototype, {
         if(as) cmd += " " + as;
         return this._exec( cmd );
     },
+    getCurrentRev: function(){
+        var ref = this._exec( "git symbolic-ref HEAD" ).out.trim();
+
+        var ret = this._exec( "git show-ref " + ref );
+
+        var parsed = {};
+
+        var rev = ret.out.substring(0, ret.out.indexOf(" "));
+
+        parsed.rev = rev;
+
+        ret.parsed = parsed;
+        return ret;
+    },
+
     push: function(){
         var ret = this._exec( "git push" );
         ret.parsed = this._parsePush(ret);
@@ -53,9 +68,9 @@ Object.extend(git.Repo.prototype, {
         var parsed = {};
         var lines = exec.out.trim().split(/\n/);
 
-        var fromrev = lines[0].substring(lines[0].lastIndexOf(" "),
+        var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
             lines[0].indexOf('.'));
-        var torev = lines[0].substring(lines[0].lastIndexOf("."));
+        var torev = lines[0].substring(lines[0].lastIndexOf("."+1));
         var files = {};
         var created = {};
         var deleted = {};
@@ -71,7 +86,7 @@ Object.extend(git.Repo.prototype, {
         }
 
         // this line should be like:
-        // "9 files changed, 211 insertions(+), 65 delitions(-)"
+        // "9 files changed, 211 insertions(+), 65 deletions(-)"
         ++i;
 
         for(; i < lines.length; i++){
