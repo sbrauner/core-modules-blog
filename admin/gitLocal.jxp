@@ -41,6 +41,11 @@ var output_command = function(foo){
             output_command(foo);
 	}
  }
+else if ( request.action == "checkout" && request.file ){
+    print("Performing checkout...<br>");
+    var foo = g.checkout(request.getParameters("file"));
+    output_command(foo);
+}
 
 
      var out = g.status().out;
@@ -106,7 +111,7 @@ var output_command = function(foo){
     <td colspan="2">Commit Message <input name="msg" value=""> </td>
   </tr>
   <tr>
-    <td colspan="2"><input type="submit" name="action" value="diff"> </td>
+    <td colspan="2"><input type="submit" name="action" value="diff"> <input type="submit" name="action" value="checkout"></td>
   </tr>
   <% } %>
 
