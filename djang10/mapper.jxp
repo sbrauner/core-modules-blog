@@ -11,20 +11,16 @@
 
 core.djang10.http();
 
-var map = djang10.getControllerMap();
-var keys = map.keys();
+core.djang10.mapper_filter();
+    
 var match_array = null;
 var duple = null;
 
-// check this URI against the pre-filled regex map.
+var thing = MapperFilter.matchURI(request.getURI());
 
-for (i in keys) {
-    match_array = request.getURI().match(keys[i]);
-    
-    if (match_array != null) {
-        duple = map.get(keys[i]);
-        break;
-    }
+if (thing != null) {
+    match_array = thing.match_array;
+    duple = thing.duple;
 }
 
 // if we don't have an invoker,do whatever show a framework error page
@@ -42,7 +38,17 @@ else {
     match_array[0] = new HttpRequest(request);
 
     var scp = duple.s;
-    var httpResp = scp[duple.f](request, match_array);
-    print(httpResp.getContent());
+    var func = scp[duple.f];
+
+    // @TODO - move this to mapper as we can tell earlier and warn on deployment
+    
+    if (func != null) {
+        var httpResp = func(request, match_array);
+        print(httpResp.getContent());
+    }
+    else {
+        log.djang10app("ERROR - function \"" + duple.f + "\" doesn't exist");
+        core.djang10.conf.errorPage("Programmer error : unknown function in controller for  " + request.getURI());
+    }
 }
 %>
