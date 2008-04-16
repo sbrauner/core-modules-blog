@@ -1,129 +1,90 @@
 <%
- 
- if ( request.action == "pull" ){
-	print( "pulling...<br>" );
-	var foo = sysexec( "git pull" );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
- }
- else if ( request.action == "push" ){
-	print( "pushing...<br>" );
-	var foo = sysexec( "git push" );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
- }
- else if ( request.action == "add" && request.file ){
-	print( "Adding...<br>" );
-	var cmd = "git add ";
-	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-	print( cmd + "<br>" );
-	var foo = sysexec( cmd );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
- }
- else if ( request.action == "diff" && request.file ){
-	print( "Diffinf...<br>" );
-	var cmd = "git diff ";
-	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-	print( cmd + "<br>" );
-	var foo = sysexec( cmd );
-	print( "\n<pre>\n" + foo.out + "\n---\n" + foo.err + "\n</pre>\n" );
-	print( "<hr>" );
- }
- else if ( request.action == "commit" && request.file ){
-	if ( ! request.msg )
-		print( "need a message!" );
-	else {
-		print( "Commit...<br>" );
-		var cmd = "git commit -F - ";
-		
-		cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
-		var env = {};
 
-		env.GIT_AUTHOR_NAME = user.name;
-		env.GIT_COMMITTER_NAME = user.name;
-		env.GIT_AUTHOR_EMAIL = user.email;
-		env.GIT_COMMITTER_EMAIL = user.email;
+core.git.repo();
+core.content.html();
 
-		request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-		print( cmd + "<br>" );
-	
-		var foo = sysexec( cmd , request.msg , env );
-		print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-		print( "<hr>" );
-	}
- }
+var g = new git.Repo(); 
+var output_command = function(foo){
+    print(content.HTML.escape(foo.cmd) + "<br>");
+    print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
+          content.HTML.escape(foo.err) + "</pre>");
+    print("<hr>");
+};
 
+if ( request.action == "pull" ){
+    print( "pulling...<br>" );
+    var foo = g.pull();
+    output_command(foo);
+}
+else if ( request.action == "push" ){
+    print( "pushing...<br>" );
+    var foo = g.push();
+    output_command(foo);
+}
+else if ( request.action == "add" && request.file ){
+    print( "Adding...<br>" );
+    var foo = g.add(request.getParameters('file'));
+    output_command(foo);
+}
+else if ( request.action == "diff" && request.file ){
+    print( "Diffinf...<br>" );
+    var foo = g.diff(request.getParameters('file'));
+    output_command(foo);
+}
+else if ( request.action == "commit" && request.file ){
+    if ( ! request.msg )
+	print( "need a message!" );
+    else {
+	print( "Commit...<br>" );
+        
+	var foo = g.commit( request.getParameters('file') , request.msg , user );
+        output_command(foo);
+    }
+}
+else if ( request.action == "checkout" && request.file ){
+    print("Performing checkout...<br>");
+    var foo = g.checkout(request.getParameters("file"));
+    output_command(foo);
+}
 
- var out = sysexec( "git status" ).out;
- 
- var types = {};
- var temp = null;
+var parsed = g.status().parsed;
 
- out.split( /\n/ ).forEach( function( line ){
-	
-	if ( ! line.match( /^#/ ) )
-		return;
-	line = line.substring(1);
-	
-	if ( line.match( /^ [\w ]+:$/ ) ){
-		var foo = line.replace( /:\s*$/ , ""  ).trim();
+var buttons = {"changed": 'commit', 'untracked': 'add'};
 
-		if ( foo == "Changed but not updated" || foo == "Changes to be committed") foo = "commit";
-		else if ( foo == "Untracked files" ) foo = "add";
-		else throw "don't know what [" + foo + "] is";
+%>
 
-		temp = types[foo];		
-		if ( ! temp ){
-			temp = [];
-			types[ foo ] = temp;
-		}
-		return;
-	}
-	
-	if ( line.match( /^\s+$/ ) || line.match( /^\s+\(/ ) )
-		return;
-	
-	if ( ! temp )
-		return;
-		
-	line = line.trim().replace( /modified:/ , "" ).trim();
-	line = line.trim().replace( /new file:/ , "" ).trim();
-
-	if ( line.length == 0 ) return;
-
-	temp.push( line.trim() );
-
-	} );
- %>
+<form>
+  <input type="submit" name="action" value="pull">
+  <input type="submit" name="action" value="push">
+</form>
 
 <table>
-<% for ( type in types ){ %>
-  
-  <form>
+<% for ( type in parsed ){ %>
+
+  <form method="POST">
 
   <tr>
     <td colspan="2"><%= type %></td>
   </tr>
 
-  <% types[type].forEach( function( z ){ %>
+  <% parsed[type].forEach( function( z ){ %>
   <tr>
-    <td><input type="checkbox" name="file" value="<%= z %>"></td>
-    <td><%= z %></td>
+    <td><input type="checkbox" name="file" value="<%= z.name %>"></td>
+    <td><%= z.name %></td>
   </tr>
   <% } ); %>
 	 
-  <% if ( type == "commit" ){ %>
+  <% if ( type == "changed" ){ %>
   <tr>
     <td colspan="2">Commit Message <input name="msg" value=""> </td>
   </tr>
   <tr>
-    <td colspan="2"><input type="submit" name="action" value="diff"> </td>
+    <td colspan="2"><input type="submit" name="action" value="diff"> <input type="submit" name="action" value="checkout"></td>
   </tr>
   <% } %>
 
   <tr>
-    <td colspan="2"><input type="submit" name="action" value="<%=type  %>"> </td>
+    <td colspan="2"><input type="submit" name="action" value="<%= buttons[type] %>"> </td>
   </tr>
   
   </form>
@@ -132,9 +93,4 @@
 </table>
 
 <hr>
-
-<form>
-  <input type="submit" name="action" value="pull">
-  <input type="submit" name="action" value="push">
-</form>
 

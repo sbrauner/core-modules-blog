@@ -10,78 +10,13 @@ sc.eval('sysexec("mkdir -p /tmp/gitrepo/test");');
 var repoAt = function(root){
     var s = scopeWithRoot(root);
     s.eval("core.git.repo()");
-    git.Repo.prototype.parseStatus = gr_parseStatus;
     git.Repo.prototype.checkStatus = gr_checkStatus;
     return new git.Repo();
 };
 
-gr_parseStatus = function(){
-    var info = {};
-    var stat = this.status().out.trim();
-    var statlines = stat.split(/\n/g);
-    var currentState = ""; // "untracked", "changed", "staged", ??
-
-    var filename = "";
-    var filetype = "";
-    for(var i = 0; i < statlines.length; ++i){
-        // Special cases for special lines:
-        if(statlines[i].match(/# On branch (.+)$/))
-            continue;
-
-        if(statlines[i].match(/# Initial commit/))
-            continue;
-
-        if(statlines[i].match(/#\s*$/)) continue;
-
-        if(statlines[i].match(/use \"git /))
-            // We don't need usage advice, thanks
-            continue;
-
-        if(statlines[i].match(/^\w/)){
-            // like "nothing to commit" or "nothing added to commit"
-            // we should probably handle this!
-
-            continue;
-        }
-        // END special cases
-
-
-        if(statlines[i].match(/# Changed but not updated:/)){
-            currentState = "changed";
-            continue;
-        }
-
-        if(statlines[i].match(/# Untracked files:/)){
-            currentState = "untracked";
-            continue;
-        }
-
-        if(statlines[i].match(/# Changes to be committed:/)){
-            currentState = "staged";
-            continue;
-        }
-
-
-        var exec = statlines[i].match(/#\s+(modified|new file):\s+(.+)$/);
-        if(exec){
-            filetype = exec[1];
-            filename = exec[2];
-            file = {name: filename, type: filetype};
-        }
-        else {
-            var exec = statlines[i].match(/#\s+(.+)$/);
-            file = exec[1];
-        }
-
-        if(! (currentState in info) ) info[currentState] = [];
-        info[currentState].push(file);
-    }
-
-    return info;
-};
 
 gr_checkStatus = function(spec){
-    var info = this.parseStatus();
+    var info = this.status().parsed;
 
     for(var field in spec){
         if(! (field in info) ){
@@ -100,6 +35,7 @@ gr_checkStatus = function(spec){
             // Find a file in actual that matches the desired one
             for(var j = 0; j < actual.length; ++j){
                 if((desired == actual[j]) ||
+                   (desired == actual[j].name) ||
                    (desired.name && (desired.name == actual[j].name)))
                     break;
             }
@@ -150,6 +86,10 @@ assert(g.checkStatus({ staged: [{name: "file1", type: "new file"}] }));
 
 print(tojson(g.commit(["file1"], "test commit", u)));
 
+var startCommit = g.getCurrentRev().parsed.rev;
+
+assert(g.getCommit(startCommit).parsed.message == "test commit");
+
 // All changes are gone
 assert(g.checkStatus({ }));
 
@@ -164,8 +104,10 @@ print(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
 var g3 = repoAt("/tmp/gitrepo/test2");
 assert(g3.checkStatus({}));
 
+assert(startCommit == g3.getCurrentRev().parsed.rev);
 
-// Commit "upstream
+
+// Commit "upstream"
 
 sc.eval('var f = File.create("hi there\\n");');
 sc.makeThreadLocal();
@@ -175,13 +117,24 @@ assert(g.diff([]).out.match(/\n\+hi there\n/));
 
 print(tojson(g.commit(["file1"], "test commit 2", u)));
 
+var endCommit = g.getCurrentRev().parsed.rev;
+assert(g.getCommit(endCommit).parsed.message == "test commit 2");
+
 // Try a pull on g3
 
-print(tojson(g3.pull()));
+var pull = g3.pull();
 
 var s = File.open('/tmp/gitrepo/test2/file1').asString();
 
 assert(s == "hi there\n");
+
+
+assert(pull.parsed);
+assert(startCommit.match(pull.parsed.from));
+assert(endCommit.match(pull.parsed.to));
+assert("file1" in pull.parsed.files);
+
+
 
 // Commit to g3 and push to g1
 
@@ -193,13 +146,22 @@ assert(g3.diff([]).out.match(/\n\-hi there\n/));
 
 print(tojson(g3.commit(["file1"], "test commit 3", u)));
 
-print(tojson(g3.push()));
+var lastCommit = g3.getCurrentRev().parsed.rev;
+
+assert(g3.getCommit(lastCommit).parsed.message == "test commit 3");
+
+var push = g3.push();
 
 print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
 
 var s = File.open('/tmp/gitrepo/test/file1').asString();
 
 assert(s == "hello there\n");
+
+assert(push.parsed);
+assert(push.parsed.from == endCommit);
+assert(push.parsed.to == lastCommit);
+assert(! push.parsed.pullFirst);
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 
