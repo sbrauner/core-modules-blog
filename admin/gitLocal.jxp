@@ -11,52 +11,56 @@ var output_command = function(foo){
     print("<hr>");
 };
 
- if ( request.action == "pull" ){
-	print( "pulling...<br>" );
-     var foo = g.pull();
-     output_command(foo);
- }
- else if ( request.action == "push" ){
-	print( "pushing...<br>" );
-     var foo = g.push();
-     output_command(foo);
- }
- else if ( request.action == "add" && request.file ){
-	print( "Adding...<br>" );
-     var foo = g.add(request.getParameters('file'));
-     output_command(foo);
- }
- else if ( request.action == "diff" && request.file ){
-	print( "Diffinf...<br>" );
-     var foo = g.diff(request.getParameters('file'));
-     output_command(foo);
- }
- else if ( request.action == "commit" && request.file ){
-	if ( ! request.msg )
-		print( "need a message!" );
-	else {
-		print( "Commit...<br>" );
-
-	    var foo = g.commit( request.getParameters('file') , request.msg , user );
-            output_command(foo);
-	}
- }
+if ( request.action == "pull" ){
+    print( "pulling...<br>" );
+    var foo = g.pull();
+    output_command(foo);
+}
+else if ( request.action == "push" ){
+    print( "pushing...<br>" );
+    var foo = g.push();
+    output_command(foo);
+}
+else if ( request.action == "add" && request.file ){
+    print( "Adding...<br>" );
+    var foo = g.add(request.getParameters('file'));
+    output_command(foo);
+}
+else if ( request.action == "diff" && request.file ){
+    print( "Diffinf...<br>" );
+    var foo = g.diff(request.getParameters('file'));
+    output_command(foo);
+}
+else if ( request.action == "commit" && request.file ){
+    if ( ! request.msg )
+	print( "need a message!" );
+    else {
+	print( "Commit...<br>" );
+        
+	var foo = g.commit( request.getParameters('file') , request.msg , user );
+        output_command(foo);
+    }
+}
 else if ( request.action == "checkout" && request.file ){
     print("Performing checkout...<br>");
     var foo = g.checkout(request.getParameters("file"));
     output_command(foo);
 }
 
-
-     var parsed = g.status().parsed;
+var parsed = g.status().parsed;
 
 var buttons = {"changed": 'commit', 'untracked': 'add'};
- 
- %>
+
+%>
+
+<form>
+  <input type="submit" name="action" value="pull">
+  <input type="submit" name="action" value="push">
+</form>
 
 <table>
 <% for ( type in parsed ){ %>
-  
+
   <form method="POST">
 
   <tr>
@@ -89,9 +93,4 @@ var buttons = {"changed": 'commit', 'untracked': 'add'};
 </table>
 
 <hr>
-
-<form>
-  <input type="submit" name="action" value="pull">
-  <input type="submit" name="action" value="push">
-</form>
 
