@@ -1,61 +1,49 @@
 <%
- 
+
+core.git.repo();
+core.content.html();
+
+var g = new git.Repo(); 
+var output_command = function(foo){
+    print(foo.cmd + "<br>");
+    print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
+          content.HTML.escape(foo.err) + "</pre>");
+    print("<hr>");
+};
+
  if ( request.action == "pull" ){
 	print( "pulling...<br>" );
-	var foo = sysexec( "git pull" );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
+     var foo = g.pull();
+     output_command(foo);
  }
  else if ( request.action == "push" ){
 	print( "pushing...<br>" );
-	var foo = sysexec( "git push" );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
+     var foo = g.push();
+     output_command(foo);
  }
  else if ( request.action == "add" && request.file ){
 	print( "Adding...<br>" );
-	var cmd = "git add ";
-	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-	print( cmd + "<br>" );
-	var foo = sysexec( cmd );
-	print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-	print( "<hr>" );
+     var foo = g.add(request.getParameters('file'));
+     output_command(foo);
  }
  else if ( request.action == "diff" && request.file ){
 	print( "Diffinf...<br>" );
-	var cmd = "git diff ";
-	request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-	print( cmd + "<br>" );
-	var foo = sysexec( cmd );
-	print( "\n<pre>\n" + foo.out + "\n---\n" + foo.err + "\n</pre>\n" );
-	print( "<hr>" );
+     var foo = g.diff(request.getParameters('file'));
+     output_command(foo);
  }
  else if ( request.action == "commit" && request.file ){
 	if ( ! request.msg )
 		print( "need a message!" );
 	else {
 		print( "Commit...<br>" );
-		var cmd = "git commit -F - ";
-		
-		cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
-		var env = {};
 
-		env.GIT_AUTHOR_NAME = user.name;
-		env.GIT_COMMITTER_NAME = user.name;
-		env.GIT_AUTHOR_EMAIL = user.email;
-		env.GIT_COMMITTER_EMAIL = user.email;
-
-		request.getParameters( "file" ).forEach( function( z ){ cmd += " " + z; } );
-		print( cmd + "<br>" );
-	
-		var foo = sysexec( cmd , request.msg , env );
-		print( "<pre>" + foo.out + "\n---\n" + foo.err + "</pre>" );
-		print( "<hr>" );
+	    var foo = g.commit( request.getParameters('file') , request.msg , user );
+            output_command(foo);
 	}
  }
 
 
- var out = sysexec( "git status" ).out;
+     var out = g.status().out;
  
  var types = {};
  var temp = null;
