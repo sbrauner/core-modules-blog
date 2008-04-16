@@ -1,0 +1,23 @@
+<%
+// this is the main entry point into rails
+
+if ( ! Rails.ready ){
+    core.rails.start();
+    //Rails.ready = true;
+}
+
+var myController = null;
+Rails.controllers.forEach( function(z){
+        if ( z.wants( request.getURI() ) )
+            myController = z;
+    } 
+    );
+
+if ( ! myController ){
+    print( "No Controller Found for : " + request.getURI() );
+    return;
+}
+
+myController.dispatch( request , response );
+%>
+

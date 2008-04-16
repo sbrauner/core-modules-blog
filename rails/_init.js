@@ -1,0 +1,3 @@
+
+Rails = {};
+core.rails.core();
