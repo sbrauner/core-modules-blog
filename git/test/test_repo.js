@@ -88,6 +88,8 @@ print(tojson(g.commit(["file1"], "test commit", u)));
 
 var startCommit = g.getCurrentRev().parsed.rev;
 
+assert(g.getCommit(startCommit).parsed.message == "test commit");
+
 // All changes are gone
 assert(g.checkStatus({ }));
 
@@ -116,6 +118,7 @@ assert(g.diff([]).out.match(/\n\+hi there\n/));
 print(tojson(g.commit(["file1"], "test commit 2", u)));
 
 var endCommit = g.getCurrentRev().parsed.rev;
+assert(g.getCommit(endCommit).parsed.message == "test commit 2");
 
 // Try a pull on g3
 
@@ -144,6 +147,8 @@ assert(g3.diff([]).out.match(/\n\-hi there\n/));
 print(tojson(g3.commit(["file1"], "test commit 3", u)));
 
 var lastCommit = g3.getCurrentRev().parsed.rev;
+
+assert(g3.getCommit(lastCommit).parsed.message == "test commit 3");
 
 var push = g3.push();
 

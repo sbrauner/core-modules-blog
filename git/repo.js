@@ -12,6 +12,8 @@ Object.extend(git.Repo.prototype, {
     _exec: function(cmd){
         var foo = sysexec( cmd );
         foo.cmd = cmd;
+        log("executed: " + tojson(foo));
+
         return foo;
     },
     _init: function(){
@@ -35,6 +37,30 @@ Object.extend(git.Repo.prototype, {
         parsed.rev = rev;
 
         ret.parsed = parsed;
+        return ret;
+    },
+
+    getCommit: function(rev){
+        var ret = this._exec( "git log -n 1 "+rev );
+        parsed = {};
+
+        var lines = ret.out.trim().split(/\n/);
+        // lines[0] -> commit d3ce0cfde8ba...
+        for(var i = 1; i < lines.length; i++){
+            if(lines[i].indexOf(':') == -1) break;
+            var header = lines[i].split(/:/);
+            parsed[header[0].toLowerCase()] = header[1].trim();
+        }
+
+        // lines[i] -> blank
+        ++i;
+        var messagelines = lines.slice(i, lines.length).map(function(s){
+            return s.substr(4);
+        });
+        parsed.message = messagelines.join('\n');
+
+        ret.parsed = parsed;
+
         return ret;
     },
 
