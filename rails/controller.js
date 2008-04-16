@@ -44,9 +44,30 @@ ApplicationController.prototype.dispatch = function( request , response ){
         print( "can't find [" + method + "] in [" + this.className + "]" );
         return;
     }
-
-    f.getScope( true ).render_text = print;    
+    
+    var anythingRendered = false;
+    
+    f.getScope( true ).render_text = function(s){
+        print( s );
+        anythingRendered = true;
+    };
+    
     f( request , response );
+
+    if ( ! anythingRendered ){
+
+        if ( ! local.app.views )
+            throw "no views directory";
+        
+        if ( ! local.app.views[ this.shortName ] )
+            throw "no views directory for " + this.shortName;
+        
+        var view = local.app.views[ this.shortName ][method];
+        if ( ! view )
+            throw "no view for " + this.shortName + "." + method;
+        
+        view();
+    }
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
 };
