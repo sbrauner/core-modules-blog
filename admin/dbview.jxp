@@ -887,7 +887,10 @@ else {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(oData && oData.length >= 20) {
+        if(!oData) {
+            elCell.innerHTML = '<img src="NOCDN/~~/admin/assets/nonexistent.png">';
+        }
+        else if(oData.length >= 20) {
             var fullText = document.createElement("div");
             fullText.setAttribute("class","fullText");
             fullText.setAttribute("id", "fullText"+fcount++);
