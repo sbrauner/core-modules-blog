@@ -2,6 +2,7 @@
    // title
    // actions = ["checkout", "diff", "commit"]
    // filenames = ["file1", "file2"]
+   // filevar = "untracked_file" (the "name" field for a checkbox)
    var filenames = obj.filenames;
    var filetypes = obj.filetypes;
    var actions = obj.actions;
@@ -17,7 +18,7 @@
       <% var classes = [];
          if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
       <tr class="<%= classes.join(' ') %>">
-        <td><input type="checkbox" name="file" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
+        <td><input type="checkbox" name="$filevar" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
         <td>$filenames[file] <%= filetypes[file] ? ("(" + filetypes[file] + ")") : "" %>
         <if fileDiff>
           (<a href="gitDiffOne?file=$filenames[file]" target="new" onclick="return popup(this)">diff</a>)
