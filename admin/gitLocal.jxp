@@ -67,12 +67,27 @@ else if ( request.action == "checkout" && request.changed_file ){
 
 var parsed = g.status().parsed;
 
+if(parsed.staged){
+    parsed.changed = (parsed.changed || []).concat(parsed.staged);
+    delete parsed.staged;
+}
+
 var conflicts = false;
 var unmerged = {};
 if(parsed.unmerged){
     parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
     delete parsed.unmerged;
     conflicts = true;
+
+    if(parsed.changed){
+        var conflictFiles = parsed.changed.filter(function(z){
+            return unmerged[z.name];
+        });
+        var otherFiles = parsed.changed.filter(function(z){
+            return !(unmerged[z.name]);
+        });
+        parsed.changed = conflictFiles.concat(otherFiles);
+    }
 }
 
 var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'commit'], 'untracked': ['add']};
@@ -90,11 +105,6 @@ if(request.untracked_file)
     request.getParameters('untracked_file').forEach(function(z){
         checked[z] = "checked";
     });
-if(parsed.staged){
-    parsed.changed = (parsed.changed || []).concat(parsed.staged);
-    delete parsed.staged;
-}
-
 %>
 <form method="POST">
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
