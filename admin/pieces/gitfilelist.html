@@ -3,6 +3,7 @@
    // actions = ["checkout", "diff", "commit"]
    // filenames = ["file1", "file2"]
    var filenames = obj.filenames;
+   var filetypes = obj.filetypes;
    var actions = obj.actions;
    var unmerged = obj.unmerged;
 %>
@@ -16,7 +17,7 @@
          if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
       <tr class="<%= classes.join(' ') %>">
         <td><input type="checkbox" name="file" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
-        <td>$filenames[file]</td>
+        <td>$filenames[file] <%= filetypes[file] ? ("(" + filetypes[file] + ")") : "" %></td>
       </tr>
     </forin>
     <if obj.extra>

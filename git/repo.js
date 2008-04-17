@@ -280,7 +280,7 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file|unmerged):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];

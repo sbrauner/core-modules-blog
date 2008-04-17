@@ -98,6 +98,7 @@ for ( type in parsed ){
                                    extra: extra[type], checked: checked,
                                    unmerged: unmerged,
                                    filenames: parsed[type].map(Ext.pluck('name')),
+                                   filetypes: parsed[type].map(Ext.pluck('type')),
                                    fileDiff: diffLinks[type] });
 }
 %>
