@@ -58,7 +58,15 @@ else if ( request.action == "checkout" && request.file ){
 
 var parsed = g.status().parsed;
 
-var buttons = {"changed": ['diff', 'checkout', 'commit'], 'untracked': ['add']};
+var conflicts = false;
+var unmerged = {};
+if(parsed.unmerged){
+    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+    delete parsed.unmerged;
+    conflicts = true;
+}
+
+var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'commit'], 'untracked': ['add']};
 
 var diffLinks = {"changed": true, 'untracked': false};
 
@@ -77,18 +85,14 @@ if(parsed.staged){
 
 %>
 
-<form>
-  <input type="submit" name="action" value="pull">
-  <input type="submit" name="action" value="push">
-</form>
-
 <% 
-var unmerged = {};
-if(parsed.unmerged){
-    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
-    delete parsed.unmerged;
-}
 
+%>
+<form>
+<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
+<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
+</form>
+<%
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
                                    extra: extra[type], checked: checked,

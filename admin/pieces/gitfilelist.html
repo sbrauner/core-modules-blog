@@ -27,7 +27,7 @@
     <tr>
       <td colspan="2">
       <forin action actions>
-        <input type="submit" name="action" value="$actions[action]">
+        <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %>>
       </forin>
       </td>
     </tr>
