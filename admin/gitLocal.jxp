@@ -4,6 +4,7 @@ core.ext.pluck();
 core.content.html();
 
 head.addScript("/~~/admin/assets/gitPopup.js");
+head.addCSS("/~~/admin/assets/gitLocal.css");
 
 var g = new git.Repo(); 
 

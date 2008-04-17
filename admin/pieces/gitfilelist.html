@@ -17,7 +17,15 @@
          if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
       <tr class="<%= classes.join(' ') %>">
         <td><input type="checkbox" name="$filevar" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
-        <td>$filenames[file] <%= filetypes[file] ? ("(" + filetypes[file] + ")") : "" %>
+        <td>$filenames[file]
+          <%
+             if(filetypes[file] == "CONFLICT"){
+                 print("<span class='conflicttype'>CONFLICT</span>");
+             }
+             else if(filetypes[file]){
+                 print("(" + filetypes[file] + ")");
+             }
+%>
         <if fileDiff>
           (<a href="gitDiffOne?file=$filenames[file]" target="new" onclick="return popup(this)">diff</a>)
         </if></td>
