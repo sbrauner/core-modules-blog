@@ -4,6 +4,7 @@
    // filenames = ["file1", "file2"]
    var filenames = obj.filenames;
    var actions = obj.actions;
+   var unmerged = obj.unmerged;
 %>
 <table>
   <form method="POST">
@@ -11,7 +12,9 @@
       <td colspan="2">$title</td>
     </tr>
     <forin file filenames>
-      <tr>
+      <% var classes = [];
+         if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
+      <tr class="<%= classes.join(' ') %>">
         <td><input type="checkbox" name="file" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
         <td>$filenames[file]</td>
       </tr>

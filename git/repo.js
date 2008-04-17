@@ -226,6 +226,7 @@ Object.extend(git.Repo.prototype, {
 
         var filename = "";
         var filetype = "";
+        var unmerged = [];
         for(var i = 0; i < statlines.length; ++i){
             // Special cases for special lines:
             if(statlines[i].match(/# On branch (.+)$/))
@@ -265,11 +266,15 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];
                 file = {name: filename, type: filetype};
+                if(filetype == "unmerged"){
+                    unmerged.push(file);
+                    continue;
+                }
             }
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
@@ -279,6 +284,8 @@ Object.extend(git.Repo.prototype, {
             if(! (currentState in info) ) info[currentState] = [];
             info[currentState].push(file);
         }
+
+        if(unmerged.length > 0) info.unmerged = unmerged;
 
         return info;
     },

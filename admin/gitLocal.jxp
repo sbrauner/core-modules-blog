@@ -83,9 +83,15 @@ if(parsed.staged){
 </form>
 
 <% 
+var unmerged = {};
+parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+delete parsed.unmerged;
+
+
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
-   extra: extra[type], checked: checked,
+                                   extra: extra[type], checked: checked,
+                                   unmerged: unmerged,
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    fileDiff: diffLinks[type] });
 }
