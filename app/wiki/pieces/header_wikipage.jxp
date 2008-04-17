@@ -1,5 +1,7 @@
 <%
 
+log.app.wiki("got page "+ wikiPage.name "; db.wiki constructor is " + db.wiki.getConstructor());
+
 if (request.edit) 
     head.push('<script type="text/javascript">isEditPage = true;</script>');
 else 
