@@ -1,3 +1,4 @@
+log.app.wiki.info("Running wikipage.js.");
 
 app.wiki.WikiPage = function(name) {
     this.name = name || '';
@@ -5,6 +6,8 @@ app.wiki.WikiPage = function(name) {
     this.lastEdit = new Date();
     this.files = [];
 };
+
+log.app.wiki.info("db: " + db);
 
 if (db) {
     db.wiki.ensureIndex( { name : 1 } );
