@@ -1,0 +1,8 @@
+<% if(! request.file) return; %>
+<%
+core.content.html();
+core.git.repo();
+var g = new git.Repo();
+var diff = g.diff([request.file], {rev: "HEAD"});
+print("<pre>" + content.HTML.escape(diff.out) + "</pre>");
+%>

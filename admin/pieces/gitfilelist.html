@@ -2,24 +2,36 @@
    // title
    // actions = ["checkout", "diff", "commit"]
    // filenames = ["file1", "file2"]
+   // filevar = "untracked_file" (the "name" field for a checkbox)
    var filenames = obj.filenames;
+   var filetypes = obj.filetypes;
    var actions = obj.actions;
+   var unmerged = obj.unmerged;
+   var fileDiff = obj.fileDiff;
 %>
-<table>
-  <form method="POST">
     <tr>
       <td colspan="2">$title</td>
     </tr>
     <forin file filenames>
-      <tr>
-        <td><input type="checkbox" name="file" value="$filenames[file]"></td>
-        <td>$filenames[file]</td>
+      <% var classes = [];
+         if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
+      <tr class="<%= classes.join(' ') %>">
+        <td><input type="checkbox" name="$filevar" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
+        <td>$filenames[file] <%= filetypes[file] ? ("(" + filetypes[file] + ")") : "" %>
+        <if fileDiff>
+          (<a href="gitDiffOne?file=$filenames[file]" target="new" onclick="return popup(this)">diff</a>)
+        </if></td>
       </tr>
     </forin>
+    <if obj.extra>
+      <tr>
+        <td colspan="2">$extra</td>
+      </tr>
+    </if>
     <tr>
+      <td colspan="2">
       <forin action actions>
-        <td><input type="submit" name="action" value="$actions[action]"></td>
+        <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %>>
       </forin>
+      </td>
     </tr>
-  </form>
-</table>

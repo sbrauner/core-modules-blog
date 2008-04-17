@@ -3,6 +3,8 @@ core.git.repo();
 core.ext.pluck();
 core.content.html();
 
+head.addScript("/~~/admin/assets/gitPopup.js");
+
 var g = new git.Repo(); 
 
 var revid = g.getCurrentRev().parsed.rev;
@@ -21,95 +23,96 @@ var output_command = function(foo){
 };
 
 if ( request.action == "pull" ){
+    // No files
     print( "pulling...<br>" );
     var foo = g.pull();
     output_command(foo);
 }
 else if ( request.action == "push" ){
+    // No files
     print( "pushing...<br>" );
     var foo = g.push();
-    output_command(foo);
+    g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+        core.admin.pieces.gitpushedrev(z);
+    });
 }
-else if ( request.action == "add" && request.file ){
+else if ( request.action == "add" && request.untracked_file ){
+    // Untracked files
     print( "Adding...<br>" );
-    var foo = g.add(request.getParameters('file'));
+    var foo = g.add(request.getParameters('untracked_file'));
     output_command(foo);
 }
-else if ( request.action == "diff" && request.file ){
+else if ( request.action == "diff" && request.changed_file ){
+    // Changed files
     print( "Diffinf...<br>" );
-    var foo = g.diff(request.getParameters('file'));
+    var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     output_command(foo);
 }
-else if ( request.action == "commit" && request.file ){
+else if ( request.action == "commit" && request.changed_file ){
+    // Changed files
     if ( ! request.msg )
 	print( "need a message!" );
     else {
 	print( "Commit...<br>" );
         
-	var foo = g.commit( request.getParameters('file') , request.msg , user );
+	var foo = g.commit( request.getParameters('changed_file') , request.msg , user );
         output_command(foo);
     }
 }
-else if ( request.action == "checkout" && request.file ){
+else if ( request.action == "checkout" && request.changed_file ){
     print("Performing checkout...<br>");
-    var foo = g.checkout(request.getParameters("file"));
+    var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
 }
 
 var parsed = g.status().parsed;
 
-var buttons = {"changed": 'commit', 'untracked': 'add'};
+var conflicts = false;
+var unmerged = {};
+if(parsed.unmerged){
+    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+    delete parsed.unmerged;
+    conflicts = true;
+}
 
+var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'commit'], 'untracked': ['add']};
+
+var diffLinks = {"changed": true, 'untracked': false};
+
+var extra = {'changed': 'Commit Message <input name="msg" value="">'};
+
+var checked = {};
+if(request.changed_file)
+    request.getParameters('changed_file').forEach(function(z){
+        checked[z] = "checked";
+    });
+if(request.untracked_file)
+    request.getParameters('untracked_file').forEach(function(z){
+        checked[z] = "checked";
+    });
 if(parsed.staged){
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }
 
 %>
-
-<form>
-  <input type="submit" name="action" value="pull">
-  <input type="submit" name="action" value="push">
+<form method="POST">
+<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
+<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
 </form>
-
-<% for ( type in parsed ){ 
-   if(type == "untracked"){
-   core.admin.pieces.gitfilelist({title: type, actions: ["add"],
-                                  filenames: parsed[type].map(Ext.pluck('name')),
-                                  fileDiff: false });
-   continue;
-   }
-%>
 <table>
   <form method="POST">
-
-  <tr>
-    <td colspan="2"><%= type %></td>
-  </tr>
-
-  <% parsed[type].forEach( function( z ){ %>
-  <tr>
-    <td><input type="checkbox" name="file" value="<%= z.name %>"></td>
-    <td><%= z.name %></td>
-  </tr>
-  <% } ); %>
-	 
-  <% if ( type == "changed" ){ %>
-  <tr>
-    <td colspan="2">Commit Message <input name="msg" value=""> </td>
-  </tr>
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="diff"> <input type="submit" name="action" value="checkout"></td>
-  </tr>
-  <% } %>
-
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="<%= buttons[type] %>"> </td>
-  </tr>
-  
+<%
+for ( type in parsed ){ 
+    core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
+                                   extra: extra[type], checked: checked,
+                                   unmerged: unmerged, filevar: type+"_file",
+                                   filenames: parsed[type].map(Ext.pluck('name')),
+                                   filetypes: parsed[type].map(Ext.pluck('type')),
+                                   fileDiff: diffLinks[type] });
+}
+%>
   </form>
 </table>
-<% } %>
-
 <hr>
 
