@@ -792,16 +792,13 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
     print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
-    %>
-    { label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
-    <%
     if(rows) {
         for(var i in f) {
             if(!ignore[i]) {
                 // Special cases:
                 // if _id, the column needs to be converted to hexidecimal and sorted that way
                 if(i == "_id") {
-       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')" id="arrow'+i+'"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", sortable: true }]}]},');
+       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')" id="arrow'+i+'"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", formatter: "id", sortable: true }]}]},');
                 }
                 else
                     print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
@@ -888,11 +885,11 @@ if(top) {
 }
 else {
     %>
+    idFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
     deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
-    }
-    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
         if(oData && oData.length >= 20) {
@@ -920,7 +917,7 @@ else {
 
     }
 
-    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.id = idFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
     YAHOO.widget.DataTable.Formatter.str = strFormatter;
     <%
