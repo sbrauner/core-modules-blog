@@ -84,9 +84,10 @@ if(parsed.staged){
 
 <% 
 var unmerged = {};
-parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
-delete parsed.unmerged;
-
+if(parsed.unmerged){
+    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+    delete parsed.unmerged;
+}
 
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
