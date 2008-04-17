@@ -64,6 +64,12 @@ var diffLinks = {"changed": true, 'untracked': false};
 
 var extra = {'changed': 'Commit Message <input name="msg" value="">'};
 
+var checked = {};
+if(request.file)
+    request.getParameters('file').forEach(function(z){
+        checked[z] = "checked";
+    });
+
 if(parsed.staged){
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
@@ -79,7 +85,7 @@ if(parsed.staged){
 <% 
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
-                                   extra: extra[type],
+   extra: extra[type], checked: checked,
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    fileDiff: diffLinks[type] });
 }
