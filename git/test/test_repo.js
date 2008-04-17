@@ -190,6 +190,13 @@ pull = g3.pull();
 
 assert(pull.parsed.failed.conflicts.file1);
 
+var listRevs = g.listRevs(startCommit, lastCommit);
+
+assert(listRevs.parsed.revs[0].id == endCommit);
+assert(listRevs.parsed.revs[0].message == "test commit 2");
+assert(listRevs.parsed.revs[1].id == lastCommit);
+assert(listRevs.parsed.revs[1].message == "test commit 3");
+
 // FIXME: try a push on a branch when another branch is not a local subset?
 
 // FIXME: test rm

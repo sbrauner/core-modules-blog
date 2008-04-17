@@ -60,7 +60,21 @@ Object.extend(git.Repo.prototype, {
     },
 
     listRevs: function(from, to){
-
+        // Doesn't include rev:from
+        var cmd = "log --first-parent --pretty=oneline "+from+".."+to;
+        var ret = this._exec( cmd );
+        var parsed = {};
+        var lines = ret.out.trim().split(/\n/);
+        var revs = [];
+        for(var i = lines.length-1; i >= 0; --i){
+            var space = lines[i].indexOf(" ");
+            var id = lines[i].substring(0, space);
+            var message = lines[i].substring(space+1);
+            revs.push({id: id, message: message});
+        }
+        parsed.revs = revs;
+        ret.parsed = parsed;
+        return ret;
     },
 
     push: function(){
