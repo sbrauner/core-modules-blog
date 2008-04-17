@@ -793,15 +793,10 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
     if(rows) {
+       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\'_id\\\')" id="arrow_id"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("_id"), sortable: false, children: [{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true }]}]},');
         for(var i in f) {
-            if(!ignore[i]) {
-                // Special cases:
-                // if _id, the column needs to be converted to hexidecimal and sorted that way
-                if(i == "_id") {
-       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')" id="arrow'+i+'"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", formatter: "id", sortable: true }]}]},');
-                }
-                else
-                    print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
+            if(!ignore[i] && i != "_id") {
+                print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
             }
        }
     }
