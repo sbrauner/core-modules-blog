@@ -438,10 +438,6 @@ if(top) {
     %>
     <input type="button" value="Create Collection" onclick="createTable()" />
     <%
-} else {
-    %>
-    <input type="button" value="Add Record" onclick="addRecord()" />
-    <%
 }
 %>
 
