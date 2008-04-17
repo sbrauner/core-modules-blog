@@ -185,6 +185,13 @@ Object.extend(git.Repo.prototype, {
         files.forEach( function( z ){ cmd += " " + z; } );
         return this._exec( cmd );
     },
+    rm: function(files, opts){
+        opts = opts || {};
+        var cmd = "rm ";
+        if(opts.cached) cmd += "--cached ";
+        cmd += files.join(' ');
+        return this._exec( cmd );
+    },
     diff: function(files, opts){
         opts = opts || {};
         this._validate(files);

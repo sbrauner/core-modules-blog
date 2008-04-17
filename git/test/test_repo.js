@@ -182,9 +182,17 @@ var pull = g3.pull();
 assert(pull.parsed.failed.notuptodate == "file1");
 
 g3.commit(["file1"], "revise with yo", u);
+var push = g3.push();
+
+assert(push.parsed.pullFirst);
+
 pull = g3.pull();
 
 assert(pull.parsed.failed.conflicts.file1);
+
+// FIXME: try a push on a branch when another branch is not a local subset?
+
+// FIXME: test rm
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 
