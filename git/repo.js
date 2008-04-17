@@ -185,9 +185,11 @@ Object.extend(git.Repo.prototype, {
         files.forEach( function( z ){ cmd += " " + z; } );
         return this._exec( cmd );
     },
-    diff: function(files){
+    diff: function(files, opts){
+        opts = opts || {};
         this._validate(files);
         var cmd = "diff ";
+        if(opts.rev) cmd += opts.rev + " ";
         files.forEach( function( z ){ cmd += " " + z; } );
         if(files.length == 2){
             // Did you know that if you give git two files, it will sometimes

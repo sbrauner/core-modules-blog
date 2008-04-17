@@ -3,6 +3,8 @@ core.git.repo();
 core.ext.pluck();
 core.content.html();
 
+head.addScript("/~~/admin/assets/gitPopup.js");
+
 var g = new git.Repo(); 
 
 var revid = g.getCurrentRev().parsed.rev;
@@ -37,7 +39,7 @@ else if ( request.action == "add" && request.file ){
 }
 else if ( request.action == "diff" && request.file ){
     print( "Diffinf...<br>" );
-    var foo = g.diff(request.getParameters('file'));
+    var foo = g.diff(request.getParameters('file'), {rev: "HEAD"});
     output_command(foo);
 }
 else if ( request.action == "commit" && request.file ){
@@ -82,10 +84,6 @@ if(parsed.staged){
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }
-
-%>
-
-<% 
 
 %>
 <form>
