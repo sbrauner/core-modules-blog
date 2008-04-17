@@ -81,7 +81,11 @@ if(parsed.unmerged){
 
     if(parsed.changed){
         var conflictFiles = parsed.changed.filter(function(z){
-            return unmerged[z.name];
+            if(unmerged[z.name]){
+                z.type = "CONFLICT";
+                return true;
+            }
+            return false;
         });
         var otherFiles = parsed.changed.filter(function(z){
             return !(unmerged[z.name]);
