@@ -58,7 +58,11 @@ else if ( request.action == "checkout" && request.file ){
 
 var parsed = g.status().parsed;
 
-var buttons = {"changed": 'commit', 'untracked': 'add'};
+var buttons = {"changed": ['diff', 'checkout', 'commit'], 'untracked': ['add']};
+
+var diffLinks = {"changed": true, 'untracked': false};
+
+var extra = {'changed': 'Commit Message <input name="msg" value="">'};
 
 if(parsed.staged){
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
@@ -72,44 +76,13 @@ if(parsed.staged){
   <input type="submit" name="action" value="push">
 </form>
 
-<% for ( type in parsed ){ 
-   if(type == "untracked"){
-   core.admin.pieces.gitfilelist({title: type, actions: ["add"],
-                                  filenames: parsed[type].map(Ext.pluck('name')),
-                                  fileDiff: false });
-   continue;
-   }
+<% 
+for ( type in parsed ){ 
+    core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
+                                   extra: extra[type],
+                                   filenames: parsed[type].map(Ext.pluck('name')),
+                                   fileDiff: diffLinks[type] });
+}
 %>
-<table>
-  <form method="POST">
-
-  <tr>
-    <td colspan="2"><%= type %></td>
-  </tr>
-
-  <% parsed[type].forEach( function( z ){ %>
-  <tr>
-    <td><input type="checkbox" name="file" value="<%= z.name %>"></td>
-    <td><%= z.name %></td>
-  </tr>
-  <% } ); %>
-	 
-  <% if ( type == "changed" ){ %>
-  <tr>
-    <td colspan="2">Commit Message <input name="msg" value=""> </td>
-  </tr>
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="diff"> <input type="submit" name="action" value="checkout"></td>
-  </tr>
-  <% } %>
-
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="<%= buttons[type] %>"> </td>
-  </tr>
-  
-  </form>
-</table>
-<% } %>
-
 <hr>
 

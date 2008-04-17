@@ -16,10 +16,17 @@
         <td>$filenames[file]</td>
       </tr>
     </forin>
+    <if obj.extra>
+      <tr>
+        <td colspan="2">$extra</td>
+      </tr>
+    </if>
     <tr>
+      <td colspan="2">
       <forin action actions>
-        <td><input type="submit" name="action" value="$actions[action]"></td>
+        <input type="submit" name="action" value="$actions[action]">
       </forin>
+      </td>
     </tr>
   </form>
 </table>
