@@ -11,7 +11,10 @@ var repoAt = function(root){
     var s = scopeWithRoot(root);
     s.eval("core.git.repo()");
     git.Repo.prototype.checkStatus = gr_checkStatus;
-    return new git.Repo();
+    git.Repo.prototype.dumpFile = gr_dumpFile;
+    var g = new git.Repo();
+    g.root = root;
+    return g;
 };
 
 
@@ -70,6 +73,11 @@ gr_checkStatus = function(spec){
     return true;
 };
 
+var gr_dumpFile = function(file, contents){
+    sc.eval('var f = File.create("'+contents.replace(/\n/g, "\\n")+'");');
+    sc.eval("f.writeToLocalFile('"+this.root + "/" + file + "');");
+};
+
 var g = repoAt("/tmp/gitrepo/test");
 
 g._init();
@@ -109,9 +117,8 @@ assert(startCommit == g3.getCurrentRev().parsed.rev);
 
 // Commit "upstream"
 
-sc.eval('var f = File.create("hi there\\n");');
 sc.makeThreadLocal();
-sc.eval("f.writeToLocalFile('/tmp/gitrepo/test/file1');");
+g.dumpFile("file1", "hi there\n");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
 
@@ -138,8 +145,7 @@ assert("file1" in pull.parsed.changed);
 
 // Commit to g3 and push to g1
 
-sc.eval('var f = File.create("hello there\\n");');
-sc.eval("f.writeToLocalFile('/tmp/gitrepo/test2/file1');");
+g3.dumpFile("file1", "hello there\n");
 
 assert(g3.diff([]).out.match(/\n\+hello there\n/));
 assert(g3.diff([]).out.match(/\n\-hi there\n/));
