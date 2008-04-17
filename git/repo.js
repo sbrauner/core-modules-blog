@@ -27,18 +27,12 @@ Object.extend(git.Repo.prototype, {
         return this._exec( cmd );
     },
     getCurrentRev: function(){
-        var ref = this._exec( "symbolic-ref HEAD" ).out.trim();
+        var ref = this._exec( "rev-parse HEAD" );
 
-        var ret = this._exec( "show-ref " + ref );
+        var parsed = {rev: ref.out.trim()};
 
-        var parsed = {};
-
-        var rev = ret.out.substring(0, ret.out.indexOf(" "));
-
-        parsed.rev = rev;
-
-        ret.parsed = parsed;
-        return ret;
+        ref.parsed = parsed;
+        return ref;
     },
 
     getCommit: function(rev){
@@ -63,6 +57,10 @@ Object.extend(git.Repo.prototype, {
         ret.parsed = parsed;
 
         return ret;
+    },
+
+    listRevs: function(from, to){
+
     },
 
     push: function(){
