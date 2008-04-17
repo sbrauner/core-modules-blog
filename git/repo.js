@@ -10,6 +10,7 @@ Object.extend(git.Repo.prototype, {
         }
     },
     _exec: function(cmd){
+        cmd = "git " + cmd;
         var foo = sysexec( cmd );
         foo.cmd = cmd;
         log("executed: " + tojson(foo));
@@ -18,17 +19,17 @@ Object.extend(git.Repo.prototype, {
     },
     _init: function(){
         print(scope.getRoot());
-        return this._exec("git init");
+        return this._exec("init");
     },
     _clone: function(from, as){
-        var cmd = "git clone " + from;
+        var cmd = "clone " + from;
         if(as) cmd += " " + as;
         return this._exec( cmd );
     },
     getCurrentRev: function(){
-        var ref = this._exec( "git symbolic-ref HEAD" ).out.trim();
+        var ref = this._exec( "symbolic-ref HEAD" ).out.trim();
 
-        var ret = this._exec( "git show-ref " + ref );
+        var ret = this._exec( "show-ref " + ref );
 
         var parsed = {};
 
@@ -41,7 +42,7 @@ Object.extend(git.Repo.prototype, {
     },
 
     getCommit: function(rev){
-        var ret = this._exec( "git log -n 1 "+rev );
+        var ret = this._exec( "log -n 1 "+rev );
         var parsed = {};
 
         var lines = ret.out.trim().split(/\n/);
@@ -65,7 +66,7 @@ Object.extend(git.Repo.prototype, {
     },
 
     push: function(){
-        var ret = this._exec( "git push" );
+        var ret = this._exec( "push" );
         ret.parsed = this._parsePush(ret);
         return ret;
     },
@@ -86,7 +87,7 @@ Object.extend(git.Repo.prototype, {
     },
 
     pull: function(){
-        var ret = this._exec( "git pull" );
+        var ret = this._exec( "pull" );
         ret.parsed = this._parsePull(ret);
         return ret;
     },
@@ -180,13 +181,13 @@ Object.extend(git.Repo.prototype, {
     add: function(files){
         this._validate(files);
 
-        var cmd = "git add ";
+        var cmd = "add ";
         files.forEach( function( z ){ cmd += " " + z; } );
         return this._exec( cmd );
     },
     diff: function(files){
         this._validate(files);
-        var cmd = "git diff ";
+        var cmd = "diff ";
         files.forEach( function( z ){ cmd += " " + z; } );
         return this._exec( cmd );
     },
@@ -210,7 +211,7 @@ Object.extend(git.Repo.prototype, {
         return foo;
     },
     status: function(){
-        var ret = this._exec("git status");
+        var ret = this._exec("status");
 
         ret.parsed = this._parseStatus(ret);
 
@@ -284,7 +285,7 @@ Object.extend(git.Repo.prototype, {
     checkout: function(files, opts){
         opts = opts || {};
         this._validate(files);
-        var cmd = "git checkout ";
+        var cmd = "checkout ";
         if(opts.force) cmd += "-f ";
         if(opts.rev) cmd += opts.rev + " ";
         cmd += files.join(" ");
