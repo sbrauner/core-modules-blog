@@ -69,6 +69,15 @@ else if ( request.action == "checkout" && request.changed_file ){
 var parsed = g.status().parsed;
 
 if(parsed.staged){
+    var files = {};
+    parsed.staged.forEach(function(z){
+        files[z.name] = z.type;
+    });
+
+    // If a file is both in staged and changed, remove it from changed
+    parsed.changed = parsed.changed.filter(function(z){
+        return !(files[z.name]);
+    });
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }
