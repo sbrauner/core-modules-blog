@@ -1,10 +1,19 @@
 <%
-
 core.git.repo();
+core.ext.pluck();
 core.content.html();
 
 var g = new git.Repo(); 
+
+var revid = g.getCurrentRev().parsed.rev;
+var revmsg = g.getCommit(revid).parsed.message;
+revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
+
+core.admin.pieces.githeader({revid: revid, revmsg: revmsg,
+                            });
+
 var output_command = function(foo){
+    log(tojson(foo));
     print(content.HTML.escape(foo.cmd) + "<br>");
     print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
           content.HTML.escape(foo.err) + "</pre>");
@@ -51,6 +60,11 @@ var parsed = g.status().parsed;
 
 var buttons = {"changed": 'commit', 'untracked': 'add'};
 
+if(parsed.staged){
+    parsed.changed = (parsed.changed || []).concat(parsed.staged);
+    delete parsed.staged;
+}
+
 %>
 
 <form>
@@ -58,9 +72,15 @@ var buttons = {"changed": 'commit', 'untracked': 'add'};
   <input type="submit" name="action" value="push">
 </form>
 
+<% for ( type in parsed ){ 
+   if(type == "untracked"){
+   core.admin.pieces.gitfilelist({title: type, actions: ["add"],
+                                  filenames: parsed[type].map(Ext.pluck('name')),
+                                  fileDiff: false });
+   continue;
+   }
+%>
 <table>
-<% for ( type in parsed ){ %>
-
   <form method="POST">
 
   <tr>
@@ -88,9 +108,8 @@ var buttons = {"changed": 'commit', 'untracked': 'add'};
   </tr>
   
   </form>
-
-<% } %>
 </table>
+<% } %>
 
 <hr>
 

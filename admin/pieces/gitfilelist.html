@@ -1,0 +1,25 @@
+<%    // fileDiff -- per-file diff link
+   // title
+   // actions = ["checkout", "diff", "commit"]
+   // filenames = ["file1", "file2"]
+   var filenames = obj.filenames;
+   var actions = obj.actions;
+%>
+<table>
+  <form method="POST">
+    <tr>
+      <td colspan="2">$title</td>
+    </tr>
+    <forin file filenames>
+      <tr>
+        <td><input type="checkbox" name="file" value="$filenames[file]"></td>
+        <td>$filenames[file]</td>
+      </tr>
+    </forin>
+    <tr>
+      <forin action actions>
+        <td><input type="submit" name="action" value="$actions[action]"></td>
+      </forin>
+    </tr>
+  </form>
+</table>
