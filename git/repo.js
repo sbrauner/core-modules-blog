@@ -97,42 +97,81 @@ Object.extend(git.Repo.prototype, {
         var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
             lines[0].indexOf('.'));
         var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
-        var files = {};
         var created = {};
         var deleted = {};
+        var changed = {};
+        var conflicts = {};
+        var mergetype;
+        var failed;
+        var merged;
 
-        // lines[1] should just be "Fast forward"
+        if(lines.length > 0 && lines[1] == "Fast forward") {
+            mergetype = "fastforward";
 
-        for(var i = 2; i < lines.length; i++){
-            if(lines[i].indexOf('|') == -1) break;
-            var pipes = lines[i].split(/\|/);
-            var filename = pipes[0].trim();
-            var diffstat = pipes[1].trim();
-            files[filename] = diffstat;
+            for(var i = 2; i < lines.length; i++){
+                if(lines[i].indexOf('|') == -1) break;
+                var pipes = lines[i].split(/\|/);
+                var filename = pipes[0].trim();
+                var diffstat = pipes[1].trim();
+                changed[filename] = diffstat;
+            }
+            // this line should be like:
+            // "9 files changed, 211 insertions(+), 65 deletions(-)"
+            ++i;
+
+            for(; i < lines.length; i++){
+                var line = lines[i];
+                if(line.match(/^ create/)){
+                    // FIXME: implement String.split(..., limit)
+                    var firstFieldEnd = line.indexOf(/ /, 1);
+                    var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
+                    var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
+                    var filename = line.substring(thirdFieldEnd);
+                    created[filename] = line;
+                }
+                else if( false ){ // FIXME: deleted files
+
+                }
+            }
         }
-
-        // this line should be like:
-        // "9 files changed, 211 insertions(+), 65 deletions(-)"
-        ++i;
-
-        for(; i < lines.length; i++){
-            var line = lines[i];
-            if(line.match(/^ create/)){
-                // FIXME: implement String.split(..., limit)
-                var firstFieldEnd = line.indexOf(/ /, 1);
-                var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
-                var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
-                var filename = line.substring(thirdFieldEnd);
-                created[filename] = line;
+        else {
+            var m = exec.err.match(/^fatal: Entry '(\w+)' not uptodate\. Cannot merge\.$/);
+            if(m){
+                failed = {notuptodate: m[1]};
             }
-            else if( false ){ // FIXME: deleted files
+            else {
+                merged = {};
+                conflicts = {};
+                for(var i = 0; i < lines.length; i++){
+                    var m = lines[i].match(/^Auto-merged/);
+                    if(m){
+                        merged[m[1]] = true;
+                        continue;
+                    }
 
+                    var m = lines[i].match(/CONFLICT/);
+                    if(m){
+                        // FIXME: files with spaces in them??
+                        var file = lines[i].substring(lines[i].lastIndexOf(' '));
+                        conflicts[file] = lines[i];
+                    }
+
+                }
+                if(exec.err.match(/^Automatic merge failed/)){
+                    failed = {conflicts: conflicts};
+                }
             }
+
         }
 
         parsed.from = fromrev;
         parsed.to = torev;
-        parsed.files = files;
+        parsed.created = created;
+        parsed.deleted = deleted;
+        parsed.changed = changed;
+        parsed.conflicts = conflicts;
+        parsed.merged = merged;
+        parsed.failed = failed;
 
         return parsed;
     },

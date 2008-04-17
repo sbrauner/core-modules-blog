@@ -132,7 +132,7 @@ assert(s == "hi there\n");
 assert(pull.parsed);
 assert(startCommit.match(pull.parsed.from));
 assert(endCommit.match(pull.parsed.to));
-assert("file1" in pull.parsed.files);
+assert("file1" in pull.parsed.changed);
 
 
 
