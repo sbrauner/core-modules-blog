@@ -107,29 +107,23 @@ var fieldcount = 0;
 
 var done = false;
 function outp(x, id, name) {
-//    if(typeof x == "number" || typeof x == "string") {
-//        return x;
-//    }
-//    else
         return (typeof x)+":"+x;
 }
 
-/*    if(typeof x == "object") {
-        text = "";
-        // make x an obj of the form cursor[field]
-        x = {"...": x};
-        printObj(x, "...", id, [name]);
-        return text;
+var fields = [];
+var f = {};
+for( var i=0; i < rows.length; i++ ) {
+    for( var e in rows[i] ) {
+        if( !f[e] ) f[e] = 1;
     }
-    else
-        return '"'+x+'"';
-}*/
-
-  // top == show all collections
-
-  var fields;
-  // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
-  var thresh = rows.length < 4 ? 0 : rows.length / 2;
+}
+if(top) { fields.push("name"); fields.push("index"); }
+for( var i in f) {
+    fields.push(f[i]);
+}
+// thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
+/*var fields;
+var thresh = rows.length < 4 ? 0 : rows.length / 2;
 if( top ) {
     fields = [ 'name', 'index' ];
 }
@@ -144,7 +138,8 @@ else {
     for( var g in f ) {
 	if( f[g] >= thresh ) fields.push(g);
     }
-}
+}*/
+
 
 
 var dbTable = { rows: [] };
@@ -169,10 +164,11 @@ for( var i=0; i < rows.length; i++ ) {
 	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        dbTable.rows[k].fixed = currentRow.fixed;
+        dbTable.rows[k].fixed = currentRow.capped;
     } else {
         for( h in f ) {
-	    if( f[h]>thresh && !ignore[h] ) {
+//	    if( f[h]>thresh && !ignore[h] ) {
+            if( !ignore[h] ) {
                 if(h == "_id"){
 	            dbTable.rows[k][h] = obj[h];
                 }
@@ -190,7 +186,7 @@ for( var i=0; i < rows.length; i++ ) {
                     dbTable.rows[k][h] = tojson_u(obj[h]);
 	    }
         }
-        var first = true;
+/*        var first = true;
         dbTable.rows[k].other = "";
         for( x in obj ) {
             if( f[x]<= thresh ) {
@@ -199,7 +195,7 @@ for( var i=0; i < rows.length; i++ ) {
 	        first = false;
 	        dbTable.rows[k].other = x + ": " + outp(tojson(obj[x]));
             }
-        }
+        }*/
     }
     print(tojson_u(dbTable.rows[k]));
     print(",");

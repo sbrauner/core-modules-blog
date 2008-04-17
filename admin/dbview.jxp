@@ -26,23 +26,19 @@ var rows, max;
 rows = collection.find().limit(10).sort( { name : 1 } ).toArray();
     max = rows.length+1;
 
-var fields;
-// thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
-var thresh = rows.length < 4 ? 0 : rows.length / 2;
-if( top )
-    fields = [ 'name' ];
-else {
-    fields = [];
-    var f = {};
-    for( var i=0; i < rows.length; i++ ) {
-        for( var e in rows[i] ) {
-	    if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
-        }
-    }
-    for( var g in f ) {
-	if( f[g] >= thresh ) fields.push(g);
+
+// Find all fields of all rows
+var fields = [];
+var f = {};
+for( var i=0; i < rows.length; i++ ) {
+    for( var e in rows[i] ) {
+        if( !f[e] ) f[e] = 1;
     }
 }
+for( var i in f) {
+    fields.push(f[i]);
+}
+
 %>
 
 <h3><%=hdr%></h3>
@@ -413,29 +409,25 @@ function createTable() {
 }
 
 function addTable() {
-var tbl = document.getElementById("createTableForm");
+    var tbl = document.getElementById("createTableForm");
 
-var passData = "";
-var children = YAHOO.util.Dom.getChildren(tbl);
-for(var i=0; i<children.length; i++) {
-var c = YAHOO.util.Dom.getLastChild(children[i]);
-if(c.getAttribute("type") == "text")
-                                if(c.value != "") passData += "&"+c.name+"="+c.value;
-if(c.getAttribute("type") == "checkbox")
-                                if(c.checked) passData += "&"+c.name;
-}
-ajax("action=create"+passData, "editDb", function(response) {
-refreshTable();
-});
-createTablePanel.hide();
-}
-
-function closeEditRowPanel() {
-
+    var passData = "";
+    var children = YAHOO.util.Dom.getChildren(tbl);
+    for(var i=0; i<children.length; i++) {
+        var c = YAHOO.util.Dom.getLastChild(children[i]);
+        if(c.getAttribute("type") == "text")
+             if(c.value != "") passData += "&"+c.name+"="+c.value;
+        if(c.getAttribute("type") == "checkbox")
+             if(c.checked) passData += "&"+c.name+"=true";
+    }
+    ajax("action=create"+passData, "editDb", function(response) {
+        refreshTable();
+    });
+    createTablePanel.hide();
 }
 
 function closeCreateTableDlg() {
-createTablePanel.hide();
+    createTablePanel.hide();
 }
 
 </script>
@@ -772,13 +764,19 @@ myDataSource.responseSchema = {
         %>
 
         {key: "delete"}, <%
-        if(rows && rows[0]) {
-            for(var i in rows[0]) {
-                if(!ignore[i]) {
-                    print('{ key: "'+i+'"');
-                    print(', parser:YAHOO.util.DataSource.parseString');
-                    print('},');
+        var f = {};
+        if(rows) {
+            for(var rownum in rows) {
+                for(var i in rows[rownum]) {
+                    if(!ignore[i] && !f[i]) {
+                        f[i] = 1;
+                    }
                 }
+            }
+            for(var i in f) {
+                print('{ key: "'+i+'"');
+                print(', parser:YAHOO.util.DataSource.parseString');
+                print('},');
             }
         }
     }
@@ -794,19 +792,11 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
     print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
-    %>
-    { label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />', children: [{key: "edit", label:"Edit", formatter: "editBtn"}]},
-    <%
-    if(rows && rows[0]) {
-        for(var i in rows[0]) {
-            if(!ignore[i]) {
-                // Special cases:
-                // if _id, the column needs to be converted to hexidecimal and sorted that way
-                if(i == "_id") {
-       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')" id="arrow'+i+'"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ label: "'+i+'", sortOptions:{sortFunction:sortHex}, key: "'+i+'", sortable: true }]}]},');
-                }
-                else
-                    print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
+    if(rows) {
+       print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\'_id\\\')" id="arrow_id"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("_id"), sortable: false, children: [{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true }]}]},');
+        for(var i in f) {
+            if(!ignore[i] && i != "_id") {
+                print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
             }
        }
     }
@@ -890,11 +880,11 @@ if(top) {
 }
 else {
     %>
+    idFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
     deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
-    }
-    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
         if(oData && oData.length >= 20) {
@@ -922,7 +912,7 @@ else {
 
     }
 
-    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.id = idFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
     YAHOO.widget.DataTable.Formatter.str = strFormatter;
     <%

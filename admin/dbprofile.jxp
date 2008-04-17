@@ -9,9 +9,9 @@ if( request.set != null ) {
     print("<p>");
 }
 %>
-DB Profiling: <a href="?set=0">Off</a> | 
-<a href="?set=1">On for slow operations</a> | 
-<a href="?set=2">On for all operations</a> | 
+DB Profiling: <a href="?set=0">Off</a> |
+<a href="?set=1">On for slow operations</a> |
+<a href="?set=2">On for all operations</a> |
 <a href="http://www.10gen.com/wiki/db.profile">Help</a>
 <p>
 <%
@@ -21,7 +21,7 @@ DB Profiling: <a href="?set=0">Off</a> |
      ns : db.system.profile,
      cols : [
      { name: "ts", searchWidth: 8,
-       view: function(x) { return (""+x).replace(/.GMT.........../,''); } 
+       view: function(x) { var z = new Date(x); return z.format("yyyy-MM-dd HH:mm:ss"); } //(""+x).replace(/.GMT.........../,''); }
      },
     { name: "millis", searchWidth: 4,
        view: function(x) { return x.toFixed(); }
