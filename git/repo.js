@@ -189,6 +189,20 @@ Object.extend(git.Repo.prototype, {
         this._validate(files);
         var cmd = "diff ";
         files.forEach( function( z ){ cmd += " " + z; } );
+        if(files.length == 2){
+            // Did you know that if you give git two files, it will sometimes
+            // do an ordinary diff of those files -- i.e. not compare against
+            // the index? You can force this behavior on by --no-index, but
+            // there's no real way to force it off. Thanks guys!
+
+            // Fortunately if we re-give one of those two files, we bring the number
+            // of files up to three, thereby not triggering the behavior.
+            // By luck, this doesn't change the output from what it should be --
+            // files aren't displayed twice or anything.
+            // We arbitrarily choose the first file here
+            // (but we could just as easily choose the second)
+            cmd += " " + files[0];
+        }
         return this._exec( cmd );
     },
     commit: function(files, msg, user){
