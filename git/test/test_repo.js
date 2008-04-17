@@ -190,6 +190,10 @@ pull = g3.pull();
 
 assert(pull.parsed.failed.conflicts.file1);
 
+var status = g3.status();
+
+assert(status.parsed.unmerged[0].name == "file1");
+
 var listRevs = g.listRevs(startCommit, lastCommit);
 
 assert(listRevs.parsed.revs[0].id == endCommit);

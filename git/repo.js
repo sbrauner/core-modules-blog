@@ -66,6 +66,7 @@ Object.extend(git.Repo.prototype, {
         var parsed = {};
         var lines = ret.out.trim().split(/\n/);
         var revs = [];
+        // Reverse these -- git puts newest first
         for(var i = lines.length-1; i >= 0; --i){
             var space = lines[i].indexOf(" ");
             var id = lines[i].substring(0, space);
