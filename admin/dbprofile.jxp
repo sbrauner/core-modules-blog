@@ -9,19 +9,230 @@ if( request.set != null ) {
     print("<p>");
 }
 %>
-DB Profiling: <a href="?set=0">Off</a> |
-<a href="?set=1">On for slow operations</a> |
-<a href="?set=2">On for all operations</a> |
+<form>DB Profiling is...
+  <select onchange="submit()" id="set" name="set">
+    <option value="">&nbsp</option>
+    <option value="0">Off</option>
+    <option value="1">On for slow operations</option>
+    <option value="2">On for all operations</option>
+  </select>
+</form>
+
 <a href="http://www.10gen.com/wiki/db.profile">Help</a>
 <p>
+<div class="filtering">
+
+<div class="field">
+  Show <select id="record_type" name="record_type">
+    <option value="">&nbsp</option>
+    <option value="0">All</option>
+    <option value="1">Query</option>
+    <option value="2">Insert</option>
+    <option value="3">Update</option>
+    <option value="4">Getmore</option>
+  </select>
+</div>
+
+<div class="field"><input type="checkbox" name="timefilter" id="timefilter">
+  <label for="timefilter">Timestamp filter between </label>
+  <input type="text" onclick="clearTextBox('time_from')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
+  <input type="text" name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
+</div>
+<div class="field"><input type="checkbox" name="msfilter" id="msfilter">
+  <label for="msfilter">Millisecond filter between </label>
+  <input type="text" name="ms_from" onclick="clearTextBox('ms_from')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
+  <input type="text" name="ms_to"  onclick="clearTextBox('ms_to')" onblur="resetTextBox('ms_to', '999')" id="ms_to" value="999" />
+</div>
+<div class="field"><input type="checkbox" name="refilter" id="refilter">
+  <label for="refilter">Information RegExp filter </label>
+  <input type="text" name="re" id="re" />
+  <input type="button" onclick="doSearch()" value="Search" />
+  <input type="button" onclick="refreshSearch()" value="Refresh" />
+</div>
+</div>
+
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+
+</div>
+
+
+<!--CSS file (default YUI Sam Skin) -->
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
+<link type="text/css" rel="stylesheet" href="/@@/yui/current/logger/assets/skins/sam/logger.css">
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="/@@/yui/current/container/assets/skins/sam/container.css" />
+
+
+<!-- Dependencies -->
+<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/datasource/datasource-beta-debug.js"></script>
+
+<!-- OPTIONAL: JSON Utility -->
+<script type="text/javascript" src="/@@/yui/current/json/json-min.js"></script>
+
+<!-- OPTIONAL: Drag Drop (enables resizeable or reorderable columns) -->
+<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>
+
+<!-- Source files -->
+<script type="text/javascript" src="/@@/yui/current/datatable/datatable-beta-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
+<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
+
+<script type="text/javascript">
+
+myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile');
+myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+myDataSource.connXhrMode = "queueRequests";
+
+var myPaginator = new YAHOO.widget.Paginator({ rowsPerPage: 50, alwaysVisible : false } );
+
+oConfigs = {
+    initialRequest: "",
+    paginator: myPaginator,
+    sortedBy: { key: "ts", dir:YAHOO.widget.DataTable.CLASS_ASC }
+};
+
+myDataSource.responseSchema = {
+    resultsList: "rows",
+    fields: [
+      {key: "ts"},
+      {key: "info"},
+      {key: "millis", parser:YAHOO.util.DataSource.parseNumber}
+    ]
+};
+
+var myColumnDefs = [ { label: "Timestamp", key: "ts", sortable: true, formatter: "myDate" },
+                     { label: "Length (ms)", key: "millis", sortable: true },
+                     { label: "Information", key: "info", sortable: true }
+                   ];
+
+var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
+
+var currentSort = {key: "ts", dir: "yui-dt-asc"};
+myDataTable.onEventSortColumn = function(e, target) {
+    currentSort = {};
+    currentSort.key = e.column.parent.children[0].key;
+    currentSort.dir = e.dir;
+}
+myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
+
+updateCaseTable = {
+    success : function(){
+        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
+        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
+    },
+    failure : myDataTable.onDataReturnInitializeTable,
+    scope : myDataTable
+};
+
+
+myDataSource.liveData = "showTable?ns=admin.system.profile";
+
+myDateFormatter = function(elCell, oRecord, oColumn, oData) {
+    var d = new Date(oData);
+    var yyyy = d.getFullYear();
+    var MM = d.getMonth() < 9 ? "0"+(d.getMonth()+1) : d.getMonth()+1;
+    var dd = d.getDate() < 10 ? "0"+d.getDate() : d.getDate();
+    var HH = d.getHours() < 10 ? "0"+d.getHours() : d.getHours();
+    var mm = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
+    var ss = d.getSeconds() < 10 ? "0" + d.getSeconds() : d.getSeconds();
+    elCell.innerHTML = yyyy+"-"+MM+"-"+dd+" "+HH+":"+mm+":"+ss;
+}
+
+YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
+
+// End of table code
+
+
+
+// Initial setup of page
+document.getElementById("set").options[<%= parseInt(request.set ? request.set : "-1")+1 %>].selected = true;
+
+// Form handling
+function clearTextBox(id) {
+    document.getElementById(id).value = "";
+}
+function resetTextBox(id, str) {
+    var elem = document.getElementById(id);
+    if(elem.value.trim() == "") {
+        elem.value = str
+    }
+}
+
+var passData, lastSearch;
+function refreshTable(passData){
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    myDataSource.sendRequest("&action=profilersearch&"+passData+lastSearch, updateCaseTable);
+}
+function doSearch() {
+    var passData = getSearchArgs();
+    if(passData == -1) return;
+    lastSearch = passData;
+    refreshTable();
+}
+function getSearchArgs() {
+    var pairs = [];
+    if(document.getElementById("timefilter").checked) {
+        if(validateTime()) {
+            pairs.push("time_from="+document.getElementById("time_from").value);
+            pairs.push("time_to="+document.getElementById("time_to").value);
+        }
+        else {
+            alert("Timestamp filters must have the format: \"YYYY-MM-DD HH:MM:SS\"");
+            return -1;
+        }
+    }
+
+    if(document.getElementById("msfilter").checked) {
+        if(validateMs()) {
+            pairs.push("ms_from="+document.getElementById("ms_from").value);
+            pairs.push("ms_to="+document.getElementById("ms_to").value);
+        }
+        else {
+            alert("Millisecond filters must be numbers between 0 and 999.");
+            return -1;
+        }
+    }
+
+    if(document.getElementById("refilter").checked) {
+        if(validateRe())
+            pairs.push("re="+document.getElementById("re").value);
+        else {
+            alert("Regular expressions must be of the form \"/regexp/opts\"");
+            return -1;
+        }
+    }
+
+    return pairs.join('&');
+}
+function validateTime() {
+    re = new RegExp(/^\d{4}-\d{2}-\d{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/);
+    return re.test(document.getElementById("time_from").value) && re.test(document.getElementById("time_to").value);
+}
+function validateMs() {
+    return /^\d{1,3}$/.test(document.getElementById("ms_to").value) && /^\d{1,3}$/.test(document.getElementById("ms_to").value);
+}
+function validateRe() {
+    val = document.getElementById("re").value;
+    return val.indexOf("/") < val.lastIndexOf("/");
+}
+
+</script>
+
+
 <%
-    var tab = new htmltable(
+/*    var tab = new htmltable(
     {
      searchable : true,
      ns : db.system.profile,
      cols : [
      { name: "ts", searchWidth: 8,
-       view: function(x) { var z = new Date(x); return z.format("yyyy-MM-dd HH:mm:ss"); } //(""+x).replace(/.GMT.........../,''); }
+       view: function(x) { var z = new Date(x); return z.format("yyyy-MM-dd HH:mm:ss"); }
      },
     { name: "millis", searchWidth: 4,
        view: function(x) { return x.toFixed(); }
@@ -34,6 +245,6 @@ DB Profiling: <a href="?set=0">Off</a> |
 
 
 
-tab.dbview( tab.find({},{$natural:-1}) );
+tab.dbview( tab.find({},{$natural:-1}) );*/
 %>
 
