@@ -172,8 +172,8 @@ for( var i=0; i < rows.length; i++ ) {
                 if(h == "_id"){
 	            dbTable.rows[k][h] = obj[h];
                 }
-                else if(obj[h] == null)
-                    dbTable.rows[k][h] = "null";
+                else if(h in obj && obj[h] == null)
+                    dbTable.rows[k][h] = null;
                 else if(typeof obj[h] == "string") {
                     dbTable.rows[k][h] = content.HTML.escape_html(obj[h]); //(obj[h].length >= 20) ? obj[h].substring(0, 18)+"..." : obj[h];
                 }
@@ -182,7 +182,7 @@ for( var i=0; i < rows.length; i++ ) {
                 }
                 else if(obj[h] instanceof Date)
                     dbTable.rows[k][h] = obj[h].toString();
-                else
+                else if(h in obj)
                     dbTable.rows[k][h] = tojson_u(obj[h]);
 	    }
         }
