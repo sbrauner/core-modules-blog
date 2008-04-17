@@ -58,7 +58,26 @@ var top = request.ns == null;
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
-if(request.action == "search") {
+// dbprofiler
+if(request.action == "searchprofile") {
+    var dateStart, dateEnd;
+    if(request.time_from) {
+        var t1 = request.time_from, t2 = request.time_to;
+        dateStart = new Date(t1.substring(0,4), t1.substring(5,7), t1.substring(8,10), t1.substring(11,13), t1.substring(14,16), t1.substring(17,19));
+        dateEnd = new Date(t2.substring(0,4), t2.substring(5,7), t2.substring(8,10), t2.substring(11,13), t2.substring(14,16), t2.substring(17,19));
+    }
+    rows = db.system.profile.find( { $where: function() {
+        if(request.time_from && (obj.ts < dateStart || obj.ts > dateEnd))
+            return false;
+        if(request.ms_from && (obj.millis < parseInt(request.ms_from) || obj.millis > parseInt(request.ms_to)))
+           return false;
+        if(request.re && !(new RexExp("request.re")).test(obj.info))
+            return false;
+        return true;
+    } } );
+}
+// dbview
+else if(request.action == "search") {
     collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
     var searchobj = {};
     var tempLive;
@@ -121,24 +140,6 @@ if(top) { fields.push("name"); fields.push("index"); }
 for( var i in f) {
     fields.push(f[i]);
 }
-// thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
-/*var fields;
-var thresh = rows.length < 4 ? 0 : rows.length / 2;
-if( top ) {
-    fields = [ 'name', 'index' ];
-}
-else {
-    fields = [];
-    var f = {};
-    for( var i=0; i < rows.length; i++ ) {
-        for( var e in rows[i] ) {
-	    if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
-        }
-    }
-    for( var g in f ) {
-	if( f[g] >= thresh ) fields.push(g);
-    }
-}*/
 
 
 
@@ -167,7 +168,6 @@ for( var i=0; i < rows.length; i++ ) {
         dbTable.rows[k].fixed = currentRow.capped;
     } else {
         for( h in f ) {
-//	    if( f[h]>thresh && !ignore[h] ) {
             if( !ignore[h] ) {
                 if(h == "_id"){
 	            dbTable.rows[k][h] = obj[h];
@@ -186,16 +186,6 @@ for( var i=0; i < rows.length; i++ ) {
                     dbTable.rows[k][h] = tojson_u(obj[h]);
 	    }
         }
-/*        var first = true;
-        dbTable.rows[k].other = "";
-        for( x in obj ) {
-            if( f[x]<= thresh ) {
-	        if( !first )
-		    dbTable.rows[k].other += ", ";
-	        first = false;
-	        dbTable.rows[k].other = x + ": " + outp(tojson(obj[x]));
-            }
-        }*/
     }
     print(tojson_u(dbTable.rows[k]));
     print(",");
