@@ -1,5 +1,7 @@
 core.core.file();
 
+log.git.tests.level = log.LEVEL.ERROR;
+
 u = {name: "Test Framework", email: "test@10gen.com"};
 
 sc = scopeWithRoot(".");
@@ -88,11 +90,11 @@ openFile("/tmp/gitrepo/test/file1").touch();
 
 assert(g.checkStatus({ untracked: ["file1"] }));
 
-print(tojson(g.add(["file1"])));
+log.git.tests.debug(tojson(g.add(["file1"])));
 
 assert(g.checkStatus({ staged: [{name: "file1", type: "new file"}] }));
 
-print(tojson(g.commit(["file1"], "test commit", u)));
+log.git.tests.debug(tojson(g.commit(["file1"], "test commit", u)));
 
 var startCommit = g.getCurrentRev().parsed.rev;
 
@@ -106,7 +108,7 @@ assert(g.checkStatus({ }));
 // the sysexec from the repo
 
 var g2 = repoAt("/tmp/gitrepo");
-print(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
+log.git.tests.debug(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
 
 
 var g3 = repoAt("/tmp/gitrepo/test2");
@@ -122,7 +124,7 @@ g.dumpFile("file1", "hi there\n");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
 
-print(tojson(g.commit(["file1"], "test commit 2", u)));
+log.git.tests.debug(tojson(g.commit(["file1"], "test commit 2", u)));
 
 var endCommit = g.getCurrentRev().parsed.rev;
 assert(g.getCommit(endCommit).parsed.message == "test commit 2");
@@ -150,7 +152,7 @@ g3.dumpFile("file1", "hello there\n");
 assert(g3.diff([]).out.match(/\n\+hello there\n/));
 assert(g3.diff([]).out.match(/\n\-hi there\n/));
 
-print(tojson(g3.commit(["file1"], "test commit 3", u)));
+log.git.tests.debug(tojson(g3.commit(["file1"], "test commit 3", u)));
 
 var lastCommit = g3.getCurrentRev().parsed.rev;
 
@@ -158,7 +160,7 @@ assert(g3.getCommit(lastCommit).parsed.message == "test commit 3");
 
 var push = g3.push();
 
-print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
+log.git.tests.debug(tojson(g.checkout([], {force: true, rev: "HEAD"})));
 
 var s = File.open('/tmp/gitrepo/test/file1').asString();
 
@@ -168,6 +170,21 @@ assert(push.parsed);
 assert(push.parsed.from == endCommit);
 assert(push.parsed.to == lastCommit);
 assert(! push.parsed.pullFirst);
+
+// commit changes to both g1 and g3 (make conflicts)
+
+g.dumpFile("file1", "howdy there\n");
+g.commit(["file1"], "revise with howdy", u);
+
+g3.dumpFile("file1", "yo there\n");
+var pull = g3.pull();
+
+assert(pull.parsed.failed.notuptodate == "file1");
+
+g3.commit(["file1"], "revise with yo", u);
+pull = g3.pull();
+
+assert(pull.parsed.failed.conflicts.file1);
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 

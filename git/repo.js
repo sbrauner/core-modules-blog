@@ -2,6 +2,7 @@ git.Repo = function(){
 
 };
 
+
 Object.extend(git.Repo.prototype, {
     _validate: function(files){
         for(var i = 0; i < files.length; i++){
@@ -13,7 +14,6 @@ Object.extend(git.Repo.prototype, {
         cmd = "git " + cmd;
         var foo = sysexec( cmd );
         foo.cmd = cmd;
-        log("executed: " + tojson(foo));
 
         return foo;
     },
@@ -136,7 +136,7 @@ Object.extend(git.Repo.prototype, {
             }
         }
         else {
-            var m = exec.err.match(/^fatal: Entry '(\w+)' not uptodate\. Cannot merge\.$/);
+            var m = exec.err.match(/fatal: Entry '(\w+)' not uptodate\. Cannot merge\.\n$/);
             if(m){
                 failed = {notuptodate: m[1]};
             }
@@ -153,7 +153,7 @@ Object.extend(git.Repo.prototype, {
                     var m = lines[i].match(/CONFLICT/);
                     if(m){
                         // FIXME: files with spaces in them??
-                        var file = lines[i].substring(lines[i].lastIndexOf(' '));
+                        var file = lines[i].substring(lines[i].lastIndexOf(' ')+1);
                         conflicts[file] = lines[i];
                     }
 
