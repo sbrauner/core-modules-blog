@@ -30,7 +30,9 @@ if ( request.action == "pull" ){
 else if ( request.action == "push" ){
     print( "pushing...<br>" );
     var foo = g.push();
-    output_command(foo);
+    g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+        core.admin.pieces.gitpushedrev(z);
+    });
 }
 else if ( request.action == "add" && request.file ){
     print( "Adding...<br>" );
