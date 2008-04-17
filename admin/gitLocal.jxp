@@ -100,6 +100,8 @@ if(parsed.staged){
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
 <input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
 </form>
+<table>
+  <form method="POST">
 <%
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
@@ -110,5 +112,7 @@ for ( type in parsed ){
                                    fileDiff: diffLinks[type] });
 }
 %>
+  </form>
+</table>
 <hr>
 
