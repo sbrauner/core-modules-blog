@@ -86,7 +86,7 @@ if(parsed.staged){
 }
 
 %>
-<form>
+<form method="POST">
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
 <input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
 </form>
