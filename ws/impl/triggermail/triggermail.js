@@ -113,6 +113,7 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
     if (xmlHTTPRequest.status == 200) {
         // got a valid method response, so process it
         this.lastResponse = xmlHTTPRequest.responseText;
+        SYSOUT( xmlHTTPRequest.responseText );
         return fromjson(xmlHTTPRequest.responseText);
     } else {
         // there's a lower level issue, so fail
@@ -128,8 +129,8 @@ ws.impl.triggermail.TriggermailClient.prototype.send = function(template, emailA
     var parameters = {email: emailAddress, template: template};
     if (vars) parameters.vars = vars;
     if (opts) parameters.options = opts;
-    SYSOUT(tojson(parameters));
-    SYSOUT(tojson({ "email" : "dana15@sociabledesign.com" , "template" : "Welcome Email" , "vars" : {  "first_name" : "d" ,  "last_name" : "spiegel"   }}));
+    log.ws.triggermail.info(tojson(parameters));
+    log.ws.triggermail.info(tojson({ "email" : "dana15@sociabledesign.com" , "template" : "Welcome Email" , "vars" : {  "first_name" : "d" ,  "last_name" : "spiegel"   }}));
     return this.__callRemoteMethod('POST', 'send', parameters);
 }
 
