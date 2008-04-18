@@ -2,6 +2,7 @@ git.Repo = function(){
 
 };
 
+
 Object.extend(git.Repo.prototype, {
     _validate: function(files){
         for(var i = 0; i < files.length; i++){
@@ -10,38 +11,32 @@ Object.extend(git.Repo.prototype, {
         }
     },
     _exec: function(cmd){
+        cmd = "git " + cmd;
         var foo = sysexec( cmd );
         foo.cmd = cmd;
-        log("executed: " + tojson(foo));
 
         return foo;
     },
     _init: function(){
         print(scope.getRoot());
-        return this._exec("git init");
+        return this._exec("init");
     },
     _clone: function(from, as){
-        var cmd = "git clone " + from;
+        var cmd = "clone " + from;
         if(as) cmd += " " + as;
         return this._exec( cmd );
     },
     getCurrentRev: function(){
-        var ref = this._exec( "git symbolic-ref HEAD" ).out.trim();
+        var ref = this._exec( "rev-parse HEAD" );
 
-        var ret = this._exec( "git show-ref " + ref );
+        var parsed = {rev: ref.out.trim()};
 
-        var parsed = {};
-
-        var rev = ret.out.substring(0, ret.out.indexOf(" "));
-
-        parsed.rev = rev;
-
-        ret.parsed = parsed;
-        return ret;
+        ref.parsed = parsed;
+        return ref;
     },
 
     getCommit: function(rev){
-        var ret = this._exec( "git log -n 1 "+rev );
+        var ret = this._exec( "log -n 1 "+rev );
         var parsed = {};
 
         var lines = ret.out.trim().split(/\n/);
@@ -64,29 +59,80 @@ Object.extend(git.Repo.prototype, {
         return ret;
     },
 
+    listRevs: function(from, to){
+        // Doesn't include rev:from
+        var cmd = "log --first-parent --pretty=oneline "+from+".."+to;
+        var ret = this._exec( cmd );
+        var parsed = {};
+        var lines = ret.out.trim().split(/\n/);
+        var revs = [];
+        // Reverse these -- git puts newest first
+        for(var i = lines.length-1; i >= 0; --i){
+            var space = lines[i].indexOf(" ");
+            var id = lines[i].substring(0, space);
+            var message = lines[i].substring(space+1);
+            revs.push({id: id, message: message});
+        }
+        parsed.revs = revs;
+        ret.parsed = parsed;
+        return ret;
+    },
+
+    getCurrentBranch: function(){
+        var cmd = "branch";
+        var ret = this._exec( cmd );
+        var lines = ret.out.split(/\n/);
+        var branch;
+
+        for(var i = 0; i < lines.length; i++){
+            if(lines[i].match(/^\*/)){
+                branch = lines[i].substr(2);
+            }
+        }
+
+        ret.parsed = {};
+        ret.parsed.branch = branch;
+        return ret;
+    },
+
+    getCurrentHeadSymbolic: function(){
+        var cmd = "symbolic-ref HEAD";
+        var ret = this._exec( cmd );
+        ret.parsed = {};
+        ret.parsed.head = ret.out.trim();
+        return ret;
+    },
+
     push: function(){
-        var ret = this._exec( "git push" );
+        var ret = this._exec( "push" );
         ret.parsed = this._parsePush(ret);
         return ret;
     },
     _parsePush: function(exec){
         var parsed = {};
         var lines = exec.err.trim().split(/\n/);
-        if( lines[0].match(/pull first\?$/) ){
-            parsed.pullFirst = true;
-        }
-        else {
+        if( lines[0].match(/^updating/) ){
             var fromrev = lines[1].substring(lines[1].lastIndexOf(' ')+1);
             var torev = lines[2].substring(lines[2].lastIndexOf(' ')+1);
             parsed.from = fromrev;
             parsed.to = torev;
+        }
+        else {
+            for(var i = 0; i < lines.length-1; ++i){
+                var m = lines[i].match(/remote '.+?' is not a strict subset of local ref '(.+?)'/);
+                var ref = m[1];
+                if(ref == this.getCurrentHeadSymbolic().parsed.head)
+                    parsed.pullFirst = true;
+            }
+            if(! parsed.pullFirst)
+                parsed.upToDate = true;
         }
 
         return parsed;
     },
 
     pull: function(){
-        var ret = this._exec( "git pull" );
+        var ret = this._exec( "pull" );
         ret.parsed = this._parsePull(ret);
         return ret;
     },
@@ -94,45 +140,84 @@ Object.extend(git.Repo.prototype, {
         var parsed = {};
         var lines = exec.out.trim().split(/\n/);
 
-        var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
-            lines[0].indexOf('.'));
-        var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
-        var files = {};
         var created = {};
         var deleted = {};
+        var changed = {};
+        var conflicts = {};
+        var mergetype;
+        var failed;
+        var merged;
 
-        // lines[1] should just be "Fast forward"
+        if(lines.length > 0 && lines[1] == "Fast forward") {
+            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
+                lines[0].indexOf('.'));
+            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
+            mergetype = "fastforward";
 
-        for(var i = 2; i < lines.length; i++){
-            if(lines[i].indexOf('|') == -1) break;
-            var pipes = lines[i].split(/\|/);
-            var filename = pipes[0].trim();
-            var diffstat = pipes[1].trim();
-            files[filename] = diffstat;
+            for(var i = 2; i < lines.length; i++){
+                if(lines[i].indexOf('|') == -1) break;
+                var pipes = lines[i].split(/\|/);
+                var filename = pipes[0].trim();
+                var diffstat = pipes[1].trim();
+                changed[filename] = diffstat;
+            }
+            // this line should be like:
+            // "9 files changed, 211 insertions(+), 65 deletions(-)"
+            ++i;
+
+            for(; i < lines.length; i++){
+                var line = lines[i];
+                if(line.match(/^ create/)){
+                    // FIXME: implement String.split(..., limit)
+                    var firstFieldEnd = line.indexOf(/ /, 1);
+                    var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
+                    var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
+                    var filename = line.substring(thirdFieldEnd);
+                    created[filename] = line;
+                }
+                else if( false ){ // FIXME: deleted files
+
+                }
+            }
         }
-
-        // this line should be like:
-        // "9 files changed, 211 insertions(+), 65 deletions(-)"
-        ++i;
-
-        for(; i < lines.length; i++){
-            var line = lines[i];
-            if(line.match(/^ create/)){
-                // FIXME: implement String.split(..., limit)
-                var firstFieldEnd = line.indexOf(/ /, 1);
-                var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
-                var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
-                var filename = line.substring(thirdFieldEnd);
-                created[filename] = line;
+        else {
+            var m = exec.err.match(/fatal: Entry '(\w+)' not uptodate\. Cannot merge\.\n$/);
+            if(m){
+                failed = {notuptodate: m[1]};
             }
-            else if( false ){ // FIXME: deleted files
+            else {
+                merged = {};
+                conflicts = {};
+                for(var i = 0; i < lines.length; i++){
+                    var m = lines[i].match(/^Auto-merged/);
+                    if(m){
+                        merged[m[1]] = true;
+                        continue;
+                    }
 
+                    var m = lines[i].match(/CONFLICT/);
+                    if(m){
+                        // FIXME: files with spaces in them??
+                        var file = lines[i].substring(lines[i].lastIndexOf(' ')+1);
+                        conflicts[file] = lines[i];
+                    }
+
+                }
+                if(exec.err.match(/^Automatic merge failed/)){
+                    failed = {conflicts: conflicts};
+                }
             }
+
         }
 
         parsed.from = fromrev;
         parsed.to = torev;
-        parsed.files = files;
+        parsed.created = created;
+        parsed.deleted = deleted;
+        parsed.changed = changed;
+        parsed.conflicts = conflicts;
+        parsed.merged = merged;
+        parsed.failed = failed;
 
         return parsed;
     },
@@ -141,14 +226,37 @@ Object.extend(git.Repo.prototype, {
     add: function(files){
         this._validate(files);
 
-        var cmd = "git add ";
+        var cmd = "add ";
         files.forEach( function( z ){ cmd += " " + z; } );
         return this._exec( cmd );
     },
-    diff: function(files){
+    rm: function(files, opts){
+        opts = opts || {};
+        var cmd = "rm ";
+        if(opts.cached) cmd += "--cached ";
+        cmd += files.join(' ');
+        return this._exec( cmd );
+    },
+    diff: function(files, opts){
+        opts = opts || {};
         this._validate(files);
-        var cmd = "git diff ";
+        var cmd = "diff ";
+        if(opts.rev) cmd += opts.rev + " ";
         files.forEach( function( z ){ cmd += " " + z; } );
+        if(files.length == 2){
+            // Did you know that if you give git two files, it will sometimes
+            // do an ordinary diff of those files -- i.e. not compare against
+            // the index? You can force this behavior on by --no-index, but
+            // there's no real way to force it off. Thanks guys!
+
+            // Fortunately if we re-give one of those two files, we bring the number
+            // of files up to three, thereby not triggering the behavior.
+            // By luck, this doesn't change the output from what it should be --
+            // files aren't displayed twice or anything.
+            // We arbitrarily choose the first file here
+            // (but we could just as easily choose the second)
+            cmd += " " + files[0];
+        }
         return this._exec( cmd );
     },
     commit: function(files, msg, user){
@@ -171,7 +279,7 @@ Object.extend(git.Repo.prototype, {
         return foo;
     },
     status: function(){
-        var ret = this._exec("git status");
+        var ret = this._exec("status");
 
         ret.parsed = this._parseStatus(ret);
 
@@ -186,6 +294,7 @@ Object.extend(git.Repo.prototype, {
 
         var filename = "";
         var filetype = "";
+        var unmerged = [];
         for(var i = 0; i < statlines.length; ++i){
             // Special cases for special lines:
             if(statlines[i].match(/# On branch (.+)$/))
@@ -225,11 +334,15 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];
                 file = {name: filename, type: filetype};
+                if(filetype == "unmerged"){
+                    unmerged.push(file);
+                    continue;
+                }
             }
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
@@ -240,12 +353,14 @@ Object.extend(git.Repo.prototype, {
             info[currentState].push(file);
         }
 
+        if(unmerged.length > 0) info.unmerged = unmerged;
+
         return info;
     },
     checkout: function(files, opts){
         opts = opts || {};
         this._validate(files);
-        var cmd = "git checkout ";
+        var cmd = "checkout ";
         if(opts.force) cmd += "-f ";
         if(opts.rev) cmd += opts.rev + " ";
         cmd += files.join(" ");

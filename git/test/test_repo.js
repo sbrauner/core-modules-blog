@@ -1,5 +1,7 @@
 core.core.file();
 
+log.git.tests.level = log.LEVEL.ERROR;
+
 u = {name: "Test Framework", email: "test@10gen.com"};
 
 sc = scopeWithRoot(".");
@@ -11,7 +13,10 @@ var repoAt = function(root){
     var s = scopeWithRoot(root);
     s.eval("core.git.repo()");
     git.Repo.prototype.checkStatus = gr_checkStatus;
-    return new git.Repo();
+    git.Repo.prototype.dumpFile = gr_dumpFile;
+    var g = new git.Repo();
+    g.root = root;
+    return g;
 };
 
 
@@ -70,6 +75,11 @@ gr_checkStatus = function(spec){
     return true;
 };
 
+var gr_dumpFile = function(file, contents){
+    sc.eval('var f = File.create("'+contents.replace(/\n/g, "\\n")+'");');
+    sc.eval("f.writeToLocalFile('"+this.root + "/" + file + "');");
+};
+
 var g = repoAt("/tmp/gitrepo/test");
 
 g._init();
@@ -80,11 +90,11 @@ openFile("/tmp/gitrepo/test/file1").touch();
 
 assert(g.checkStatus({ untracked: ["file1"] }));
 
-print(tojson(g.add(["file1"])));
+log.git.tests.debug(tojson(g.add(["file1"])));
 
 assert(g.checkStatus({ staged: [{name: "file1", type: "new file"}] }));
 
-print(tojson(g.commit(["file1"], "test commit", u)));
+log.git.tests.debug(tojson(g.commit(["file1"], "test commit", u)));
 
 var startCommit = g.getCurrentRev().parsed.rev;
 
@@ -98,7 +108,7 @@ assert(g.checkStatus({ }));
 // the sysexec from the repo
 
 var g2 = repoAt("/tmp/gitrepo");
-print(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
+log.git.tests.debug(tojson(g2._clone("/tmp/gitrepo/test", "test2")));
 
 
 var g3 = repoAt("/tmp/gitrepo/test2");
@@ -109,13 +119,12 @@ assert(startCommit == g3.getCurrentRev().parsed.rev);
 
 // Commit "upstream"
 
-sc.eval('var f = File.create("hi there\\n");');
 sc.makeThreadLocal();
-sc.eval("f.writeToLocalFile('/tmp/gitrepo/test/file1');");
+g.dumpFile("file1", "hi there\n");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
 
-print(tojson(g.commit(["file1"], "test commit 2", u)));
+log.git.tests.debug(tojson(g.commit(["file1"], "test commit 2", u)));
 
 var endCommit = g.getCurrentRev().parsed.rev;
 assert(g.getCommit(endCommit).parsed.message == "test commit 2");
@@ -132,19 +141,18 @@ assert(s == "hi there\n");
 assert(pull.parsed);
 assert(startCommit.match(pull.parsed.from));
 assert(endCommit.match(pull.parsed.to));
-assert("file1" in pull.parsed.files);
+assert("file1" in pull.parsed.changed);
 
 
 
 // Commit to g3 and push to g1
 
-sc.eval('var f = File.create("hello there\\n");');
-sc.eval("f.writeToLocalFile('/tmp/gitrepo/test2/file1');");
+g3.dumpFile("file1", "hello there\n");
 
 assert(g3.diff([]).out.match(/\n\+hello there\n/));
 assert(g3.diff([]).out.match(/\n\-hi there\n/));
 
-print(tojson(g3.commit(["file1"], "test commit 3", u)));
+log.git.tests.debug(tojson(g3.commit(["file1"], "test commit 3", u)));
 
 var lastCommit = g3.getCurrentRev().parsed.rev;
 
@@ -152,7 +160,7 @@ assert(g3.getCommit(lastCommit).parsed.message == "test commit 3");
 
 var push = g3.push();
 
-print(tojson(g.checkout([], {force: true, rev: "HEAD"})));
+log.git.tests.debug(tojson(g.checkout([], {force: true, rev: "HEAD"})));
 
 var s = File.open('/tmp/gitrepo/test/file1').asString();
 
@@ -162,6 +170,40 @@ assert(push.parsed);
 assert(push.parsed.from == endCommit);
 assert(push.parsed.to == lastCommit);
 assert(! push.parsed.pullFirst);
+
+// commit changes to both g1 and g3 (make conflicts)
+
+g.dumpFile("file1", "howdy there\n");
+g.commit(["file1"], "revise with howdy", u);
+
+g3.dumpFile("file1", "yo there\n");
+var pull = g3.pull();
+
+assert(pull.parsed.failed.notuptodate == "file1");
+
+g3.commit(["file1"], "revise with yo", u);
+var push = g3.push();
+
+assert(push.parsed.pullFirst);
+
+pull = g3.pull();
+
+assert(pull.parsed.failed.conflicts.file1);
+
+var status = g3.status();
+
+assert(status.parsed.unmerged[0].name == "file1");
+
+var listRevs = g.listRevs(startCommit, lastCommit);
+
+assert(listRevs.parsed.revs[0].id == endCommit);
+assert(listRevs.parsed.revs[0].message == "test commit 2");
+assert(listRevs.parsed.revs[1].id == lastCommit);
+assert(listRevs.parsed.revs[1].message == "test commit 3");
+
+// FIXME: try a push on a branch when another branch is not a local subset?
+
+// FIXME: test rm
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 

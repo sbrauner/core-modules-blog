@@ -9,10 +9,10 @@ if(request.action == "delete") {
 }
 else if(request.action == "create") {
     var opts = {};
-    if(request.fixed) opts.fixed = true;
+    if(request.fixed) opts.capped = true;
     if(request.max) opts.max = parseInt(request.max);
     if(request.size) opts.size = parseInt(request.size);
-    log(createCollection(request.tablename, opts));
+    createCollection(request.tablename, opts);
 }
 else if(request.action == "drop") {
     drop(request.ns.substring( request.ns.indexOf('.')+1));

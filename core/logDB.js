@@ -9,7 +9,7 @@ BasicDBAppender.create = function(){
     createCollection( "_logs" , {size:1000000, capped:true} );
 
     var append = function( loggerName , date , level , msg , throwable , thread ){
-        var obj = LogUtil.createObject( loggerName , date , level.toString() , msg , throwable , thread.toString() );
+        var obj = LogUtil.createObject( loggerName , date , level.toString() , msg , LogUtil.prettyStackTrace( throwable ) , thread.toString() );
         db._logs.save( obj );
     }
 

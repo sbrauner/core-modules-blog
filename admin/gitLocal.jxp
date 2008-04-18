@@ -3,6 +3,9 @@ core.git.repo();
 core.ext.pluck();
 core.content.html();
 
+head.addScript("/~~/admin/assets/gitPopup.js");
+head.addCSS("/~~/admin/assets/gitLocal.css");
+
 var g = new git.Repo(); 
 
 var revid = g.getCurrentRev().parsed.rev;
@@ -21,95 +24,146 @@ var output_command = function(foo){
 };
 
 if ( request.action == "pull" ){
+    // No files
     print( "pulling...<br>" );
     var foo = g.pull();
+    if(foo.parsed.failed && foo.parsed.failed.conflicts){
+        print("Pull failed: conflicts<br/>");
+    }
+    else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
+        print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+    }
     output_command(foo);
 }
 else if ( request.action == "push" ){
+    // No files
     print( "pushing...<br>" );
     var foo = g.push();
-    output_command(foo);
+    if(foo.parsed.pullFirst){
+        output_command(foo);
+%>
+Push failed. Try pulling first.
+        <form method="POST"><input type="submit" name="action" value="pull"></form>
+<%
+        return;
+    }
+    else if(foo.parsed.upToDate){
+        print("Everything up to date on this branch.");
+    }
+    else {
+        g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            core.admin.pieces.gitpushedrev(z);
+        });
+    }
 }
-else if ( request.action == "add" && request.file ){
+else if ( request.action == "add" && request.untracked_file ){
+    // Untracked files
     print( "Adding...<br>" );
-    var foo = g.add(request.getParameters('file'));
+    var foo = g.add(request.getParameters('untracked_file'));
     output_command(foo);
 }
-else if ( request.action == "diff" && request.file ){
+else if ( request.action == "diff" && request.changed_file ){
+    // Changed files
     print( "Diffinf...<br>" );
-    var foo = g.diff(request.getParameters('file'));
+    var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     output_command(foo);
 }
-else if ( request.action == "commit" && request.file ){
-    if ( ! request.msg )
-	print( "need a message!" );
+else if ( request.action == "commit" && request.changed_file ){
+    // Changed files
+    var showDiff = false;
+    if ( ! request.viewedDiff ) showDiff = true;
+    else if ( ! request.msg.trim() ){
+        print( "need a message!" );
+        showDiff = true;
+    }
+
+    if ( showDiff ) {
+        return core.admin.gitCommit(g);
+    }
     else {
 	print( "Commit...<br>" );
         
-	var foo = g.commit( request.getParameters('file') , request.msg , user );
+	var foo = g.commit( request.getParameters('changed_file') , request.msg , user );
         output_command(foo);
     }
 }
-else if ( request.action == "checkout" && request.file ){
+else if ( request.action == "checkout" && request.changed_file ){
     print("Performing checkout...<br>");
-    var foo = g.checkout(request.getParameters("file"));
+    var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
 }
 
 var parsed = g.status().parsed;
 
-var buttons = {"changed": 'commit', 'untracked': 'add'};
-
 if(parsed.staged){
+    var files = {};
+    parsed.staged.forEach(function(z){
+        files[z.name] = z.type;
+    });
+
+    // If a file is both in staged and changed, remove it from changed
+    if(parsed.changed){
+        parsed.changed = parsed.changed.filter(function(z){
+            return !(files[z.name]);
+        });
+    }
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }
 
-%>
+var conflicts = false;
+var unmerged = {};
+if(parsed.unmerged){
+    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+    delete parsed.unmerged;
+    conflicts = true;
 
-<form>
-  <input type="submit" name="action" value="pull">
-  <input type="submit" name="action" value="push">
+    if(parsed.changed){
+        var conflictFiles = parsed.changed.filter(function(z){
+            if(unmerged[z.name]){
+                z.type = "CONFLICT";
+                return true;
+            }
+            return false;
+        });
+        var otherFiles = parsed.changed.filter(function(z){
+            return !(unmerged[z.name]);
+        });
+        parsed.changed = conflictFiles.concat(otherFiles);
+    }
+}
+
+var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'commit'], 'untracked': ['add']};
+
+var diffLinks = {"changed": true, 'untracked': false};
+
+var checked = {};
+if(request.changed_file)
+    request.getParameters('changed_file').forEach(function(z){
+        checked[z] = "checked";
+    });
+if(request.untracked_file)
+    request.getParameters('untracked_file').forEach(function(z){
+        checked[z] = "checked";
+    });
+%>
+<form method="POST">
+<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
+<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
 </form>
-
-<% for ( type in parsed ){ 
-   if(type == "untracked"){
-   core.admin.pieces.gitfilelist({title: type, actions: ["add"],
-                                  filenames: parsed[type].map(Ext.pluck('name')),
-                                  fileDiff: false });
-   continue;
-   }
-%>
 <table>
   <form method="POST">
-
-  <tr>
-    <td colspan="2"><%= type %></td>
-  </tr>
-
-  <% parsed[type].forEach( function( z ){ %>
-  <tr>
-    <td><input type="checkbox" name="file" value="<%= z.name %>"></td>
-    <td><%= z.name %></td>
-  </tr>
-  <% } ); %>
-	 
-  <% if ( type == "changed" ){ %>
-  <tr>
-    <td colspan="2">Commit Message <input name="msg" value=""> </td>
-  </tr>
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="diff"> <input type="submit" name="action" value="checkout"></td>
-  </tr>
-  <% } %>
-
-  <tr>
-    <td colspan="2"><input type="submit" name="action" value="<%= buttons[type] %>"> </td>
-  </tr>
-  
+<%
+for ( type in parsed ){ 
+    core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
+                                   checked: checked,
+                                   unmerged: unmerged, filevar: type+"_file",
+                                   filenames: parsed[type].map(Ext.pluck('name')),
+                                   filetypes: parsed[type].map(Ext.pluck('type')),
+                                   fileDiff: diffLinks[type] });
+}
+%>
   </form>
 </table>
-<% } %>
-
 <hr>
 
