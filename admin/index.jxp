@@ -27,12 +27,27 @@ if ( sectionName.match( /^index/ ) )
 
 // Maps jxp names to sections
 var sectionMap = {
+    'users': ['system', 'users'],
+
+    'database': ['system', 'database'],
     'dbview': ['system', 'database', 'dbview'],
     'dbprofile': ['system', 'database', 'dbprofile'],
-    'gitLocal': ['git'],
+
+    'files': ['system', 'files'],
+    'cron': ['system', 'cron'],
+
+    'cron': ['system', 'cron'],
+    'editCron': ['system', 'cron'],
+
+    'logs': ['system', 'logs'],
     'logScroll': ['system', 'logs', 'scrolling'],
     'logMemory': ['system', 'logs', 'memory'],
-    'cron': ['system', 'cron']
+
+    'editor': ['editor'],
+    'gitLocal': ['git'],
+
+    'doc': ['doc'],
+    'applications': ['applications'],
 };
 var sectionList = sectionMap[sectionName];
 
