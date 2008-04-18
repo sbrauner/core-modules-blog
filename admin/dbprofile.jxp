@@ -23,13 +23,12 @@ if( request.set != null ) {
 <div class="filtering">
 
 <div class="field">
-  Show <select id="record_type" name="record_type">
-    <option value="">&nbsp</option>
-    <option value="0">All</option>
-    <option value="1">Query</option>
-    <option value="2">Insert</option>
-    <option value="3">Update</option>
-    <option value="4">Getmore</option>
+  Show <select id="record_type" name="record_type" onchange="changeRecordType()">
+    <option value="all">All</option>
+    <option value="query">Query</option>
+    <option value="insert">Insert</option>
+    <option value="update">Update</option>
+    <option value="getmore">Getmore</option>
   </select>
 </div>
 
@@ -82,7 +81,7 @@ if( request.set != null ) {
 
 <script type="text/javascript">
 
-myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile');
+myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile&reverse=true');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
@@ -160,7 +159,7 @@ updateCaseTable = {
 };
 
 
-myDataSource.liveData = "showTable?ns=admin.system.profile";
+myDataSource.liveData = "showTable?ns=admin.system.profile&reverse=true";
 
 myDateFormatter = function(elCell, oRecord, oColumn, oData) {
     var d = new Date(oData);
@@ -257,6 +256,10 @@ function validateMs() {
 function validateRe() {
     val = new RegExp(document.getElementById("re").value);
     return val != null;
+}
+
+function changeRecordType() {
+    refreshTable("record_type="+document.getElementById("record_type").value);
 }
 
 </script>
