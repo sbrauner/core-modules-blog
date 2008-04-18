@@ -63,7 +63,7 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
         return this._processResponse(this.xmlHTTPRequest.responseText);
     } else {
         // there's a lower level issue, so fail
-        SYSOUT("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText);
+        log.ws.xmlrpc("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText);
     }
 };
 
@@ -116,13 +116,13 @@ ws.xmlrpc.Client.Test = function() {
     var response = client.methodCall('weblogUpdates.ping', ['Silicon Alley Insider', 'http://www.alleyinsider.com/', 'http://www.alleyinsider.com/2008/2/barack_obama__live_from_seattle']);
     
     if (!response) {
-        SYSOUT('Got empty response');
+        log.ws.xmlrpc('Got empty response');
     } else {
         if (response.isFault) {
             // we got a fault
-            SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
+            log.ws.xmlrpc('Fault: (' + response.faultValue + ') ' + response.faultString);
         } else {
-            SYSOUT('Success: ' + tojson(response.value));
+            log.ws.xmlrpc('Success: ' + tojson(response.value));
         }
     }
 };
