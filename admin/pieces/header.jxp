@@ -7,6 +7,7 @@ core.ui.elements.menu();
 var obj = arguments[0];
 
 head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
+head.addCSS( "NOCDN/~~/admin/assets/leftNav.css" );
 
 %>
 <% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
