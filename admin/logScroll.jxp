@@ -1,17 +1,44 @@
 <%
 
-var ma = MemoryAppender.find( log );
-var all = ma.all;
+var all = db._logs.find().toArray();
 if ( ! all )
     throw "no all";
 
 %>
-<hr>
-<input type="checkbox" id="pause" onclick="togglePause()" /> Pause <b>Last Update</b> : <span id="last_update"></span>  <b>Last Message</b> : <span id="last_msg" ></span>
-<hr>
+<h1>Log Viewer</h1>
+<p>The log viewer displays a live view of all logs kept by this environment.  The log messages can be filtered using a JavaScript grep expression.  Older log messages are visible on subsequent pages.
+
+<div class="optbox">
+  Show only
+  <select onchange="filterResults('log_level')" name="log_level" id="log_level">
+    <option value="ALL">All</option>
+    <option value="DEBUG">Debug</option>
+    <option value="INFO">Info</option>
+    <option value="ERROR">Error</option>
+    <option value="FATAL">Fatal</option>
+  </select>
+  <select onchange="filterResults('logger)" name="logger" id="logger">
+    <% /* Generate logger opts */ %>
+  </select>
+</div>
+
+<div class="filter">
+  Filter by
+  <input type="text" name="filter" id="filter" />
+  <input type="button" onclick="filterResults('filter')" value="Filter" />
+  <input type="button" onclick="refreshFilter()" value="Refresh" />
+</div>
+
+<input type="checkbox" id="pause" onclick="togglePause()" /> Pause
+
+<div>
+  <b>Last Update</b> : <span id="last_update"></span>  <b>Last Message</b> : <span id="last_msg" ></span>
+</div>
+
 <div id="mylog"></div>
 <hr>
 <div id="debug"></div>
+
 <script>
 
 var pause = false;
@@ -19,8 +46,8 @@ var mostRecent = null;
 var all = [];
 
 function togglePause() {
-   pause = !pause;
-   if(!pause)
+    pause = !pause;
+    if(!pause)
         updateLog();
 }
 
@@ -34,7 +61,7 @@ function updateLog(){
    if(!pause) {
       var url = "/admin/_logScroll?";
       if ( mostRecent ) url += "since=" + mostRecent.getTime();
-      loadDocAsync( url , updateLogHandler );
+      loadDocAsync( url+getPassOpts() , updateLogHandler );
    }
 }
 
@@ -77,4 +104,48 @@ function updateLogHandler( raw ){
    setTimeout( updateLog , 1000 );
 }
 updateLog();
+
+var ns = 'all';
+var log_level = 'ALL';
+var filterStr = '';
+
+function filterResults(id) {
+    var val = document.getElementById(id).value;
+
+    if(id == "filter") {
+        filterStr = val;
+    }
+    if(id == "log_level") {
+        log_level = val;
+    }
+    if(id == "logger") {
+        ns = val;
+    }
+    ajax("action=filter"+getPassOpts(), "_logScroll", function(res) {
+       all = [];
+       updateLogHandler(res);
+    });
+}
+
+function getPassOpts() {
+    passData = "";
+    if(ns != "all")
+        passData += "&ns="+ns;
+    if(log_level != "ALL")
+        passData += "&log_level="+log_level;
+    if(filterStr != "")
+        passData += "&filter="+filterStr;
+    return passData;
+}
+
+function refreshFilter() {
+    ns = "all";
+    log_level = "ALL";
+    filterStr = "";
+
+    pause = false;
+    mostRecent = null;
+    updateLog();
+}
+
 </script>
