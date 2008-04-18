@@ -33,9 +33,22 @@ else if ( request.action == "push" ){
     // No files
     print( "pushing...<br>" );
     var foo = g.push();
-    g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-        core.admin.pieces.gitpushedrev(z);
-    });
+    if(foo.parsed.pullFirst){
+        output_command(foo);
+%>
+Push failed. Try pulling first.
+        <form method="POST"><input type="submit" name="action" value="pull"></form>
+<%
+        return;
+    }
+    else if(foo.parsed.upToDate){
+        print("Everything up to date on this branch.");
+    }
+    else {
+        g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            core.admin.pieces.gitpushedrev(z);
+        });
+    }
 }
 else if ( request.action == "add" && request.untracked_file ){
     // Untracked files

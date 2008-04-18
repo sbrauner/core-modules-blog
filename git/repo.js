@@ -78,6 +78,31 @@ Object.extend(git.Repo.prototype, {
         return ret;
     },
 
+    getCurrentBranch: function(){
+        var cmd = "branch";
+        var ret = this._exec( cmd );
+        var lines = ret.out.split(/\n/);
+        var branch;
+
+        for(var i = 0; i < lines.length; i++){
+            if(lines[i].match(/^\*/)){
+                branch = lines[i].substr(2);
+            }
+        }
+
+        ret.parsed = {};
+        ret.parsed.branch = branch;
+        return ret;
+    },
+
+    getCurrentHeadSymbolic: function(){
+        var cmd = "symbolic-ref HEAD";
+        var ret = this._exec( cmd );
+        ret.parsed = {};
+        ret.parsed.head = ret.out.trim();
+        return ret;
+    },
+
     push: function(){
         var ret = this._exec( "push" );
         ret.parsed = this._parsePush(ret);
@@ -86,14 +111,21 @@ Object.extend(git.Repo.prototype, {
     _parsePush: function(exec){
         var parsed = {};
         var lines = exec.err.trim().split(/\n/);
-        if( lines[0].match(/pull first\?$/) ){
-            parsed.pullFirst = true;
-        }
-        else {
+        if( lines[0].match(/^updating/) ){
             var fromrev = lines[1].substring(lines[1].lastIndexOf(' ')+1);
             var torev = lines[2].substring(lines[2].lastIndexOf(' ')+1);
             parsed.from = fromrev;
             parsed.to = torev;
+        }
+        else {
+            for(var i = 0; i < lines.length-1; ++i){
+                var m = lines[i].match(/remote '.+?' is not a strict subset of local ref '(.+?)'/);
+                var ref = m[1];
+                if(ref == this.getCurrentHeadSymbolic().parsed.head)
+                    parsed.pullFirst = true;
+            }
+            if(! parsed.pullFirst)
+                parsed.upToDate = true;
         }
 
         return parsed;
