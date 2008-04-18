@@ -27,7 +27,7 @@ if ( sectionName.match( /^index/ ) )
 
 // Maps jxp names to sections
 var sectionMap = {
-    'dbview': ['system', 'database', 'collections'],
+    'dbview': ['system', 'database', 'dbview'],
     'dbprofile': ['system', 'database', 'profile'],
     'gitLocal': ['git'],
     'logScroll': ['system', 'logs', 'scrolling'],

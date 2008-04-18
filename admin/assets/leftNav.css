@@ -28,7 +28,7 @@
 }
 
 #leftnav .current-page {
-    background-image: url(../images/icon_leftnav_active.gif);
+    background-image: url(icon_leftnav_active.gif);
     background-repeat: no-repeat;
     background-position: 144px .35em;	
 }
