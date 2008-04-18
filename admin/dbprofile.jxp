@@ -211,6 +211,7 @@ function refreshSearch() {
     refreshTable();
 }
 
+var recordType = "all";
 function getSearchArgs() {
     var pairs = [];
     if(document.getElementById("timefilter").checked) {
@@ -243,6 +244,7 @@ function getSearchArgs() {
             return -1;
         }
     }
+    pairs.push("record_type="+recordType);
 
     return pairs.join('&');
 }
@@ -259,6 +261,7 @@ function validateRe() {
 }
 
 function changeRecordType() {
+    recordType = document.getElementById("record_type").value;
     refreshTable("record_type="+document.getElementById("record_type").value);
 }
 
