@@ -51,8 +51,16 @@ else if ( request.action == "diff" && request.changed_file ){
 }
 else if ( request.action == "commit" && request.changed_file ){
     // Changed files
-    if ( ! request.msg )
-	print( "need a message!" );
+    var showDiff = false;
+    if ( ! request.viewedDiff ) showDiff = true;
+    else if ( ! request.msg.trim() ){
+        print( "need a message!" );
+        showDiff = true;
+    }
+
+    if ( showDiff ) {
+        return core.admin.gitCommit(g);
+    }
     else {
 	print( "Commit...<br>" );
         
@@ -108,8 +116,6 @@ var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'com
 
 var diffLinks = {"changed": true, 'untracked': false};
 
-var extra = {'changed': 'Commit Message <input name="msg" value="">'};
-
 var checked = {};
 if(request.changed_file)
     request.getParameters('changed_file').forEach(function(z){
@@ -129,7 +135,7 @@ if(request.untracked_file)
 <%
 for ( type in parsed ){ 
     core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
-                                   extra: extra[type], checked: checked,
+                                   checked: checked,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    filetypes: parsed[type].map(Ext.pluck('type')),
