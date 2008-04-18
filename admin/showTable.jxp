@@ -60,21 +60,22 @@ var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(reque
 
 // dbprofiler
 if(request.action == "searchprofile") {
+    var searchObj = {};
     var dateStart, dateEnd;
     if(request.time_from) {
         var t1 = request.time_from, t2 = request.time_to;
         dateStart = new Date(t1.substring(0,4), t1.substring(5,7), t1.substring(8,10), t1.substring(11,13), t1.substring(14,16), t1.substring(17,19));
         dateEnd = new Date(t2.substring(0,4), t2.substring(5,7), t2.substring(8,10), t2.substring(11,13), t2.substring(14,16), t2.substring(17,19));
+        searchObj.ts = { $gte: dateStart, $lte: dateEnd };
     }
-    rows = db.system.profile.find( { $where: function() {
-        if(request.time_from && (obj.ts < dateStart || obj.ts > dateEnd))
-            return false;
-        if(request.ms_from && (obj.millis < parseInt(request.ms_from) || obj.millis > parseInt(request.ms_to)))
-           return false;
-        if(request.re && !(new RexExp("request.re")).test(obj.info))
-            return false;
-        return true;
-    } } );
+    if(request.ms_from) {
+        searchObj.millis = { $gte : parseInt(request.ms_from), $lte : parseInt(request.ms_to) };
+    }
+    if(request.re) {
+        searchObj.info = new RegExp(request.re, "i");
+    }
+    log(tojson(searchObj));
+    rows = db.system.profile.find( searchObj ).toArray();
 }
 // dbview
 else if(request.action == "search") {

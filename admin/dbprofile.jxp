@@ -167,7 +167,7 @@ function refreshTable(passData){
         passData = passData+"&";
     else
         passData = "";
-    myDataSource.sendRequest("&action=profilersearch&"+passData+lastSearch, updateCaseTable);
+    myDataSource.sendRequest("&action=searchprofile&"+passData+lastSearch, updateCaseTable);
 }
 function doSearch() {
     var passData = getSearchArgs();
@@ -175,6 +175,11 @@ function doSearch() {
     lastSearch = passData;
     refreshTable();
 }
+function refreshSearch() {
+    lastSearch = "";
+    refreshTable();
+}
+
 function getSearchArgs() {
     var pairs = [];
     if(document.getElementById("timefilter").checked) {
@@ -218,8 +223,8 @@ function validateMs() {
     return /^\d{1,3}$/.test(document.getElementById("ms_to").value) && /^\d{1,3}$/.test(document.getElementById("ms_to").value);
 }
 function validateRe() {
-    val = document.getElementById("re").value;
-    return val.indexOf("/") < val.lastIndexOf("/");
+    val = new RegExp(document.getElementById("re").value);
+    return val != null;
 }
 
 </script>
