@@ -27,6 +27,9 @@ if ( request.action == "pull" ){
     // No files
     print( "pulling...<br>" );
     var foo = g.pull();
+    if(foo.parsed.failed && Object.keys(foo.parsed.failed.conflicts).length > 0){
+        print("Pull failed: conflicts<br/>");
+    }
     output_command(foo);
 }
 else if ( request.action == "push" ){
@@ -96,9 +99,11 @@ if(parsed.staged){
     });
 
     // If a file is both in staged and changed, remove it from changed
-    parsed.changed = parsed.changed.filter(function(z){
-        return !(files[z.name]);
-    });
+    if(parsed.changed){
+        parsed.changed = parsed.changed.filter(function(z){
+            return !(files[z.name]);
+        });
+    }
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }

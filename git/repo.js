@@ -140,9 +140,6 @@ Object.extend(git.Repo.prototype, {
         var parsed = {};
         var lines = exec.out.trim().split(/\n/);
 
-        var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
-            lines[0].indexOf('.'));
-        var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
         var created = {};
         var deleted = {};
         var changed = {};
@@ -152,6 +149,9 @@ Object.extend(git.Repo.prototype, {
         var merged;
 
         if(lines.length > 0 && lines[1] == "Fast forward") {
+            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
+                lines[0].indexOf('.'));
+            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
             mergetype = "fastforward";
 
             for(var i = 2; i < lines.length; i++){
