@@ -52,6 +52,20 @@ ApplicationController.prototype.dispatch = function( request , response ){
         anythingRendered = true;
     };
     
+    f.getScope( true ).respond_to = 
+        [
+            { 
+                html : function(){
+                    print( "found an html want thingy" );
+                    anythingRendered = true;
+                } ,
+                
+                xml : function(){
+                    return false;
+                }
+            }
+        ];
+    
     f( request , response );
 
     if ( ! anythingRendered ){
