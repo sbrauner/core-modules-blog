@@ -213,3 +213,17 @@ em#editorLabel { background: url('/~~/admin/assets/application_edit.png') 0% 40%
 em#logoutLabel { background: url('/~~/admin/assets/cancel.png') 0% 40% no-repeat; padding-left: 20px; }
 /* xgenAdminTopNav end */
 
+/* From Jason */
+
+div.onecolumn {
+	clear:left;
+	width:100%; 
+}
+
+/* Footer */
+
+p.footer {
+	margin-top: 5em;
+	text-align: center;
+	font-size: 11px;
+}
