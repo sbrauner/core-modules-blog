@@ -13,12 +13,13 @@ BasicDBAppender.create = function(){
         var now = new Date();
         var lvl = level.toString();
         msg = msg.toString();
-        if(lvl == "FATAL" && now.getTime() > (this.sendEmail.getTime() + 10*60*1000)) {
+/*        if(lvl == "FATAL" && now.getTime() > (this.sendEmail.getTime() + 10*60*1000)) {
             m = new Mail.Message( "Fatal Log Message", msg );
             m.addRecipient(  user.email , "to" );
+            m.addRecipient(  "kristina@10gen.com" );
             m.send( mail );
             this.sendEmail = now;
-        }
+        }*/
         var obj = LogUtil.createObject( loggerName , date , lvl , msg , LogUtil.prettyStackTrace( throwable ) , thread.toString() );
         db._logs.save( obj );
     }
