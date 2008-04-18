@@ -14,5 +14,12 @@ LogUtil.createObject = function( loggerName , date , level , msg , throwable , t
     
 };
 
+LogUtil.prettyStackTrace = function( throwable ){
+    if ( ! throwable )
+        return null;
+
+    return throwable.toString();
+};
+
 core.core.logMemoryAppender(); 
 core.core.logDB(); 

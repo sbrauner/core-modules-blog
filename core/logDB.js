@@ -19,7 +19,7 @@ BasicDBAppender.create = function(){
             m.send( mail );
             this.sendEmail = now;
         }
-        var obj = LogUtil.createObject( loggerName , date , lvl, msg, throwable , thread.toString() );
+        var obj = LogUtil.createObject( loggerName , date , lvl , msg , LogUtil.prettyStackTrace( throwable ) , thread.toString() );
         db._logs.save( obj );
     }
 

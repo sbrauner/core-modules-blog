@@ -27,15 +27,34 @@ if ( request.action == "pull" ){
     // No files
     print( "pulling...<br>" );
     var foo = g.pull();
+    if(foo.parsed.failed && foo.parsed.failed.conflicts){
+        print("Pull failed: conflicts<br/>");
+    }
+    else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
+        print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+    }
     output_command(foo);
 }
 else if ( request.action == "push" ){
     // No files
     print( "pushing...<br>" );
     var foo = g.push();
-    g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-        core.admin.pieces.gitpushedrev(z);
-    });
+    if(foo.parsed.pullFirst){
+        output_command(foo);
+%>
+Push failed. Try pulling first.
+        <form method="POST"><input type="submit" name="action" value="pull"></form>
+<%
+        return;
+    }
+    else if(foo.parsed.upToDate){
+        print("Everything up to date on this branch.");
+    }
+    else {
+        g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            core.admin.pieces.gitpushedrev(z);
+        });
+    }
 }
 else if ( request.action == "add" && request.untracked_file ){
     // Untracked files
@@ -83,9 +102,11 @@ if(parsed.staged){
     });
 
     // If a file is both in staged and changed, remove it from changed
-    parsed.changed = parsed.changed.filter(function(z){
-        return !(files[z.name]);
-    });
+    if(parsed.changed){
+        parsed.changed = parsed.changed.filter(function(z){
+            return !(files[z.name]);
+        });
+    }
     parsed.changed = (parsed.changed || []).concat(parsed.staged);
     delete parsed.staged;
 }
