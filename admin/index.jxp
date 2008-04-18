@@ -25,6 +25,19 @@ if ( sectionName.match( /^index/ ) )
     sectionName = "";
 
 
+// Maps jxp names to sections
+var sectionMap = {
+    'dbview': ['system', 'database', 'collections'],
+    'dbprofile': ['system', 'database', 'profile'],
+    'gitLocal': ['git'],
+    'logScroll': ['system', 'logs', 'scrolling'],
+    'logMemory': ['system', 'logs', 'memory'],
+    'cron': ['system', 'cron']
+};
+var sectionList = sectionMap[sectionName];
+
+
+
 var section = null;
 
 var sectionHeader = null;
@@ -68,7 +81,8 @@ if ( isFunction( section ) &&
 }
 
 if ( ajaxFunctions.indexOf(sectionName) == -1 ) {
-    core.admin.pieces.header();
+    core.admin.pieces.header({sectionList: sectionList,
+                             });
 
     if ( isFunction( sectionHeader ) )
         sectionHeader();

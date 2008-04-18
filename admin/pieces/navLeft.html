@@ -1,0 +1,63 @@
+<%
+var obj = arguments[0] || {};
+var sectionList = obj.sectionList || [];
+if(sectionList.length < 1) return;
+var topSection = sectionList[0];
+
+var sectionTree = {
+    'system': {
+        'users': {},
+        'database': {
+            'profile': true,
+            'dbview': true,
+        },
+        'files': {
+        },
+        'cron': {
+        },
+        'logs': {
+        },
+    },
+    'editor': {
+    },
+    'docs': {
+    },
+    'applications': {
+    }
+};
+
+if(! sectionTree[topSection]){
+    sectionTree[topSection] = {};
+}
+
+var sectionNames = {
+    'system/database/dbview': 'View Collections',
+    'system/database/profile': 'Profiling',
+};
+%>
+<table cellpadding="0" cellspacing="0" border="0">
+  <tr>
+        <!-- Left Side -->
+    <td width="180">
+      <div id="leftnav">
+                <h1>navigation</h1>
+                  <ul>
+                    <% for(var key in sectionTree[topSection]){
+                        if(key != sectionList[1]){ %>
+                        <li><a href="<%= key %>"><%= key.toUpperCase() %></a></li>
+                        <% } else { %>
+                        <li>
+                          <ul>
+                                <li class="current-heading"><a href=""><%= key.toUpperCase() %></a></li>
+                                <% for(var subkey in sectionTree[topSection][key]){ %>
+                                <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
+                                <% } %>
+                          </ul>
+                        </li>
+                        <% } %>
+                        <% } %>
+                  </ul>
+                </div>
+        </td>
+        <!-- Right Side -->
+        <td class="maincontent" width="100%" valign="top">

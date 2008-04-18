@@ -4,6 +4,8 @@ core.content.table();
 core.content.forms();
 core.ui.elements.menu();
 
+var obj = arguments[0];
+
 head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
 
 %>
@@ -20,6 +22,7 @@ head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
     <% core.admin.pieces.nav(); %>
     <% core.user.html.topCorner(); %>
 </div>
+<% core.admin.pieces.navLeft(obj); %>
 <% } %>
 <div id="customer_body">
 
