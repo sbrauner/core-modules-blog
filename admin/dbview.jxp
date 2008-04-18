@@ -4,122 +4,41 @@ head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiload
 
 core.content.html();
 
-var objcount = 0; // unique id for each object's div
-var fieldcount = 0;
-
-function printEditableField(x, id, path) {
-    if(typeof x == "string") {
-        if( x.length<=20 )
-            x = content.HTML.escape_html(x);
-        else {
-	    x = content.HTML.escape_html(x)
-            // put extra text in a hidden div
-            print('<div id="extra'+fieldcount+'" style="display: none;">'+x+'</div>');
-            x = x.substring(0,18)+"...";
-        }
-    }
-
-    print('<span class="obj" id="f'+fieldcount+'" onclick=\'editField('+fieldcount+', "'+(typeof x)+'","'+id+'","'+path+'")\'>'+x+"</span>");
-    fieldcount++;
-}
-
-function printObj(cursor, field, id, path) {
-    if(!cursor || !cursor[field]) return;
-
-    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
-        print('<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>");
-    }
-    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        print('<div><label class="obj">'+field+':</label>');
-        printEditableField(cursor[field], id, path);
-        print('</div>');
-    } else if(typeof cursor[field] == "object") {
-        var name;
-        var desc;
-        if(cursor[field] instanceof Date) {
-            name = "Date";
-            desc = cursor[field].toString();
-        }
-        else if(cursor[field] instanceof Array) {
-            name = "Array";
-            desc = "["+cursor[field].length+"]";
-        }
-        else {
-            name = "Object";
-            desc = field;
-        }
-        print("<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">");
-        var tempobj = objcount;
-        objcount++;
-        for(var name in cursor[field]) {
-            path.push(name);
-            printObj(cursor[field], name, id, path);
-            path.pop();
-        }
-        print("<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' value='close'></div></div>");
-    } else {
-        print('<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>");
-    }
-}
-
-var done = false;
-function outp(x, id, name) {
-    if(typeof x == "object") {
-        // make x an obj of the form cursor[field]
-        x = {"...": x};
-        printObj(x, "...", id, [name]);
-    }
-    else if(x == null || typeof x == "native" || typeof x == "function")
-        print(x);
-    else
-        printEditableField(x, id, [name]);
-}
-
-  // top == show all collections
-  var top = request.ns == null;
-  var collection;
-  if( top ) collection = db["system.namespaces"];
-  else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+// top == show all collections
+var top = request.ns == null;
+var collection;
+if( top ) collection = db["system.namespaces"];
+else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
 
 var appName = request.getHost();
 appName = (appName.indexOf(".") == -1) ? appName : appName.substring(0, appName.indexOf("."));
 
-  var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
-  if( top ) {
+var hdr = top ? "All collections for " + appName + " application" : "Collection: " + request.ns;
+if( top ) {
     // we'll sort by collection name
     collection.ensureIndex( {name:true} );
-  }
+}
 
-  // ignore internal transient variables
-  var ignore= { _ns:1, _save:1, _update:1 };
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
 
 var rows, max;
-if(request.all) {
-    rows = collection.find().sort( { name : 1 } ).toArray();
+rows = collection.find().limit(10).sort( { name : 1 } ).toArray();
     max = rows.length+1;
+
+
+// Find all fields of all rows
+var fields = [];
+var f = {};
+for( var i=0; i < rows.length; i++ ) {
+    for( var e in rows[i] ) {
+        if( !f[e] ) f[e] = 1;
+    }
 }
-else {
-    max = top?1000:(request.max ? parseInt(request.max) : 100);
-    rows = collection.find().sort( { name : 1 } ).limit(max).toArray();
+for( var i in f) {
+    fields.push(f[i]);
 }
 
-  var fields;
-  // thresh: threshold for which we add a column to the table we generate.  so uncommon fields just go in the catchall.
-  var thresh = rows.length < 4 ? 0 : rows.length / 2;
-  if( top )
-    fields = [ 'name' ];
-  else {
-    fields = [];
-    var f = {};
-    for( var i=0; i < rows.length; i++ ) {
-      for( var e in rows[i] ) {
-	  if( f[e] == null ) f[e] = 1; else  f[e]++; // count frequency
-      }
-    }
-    for( var g in f ) {
-	if( f[g] >= thresh ) fields.push(g);
-    }
-  }
 %>
 
 <h3><%=hdr%></h3>
@@ -146,6 +65,44 @@ else {
 
 <script type="text/javascript">
 var lastSearch = "";
+
+var objcount = 0;
+function printObj(cursor, field) {
+    if(!cursor || !cursor[field]) return;
+    var text = "";
+
+    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+    }
+    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+    } else if(typeof cursor[field] == "object") {
+        var name;
+        var desc;
+        if(cursor[field] instanceof Date) {
+            name = field;
+            desc = cursor[field].toString();
+        }
+        else if(cursor[field] instanceof Array) {
+            name = field;
+            desc = "["+cursor[field].length+"]";
+        }
+        else {
+            name = field;
+            desc = "{...}";
+        }
+        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+        var tempobj = objcount;
+        objcount++;
+        for(var q in cursor[field]) {
+            text += printObj(cursor[field], q);
+        }
+        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+    } else {
+        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+    }
+    return text;
+}
 
 function showObj(i) {
          document.getElementById(i).style.display = "block";
@@ -180,33 +137,83 @@ function deleteRow(id) {
     simpledialog1.show();
 }
 
-function customSplit(str, num) {
-    var a = str.split(":");
-    for(var i=num; i<a.length; i++) {
-        a[num-1] += ":"+a[i];
-    }
-    return a;
+function toggleVisible(i) {
+     var elem = document.getElementById("div"+i);
+     if(elem.style.display == "block")
+         elem.style.display = "none";
+     else
+         elem.style.display = "block";
 }
 
-function printDiv(fields, bd) {
-    f = customSplit(fields, 3);
-    if(f[0] == "_id") return;
+function printDiv(val, type, i, bd, id, path) {
+    if(i == "_id") return;
 
-    bd.innerHTML += '<div class="elem"><label class="obj">'+f[0]+': </label>';
-    if(f[1] == "object") {
-        subobj = f[2].substring(f[2].indexOf("{")+1, f[2].lastIndexOf("}"));
-        subobj = subobj.split("&");
+    var fieldDiv = document.createElement("div");
+    fieldDiv.setAttribute("class", "elem");
+    fieldDiv.setAttribute("id", "div"+(++fcount))
+    fieldDiv.innerHTML = '<label class="obj">'+i+': </label>';
+    if(val[i] != null && typeof val[i] == "object") {
+        fieldDiv.innerHTML += '<span onclick="toggleVisible('+(fcount+1)+')" style="cursor: default">(click to toggle object view)</span><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])"><br />';
+
         var outerDiv = document.createElement("div");
         outerDiv.setAttribute("class", "obj");
-        for(var j=0; j<subobj.length-1; j++) {
-            printDiv(subobj[j], outerDiv);
+        outerDiv.setAttribute("id", "div"+(++fcount));
+        outerDiv.setAttribute("style", "display:block;");
+
+        var subobj = val[i];
+        for(var j in subobj) {
+            path.push("'"+j+"'");
+            printDiv(val[i], type[i], j, outerDiv, id, path);
+            path.pop();
         }
-        bd.appendChild(outerDiv);
+        fieldDiv.appendChild(outerDiv);
+    }
+    else if(type[i] == "boolean") {
+        var check = val[i] == "true" ? "checked" : "";
+        fieldDiv.innerHTML += '<input type="checkbox" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\'boolean\',\''+fcount+'\',['+path+'])" '+check+'><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+        fcount++;
     }
     else {
-        bd.innerHTML += '<input type="text" value="'+f[2]+'"></div>';
+        if(type[i] == "string" && val[i].length >= 20)
+            fieldDiv.innerHTML += '<textarea id="f'+fcount+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])">'+val[i]+'</textarea><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+        else
+            fieldDiv.innerHTML += '<input type="text" id="f'+fcount+'" value="'+val[i]+'" onchange="saveValue(\''+type[i]+'\',\''+fcount+'\',['+path+'])"><input type="button" value="x" onclick="deleteProp('+fcount+', ['+path+'])" />';
+        fcount++;
     }
+    bd.appendChild(fieldDiv);
 }
+
+// alright, so what really should be done is checkboxes, but this will work for now
+function deleteProp(num, path) {
+    var deleteThis = function() {
+        var tempObj = currentObj;
+        for(var i=0; i<path.length-1; i++) {
+            tempObj = tempObj[path[i]];
+        }
+        delete tempObj[path[path.length-1]];
+        document.getElementById("div"+num).style.display = "none";
+        this.hide();
+//      refreshTable();
+    }
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+        { width: "300px",
+          fixedcenter: true,
+          draggable: true,
+          visible: false,
+          close: true,
+          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+          text: "Are you sure you want to delete this field?",
+          buttons: [ { text:"Yes", handler:deleteThis }, { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Delete Field");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.bringToTop();
+    simpledialog1.show();
+}
+
+// currentObj stores edits to the fields
+var currentObj = {};
 
 function editRow(id) {
     ajax("ns=<%= request.ns %>&id="+id, "showTable", function(response) {
@@ -217,18 +224,161 @@ function editRow(id) {
         });
         bd = bd[0];
 
-        var fields = response.split("&&");
+        bd.innerHTML = "";
+        var obj = YAHOO.lang.JSON.parse(response);
+        currentObj = obj.val;
         // for each field, display the relevant input type
-        for(var i=0; i<fields.length-1; i++) {
-            printDiv(fields[i], bd);
-        }
+        for(var i in obj.val)
+            printDiv(obj.val, obj.type, i, bd, id, ["'"+i+"'"]);
+
         editRowPanel.bringToTop();
         editRowPanel.show();
     });
 }
 
+function saveValue(type, fcount, path) {
+    var val;
+    if(type == "boolean") {
+        val = document.getElementById("f"+fcount).checked;
+    }
+    else if(type == "number") {
+        val = parseInt(document.getElementById("f"+fcount).value);
+    }
+    else if(type == "Date") {
+        val = new Date('"'+document.getElementById("f"+fcount).value+'"');
+    }
+    else { // string
+        val = document.getElementById("f"+fcount).value;
+    }
 
+    var tempObj = currentObj;
+    for(var i=0; i<path.length-1; i++) {
+        tempObj = tempObj[path[i]];
+    }
+    tempObj[path[path.length-1]] = val;
+}
 
+// save an edited value
+function saveRow() {
+    // check for added fields
+    if(document.getElementById("newFieldDiv")) {
+        var min = parseInt(document.getElementById("newFieldDiv").className);
+
+        for(var i=min+1; i<fcount; i++) {
+            var label = document.getElementById("label"+i).value;
+            if(label.trim() == "") continue;
+
+            var val = document.getElementById("f"+i);
+            if(val.className == "boolean")
+                currentObj[label] = val.checked;
+            else if(val.className == "number")
+                currentObj[label] = parseInt(val.value);
+            else if(val.className == "date")
+                currentObj[label] = new Date('"'+val.value+'"');
+            else
+                currentObj[label] = val.value;
+        }
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(currentObj), "editRow", function(response) {
+        refreshTable();
+    });
+    editRowPanel.hide();
+}
+
+// Save a new value
+function saveRecord(elem) {
+    var bd = document.getElementById(elem);
+    var children = YAHOO.util.Dom.getChildren(bd);
+    var newObj = {};
+
+    var getVal = function(val) {
+        if(val.className == "boolean")
+            return val.checked;
+        if(val.className == "number")
+            return parseInt(val.value);
+        if(val.className == "string")
+            return val.value;
+        if(val.className == "date")
+            return new Date(val);
+        if(val.className == "object")
+            return null;
+    }
+
+    for(var i in children) {
+        if(children[i].style.display == "none") continue;
+
+        if(children[i].id == "newFieldDiv") {
+            var newFields = YAHOO.util.Dom.getChildren(children[i]);
+            for(var i in newFields) {
+                var label = YAHOO.util.Dom.getFirstChild(newFields[i]);
+                var labelVal = YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getFirstChild(label)).value;
+                if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getFirstChild(label)).value.trim() == "") continue;
+                var val = YAHOO.util.Dom.getNextSibling(label);
+                newObj[labelVal] = getVal(val);
+            }
+            continue;
+        }
+
+        var label = YAHOO.util.Dom.getFirstChild(children[i]);
+        var val = YAHOO.util.Dom.getNextSibling(label);
+        newObj[label.innerHTML.substring(0, label.innerHTML.length-2)] = getVal(val);
+    }
+    ajax("ns=<%= request.ns %>&action=save_row&val="+YAHOO.lang.JSON.stringify(newObj), "editRow", function(response) {
+        refreshTable();
+    });
+    createRecordPanel.hide();
+}
+
+// This is called when someone clicks "Add Field" in the Edit Record Dialog
+function addField(elem) {
+    // Let the user choose the field type
+    var bd = document.getElementById(elem);
+
+    var chooser = document.getElementById("chooseTypeDiv"+elem);
+    if(!chooser) {
+        var newField = document.createElement("div");
+        newField.setAttribute("id", "newFieldDiv");
+        newField.setAttribute("style", "margin-top: 10px;");
+        bd.appendChild(newField);
+
+        chooser = document.createElement("div");
+        chooser.setAttribute("id", "chooseTypeDiv"+elem);
+        chooser.innerHTML = 'Choose a type: <select id="selectFieldType" onchange="makeField(\''+elem+'\')"><option value=""></option><option value="string">String</option><option value="number">Number</option><option value="boolean">Boolean</option><!--<option value="date">Date</option>--></select>';
+        bd.appendChild(chooser);
+    }
+    else {
+        chooser.style.display = "block";
+    }
+}
+
+function makeField(elem) {
+    // get the field type
+    var selectFT = document.getElementById("selectFieldType");
+    var type = selectFT.value;
+    if(type=="") return;
+    // zero and hide the select
+    for(var i=0; i<selectFT.options.length; i++) {
+        selectFT.options[i].selected = false;
+    }
+    document.getElementById("chooseTypeDiv"+elem).style.display = "none";
+
+    // get the new field container
+    var con = document.getElementById("newFieldDiv");
+    con.setAttribute("class", fcount++);
+
+    // put a label/val field in the container
+    var elem = document.createElement("div");
+    elem.setAttribute("class", "elem");
+    elem.innerHTML = '<label class="obj"><nobr><input type="text" id="label'+fcount+'" style="width: 90px;" />: </nobr></label>';
+    if(type == "boolean") {
+        elem.innerHTML += '<input type="checkbox" id="f'+fcount+'" class="boolean"><br />';
+    }
+    else {
+        elem.innerHTML += '<input type="text" id="f'+fcount+'" class="'+type+'">';
+    }
+    fcount++;
+    con.appendChild(elem);
+}
 
 function editField(id, type, dbid, path) {
     var editSpan = document.getElementById("f"+id);
@@ -247,77 +397,37 @@ function editField(id, type, dbid, path) {
     }
 }
 
-function saveValue(id, type, dbid, path) {
-    var editSpan = document.getElementById("f"+id);
-
-    passData = "ns=<%= request.ns %>&action=edit&type="+type+"&id="+dbid+"&path="+path+"&retval="+id+"&val=";
-    if(type == "boolean") {
-        ajax(passData+document.getElementById("in"+id).checked, "editDb", function(response) {
-            if(response != "") {
-                alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                return;
-            }
-            editSpan.innerHTML = document.getElementById("in"+id).checked;
-            editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-        });
-    }
-    if(type == "number" || type == "string") {
-        var xtra = document.getElementById("extra"+id);
-        if(xtra) {
-            ajax(passData+document.getElementById("in"+id).innerHTML, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).innerHTML;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-        else {
-            ajax(passData+document.getElementById("in"+id).value, "editDb", function(response) {
-                if(response == "") {
-                    alert("Error: the maximum depth for table editing is 5 levels.  You are trying to set a variable "+response+" levels deep.");
-                    return;
-                }
-                editSpan.innerHTML = document.getElementById("in"+id).value;
-                editSpan.setAttribute("onclick", "editField("+id+",'"+type+"','"+dbid+"','"+path+"')");
-            });
-        }
-    }
-
-
-}
 
 var createRecordPanel;
 var createTablePanel;
 
-function createRecord() {
-    createRecordPanel.show();
+function addRecord() {
+    createRecordPanel.show()
 }
 function createTable() {
     createTablePanel.show();
 }
 
 function addTable() {
-var tbl = document.getElementById("createTableForm");
+    var tbl = document.getElementById("createTableForm");
 
-var passData = "";
-var children = YAHOO.util.Dom.getChildren(tbl);
-for(var i=0; i<children.length; i++) {
-var c = YAHOO.util.Dom.getLastChild(children[i]);
-if(c.getAttribute("type") == "text")
-                                if(c.value != "") passData += "&"+c.name+"="+c.value;
-if(c.getAttribute("type") == "checkbox")
-                                if(c.checked) passData += "&"+c.name;
-}
-ajax("action=create"+passData, "editDb", function(response) {
-refreshTable();
-});
-createTablePanel.hide();
+    var passData = "";
+    var children = YAHOO.util.Dom.getChildren(tbl);
+    for(var i=0; i<children.length; i++) {
+        var c = YAHOO.util.Dom.getLastChild(children[i]);
+        if(c.getAttribute("type") == "text")
+             if(c.value != "") passData += "&"+c.name+"="+c.value;
+        if(c.getAttribute("type") == "checkbox")
+             if(c.checked) passData += "&"+c.name+"=true";
+    }
+    ajax("action=create"+passData, "editDb", function(response) {
+        refreshTable();
+    });
+    createTablePanel.hide();
 }
 
 function closeCreateTableDlg() {
-createTablePanel.hide();
+    createTablePanel.hide();
 }
 
 </script>
@@ -326,11 +436,7 @@ createTablePanel.hide();
 core.db.db();
 if(top) {
     %>
-    <input type="button" value="Create Table" onclick="createTable()" />
-    <%
-} else {
-    %>
-    <input type="button" value="Add Record" onclick="createRecord()" />
+    <input type="button" value="Create Collection" onclick="createTable()" />
     <%
 }
 %>
@@ -345,14 +451,14 @@ if( rows.length >= max )
 
 if(top) {
     %>
-<div id="createTable">
-<div class="hd">Create Table</div>
+<div id="createTable" style="display:none">
+<div class="hd">Create Collection</div>
 <div class="bd">
 <form id="createTableForm">
-    <div><label>Table name: </label><input type="text"  name="tablename"></div>
-    <div><label>Fixed: </label><input type="checkbox"  name="fixed"></div>
-    <div><label>Size: </label><input type="text" name="size"></div>
-<div><label>Max: </label><input type="text" name="max"></div>
+    <div class="elem"><label class="obj">Collection name: </label><input type="text"  name="tablename"></div>
+    <div class="elem"><label class="obj">Fixed: </label><input type="checkbox"  name="fixed"></div>
+    <div class="elem"><label class="obj">Size: </label><input type="text" name="size"></div>
+<div class="elem"><label class="obj">Max: </label><input type="text" name="max"></div>
 </form>
 </div>
 <div class="ft"><input type="button" value="Save" onclick="addTable()"/>
@@ -364,37 +470,48 @@ if(top) {
 <%
 } else {
    %>
-<div id="createRecord">
+<div id="createRecord" style="display:none">
 <div class="hd">Add Record</div>
-<div class="bd">
-  Enter fields at your own risk!  All text will all be processed as strings.
-  <table>
-    <tr>
-<%
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<th>"+fields[b]+"</th>");
-}
-print("</tr><tr>");
-for(var b in fields) {
-    if(!ignore[fields[b]] && fields[b] != "_id")
-        print("<td><input type='text' name='"+fields[b]+"' /></td>");
-}
+<div class="bd" id="createRecordBd">
+    <%
+    var x = collection.findOne();
+    var fcount = 0;
+    for(var b in fields) {
+        if(ignore[fields[b]] || fields[b] == "_id")
+            continue;
+
+
+        print('<div class="elem" id="div'+fcount+'"><label class="obj">'+fields[b]+': </label>');
+        if(x[fields[b]] == null)
+            print('<span class="object">(type unknown)</span>');
+        else if(x[fields[b]] instanceof Date)
+            print('<input type="text" class="date" id="'+fields[b]+'">');
+        else if(typeof x[fields[b]] == "object")
+            print('<span class="object">(null object)</span>');
+        else if(typeof x[fields[b]] == "boolean")
+            print('<input type="checkbox" class="boolean" id="'+fields[b]+'">');
+        else
+            print('<input type="text" class="'+(typeof x[fields[b]])+'" id="'+fields[b]+'">');
+
+        print('<input type="button" value="x" onclick="deleteProp('+(fcount++)+', [])" />');
+        print('</div>');
+    }
 %>
-</tr>
-</table>
 </div>
 <div class="ft">
-<input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<input type="button" value="Add Field" onclick="addField('createRecordBd')" />
+<input type="button" value="Save" onclick="saveRecord('createRecordBd')"/>
+<input type="button" value="Cancel" onclick="createRecordPanel.hide()" />
 </div>
 </div>
 
-<div id="editRecord" style="background:gainsboro;">
-<div id="hd">Edit Record</div>
-<div id="bd"></div>
-<div id="ft"><input type="button" value="Save" onclick="saveRecord()"/>
-<input type="button" value="Cancel" onclick="handleNo" />
+<div id="editRecord" style="display:none">
+<div class="hd">Edit Record</div>
+<div class="bd" id="bd"></div>
+<div class="ft">
+  <input type="button" value="Add Field" onclick="addField('bd')" />
+  <input type="button" value="Save" id="saveRowBtn" onclick="saveRow()"/>
+  <input type="button" value="Cancel" onclick="editRowPanel.hide()" />
 </div>
 </div>
 
@@ -425,21 +542,19 @@ for(var b in fields) {
 <script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
 
-<!--<script type="text/javascript">
-var myLogReader = new YAHOO.widget.LogReader();
-</script>
--->
-
 <script type="text/javascript">
+
+var fcount = <%= fcount+1 %>;
+
 
 <%
 if(top) {
-    var cols = [ "name", "index", "fixed" ]; //, "dateCreate", "dateUpdate", "size", "rows", "fixed" ];
+    var cols = [ "name", "index", "fixed" ];
 }
 %>
 
 addSearchForm = function(n) {
-    var str = '<input type="text" name="'+n+'" class="minisearch"';
+    var str = '<form style="display:inline;" onsubmit="doSearch(); return false;"><input type="text" name="'+n+'" class="minisearch"';
     if(n == "Name") {
         return '<nobr><input type="button" name="action" onclick="doSearch()" value="Search" />'+str+"></nobr>";
     }
@@ -513,11 +628,11 @@ if(top) {
             visible: false,
             close: true,
             icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop this table?",
+            text: "Are you sure you want to drop the collection "+tname+"?",
             buttons: [ { text:"Yes", handler:handleDrop },
             { text:"No", handler:handleNo, isDefault:true } ]
             } );
-        simpledialog1.setHeader("Drop Table");
+        simpledialog1.setHeader("Drop Collection");
         simpledialog1.render("myMarkedUpContainer");
         simpledialog1.show();
     }
@@ -590,13 +705,36 @@ function getSearchArgs() {
     return passData;
 }
 
+(function(){var B=YAHOO.widget.DataTable,A=YAHOO.util.Dom;B.prototype._setColumnWidth=function(I,D,J){I=this.getColumn(I);if(I){J=J||"hidden";if(!B._bStylesheetFallback){var N;if(!B._elStylesheet){N=document.createElement("style");N.type="text/css";B._elStylesheet=document.getElementsByTagName("head").item(0).appendChild(N)}if(B._elStylesheet){N=B._elStylesheet;var M=".yui-dt-col-"+I.getId();var K=B._oStylesheetRules[M];if(!K){if(N.styleSheet&&N.styleSheet.addRule){N.styleSheet.addRule(M,"overflow:"+J);N.styleSheet.addRule(M,"width:"+D);K=N.styleSheet.rules[N.styleSheet.rules.length-1]}else{if(N.sheet&&N.sheet.insertRule){N.sheet.insertRule(M+" {overflow:"+J+";width:"+D+";}",N.sheet.cssRules.length);K=N.sheet.cssRules[N.sheet.cssRules.length-1]}else{B._bStylesheetFallback=true}}B._oStylesheetRules[M]=K}else{K.style.overflow=J;K.style.width=D}return }B._bStylesheetFallback=true}if(B._bStylesheetFallback){if(D=="auto"){D=""}var C=this._elTbody?this._elTbody.rows.length:0;if(!this._aFallbackColResizer[C]){var H,G,F;var L=["var colIdx=oColumn.getKeyIndex();","oColumn.getThEl().firstChild.style.width="];for(H=C-1,G=2;H>=0;--H){L[G++]="this._elTbody.rows[";L[G++]=H;L[G++]="].cells[colIdx].firstChild.style.width=";L[G++]="this._elTbody.rows[";L[G++]=H;L[G++]="].cells[colIdx].style.width="}L[G]="sWidth;";L[G+1]="oColumn.getThEl().firstChild.style.overflow=";for(H=C-1,F=G+2;H>=0;--H){L[F++]="this._elTbody.rows[";L[F++]=H;L[F++]="].cells[colIdx].firstChild.style.overflow=";L[F++]="this._elTbody.rows[";L[F++]=H;L[F++]="].cells[colIdx].style.overflow="}L[F]="sOverflow;";this._aFallbackColResizer[C]=new Function("oColumn","sWidth","sOverflow",L.join(""))}var E=this._aFallbackColResizer[C];if(E){E.call(this,I,D,J);return }}}else{}};B.prototype._syncColWidths=function(){var J=this.get("scrollable");if(this._elTbody.rows.length>0){var M=this._oColumnSet.keys,C=this.getFirstTrEl();if(M&&C&&(C.cells.length===M.length)){var O=false;if(J&&(YAHOO.env.ua.gecko||YAHOO.env.ua.opera)){O=true;if(this.get("width")){this._elTheadContainer.style.width="";this._elTbodyContainer.style.width=""}else{this._elContainer.style.width=""}}var I,L,F=C.cells.length;for(I=0;I<F;I++){L=M[I];if(!L.width){this._setColumnWidth(L,"auto","visible")}}for(I=0;I<F;I++){L=M[I];var H=0;var E="hidden";if(!L.width){var G=L.getThEl();var K=C.cells[I];if(J){var N=(G.offsetWidth>K.offsetWidth)?G.firstChild:K.firstChild;if(G.offsetWidth!==K.offsetWidth||N.offsetWidth<L.minWidth){H=Math.max(0,L.minWidth,N.offsetWidth-(parseInt(A.getStyle(N,"paddingLeft"),10)|0)-(parseInt(A.getStyle(N,"paddingRight"),10)|0))}}else{if(K.offsetWidth<L.minWidth){E=K.offsetWidth?"visible":"hidden";H=Math.max(0,L.minWidth,K.offsetWidth-(parseInt(A.getStyle(K,"paddingLeft"),10)|0)-(parseInt(A.getStyle(K,"paddingRight"),10)|0))}}}else{H=L.width}if(L.hidden){L._nLastWidth=H;this._setColumnWidth(L,"1px","hidden")}else{if(H){this._setColumnWidth(L,H+"px",E)}}}if(O){var D=this.get("width");this._elTheadContainer.style.width=D;this._elTbodyContainer.style.width=D}}}this._syncScrollPadding()}})();
+
+function collapseCol(key) {
+    var col = myDataTable.getColumn(key);
+    var x = col.parent.parent._elTh;
+    var curWidth = YAHOO.util.Dom.getStyle(x, "width");
+    var arrow = document.getElementById("arrow"+key);
+    var oldWidth = arrow.getAttribute("oldWidth");
+
+    if(oldWidth && parseInt(oldWidth) > parseInt(curWidth)) {
+        var arrow = document.getElementById("arrow"+key);
+        var oldWidth = arrow.getAttribute("oldWidth");
+        myDataTable.setColumnWidth(col, parseInt(oldWidth));
+        arrow.setAttribute("oldWidth", "0");
+    }
+    else {
+        myDataTable.setColumnWidth(col, 10);
+        arrow.setAttribute("oldWidth", curWidth.substring(0, curWidth.length-2));
+    }
+}
+
 // Custom sorters
 var sortHex = function(a, b, desc) {
     return parseInt(a.getData("_id"), 16) >= parseInt(b.getData("_id"), 16) ? (desc ? 1 : -1) : (desc ? -1 : 1) ;
 }
 
 // Todo: write date sort
-var sortDate = function(a, b, desc) {}
+var sortDate = function(a, b, desc) {
+
+}
 
 
 myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
@@ -604,14 +742,14 @@ myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
 var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 20,
+    rowsPerPage: 50,
     alwaysVisible : false
 });
 
 oConfigs = {
     initialRequest: "",
     paginator: myPaginator,
-    <%= top ? 'sortedBy:{key:"name", dir:"desc"}' : '' %>
+    sortedBy: { <%= top ? 'key:"name"' : 'key:"_id"' %>, dir:YAHOO.widget.DataTable.CLASS_ASC }
 };
 
 myDataSource.responseSchema = {
@@ -624,13 +762,19 @@ myDataSource.responseSchema = {
         %>
 
         {key: "delete"}, <%
-        if(rows && rows[0]) {
-            for(var i in rows[0]) {
-                if(!ignore[i]) {
-                    print('{ key: "'+i+'"');
-                    print(', parser:YAHOO.util.DataSource.parseString');
-                    print('},');
+        var f = {};
+        if(rows) {
+            for(var rownum in rows) {
+                for(var i in rows[rownum]) {
+                    if(!ignore[i] && !f[i]) {
+                        f[i] = 1;
+                    }
                 }
+            }
+            for(var i in f) {
+                print('{ key: "'+i+'"');
+                print(', parser:YAHOO.util.DataSource.parseString');
+                print('},');
             }
         }
     }
@@ -639,33 +783,23 @@ myDataSource.responseSchema = {
             ]
 };
 
-
-
 var myColumnDefs = [ <% if(top) {
-    print('{ label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink", children: [ { label: addSearchForm("'+cols[0]+'"), sortable: false } ] },');
-    print('{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + ', children: [{ label: addSearchForm("'+cols[1]+'"), sortable: false }]},');
-    print('{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + ', children: [{ label: addSearchForm("'+cols[2]+'"), sortable: false }]},');
-    print('{ label: "Stats", children: [{key: "stats", label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", formatter: "statsBtn" }]},');
-    print('{ label: "Drop Table", children: [{key: "drop", label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", formatter: "dropBtn" }]},');
+    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
+    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
+    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
+    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
+    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
-    %>
-    { key: "edit", label:"Edit", formatter: "editBtn", children: [{label: '<input type="button" value="Search" onclick="doSearch()"><input type="button" onclick="clearSearch()" value="Refresh" />'}]},
-    <%
-    if(rows && rows[0]) {
-        for(var i in rows[0]) {
-            if(!ignore[i]) {
-                // Special cases:
-                // if _id, the column needs to be converted to hexidecimal and sorted that way
-                if(i == "_id") {
-                    print('{ label: "'+i+'", sortable: true, sortOptions:{sortFunction:sortHex}, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
-                }
-                else
-                    print('{ label: "'+i+'", sortable: true, children: [{ label: addSearchForm("'+i+ '"), key: "'+i+'", sortable: false } ] },');
+    if(rows) {
+        print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\'_id\\\')" id="arrow_id"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , resizeable: true, sortable: false, children: [{ label: addSearchForm("_id"), sortable: false, children: [{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true }]}]},');
+        for(var i in f) {
+            if(!ignore[i] && i != "_id") {
+                print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , resizeable: true, sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
             }
        }
     }
     %>
-    { key: "delete", label:"Delete", formatter: "deleteBtn", children: [{label: ''}]}
+    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
     <%
 }
                      %>
@@ -675,16 +809,47 @@ var myColumnDefs = [ <% if(top) {
 
 var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 
+var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
+myDataTable.onEventSortColumn = function(e, target) {
+    currentSort = {};
+    currentSort.key = e.column.parent.children[0].key;
+    currentSort.dir = e.dir;
+}
+myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
 
 updateCaseTable = {
-    success : function(){ myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments); myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength()); },
+    argument : {
+        sorting : {
+    key : currentSort.key,
+    dir : currentSort.dir
+        }
+    },
+    success : function(){
+        updateCaseTable.argument.sorting.key = currentSort.key;
+        updateCaseTable.argument.sorting.dir = currentSort.dir;
+        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
+        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
+    },
     failure : myDataTable.onDataReturnInitializeTable,
     scope : myDataTable
 };
 
 
-
 myDataSource.liveData = "showTable?";
+
+function fnCallback(e) {
+    if(e.target.className=="obj" || e.target.className == "button")
+        return;
+
+    if(e.ctrlKey == false) {
+        var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
+        for(var i=0; i<divs.length; i++) {
+            divs[i].style.display = "none";
+        }
+    }
+    if(YAHOO.util.Dom.getNextSibling(e.target))
+        YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
+}
 
 <%
 if(top) {
@@ -702,7 +867,7 @@ if(top) {
         elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
     }
     dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop Table" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+        elCell.innerHTML = '<input type="button" value="Drop Collection" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
     }
 
     YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
@@ -713,26 +878,65 @@ if(top) {
 }
 else {
     %>
+    idFormatter = function(elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
     deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
     }
-    editBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Edit" onclick="editRow(\''+oRecord.getData("_id")+'\')" />';
+    strFormatter = function(elCell, oRecord, oColumn, oData) {
+        if(!oData) {
+            elCell.innerHTML = '<img src="NOCDN/~~/admin/assets/nonexistent.png">';
+        }
+        else if(oData.length >= 20) {
+            var fullText = document.createElement("div");
+            fullText.setAttribute("class","fullText");
+            fullText.setAttribute("id", "fullText"+fcount++);
+
+            if (YAHOO.lang.JSON.isValid(oData)) {
+                var x = YAHOO.lang.JSON.parse(oData);
+                fullText.innerHTML = "";
+                for(var q in x)
+                    fullText.innerHTML += printObj(x, q);
+                oData = '<span style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
+                oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
+            }
+            elCell.innerHTML = oData;
+            elCell.appendChild(fullText);
+            YAHOO.util.Event.addListener(elCell, "click", fnCallback);
+        }
+        else
+            elCell.innerHTML = oData;
+
     }
 
-    YAHOO.widget.DataTable.Formatter.editBtn = editBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.id = idFormatter;
     YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
+    YAHOO.widget.DataTable.Formatter.str = strFormatter;
+    <%
+}
+
+if(top) {
+    %>
+    createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createTablePanel.render("myMarkedUpContainer");
+    document.getElementById("createTable").style.display = "block";
+    <%
+}
+else {
+       %>
+    createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
+    createRecordPanel.render("myMarkedUpContainer");
+    document.getElementById("createRecord").style.display = "block";
+
+    editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+    editRowPanel.render("myMarkedUpContainer");
+    document.getElementById("editRecord").style.display = "block";
     <%
 }
 %>
-
-createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true } );
-createRecordPanel.render("myMarkedUpContainer");
-
-createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true } );
-createTablePanel.render("myMarkedUpContainer");
-
-editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
-editRowPanel.render("myMarkedUpContainer");
 
 </script>

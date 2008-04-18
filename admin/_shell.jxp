@@ -21,29 +21,42 @@ var populate = function(theScope){
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
 
-    theScope.__startFresh = function(){
+    theScope.clearCommandHistory = function(){
         db.shell.sessions.remove({user: user});
+        print.termCommand("reload");
     };
-    
+
     theScope.clearScope = function(){
         for(var key in theScope){
             delete theScope[key];
         }
-        populate(theScope);
     };
 
     theScope.clearTranscript = function(){
         print.termCommand("clear");
         return "";
     };
+
+    theScope.clearAll = function(){
+        theScope.clearScope();
+        theScope.clearTranscript();
+    };
+
+    theScope.setPrompt = function(prompt){
+        print.termCommand("setprompt", {$prompt: prompt});
+        user.shell = user.shell || {};
+        user.shell.prompt = prompt;
+        db.users.save(user);
+    };
 }
 
 if ( ! theScope ){
     log("Creating scope for " + shellId);
-    theScope = gg.child( "_shell scope : " + shellId );
+    parent = gg.child( "_shell scope parent : " + shellId );
+    populate(parent);
+    theScope = parent.child( "_shell scope : " + shellId );
     theScope.setGlobal( true );
     holder[ shellId ] = theScope;
-    populate(theScope);
 }
 
 theScope.setGlobal( true );
@@ -54,10 +67,16 @@ var oldprint = print;
 var Buffer = function(){
     var _buffer = [];
     return Object.extend(function(s){
-        _buffer.push(s);
+        if(_buffer.length == 0 || _buffer[_buffer.length-1].$command)
+            _buffer.push(s.toString());
+        else
+            _buffer[_buffer.length-1] += s;
+
     }, {
-        termCommand: function(command){
-            _buffer.push({$command: command});
+        termCommand: function(command, args){
+            // args is an Object
+            args = args || {};
+            _buffer.push(Object.extend(args, {$command: command}));
         },
         getBuffer: function(){
             return _buffer;
@@ -85,6 +104,9 @@ print( tojson( res ) );
 if(request.save == "true"){
     // Only the client knows whether to save this command.
     var session = db.shell.sessions.findOne({user: user});
+    if(session == null) 
+        // Is this an error? or is it because the session was just removed?
+        return;
     session.push(request.command, tojson(res));
     db.shell.sessions.save(session);
 }

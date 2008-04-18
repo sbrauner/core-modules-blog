@@ -1,0 +1,8 @@
+.gitunmerged {
+    background: #ff8f8f;
+}
+
+.conflicttype {
+    color: #f00;
+    text-weight: bold;
+}

@@ -1,0 +1,24 @@
+<%
+var g = arguments[0]; 
+%>
+
+<form method="POST">
+  <input type="hidden" name="viewedDiff" value="1"/>
+  <% request.getParameters('changed_file').forEach(function(z){ %>
+  <input type="hidden" name="changed_file" value="<%= z %>">
+  <% }); %>
+  <div class="field">
+    <textarea name="msg" rows="8" cols="80"><%= request.msg || "" %></textarea>
+  </div>
+  <div class="field">
+    <input type="submit" name="action" value="commit">
+    <input type="submit" name="action" value="never mind">
+  </div>
+</form>
+
+<%
+var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
+%>
+<pre>
+<%= content.HTML.escape(foo.out) %>
+</pre>

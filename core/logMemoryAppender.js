@@ -17,14 +17,7 @@ MemoryAppender.create = function(){
             cache[ loggerName ] = lst;
         }
 
-	var obj = { 
-	    msg : msg , 
-            level : level ,  
-            date : date ,
-            throwable : throwable , 
-            thread : thread ,
-	    logger : loggerName 
-	};
+	var obj = LogUtil.createObject( loggerName , date , level , msg , throwable , thread );
 	
         lst.push( obj );
         if ( lst.length > options.max  )

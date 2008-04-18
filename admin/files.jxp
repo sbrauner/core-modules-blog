@@ -6,7 +6,7 @@ if ( theFile ){
 }
 
 %>
-    
+
 <form method="POST" enctype="multipart/form-data" >
    <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
    Choose a file to upload: <input name="theFile" type="file" />
@@ -16,12 +16,23 @@ if ( theFile ){
 
 <%
 
-       if ( "Delete" == request.action ){
-	   print( "<b>I should delete something, but I don't know how yet</b><br>" );
-       }
+if ( "Delete" == request.action ){
+    var file = db._files.findOne({ _id: request._id});
+    var chunk = [];
+    var i=0;
+    var tbd = file;
+    while(tbd.next) {
+        chunk[i++] = db._chunks.findOne(tbd.next);
+        tbd = tbd.next;
+    }
+    for(var i=chunk.length-1; i>=0; i--)
+        db._chunks.remove(chunk[i]);
+
+    db._files.remove(file);
+}
 
 db._files.ensureIndex( { uploadDate : 1 } );
- var tab = new htmltable( { 
+ var tab = new htmltable( {
 	 ns : db._files ,
 	     cols : [
 		     { name : "filename", isLink: true, searchWidth: 50 },
@@ -30,8 +41,8 @@ db._files.ensureIndex( { uploadDate : 1 } );
 		     { name : "length" }
 		     ],
 	     detailUrl : "/~~/f?id=" ,
-	     searchable: true , 
-	     actions : [ 
+	     searchable: true ,
+	     actions : [
 			{ name : "Delete" }
 			]
 	     }

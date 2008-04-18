@@ -296,6 +296,9 @@ function getSearchArgs() {
           if(myarr[i].value != "") {
               dict[myarr[i].name] = myarr[i].value;
           }
+         else {
+             delete dict[myarr[i].name];
+         }
      }
      var pairs = [];
      for(var key in dict){
@@ -351,11 +354,15 @@ assignDep = function(x, xDependsOn, type) {
     });
 }
 
-showCase = function(id){
+var caseURL = function(id){
     var s = "case_edit?search="+escape(lastSearch)+"&page="+myDataTable.get('paginator').getCurrentPage() + "&showClosed=" + showClosed;
     if(id)
         s += "&id="+id;
-    location = s;
+    return s;
+};
+
+showCase = function(id){
+    location = caseURL();
 };
 
 var oMenu, checkAll = false;
@@ -364,16 +371,20 @@ var dependency = null;
 var rec = null;
 var assignDep_dlg;
 
+
 var loader = new YAHOO.util.YUILoader( {
      base: "/@@/yui/current/",
-    require: ["datatable", "json", "container", "dragdrop"],
+     require: ["datatable", "json", "container", "dragdrop"],
      loadOptional: true,
      onSuccess: function() {
 
          var myPaginator = new YAHOO.widget.Paginator({
              rowsPerPage: 30,
+             totalRecords: <%= db.bugtracker.cases.find().length() %>,
+             initialPage: <%= request.page ? request.page : 1 %>,
              alwaysVisible : false
          });
+
 
          confirmDlg = new YAHOO.widget.Dialog("confirm", {
              width: "400px",
@@ -418,7 +429,7 @@ var loader = new YAHOO.util.YUILoader( {
          var myColumnDefs = [
              {label: "", children: [{label: '<input type="checkbox" class="checkall" onclick="toggleCheckAll()">', key: "check", formatter: "checkbox" }]},
              {label: addForm("number", 3), children: [ {key: "number", label: "ID", sortable:true}]},
-             {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true }]},
+             {label: addForm("title"), children: [{ key: "title", label: "Name", sortable:true, formatter: "bugLink"}]},
              {label: addForm("owner"), children: [{ key: "owner", label: "Owner", sortable:true }]},
              {label: addForm("status", 3), children: [{ key: "status", label: "Status", sortable:true }]},
              {label: addForm("severity", 3), children: [{ key: "severity", label: "Severity", sortable: true}]},
@@ -427,6 +438,8 @@ var loader = new YAHOO.util.YUILoader( {
              {label: addForm("area", 3), children: [{ key: "area", label: "Area", sortable:true }]},
              {label: addForm("targetRelease", 3), children: [{ key: "targetRelease", label: "Release", sortable:true }]},
              {label: addForm("reporter", 4), children: [{ key: "reporter", label: "Author", sortable:true }]},
+             {label: addForm("timeToComplete"), children: [{key: "timeToComplete", label: "Time to Complete", sortable: true}]},
+             {label: addForm("estimatedCompletionDate"), children: [{key: "estimatedCompletionDate", label: "Estimated Completion Date", sortable: true}]},
              {label: "", children: [{ key: "dependency", label: "Dependency", sortable:true, formatter:"myCustom"}]}
          ];
 
@@ -442,7 +455,6 @@ var loader = new YAHOO.util.YUILoader( {
              }
          %>
          var mapping = <%= tojson(mapping) %>;
-         lastSearch = getSearchArgs();
          var pairs = [];
          for(var i in mapping){
              pairs.push(i+'='+mapping[i]);
@@ -457,7 +469,7 @@ var loader = new YAHOO.util.YUILoader( {
          myDataSource.connXhrMode = "queueRequests";
          myDataSource.responseSchema = {
              resultsList: "rows",
-             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency" ]
+             fields: [ {key:"number", parser:YAHOO.util.DataSource.parseNumber}, "title", "owner", "status", "severity", "type", "project", "area", "reporter", "targetRelease", "id", "dependency", "timeToComplete", "estimatedCompletionDate" ]
          };
          var oConfigs = {
              paginator: myPaginator,
@@ -466,7 +478,6 @@ var loader = new YAHOO.util.YUILoader( {
          };
 
          myDataTable = new YAHOO.widget.DataTable("bugJar", myColumnDefs, myDataSource, oConfigs);
-
 
 
          YAHOO.widget.DataTable.Formatter.myCustom = function(elCell, oRecord, oColumn, oData) {
@@ -492,6 +503,11 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
          };
+
+         YAHOO.widget.DataTable.Formatter.bugLink = function(elCell, oRecord, oColumn, oData) {
+             elCell.innerHTML = "<a class=\"bugLink\" href=\""+caseURL(oRecord.getData("id"))+"\">"+oRecord.getData("title")+"</a>";
+         };
+
 
          myDataTable.onEventSelectCell = function(e) {
              if(YAHOO.util.Dom.getFirstChild(YAHOO.util.Dom.getAncestorByTagName(e.target, "tr")) == e.target)
@@ -564,7 +580,7 @@ var loader = new YAHOO.util.YUILoader( {
                  }
              }
 
-             showCase(myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id"));
+             //showCase(myDataTable.getRecord(myDataTable.getTrEl(e.target)).getData("id"));
           }
 
          assignDep_dlg = new YAHOO.widget.Dialog("assignDependency", { fixedcenter: true,
@@ -590,6 +606,7 @@ var loader = new YAHOO.util.YUILoader( {
 
          <% if(request.search){ %>
          fillInForm(mapping);
+         lastSearch = getSearchArgs();
          <% } %>
 
           updateCaseTable = {

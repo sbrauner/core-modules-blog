@@ -2,10 +2,10 @@
 SERVER_HOSTNAME = javaStatic( "java.net.InetAddress" , "getLocalHost" ).getHostName();
 
 function mapUrlToJxpFileCore( uri , request , response ){
-    
+
     // webdav
     var ua = request.getHeader( "User-Agent" );
-    if ( ua && 
+    if ( ua &&
          ( ua.match( /webdav/i )
            || ua.match( /BitKinex/ )
            || ua.match( /\bneon\b/ )
@@ -15,16 +15,16 @@ function mapUrlToJxpFileCore( uri , request , response ){
          ){
         return "/~~/webdav.jxp";
     }
-    
-    if ( 
-        uri.match( /.*~$/ ) 
+
+    if (
+        uri.match( /.*~$/ )
         || uri.match( /\/\.#/ )
          )
         return "~~/bad";
 
     // admin
-    if ( ( 
-	  uri.match( /^(\/|\/~~\/)admin\// ) 
+    if ( (
+	  uri.match( /^(\/|\/~~\/)admin\// )
 	  || uri.match( /^\/admin/ )
 	  )
 	 && ! uri.match(/assets/))
@@ -40,10 +40,12 @@ function mapUrlToJxpFileCore( uri , request , response ){
         if ( res )
             return res;
     }
-    
+
 };
 
+core.core.log();
 
-core.core.logMemoryAppender(); 
 if ( ! MemoryAppender.find( log ) )
     log.appenders.push( MemoryAppender.create() );
+if ( ! BasicDBAppender.find( log ) )
+    log.appenders.push( BasicDBAppender.create() );

@@ -13,232 +13,319 @@ if( ! session ){
     session.save();
 }
 
+head.addCSS("/~~/admin/assets/shell.css");
  %>
-
 <div style="text-align:center;" class="yui-skin-sam">
      Shell (do not refresh page)<br>
      <div id="console"></div>
      <div id="treeview"></div>
-     <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
-     <script type="text/javascript" src="/@@/yui/2.5.1/yuiloader/yuiloader-beta.js"></script>
-     <script type="text/javascript">
-       var loader = new YAHOO.util.YUILoader();
-       loader.insert({
-           require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
-           base: '/@@/yui/2.5.1/',
-           onSuccess: function(loader) {
-               objectList = [];
-               loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
-               loader.objectNodes = [];
+     <div class="clear"></div>
+     <div class="button" onclick="showHistory()">Show history</div>
+     <div class="button" onclick="toggleTreeView()"><span id="treeViewShowVerb">Hide</span> object inspector</div>
+     <div id="history_popup" style="display: none;">
+       <div class="hd">History</div>
+       <div class="bd">
+         <div id="history_links"><% /* filled in by JS */ %></div>
+       </div>
+       <div class="ft"></div>
+     </div>
+</div>
 
-               // Log reader (the main console window)
-               // Dynamically create textarea for input:
-               // <div class="yui-ac">
-               //   <span class="prompt">js&gt;</span>
-               //   <textarea class="shellinput" id="commandac"></textarea>
-               // </div>
+<script type="text/javascript" src="/~~/ui/js/compat.js"></script>
+<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript">
+// FIXME: this screws up the prompts shown in the transcript; they could have
+// been different in the past
+var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
+var getUserPrompt = function(){ return userPrompt; };
+var getUserPromptHTML = function(){
+    return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+    "\"";
+}
 
-               var t = document.createElement("textarea");
-               t.id = "commandac";
-               var acdiv = document.createElement("div");
-               prompt = document.createElement("span");
-               prompt.className = "prompt";
-               prompt.appendChild(document.createTextNode("js>"));
-               acdiv.appendChild(prompt);
-               acdiv.appendChild(t);
-               acdiv.className = "yui-ac";
-               t.className = "shellinput";
-               this.myLogReader = new YAHOO.widget.LogReader('console', {
-                   newestOnTop: false,
-                   footerEnabled: false,
-                   _initHeaderEl: function(){
-                       YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
-                       this._elCollapse.style.display = "none";
-                   },
-                   _initConsoleEl: function(){
-                       YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
-                       this._elBd = this._elConsole;
-                       this._elBd.id = "consolebody";
-                       this._elConsole = document.createElement("div");
-                       this._elConsole.id = "transcript";
-                       this._elBd.appendChild(this._elConsole);
-                       this._elBd.appendChild(acdiv);
-                       YAHOO.util.Event.addListener(this._elBd, "click",
-                                                    function(){
-                                                        focusTextIfNotSelecting(t);
-                                                    });
+var loader = new YAHOO.util.YUILoader();
+loader.insert({
+    require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
+    base: '/@@/yui/2.5.1/',
+    onSuccess: function(loader) {
+        objectList = [];
+        loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
+        loader.objectTreeView.subscribe("expand", onNodeExpand);
+        loader.objectTreeView.subscribe("collapse", onNodeCollapse);
+        
+        loader.objectNodes = [];
+        
+        // ***** Console widget *****
+        
+        // Log reader (the main console window)
+        // Dynamically create textarea for input:
+        // <div class="yui-ac">
+        //   <span class="prompt">js&gt;</span>
+        //   <textarea class="shellinput" id="commandac"></textarea>
+        // </div>
+        
+        var t = document.createElement("textarea");
+        t.id = "commandac";
+        t.focus();
+        t.className = "shellinput";
+        // Borrow the AC styling
+        t.className += " yui-ac-input";
+        t.rows = 1;
+        
+        var acdiv = document.createElement("div");
+        prompt = document.createElement("span");
+        prompt.className = "prompt";
+        prompt.appendChild(document.createTextNode(getUserPrompt()));
+        acdiv.appendChild(prompt);
+        acdiv.appendChild(t);
+        acdiv.className = "yui-ac";
+        this.myLogReader = new YAHOO.widget.LogReader('console', {
+            newestOnTop: false,
+            footerEnabled: false,
+            draggable: false,
+            _initHeaderEl: function(){
+                YAHOO.widget.LogReader.prototype._initHeaderEl.call(this);
+                this._elCollapse.style.display = "none";
+            },
+            _initConsoleEl: function(){
+                YAHOO.widget.LogReader.prototype._initConsoleEl.call(this);
+                this._elBd = this._elConsole;
+                this._elBd.id = "consolebody";
+                this._elConsole = document.createElement("div");
+                this._elConsole.id = "transcript";
+                this._elBd.appendChild(this._elConsole);
+                this._elBd.appendChild(acdiv);
+                YAHOO.util.Event.addListener(this._elBd, "click",
+                                             function(){
+                                                 focusTextIfNotSelecting(t);
+                                             });
+                
+                
+                scratch = document.createElement("div");
+                scratchText = document.createElement("textarea");
+                scratchText.className = "scratchtext";
+                scratch.appendChild(scratchText);
+                scratch.className = "scratch";
+                this._elContainer.appendChild(scratch);
+            },
+            _printBuffer: function(){
+                YAHOO.widget.LogReader.prototype._printBuffer.call(this);
+                this._elBd.scrollTop = this._elBd.scrollHeight;
+            }});
+        
+        var sources = this.myLogReader.getSources();
+        this.myLogReader.hideSource("global");
+        this.myLogReader.hideSource("LogReader");
+        this.myLogReader.setTitle("10gen Shell");
+        YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        // On Linux, keydown handles cursor up/down
+        // On OS X, keypress handles it
+        // We process keydowns in histfunc, and then have to block
+        // the keypresses too.
+        blockOne = false;
+        YAHOO.util.Event.addListener(t, "keypress", function(e){
+            if(blockOne)
+                e.preventDefault();
+            blockOne = false;
+        });
+        
+        YAHOO.util.Event.addListener(window, "keydown",
+                                     function(e){
+                                         focusTextIfSelecting(t, e);
+                                     });
+        
+        YAHOO.util.Event.addListener(t,"keypress",function(e){
+            if(e.keyCode == 13){
+                window.lastSent = encodeURIComponent(t.value);
+                var value = t.value;
+                var check = checkRun(t);
+                if(check == true) {
+                    t.rows = 1;
+                    e.preventDefault();
+                    doRun(t);
+                }
+                else if(check == false){
+                    resizeRows(t, value, true);
+                }
+                else {
+                    // check is a result of match
+                    // unterminated string literal :(
+                    if(check.index+1 == t.value.length){
+                        t.selectionStart = check.index;
+                        t.selectionEnd = check.index+1;
+                    }
+                    else {
+                        t.selectionStart = check.index + 1;
+                        t.selectionEnd = t.value.length;
+                    }
+                    e.preventDefault();
+                }
+            }
+        });
 
+        this.myLogReader.formatMsg = function(msg){
+            if(msg.category == "format")
+                return msg.msg;
 
-                       scratch = document.createElement("div");
-                       scratchText = document.createElement("textarea");
-                       scratchText.className = "scratchtext";
-                       scratch.appendChild(scratchText);
-                       scratch.className = "scratch";
-                       this._elContainer.appendChild(scratch);
-                   },
-                   _printBuffer: function(){
-                       YAHOO.widget.LogReader.prototype._printBuffer.call(this);
-                       this._elBd.scrollTop = this._elBd.scrollHeight;
-                   }});
-               this.myLogReader.setTitle("10gen Shell");
+            if(msg.category == "user"){
+                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML()+"</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
+            }
+            if(msg.category == "response"){
+                var string = function(msg){
+                    return "<span class=\"response\">" + msg + "</span><br/>";
+                }
+                if(!msg.msg) return "";
 
-               var sources = this.myLogReader.getSources();
-               this.myLogReader.hideSource("global");
-               this.myLogReader.hideSource("LogReader");
-               this.myLogReader.formatMsg = function(msg){
-                   if(msg.category == "format")
-                       return msg.msg;
+                var s = "";
+                var obj = eval("(" + msg.msg + ")");
+                if(obj.$printed){
+                    if(typeof obj.$printed == "string")
+                        obj.$printed = [obj.$printed];
+                    for(var i = 0; i < obj.$printed.length; i++){
+                        var p = obj.$printed[i];
+                        
+                        if(typeof(p) == "string")
+                            s += "<span class=\"output\">" + p + "</span><br/>";
+                        else if(p.$command == "clear"){
+                            s = "";
+                            clearTranscript();
+                        }
+                        else if(p.$command == "reload"){
+                            location.reload();
+                        }
+                        else if(p.$command == "setprompt"){
+                            userPrompt = p.$prompt;
+                            prompt.innerHTML = getUserPromptHTML();
+                        }
+                    }
+                }
+                if(obj.$scope && ! replay){
+                    refreshScope(loader.objectTreeView, obj.$scope);
+                }
 
-                   if(msg.category == "user"){
-                       return "<span class=\"prompt pastprompt\">js&gt;</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
-                   }
-                   if(msg.category == "response"){
-                       var string = function(msg){
-                           return "<span class=\"response\">" + msg + "</span><br/>";
-                       }
-                       if(!msg.msg) return "";
+                if(obj.$exception){
+                    s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
+                    return s;
+                }
 
-                       var s = "";
-                       var obj = eval("(" + msg.msg + ")");
-                       if(obj.$printed){
-                           if(typeof obj.$printed == "string")
-                               obj.$printed = [obj.$printed];
-                           for(var i = 0; i < obj.$printed.length; i++){
-                               var p = obj.$printed[i];
-                               
-                               if(typeof(p) == "string")
-                                   s += "<span class=\"output\">" + p + "</span><br/>";
-                               else if(p.$command == "clear"){
-                                   s = "";
-                                   clearTranscript();
-                               }
-                           }
-                       }
-                       if(obj.$scope && ! replay){
-                           refreshScope(loader.objectTreeView, obj.$scope);
-                       }
+                obj = obj["$"];
+                if(obj instanceof Function) obj = string(obj.toString());
+                else obj = string(YAHOO.lang.JSON.stringify(obj));
+                return s += obj;
+            }
+        };
 
-                       if(obj.$exception){
-                           s += "<span class=\"exception\">" + obj.$exception + "</span><br/>";
-                           return s;
-                       }
+        var markScratchEvent = function(e){
+            e.inScratchText = true;
+        }
 
-                       obj = obj["$"];
-                       return s += string(YAHOO.lang.JSON.stringify(obj));
-                   }
-               };
+        var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event;
+        Event.addListener(scratchText, "keydown", markScratchEvent);
+        Event.addListener(scratchText, "keyup", markScratchEvent);
+        Event.addListener(scratchText, "keypress", markScratchEvent);
 
-               // resize handle on scratch area
-               var Dom = YAHOO.util.Dom, Event = YAHOO.util.Event,
-                   row1 = null, row2 = null;
-               row1 = Dom.get("consolebody");
-               row2 = scratchText;
-               var size = parseInt(Dom.getStyle("console", "height"), 10);
-               scratchText.style.height = size;
+        // resize handle on scratch area
+        var row1 = null, row2 = null;
+        row1 = Dom.get("consolebody");
+        row2 = scratchText;
+        var size = parseInt(Dom.getStyle("console", "height"), 10);
+        scratchText.style.height = size;
 
-               var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
+        var max = (size - Dom.getStyle(this.myLogReader._elHeader, "height") - 30);
 
-               var resize = new YAHOO.util.Resize(scratch, {
-                   handles: "t",
-                   height: 0,
-                   maxHeight: max
-               });
+        var scratchResize = new YAHOO.util.Resize(scratch, {
+            handles: "t",
+            height: 0,
+            maxHeight: max
+        });
 
-               oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
-               resize.on('resize', function(ev) {
-                   var oldScrollHeight = row1.scrollHeight, 
-                       oldScrollTop = row1.scrollTop;
-                   var w = ev.height;
-                   Dom.setStyle(scratchText, "height", w);
-                   var newHeight = (size - w - 20);
-                   Dom.setStyle(row1, "height", newHeight);
+        oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
+        scratchResize.on('resize', function(ev) {
+            var oldScrollHeight = row1.scrollHeight, 
+                oldScrollTop = row1.scrollTop;
+            var w = ev.height;
 
-                   if(oldHeight + oldScrollTop >= oldScrollHeight) {
-                       // row1 was scrolled all the way down
-                       row1.scrollTop = row1.scrollHeight;
-                   }
-                   oldHeight = newHeight;
-               });
+            // The height here has to be enough for the resize handle
+            // and the textarea size. So we set the size of the 
+            // textarea to the size of the div, minus the margin the
+            // textarea has.
+            Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10)+"px");
+            var newHeight = (size - w - 20);
+            Dom.setStyle(row1, "height", newHeight + "px");
 
+            if(oldHeight + oldScrollTop >= oldScrollHeight) {
+                // row1 was scrolled all the way down
+                row1.scrollTop = row1.scrollHeight;
+            }
+            oldHeight = newHeight;
+        });
 
-               resize.resize(null, 10, 0, 0, 0, true);
+        scratchResize.resize(null, 10, 0, 0, 0, true);
 
-               var replay = false;
+        var replay = false;
 
+        var inputs = <%= tojson(session.getCommands()) %>;
 
-               var inputs = <%= tojson(session.getCommands()) %>;
+        historyAry = []; // indexes of input used on each line
+        pastCommands = []; // commands themselves; unique for YUI AC
 
-               historyAry = []; // indexes of input used on each line
-               pastCommands = []; // commands themselves; unique for YUI AC
+        // translate non-unique strings into YUI-friendly format
+        for(var i = 0; i < inputs.length; i++){
+            var cmd = inputs[i];
+            if(inputs.indexOf(cmd) < i) {
+                // duplicate command!
+            }
+            else {
+                pastCommands.push(cmd);
+            }
+            historyAry.push(pastCommands.indexOf(cmd));
+        }
 
-               // translate non-unique strings into YUI-friendly format
-               for(var i = 0; i < inputs.length; i++){
-                   var cmd = inputs[i];
-                   if(inputs.indexOf(cmd) < i) {
-                       // duplicate command!
-                   }
-                   else {
-                       pastCommands.push(cmd);
-                   }
-                   historyAry.push(pastCommands.indexOf(cmd));
-               }
+        var outputs = <%= tojson(session.getResults()) %>;
 
-               var outputs = <%= tojson(session.getResults()) %>;
+        // re-log all the old commands and responses
+        shouldReplay = false;
+        // Disabled for now; we may want this later
+        if(shouldReplay){
+            replay = true;
+            YAHOO.log("<span class='faded'>", "format", "shell");
+            for(var i = 0; i < inputs.length; i++){
+            YAHOO.log(inputs[i], 'user', 'shell');
+                YAHOO.log(outputs[i], 'response', 'shell');
+            }
+            YAHOO.log("</span>", "format", "shell");
+            YAHOO.log("<hr/>", "format", "shell");
+            
+            this.myLogReader._printBuffer();
+            
+            replay = false;
+        }
+        // History popup
 
-               // re-log all the old commands and responses
-               replay = true;
-               YAHOO.log("<span class='faded'>", "format", "shell");
-               for(var i = 0; i < inputs.length; i++){
-                   YAHOO.log(inputs[i], 'user', 'shell');
-                   YAHOO.log(outputs[i], 'response', 'shell');
-               }
-               YAHOO.log("</span>", "format", "shell");
-               YAHOO.log("<hr/>", "format", "shell");
+        historyPopup = new YAHOO.widget.Dialog('history_popup', {
+            fixedcenter: true,
+            draggable: true,
+            visible: false,
+        });
+        historyPopup.render();
+        historyPopup.subscribe("hide", function(){
+            // Firefox on OS X bug; scrollbars on a visibility: hidden element
+            // aren't hidden...
+            document.getElementById("history_popup").style.display = "none";
+        })
 
-               this.myLogReader._printBuffer();
+        // Key listener for "send from scratch"
 
-               replay = false;
+        // In OS X, "Enter" is spelled "77".
+        sendKey = {ctrl: true, keys: [YAHOO.util.KeyListener.KEY.ENTER, 77]};
 
-               YAHOO.util.Event.addListener(t,"keydown",histfunc);
+        new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
 
-               YAHOO.util.Event.addListener(window, "keydown",
-                                            function(){
-                                                focusTextIfSelecting(t);
-                                            });
+        abortKey = {ctrl: true, keys: 67}; // Ctrl-C
+        new YAHOO.util.KeyListener("commandac", abortKey, abortEntry).enable();
 
-               YAHOO.util.Event.addListener(t,"keypress",function(e){
-                   if(e.keyCode == 13){
-                       window.lastSent = encodeURIComponent(t.value);
-                       var value = t.value;
-                       if(checkRun(t)) {
-                           e.preventDefault();
-                           if(handleSpecialCommands(t)){
-                               t.value = "";
-                               return;
-                           }
-                           doRun(t);
-                       }
-                   }
-               });
-
-               // Borrow the AC styling
-               t.className += " yui-ac-input";
-
-               historyPopup = new YAHOO.widget.Dialog('history_popup', {
-                   fixedcenter: true,
-                   draggable: true,
-                   visible: false
-               });
-               historyPopup.render();
-
-               t.focus();
-
-               sendKey = {ctrl: true, keys: YAHOO.util.KeyListener.KEY.ENTER};
-
-               new YAHOO.util.KeyListener(scratchText, sendKey, sendScratch).enable();
-
-           }
-       });
+    }
+});
 
 var restoreDefault = function(e){
     e.preventDefault = function(){};
@@ -248,43 +335,45 @@ var clearTranscript = function(){
     document.getElementById("transcript").innerHTML = "";
 };
 
-var specialCommandsMap = {
-}
-blah ={    "clearAll": function(t){
-        doRun(t, "__clearAll()", "false");
-        location.reload();
-        return true;
-    },
-    "clearConsole": function(t){
-        clearTranscript();
-        return true;
-    }
+var abortEntry = function(){
+    document.getElementById("commandac").value = "";
 };
 
-var handleSpecialCommands = function(t){
-    var value = t.value.trim();
-    for(var key in specialCommandsMap){
-        if(value == key || value == key+"()" || 
-           value == "__"+key || value == "__"+key +"()"){
-            return specialCommandsMap[key](t);
-        }
-    }
+var resizeRows = function(t, value, newlinepressed){
+    // Safari sometimes runs this binding before the key is processed, sometimes
+    // afterwards.. why???
+    var newlines = value.match(/\n/g);
+    newlines = newlines? newlines.length: 0;
+    // Usually this runs before the textarea is updated, so add a newline if one
+    // was pressed
+    newlines = newlines + (newlinepressed? 1 : 0);
+
+    // if I have one newline, I have two rows: rows = newlines + 1
+    // firefox seems to make textareas with 1 row have two lines??
+    // no way to make a one-line textarea in firefox??
+    t.rows = newlines + 1 - (YAHOO.env.ua.gecko?1:0);
+
+    var row1 = document.getElementById("consolebody");
+    row1.scrollTop = row1.scrollHeight;
 };
 
 var focusTextIfNotSelecting = function(t){
     // If there's a click in the console, we focus the textarea, unless there
     // is a selection, in which case we don't want to lose it.
-    // FIXME: Check if there's selected text
     if(window.getSelection().isCollapsed == true)
         return t.focus();
 };
 
-var focusTextIfSelecting = function(t){
+var focusTextIfSelecting = function(t, e){
     // But if someone selects text and then types something, they probably mean
     // to type into the console. Unless they don't??? Maybe they're
     // trying to scroll the page up or down or something.
-    if(window.getSelection().isCollapsed == false)
-        return t.focus();
+    if(window.getSelection().isCollapsed == true)
+        return;
+    if(e.inScratchText)
+        return;
+    
+    return t.focus();
 };
 
 var sendScratch = function(e){
@@ -324,6 +413,8 @@ var setcmd = function () {
     else {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
+    resizeRows(cmd, cmd.value, false);
+    
 }
 
 var histfunc = function( e ) {
@@ -343,6 +434,12 @@ var histfunc = function( e ) {
         }
     }
 
+    // We check for up and down arrows.
+    // If we replace the currently edited command, then call preventDefault
+    // on the event to prevent them scrolling.
+    // We scroll ourselves if we move to a new multi-line command
+    // (by default, replacing the text of the textarea moves the cursor to
+    // the end?).
     if( key == 38 ) { // up arrow
         if(historyLocation == 0)
             currentCommand = document.getElementById("commandac").value;
@@ -353,6 +450,9 @@ var histfunc = function( e ) {
         else {
             setHistoryLocation(historyLocation);
         }
+        t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
+        e.preventDefault();
     }
     else if( key == 40 && historyLocation != 0) { // down arrow
         historyLocation += 1;
@@ -365,38 +465,32 @@ var histfunc = function( e ) {
         var newline = t.value.indexOf('\n');
         if(newline != -1)
             t.selectionStart = t.selectionEnd = newline;
+        else t.selectionStart = t.selectionEnd = t.value.length;
+        blockOne = true;
+        e.preventDefault();
     }
 };
-     </script>
 
-     <div class="clear"></div>
-     <div onclick="showHistory()">Show history</div>
-     <div id="history_popup" style="display: none;">
-       <div class="hd">History</div>
-       <div class="bd">
-         <div id="history_links"><% /* filled in by JS */ %></div>
-       </div>
-       <div class="ft"></div>
-     </div>
-</div>
-
-<script>
 var count = 0;
 var objcount = 0;
+// Unused code from when I borrowed Kristina's object explorer
+/*
 function Text(cursor, field){
     return "<input type=\"text\" id=\"txt"+count+"\" value=\""+cursor[field]+"\" onblur=\"rewrite('"+cursor._id+"','"+field+"','"+typeof cursor[field]+"','"+count+"')\">";
 }
 function Check(cursor, field) {
     return(cursor[field] ? "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',false)\" checked>" : "<input type=\"checkbox\" onclick=\"toggle('"+cursor._id+"','"+field+"',true)\">");
-}
+}*/
 
 function refreshScope(tree, scope) {
+    removingChildren = true;
     tree.removeChildren(tree.getRoot());
-    populateTree(tree.getRoot(), scope);
+    removingChildren = false;
+    populateTree(tree.getRoot(), scope, "");
     tree.draw();
 }
 
-function populateTree(treenode, obj) {
+function populateTree(treenode, obj, name) {
     for(var field in obj){
         s = field + ": ";
         if(typeof obj[field] == "boolean") {
@@ -415,9 +509,11 @@ function populateTree(treenode, obj) {
             s += (typeof obj[field]);
         }
 
-        var tmpNode = new YAHOO.widget.TextNode(s, treenode, false);
+        var myname = name+field;
+        var tmpNode = new YAHOO.widget.TextNode(s, treenode, expandedNodes[myname]);
+        tmpNode.name = myname;
         if(typeof obj[field] == "object") {
-            populateTree(tmpNode, obj[field]);
+            populateTree(tmpNode, obj[field], name+field+".");
         }
     }
 }
@@ -426,13 +522,13 @@ function expandObj(i){
     loader.objectNodes[i].expand();
 }
 
-    indexOf = function(ary, v){
-        for(var i=0; i<ary.length; ++i){
-            if(ary[i] == v)
-                return i;
-        }
-        return -1;
-    };
+indexOf = function(ary, v){
+    for(var i=0; i<ary.length; ++i){
+        if(ary[i] == v)
+            return i;
+    }
+    return -1;
+};
 lastIndexOf = function(ary, v){
     for(var i=ary.length-1; i>=0; --i){
         if(ary[i] == v)
@@ -443,6 +539,9 @@ lastIndexOf = function(ary, v){
 
 function checkRun(el){
     var usr = el.value;
+
+    // Eliot/Geir say this should be a call to client-side eval(), and
+    // we should keep it as long as there's a syntax error.
 
     // This is a bad idea. What if we actually invoke client code, like
     // print() or something else horrible?
@@ -456,9 +555,6 @@ function checkRun(el){
     }
     // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
     //return true;
-
-    // FIXME: unterminated strings? Should we treat these differently, perhaps
-    // not add a newline?
 
     // Strip strings and regexps
     /* OK, so, when checking for [](){}, first strip regexps and quotes.
@@ -492,9 +588,6 @@ function checkRun(el){
        /\/.+\// -> ""
 
     */
-    // FIXME?: Eliot/Geir say this should be a call to client-side eval(), and
-    // we should keep it as long as there's a syntax error.
-
     var repeat = function(s, f){
         var new_s = s;
         do{
@@ -513,7 +606,7 @@ function checkRun(el){
     // operator
     newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
     // Strip regexes
-    newusr = newusr.replace(/\/.*?\/[igm]?/g, "''");
+    newusr = newusr.replace(/\/.*?\/[igm]?/g, '""');
 
     // simple check right now -- count {/}, [/], (/) and make sure they're equal
     var checkMatch = function(usr, left, right){
@@ -528,21 +621,35 @@ function checkRun(el){
     if(! checkMatch(newusr, "{", "}") ) return false;
     if(! checkMatch(newusr, "\\[", "\\]") ) return false;
     if(! checkMatch(newusr, "\\(", "\\)") ) return false;
+
+    var match = newusr.replace(/""/g, "").match(/[\'\"].*$/);
+    if(match)
+        return match;
+
     return true;
 }
 
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
+    // Send a command to the server, retreive response, and dump both to
+    // the transcript
     var command = el;
     var usr = value || command.value;
+    // Should this command go into the history?
     save = save || "";
     command.value = "";
+    // Don't actually send on empty lines
+    if(usr == ''){
+        YAHOO.log(usr, "user", "shell");
+        return;
+    }
+
     if(indexOf(pastCommands, usr) == -1){
-        // This behavior is inspired by the history functionality in bash.
-        // If you retype the last command, or re-run it, it doesn't get
-        // entered into the history twice.
         pastCommands.push(usr);
     }
+    // This behavior is inspired by the history functionality in bash.
+    // If you retype the last command, or re-run it, it doesn't get
+    // entered into the history twice.
     if (historyAry.length == 0 || lastIndexOf(historyAry, indexOf(pastCommands, usr)) != historyAry.length-1) {
         save = "true";
         historyAry.push(indexOf(pastCommands,usr));
@@ -575,7 +682,7 @@ addHistoryLink = function(i){
 makeHistoryLink = function(i){
     var cmd = pastCommands[historyAry[i]];
     var divclass = "class='historyLink'";
-    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'>"+i+": "+cmd+"</div>";
+    var thisdiv = "<div "+divclass+"onclick='activateHistory("+i+")' id='historyLink_"+i+"'><div class=\"number\">"+(i+1)+"</div>: "+cmd+"</div>";
     return thisdiv;
 };
 
@@ -584,11 +691,28 @@ showHistory = function(){
     for(var i = 0; i < historyAry.length; i++){
         s += makeHistoryLink(i);
     }
+
     document.getElementById('history_links').innerHTML = s;
     document.getElementById("history_popup").style.display = "block";
     highlightHistory();
 
     historyPopup.show();
+};
+
+var toggleTreeView = function(){
+    var tv = document.getElementById("treeview");
+    var newverb;
+    if(tv.style.display != "none"){
+        newverb = "Show";
+        tv.style.display = "none";
+        document.getElementById("console").style.width = "95%";
+    }
+    else {
+        newverb = "Hide";
+        tv.style.display = "block";
+        document.getElementById("console").style.width = "";
+    }
+    document.getElementById("treeViewShowVerb").innerHTML = newverb;
 };
 
 activateHistory = function(i){
@@ -597,6 +721,20 @@ activateHistory = function(i){
     setHistoryLocation( -(historyAry.length-i) );
     historyPopup.hide();
     document.getElementById( "commandac" ).focus();
+};
+
+
+// Map of which nodes are open
+expandedNodes = {};
+removingChildren = false;
+
+var onNodeExpand = function(node){
+    expandedNodes[node.name] = true;
+};
+
+var onNodeCollapse = function(node){
+    if(removingChildren) return;
+    expandedNodes[node.name] = false;
 };
 
 </script>
