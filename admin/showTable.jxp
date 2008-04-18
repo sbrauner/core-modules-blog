@@ -120,6 +120,7 @@ else {
 
     rows = collection.find().sort( { name : 1 } ).toArray();
 }
+rows.reverse();
 
 var objcount = 0; // unique id for each object's div
 var fieldcount = 0;

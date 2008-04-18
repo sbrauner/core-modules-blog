@@ -86,12 +86,44 @@ myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
+var parseDateStr = function(str) {
+    var dateObj = {};
+    dateObj.yyyy = str.substring(0,4);
+    dateObj.MM = str.substring(5,7);
+    dateObj.dd = str.substring(8,10);
+    dateObj.hh = str.substring(11,13);
+    dateObj.mm = str.substring(14,16);
+    dateObj.ss = str.substring(17,19);
+    return dateObj;
+}
+
+var sortMyDates = function(a, b, desc) {
+    // Check for invalid dates (I don't think this can happen, but just in case...)
+    if(!a || a.length != 19)
+        return (!b || !b.length != 19) ? 0 : 1;
+    else if(!b || b.length != 19)
+        return -1;
+
+    var lt = desc ? 1 : -1;
+    var gt = desc ? -1 : 1;
+
+    a = parseDateStr(a.getData("ts"));
+    b = parseDateStr(b.getData("ts"));
+    if(a.yyyy != b.yyyy) return a.yyyy > b.yyyy ? gt : lt;
+    if(a.MM != b.MM) return a.MM > b.MM ? gt : lt;
+    if(a.dd != b.dd) return a.dd > b.dd ? gt : lt;
+    if(a.hh != b.hh) return a.hh > b.hh ? gt : lt;
+    if(a.mm != b.mm) return a.mm > b.mm ? gt : lt;
+    if(a.ss != b.ss) return a.ss > b.ss ? gt : lt;
+    return 0;
+}
+
 var myPaginator = new YAHOO.widget.Paginator({ rowsPerPage: 50, alwaysVisible : false } );
 
 oConfigs = {
     initialRequest: "",
     paginator: myPaginator,
-    sortedBy: { key: "ts", dir:YAHOO.widget.DataTable.CLASS_ASC }
+    sortedBy: { key: "ts", dir:YAHOO.widget.DataTable.CLASS_DESC }
 };
 
 myDataSource.responseSchema = {
@@ -103,7 +135,7 @@ myDataSource.responseSchema = {
     ]
 };
 
-var myColumnDefs = [ { label: "Timestamp", key: "ts", sortable: true, formatter: "myDate" },
+var myColumnDefs = [ { label: "Timestamp", key: "ts", sortable: true, sortOptions: { sortFunction : sortMyDates }, formatter: "myDate" },
                      { label: "Length (ms)", key: "millis", sortable: true },
                      { label: "Information", key: "info", sortable: true }
                    ];
