@@ -7,13 +7,23 @@ ActiveRecord.Base = function(){
 
 ActiveRecord.Base.prototype._isModel = true;
 
+ActiveRecord.Base.prototype._checkReady = function(){
+    if ( ! this.collectionName )
+        throw "need collectionName";
+};
+
 ActiveRecord.Base.prototype.setFile = function( filename ){
     this.collectionName = filename.replace( /\.rb$/ , "" );
 };
 
 ActiveRecord.Base.prototype.find = function( filter ){
-    SYSOUT( "in ActiveRecord.Base find : " + this.collectionName + " filter [" + tojson( filter ) + "]" );
-    return 17;
+    this._checkReady();
+    
+    var jsFilter = {};
+    if ( filter == "all" ){
+    }
+    
+    return db[ this.collectionName ].find();
 };
 
 
