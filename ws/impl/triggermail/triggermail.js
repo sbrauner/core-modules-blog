@@ -84,14 +84,15 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
     if (!methodName) return; // this should really throw an exception
     if (!(type == 'GET' || type == 'POST')) return;
 
-    xmlHTTPRequest = new XMLHttpRequest();
+    var xmlHTTPRequest = new XMLHttpRequest();
     parameters.api_key = this.apiKey;
     parameters.format = 'json';
-
+    
     var signature = this.__getSignature(parameters);
     parameters.sig = signature;
-    processedParameters = this.__objectToArray(this.__flatten(parameters)).join('&');
+    var processedParameters = this.__objectToArray(this.__flatten(parameters)).join('&');
 
+    var content;
     if (type == 'GET') {
         url = this.apiUrl + '/' + methodName + '?' + processedParameters;
         content = '';
@@ -99,7 +100,7 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
         url = this.apiUrl + '/' + methodName;
         content = processedParameters;
     }
-    
+
     xmlHTTPRequest.setRequestHeader('User-Agent', 'Triggermail API 10gen Client v' + this.version);
     xmlHTTPRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -113,7 +114,6 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
     if (xmlHTTPRequest.status == 200) {
         // got a valid method response, so process it
         this.lastResponse = xmlHTTPRequest.responseText;
-        SYSOUT( xmlHTTPRequest.responseText );
         return fromjson(xmlHTTPRequest.responseText);
     } else {
         // there's a lower level issue, so fail
