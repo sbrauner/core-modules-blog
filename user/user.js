@@ -75,6 +75,13 @@ User.prototype.presave = function( ){
     // Either this.uniqueness_hash is missing or name/email has changed
     // Either way, scan the DB for users with these attributes
 
+    if(this.name == ""){
+        throw "name is required";
+    }
+    if(this.email == ""){
+        throw "email is required";
+    }
+
     var t = this;
 
     if(t._id)
@@ -91,8 +98,7 @@ User.prototype.presave = function( ){
 
     log.user.presave.debug("using duplicate-checking function " + isDuplicate);
 
-    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) ||
-       isDuplicate({nickname: this.nickname}))
+    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) )
         throw "trying to save duplicate user: " + tojson(this);
 
     this.uniqueness_hash = md5(this.name + ":" + this.email + ":" + this.nickname);

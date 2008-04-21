@@ -611,6 +611,7 @@ if(top) {
 <script type="text/javascript" src="/@@/yui/current/datatable/datatable-beta-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/utilities/utilities.js"></script>
 
 <script type="text/javascript">
 

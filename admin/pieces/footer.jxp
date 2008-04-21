@@ -1,8 +1,6 @@
-<% head.addCSS( "NOCDN/~~/admin/assets/css.jxp" ); %>
-</div>
-<hr>
-<div style="text-align: center; font-size: .7em;">
-10 Gen Admin | <%= Date() %>
+<% core.admin.pieces.navLeftClose(); %>
+<div class="onecolumn">
+<p class="footer">10 Gen Admin | <%= Date() %></p>
 </div>
 </body>
 </html>

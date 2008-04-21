@@ -4,7 +4,11 @@ core.content.table();
 core.content.forms();
 core.ui.elements.menu();
 
+var obj = arguments[0];
+
 head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
+head.addCSS( "NOCDN/~~/admin/assets/leftNav.css" );
+head.addCSS( "NOCDN/~~/admin/assets/jason.css" );
 
 %>
 <% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
@@ -17,9 +21,9 @@ head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
 <% if (!_openAccess) { %>
 
 <div id="adminHeader">
-    <% core.admin.pieces.nav(); %>
+    <% core.admin.pieces.nav(obj); %>
     <% core.user.html.topCorner(); %>
 </div>
+<% core.admin.pieces.navLeft(obj); %>
 <% } %>
-<div id="customer_body">
 

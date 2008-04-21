@@ -1,10 +1,14 @@
 <%
+
+if ( request.getHost().equals( "corejs.10gen.com" ) )
+    return print( "you can't do this" );
+
 core.git.repo();
 core.ext.pluck();
 core.content.html();
 
-head.addScript("/~~/admin/assets/gitPopup.js");
-head.addCSS("/~~/admin/assets/gitLocal.css");
+head.addScript("NOCDN/~~/admin/assets/gitPopup.js");
+head.addCSS("NOCDN/~~/admin/assets/gitLocal.css");
 
 var g = new git.Repo(); 
 
@@ -165,5 +169,4 @@ for ( type in parsed ){
 %>
   </form>
 </table>
-<hr>
 

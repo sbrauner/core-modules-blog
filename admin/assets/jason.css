@@ -1,0 +1,91 @@
+/* From Jason */
+
+/* mass reset */	
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym {border:0;font-variant:normal;}sup {vertical-align:text-top;}sub {vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}body {font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}table {font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
+
+body {
+	background-color: #ffffff;
+	font-family: helvetica, arial, sans-serif;
+	background-image:url(img/header_back.gif);
+	background-repeat: repeat-x;
+	background-color: #ffffff;
+}
+
+img {
+	border: none;
+}
+
+/* Header */
+
+.blhd-left {
+	float: left;
+	padding: 5px 50px 5px 75px;
+}
+
+.blhd-center {
+	padding-top: 19px;
+}
+
+/* Tabs */
+
+#navcontainer {
+	margin-left: 40px;
+	padding-top: 19px;
+}
+
+#navcontainer ul {
+	margin: 0;
+	padding: 0;
+}
+
+#navcontainer ul li {
+	float: left;
+	padding: 0 20px 0 13px;
+	height: 24px;
+}
+
+#navcontainer ul li.active {
+	margin:0;
+	padding: 0 0 0 1em;
+	background:url(img/header_tab_active_left.gif) no-repeat left top;	
+}
+
+#navcontainer ul li.active a {
+	margin:0;
+	padding: 0 1em 0 0;
+	background:url(img/header_tab_active_right.gif) no-repeat right top;	
+}
+
+#navcontainer ul li a, #navcontainer ul li a:visited {
+	display: block;
+	line-height: 24px;
+	font-size: 12px;
+	text-decoration: none;
+	color: #ffffff;
+}
+
+#navcontainer ul li a:hover, #navcontainer ul li a:visited:hover {
+	color: #95ca17;
+}
+
+div.onecolumn {
+	clear:left;
+	width:100%; 
+}
+
+div.topbar {
+	height: 80px;
+	line-height: 80px;
+}
+
+div.container {
+	min-width: 975px;
+}
+
+/* Footer */
+
+p.footer {
+	margin-top: 5em;
+	text-align: center;
+	font-size: 11px;
+}

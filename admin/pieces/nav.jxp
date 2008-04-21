@@ -1,4 +1,37 @@
 <%
+var obj = arguments[0] || {};
+var sectionList = obj.sectionList || [];
+var sectionTree = core.admin.data.sectiontree();
+%>
+<!-- Top Layout -->
+<div class="container">
+  <div class="onecolumn topbar">
+	
+	  <!-- 10gen Logo -->
+<div class="blhd-left"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="100" height="50" alt="10gen logo"></div>
+	
+	  <!-- Global Nav -->
+	  <div id="navcontainer">
+	    <ul>
+<%
+var className;
+for(var key in sectionTree){
+    if(sectionList[0] == key) className = "active";
+    else className = "";
+    var link = "/admin/" + key;
+    if(sectionTree[key].$) link = sectionTree[key].$;
+%>
+    <li class="<%= className %>"><a href="<%= link %>"><%= key.toUpperCase() %></a></li>
+<% 
+}
+%>
+		</ul>
+	  </div>
+	
+  </div>	
+</div>
+
+<%
 
 var config = arguments[0] || {};
 
@@ -6,48 +39,7 @@ if ( config.onlyBase )
     config.noScriptTags = true;
 
 head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
-
-var menu = [
-
-
-    { text: '<em id=\"xgenLabel\"> </em>', url : 'http://www.10gen.com' } ,
-    { text: '<em id=\"homeLabel\">Home</em>', url : "/admin/" },
-
-    { text : "<em id='systemLabel'>System</em>" , url : "#" ,
-      submenu : {
-	  id : "systemMenu" ,
-          itemdata : [
-              { text : "Users" , url : "/admin/users.jxp" } ,
-              { text : "Database" , url : "/admin/database.jxp" } ,
-              { text : "Files" , url : "/admin/files.jxp" } ,
-              { text : "Cron" , url : "/admin/cron.jxp" } ,
-              { text : "Usage" , url : "/admin/usage.jxp" } ,
-	      { text : "Logs" ,
-		submenu : { 
-		    id : "logsMenu" ,
-		    itemdata : [
-	      		{ text : "Logs in Memory" , url : "/admin/logMemory.jxp" } ,
-			{ text : "Scrolling Logs" , url : "/admin/logScroll.jxp" }
-		    ]
-		}
-	      }
-	  ]
-      }
-    } ,
-    { text : "<em id='editorLabel'>Editor</em>" , url : "/admin/ed" } ,
-//    { text : "<em id='shellLabel'>Shell</em>" , url : "/admin/shell.jxp" } ,
-    { text : "<em id='gitLabel'>Git</em>" , url : "/admin/gitLocal.jxp" } ,
-    { text : "<em id='docsLabel'>Docs</a>" , url : "#" ,
-      submenu : {
-	  id : "docsMenu" ,
-	  itemdata : [
-              { text : "Documentation" , url : "http://www.10gen.com/wiki/" },
-              { text : "Browse Code" , url : "/admin/doc?f=/" } ,
-              { text : "Browse corejs" , url : "http://corejs.10gen.com/admin/doc?f=/" }
-	  ]
-      }
-    }
-];
+menu = [];
 
 if ( allowModule ){
     for ( var mod in allowModule ){
@@ -59,43 +51,3 @@ if ( allowModule ){
 }
 
 %>
-
-<div ? ( ! config.onlyBase ) id="menuSpot" class="yui-skin-sam"></div>
-
-<% if ( ! config.noScriptTags ){ print( "<script>" ); } %>
-
-var menu = <%= tojson( menu ) %>;
-
-<% if ( ! config.onlyBase ){ %>
-
-var menuLoader = new YAHOO.util.YUILoader({
-    base: '/@@/yui/current/',
-    require: ['reset-fonts-grids', 'menu', 'utilities', 'container'],
-    rollup: true,
-    onSuccess: function() {
-
-<% } %>
-
-      var xgenAdminMenuBar = new YAHOO.widget.MenuBar("adminTopNav", {
-          lazyload: true,
-	  autosubmenudisplay: true,
-	  itemdata: menu ,
-	  hidedelay: 750,
-	  effect: {
-	     effect: YAHOO.widget.ContainerEffect.FADE,
-	     duration: 0.10
-	  }
-      } );
-
-<% if ( ! config.onlyBase ){ %>
-
-        xgenAdminMenuBar.render(document.getElementById( "menuSpot" ) );
-
-    }
-
-});
-
-menuLoader.insert();
-<% } %>
-
-<% if ( ! config.noScriptTags ){ print( "</script>" ); } %>
