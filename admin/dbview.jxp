@@ -77,7 +77,7 @@ if(!top) {
     <div>
     <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
     </div>
-    <div id="viewOptions">
+    <div id="viewOptions" style="display: none">
     <div class="hd">View Options</div>
     <div class="bd">Select the columns that you wish to display.
     <% for(var i in f) {
@@ -254,7 +254,31 @@ function deleteProp(num, path) {
     simpledialog1.show();
 }
 
-var createIndex = function() {
+function changeSearchbox() {
+    newEI = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.ensureIndex({";
+    eiAr = [];
+
+    var newidx = document.getElementsByName("createidx");
+    for(var i=0; i<newidx.length; i++) {
+        if(newidx[i].checked)
+            newEI += newidx[i].value + ": 1, ";
+    }
+    newEI = newEI.substring(0, newEI.length-2) + " });";
+
+    var sb = document.getElementById("searchbox");
+    sb.value = newEI;
+}
+
+var _createIndex = function() {
+    var passData="action=createidx&ns=<%= request.ns %>&idx=";
+    var newidx = document.getElementsByName("createidx");
+    for(var i=0; i<newidx.length; i++) {
+        if(newidx[i].checked)
+            passData+=newidx[i].value+",";
+    }
+    ajax(passData.substring(0, passData.length-1), "editDb", function(response) {
+        refreshTable();
+    });
     this.hide();
 }
 
@@ -262,7 +286,7 @@ function createIndex() {
     var idx = '<%
     for(var i in f) {
         if(!ignore[i])
-            print('<div><input type="checkbox" name="'+i+'" /> '+i+'</div>');
+            print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
     } %>';
 
     var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
@@ -272,7 +296,7 @@ function createIndex() {
           visible: false,
           close: true,
           text: "Select fields for the new index: "+idx,
-        buttons: [ { text:"Yes", handler:_createIndex() }, { text:"No", handler:handleNo, isDefault:true } ]
+        buttons: [ { text:"Yes", handler: _createIndex }, { text:"No", handler:handleNo, isDefault:true } ]
         } );
     simpledialog1.setHeader("Ensure Index");
     simpledialog1.render("myMarkedUpContainer");
@@ -470,6 +494,7 @@ function editField(id, type, dbid, path) {
 
 var createRecordPanel;
 var createTablePanel;
+var viewOptionsPanel;
 
 function addRecord() {
     createRecordPanel.show()
