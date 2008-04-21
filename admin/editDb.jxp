@@ -24,15 +24,6 @@ else if(request.action == "create") {
     if(request.size) opts.size = parseInt(request.size);
     createCollection(request.tablename, opts);
 }
-else if(request.action == "eval") {
-    try {
-        var x=scope.eval(request.cmd);
-    }
-    catch(e) {
-        log("e: "+e);
-        return -1;
-    }
-}
 else if(request.action == "drop") {
     drop(request.ns.substring( request.ns.indexOf('.')+1));
 }

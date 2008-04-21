@@ -65,10 +65,10 @@ if(!top) {
     </div>
 
     <div>
-    <div><%= request.ns %> Search/Filter</div>
+    <div><%= request.ns %> Search/Filter <input type="button" onclick="searchFilterPanel.show()" value="*" /></div>
     <textarea id="searchbox"></textarea>
     <input type="button" value="Validate" onclick="validateSearchbox()" />
-    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''" />
+    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''; refreshTable()" />
     <input type="button" onclick="doCommand()" value="Execute" /></div>
     </div>
 
@@ -87,6 +87,20 @@ if(!top) {
     <div class="ft">
     <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
     </div>
+    </div>
+
+    <div id="searchFilter" style="display:none;">
+    <div class="hd">Search/Filter Panel</div>
+    <div class="bd"><table><tr><th>Column</th><!--<th>Yes</th><th>No</th><th>Whatever</th>--><th>Search Term</th></tr>
+    <%
+    for(var i in f) {
+        if(!ignore[i])
+            print('<tr><td>'+i+'</td><!--<td><input type="radio" name="'+i+'" value="0" /></td><td><input type="radio" name="'+i+'" value="1" /></td><td><input type="radio" name="'+i+'" value="2" /></td>--><td><input type="text" onblur="setSearchFilter()" name="search" id="'+i+'" /></td></tr>');
+    }
+    %>
+    </table>
+    </div>
+    <div class="ft"><input type="button" value="OK" onclick="doCommand(); searchFilterPanel.hide()" /><input type="button" value="Cancel" onclick="searchFilterPanel.hide()" /></div>
     </div>
     <%
 } %>
@@ -133,13 +147,20 @@ function printObj(cursor, field) {
     return text;
 }
 
+function setSearchFilter() {
+    var cmd = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.find({ ";
+    var cmdAr = [];
+    var terms = document.getElementsByName("search");
+    for(var t in terms) {
+        if(terms[t].value && terms[t].value.trim() != "") {
+            cmdAr.push(terms[t].id +": "+terms[t].value);
+        }
+    }
+    document.getElementById("searchbox").value = cmd+cmdAr.join(", ")+"});";
+}
+
 function doCommand() {
-    ajax("action=eval&cmd="+document.getElementById("searchbox").value, "editDb", function(response) {
-        if(response == "-1")
-            alert("Your command threw an exception.");
-        else
-            refreshTable();
-    });
+    myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
 }
 
 function validateSearchbox() {
@@ -514,6 +535,7 @@ function editField(id, type, dbid, path) {
 var createRecordPanel;
 var createTablePanel;
 var viewOptionsPanel;
+var searchFilterPanel;
 
 function addRecord() {
     createRecordPanel.show()
@@ -1020,7 +1042,7 @@ else {
                 oData = '<span style="cursor:default">(Object)</span>';
             }
             else {
-                fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
+                fullText.innerHTML = oData;
                 oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
             }
             elCell.innerHTML = oData;
@@ -1058,6 +1080,10 @@ else {
     viewOptionsPanel = new YAHOO.widget.Panel("viewOptions", {visible: false, contraintoviewport: true, fixedcenter: true });
     viewOptionsPanel.render("myMarkedUpContainer");
     document.getElementById("viewOptions").style.display = "block";
+
+    searchFilterPanel = new YAHOO.widget.Panel("searchFilter", {visible: false, contraintoviewport: true, fixedcenter: true });
+    searchFilterPanel.render("myMarkedUpContainer");
+    document.getElementById("searchFilter").style.display = "block";
     <%
 }
 %>
