@@ -16,7 +16,7 @@ var revid = g.getCurrentRev().parsed.rev;
 var revmsg = g.getCommit(revid).parsed.message;
 revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
-core.admin.pieces.githeader({revid: revid, revmsg: revmsg,
+core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
                             });
 
 var output_command = function(foo){
@@ -47,7 +47,7 @@ if ( request.action == "pull" ){
         else {
             log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
             g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-                core.admin.pieces.gitpulledrev(z);
+                core.admin.pieces.gitPulledrev(z);
             });
         }
     }
@@ -69,7 +69,7 @@ Push failed. Try pulling first.
     }
     else {
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-            core.admin.pieces.gitpushedrev(z);
+            core.admin.pieces.gitPushedrev(z);
         });
         g.fetch();
     }
@@ -181,7 +181,7 @@ if(request.untracked_file)
   <form method="POST">
 <%
 for ( type in parsed ){ 
-    core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
+    core.admin.pieces.gitFileList({title: type, actions: buttons[type],
                                    checked: checked,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
