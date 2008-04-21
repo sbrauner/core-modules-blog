@@ -81,9 +81,6 @@ User.prototype.presave = function( ){
     if(this.email == ""){
         throw "email is required";
     }
-    if(this.nickname == ""){
-        throw "nickname is required";
-    }
 
     var t = this;
 
@@ -101,8 +98,7 @@ User.prototype.presave = function( ){
 
     log.user.presave.debug("using duplicate-checking function " + isDuplicate);
 
-    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) ||
-       isDuplicate({nickname: this.nickname}))
+    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) )
         throw "trying to save duplicate user: " + tojson(this);
 
     this.uniqueness_hash = md5(this.name + ":" + this.email + ":" + this.nickname);
