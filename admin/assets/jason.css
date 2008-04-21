@@ -98,25 +98,7 @@ img {
 	color: #95ca17;
 }
 
-/* Layout */
-
-div.onecolumn {
-	clear:left;
-	width:100%; 
-}
-
-div.topbar {
-	height: 80px;
-	line-height: 80px;
-}
-
-div.container {
-	min-width: 975px;
-}
-
-td.maincontent {
-	padding: 0 16px 0 18px;
-}
+/* leftnav stuff in leftNav.css */
 
 /* Footer */
 
@@ -124,5 +106,45 @@ p.footer {
 	margin-top: 5em;
 	text-align: center;
 	font-size: 11px;
+}
+
+/* Layout */
+
+div.container {
+	min-width: 975px;
+}
+
+div.content {
+	margin: 0 10px 0 180px;
+}
+td.maincontent {
+	padding: 0 16px 0 18px;
+}
+div.topbar {
+	height: 80px;
+	line-height: 80px;
+}
+
+div.wrapper {
+	float:left;
+	width:100%;
+}
+
+div.leftcolumn {
+	float: left;
+	width: 170px;
+	margin-left: -100%;
+	text-align: right;
+}
+
+div.extra{
+	float: left;
+	width: 10px;
+	margin-left: -10px;
+}
+
+div.onecolumn {
+	clear:left;
+	width:100%; 
 }
 
