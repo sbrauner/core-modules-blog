@@ -8,6 +8,7 @@ var obj = arguments[0];
 
 head.addCSS( "NOCDN/~~/admin/assets/css.jxp" );
 head.addCSS( "NOCDN/~~/admin/assets/leftNav.css" );
+head.addCSS( "NOCDN/~~/admin/assets/jason.css" );
 
 %>
 <% response.setHeader( "Content-Type" , "text/html;charset=UTF-8" ); %>
@@ -25,5 +26,4 @@ head.addCSS( "NOCDN/~~/admin/assets/leftNav.css" );
 </div>
 <% core.admin.pieces.navLeft(obj); %>
 <% } %>
-<div id="customer_body">
 
