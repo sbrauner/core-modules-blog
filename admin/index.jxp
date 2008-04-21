@@ -27,6 +27,8 @@ if ( sectionName.match( /^index/ ) )
 
 // Maps jxp names to sections
 var sectionMap = {
+    'system': ['system'],
+
     'users': ['system', 'users'],
 
     'database': ['system', 'database'],

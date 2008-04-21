@@ -18,8 +18,10 @@ var className;
 for(var key in sectionTree){
     if(sectionList[0] == key) className = "active";
     else className = "";
+    var link = key;
+    if(sectionTree[key].$) link = sectionTree[key].$;
 %>
-    <li class="<%= className %>"><a href="<%= key %>"><%= key.toUpperCase() %></a></li>
+    <li class="<%= className %>"><a href="<%= link %>"><%= key.toUpperCase() %></a></li>
 <% 
 }
 %>

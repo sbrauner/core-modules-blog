@@ -15,8 +15,10 @@ return {
         },
     },
     'editor': {
+        $: 'ed'
     },
     'git': {
+        $: 'gitLocal'
     },
     'docs': {
     },
