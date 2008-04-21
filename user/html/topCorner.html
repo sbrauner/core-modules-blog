@@ -2,7 +2,13 @@
 var conf = arguments[0] || {};
 var login = User.findMyLocation();
 %>
-<% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
+<% 
+if(! head.topCornerBaseCSS ){
+    head.topCornerBaseCSS = true;
+    head.addCSS(login + "/assets/topCornerBase.css", 0);
+}
+
+head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <div id="login_status">
 
   <if user >
@@ -34,3 +40,4 @@ var login = User.findMyLocation();
   </if>
 
 </div>
+
