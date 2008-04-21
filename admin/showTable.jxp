@@ -105,6 +105,17 @@ else if(request.action == "search") {
     }
     rows = collection.find(searchobj).sort({number: 1}).toArray();
 }
+else if(request.action == "eval") {
+    try {
+        var collection = scope.eval(request.cmd);
+        rows = collection.toArray();
+        top = false;
+    }
+    catch(e) {
+        log("e: "+e);
+        return -1;
+    }
+}
 else {
     collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
     if(request.limit) {
