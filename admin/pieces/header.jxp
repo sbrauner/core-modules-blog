@@ -20,7 +20,7 @@ head.addCSS( "NOCDN/~~/admin/assets/leftNav.css" );
 <% if (!_openAccess) { %>
 
 <div id="adminHeader">
-    <% core.admin.pieces.nav(); %>
+    <% core.admin.pieces.nav(obj); %>
     <% core.user.html.topCorner(); %>
 </div>
 <% core.admin.pieces.navLeft(obj); %>

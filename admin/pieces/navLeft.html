@@ -4,29 +4,7 @@ var sectionList = obj.sectionList || [];
 if(sectionList.length < 1) return;
 var topSection = sectionList[0];
 
-var sectionTree = {
-    'system': {
-        'users': {},
-        'database': {
-            'dbprofile': true,
-            'dbview': true,
-        },
-        'files': {
-        },
-        'cron': {
-        },
-        'logs': {
-            'logMemory': true,
-            'logScroll': true
-        },
-    },
-    'editor': {
-    },
-    'docs': {
-    },
-    'applications': {
-    }
-};
+var sectionTree = core.admin.data.sectiontree();
 
 if(! sectionTree[topSection]){
     sectionTree[topSection] = {};

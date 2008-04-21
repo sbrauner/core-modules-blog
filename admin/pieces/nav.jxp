@@ -1,3 +1,8 @@
+<%
+var obj = arguments[0] || {};
+var sectionList = obj.sectionList || [];
+var sectionTree = core.admin.data.sectiontree();
+%>
 <!-- Top Layout -->
 <div class="container">
   <div class="onecolumn topbar">
@@ -8,11 +13,16 @@
 	  <!-- Global Nav -->
 	  <div id="navcontainer">
 	    <ul>
-		  <li class="active"><a href="/">SYSTEM</a></li>
-		  <li><a href="/">EDITOR</a></li>
-		  <li><a href="/dsf">GIT</a></li>
-		  <li><a href="/">DOCS</a></li>
-		  <li><a href="/">APPLICATIONS</a></li>
+<%
+var className;
+for(var key in sectionTree){
+    if(sectionList[0] == key) className = "active";
+    else className = "";
+%>
+    <li class="<%= className %>"><a href="<%= key %>"><%= key.toUpperCase() %></a></li>
+<% 
+}
+%>
 		</ul>
 	  </div>
 	
