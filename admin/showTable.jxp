@@ -78,7 +78,6 @@ if(request.action == "searchprofile") {
         searchObj.info = new RegExp("^"+request.record_type+".*");
     }
 
-    log(tojson(searchObj));
     rows = db.system.profile.find( searchObj ).toArray();
 }
 // dbview
