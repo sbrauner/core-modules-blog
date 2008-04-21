@@ -116,6 +116,7 @@ Object.extend(git.Repo.prototype, {
             var torev = lines[2].substring(lines[2].lastIndexOf(' ')+1);
             parsed.from = fromrev;
             parsed.to = torev;
+            parsed.success = true;
         }
         else {
             for(var i = 0; i < lines.length-1; ++i){
@@ -148,8 +149,9 @@ Object.extend(git.Repo.prototype, {
         var failed;
         var merged;
         var upToDate;
+        var success;
 
-        if(lines.length > 0 && lines[1] == "Fast forward") {
+        if(lines.length > 0 && exec.out.match(/\nFast forward\n/)) {
             var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
                 lines[0].indexOf('.'));
             var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
@@ -180,6 +182,7 @@ Object.extend(git.Repo.prototype, {
 
                 }
             }
+            success = true;
         }
         else if(lines.length == 1 && lines[0] == "Already up-to-date."){
             upToDate = true;
@@ -223,6 +226,7 @@ Object.extend(git.Repo.prototype, {
         parsed.merged = merged;
         parsed.failed = failed;
         parsed.upToDate = upToDate;
+        parsed.success = success;
 
         return parsed;
     },
@@ -369,7 +373,9 @@ Object.extend(git.Repo.prototype, {
         if(opts.force) cmd += "-f ";
         if(opts.rev) cmd += opts.rev + " ";
         cmd += files.join(" ");
-        return this._exec( cmd );
+        var ret = this._exec( cmd );
+        if(ret.out.trim() == "" && ret.err.trim() == "")
+            ret.parsed = {success: true};
     },
 });
 
