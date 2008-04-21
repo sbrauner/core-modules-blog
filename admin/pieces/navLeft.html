@@ -30,7 +30,7 @@ var sectionNames = {
                     <% for(var key in sectionTree[topSection]){
                        if(key == "$") continue;
                         if(key != sectionList[1]){ %>
-                        <li><a href="<%= key %>"><%= key.toUpperCase() %></a></li>
+                        <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
                         <% } else { %>
                         <li>
                           <ul>

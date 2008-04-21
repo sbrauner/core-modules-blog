@@ -1,3 +1,12 @@
+var applications = {};
+
+if ( allowModule ){
+    for ( var mod in allowModule ){
+        applications[mod] = { $: "/admin/" + mod + "/index" };
+    }
+}
+
+
 return {
     'system': {
         'users': {},
@@ -22,6 +31,6 @@ return {
     },
     'docs': {
     },
-    'applications': {
-    }
+    'applications': applications
+
 };
