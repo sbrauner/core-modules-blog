@@ -8,7 +8,7 @@ var sectionTree = core.admin.data.sectiontree();
   <div class="onecolumn topbar">
 	
 	  <!-- 10gen Logo -->
-<div class="blhd-left"><img src="assets/img/logo_10gen_on_blue.gif" width="100" height="50" alt="10gen logo"></div>
+<div class="blhd-left"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="100" height="50" alt="10gen logo"></div>
 	
 	  <!-- Global Nav -->
 	  <div id="navcontainer">
