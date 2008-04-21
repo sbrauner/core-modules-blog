@@ -1,3 +1,12 @@
 <h1>Applications</h1>
 
+<ul>
+<%
+var sectionTree = core.admin.data.sectiontree();
 
+for(var key in sectionTree["applications"]){ %>
+<li><%= key %>: <a href="<%= sectionTree["applications"][key].$ %>">admin</a> | <a href="/<%= key %>">public</a></li>
+<%
+}
+%>
+</ul>

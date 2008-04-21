@@ -33,11 +33,24 @@ if ( request.action == "pull" ){
     var foo = g.pull();
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
         print("Pull failed: conflicts<br/>");
+        output_command(foo);
     }
     else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
         print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+        output_command(foo);
     }
-    output_command(foo);
+    else {
+        log(tojson(foo));
+        if(foo.parsed.upToDate){
+            print("Already up-to-date.");
+        }
+        else {
+            log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
+            g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+                core.admin.pieces.gitpulledrev(z);
+            });
+        }
+    }
 }
 else if ( request.action == "push" ){
     // No files

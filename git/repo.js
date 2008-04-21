@@ -147,6 +147,7 @@ Object.extend(git.Repo.prototype, {
         var mergetype;
         var failed;
         var merged;
+        var upToDate;
 
         if(lines.length > 0 && lines[1] == "Fast forward") {
             var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
@@ -179,6 +180,9 @@ Object.extend(git.Repo.prototype, {
 
                 }
             }
+        }
+        else if(lines.length == 1 && lines[0] == "Already up-to-date."){
+            upToDate = true;
         }
         else {
             var m = exec.err.match(/fatal: Entry '(\w+)' not uptodate\. Cannot merge\.\n$/);
@@ -218,6 +222,7 @@ Object.extend(git.Repo.prototype, {
         parsed.conflicts = conflicts;
         parsed.merged = merged;
         parsed.failed = failed;
+        parsed.upToDate = upToDate;
 
         return parsed;
     },
