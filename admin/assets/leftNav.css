@@ -1,76 +1,75 @@
 /* Left Nav */
 
 #leftnav {
-	width: 170px;
-	margin: 0;
-	padding: 0;
-	text-align: right;	
+    width: 170px;
+    margin: 0;
+    padding: 0 0 0 0;
+    text-align: right;    
 }
 
 #leftnav h1 {
-	padding: 0;
-	margin: 0;
-	font-size: 12px;
-	font-style: italic;
-	color: #a9a9a9;
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-style: italic;
+    color: #a9a9a9;
 }
 
 #leftnav ul {
-	padding-top: 2em;
-	margin-left: 16px;
+    padding-top: 2em;
+    margin-left: 16px;
 }
 
 #leftnav li {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
     border-top: 1px solid #e5e5e5;
     list-style-type: none;
 }
 
-#leftnav .current-page {
+#leftnav li ul li.current-page {
     background-image: url(icon_leftnav_active.gif);
     background-repeat: no-repeat;
-    background-position: 144px .35em;	
+    background-position: 144px .35em;    
 }
 
 #leftnav li ul {
-	margin: 0;
-	padding: .4em 0 .4em 0;
-	background-color: #eff4ff;
+    margin: 0;
+    padding: .2em 0 0em 0;
+    background-color: #eff4ff;
 }
 
 #leftnav li ul li {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
     border-top: 0px solid #eff4ff;
 }
 
 #leftnav li ul li a {
-	line-height: 1.7em;
+    line-height: 1.7em;
 }
 
 #leftnav li ul li.current-heading {
-	padding-bottom: .3em;
+    padding-bottom: .3em;
 }
 
 #leftnav li ul li.current-heading a {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #leftnav a {
-	padding: .5em 12px .4em 0;
-	line-height: 2.4em;
-	font-size: 11px;
-	color: #2c65af;
-	text-decoration: none;
-	font-weight:normal;
+    padding: .5em 12px .4em 0;
+    line-height: 2.4em;
+    font-size: 11px;
+    color: #2c65af;
+    text-decoration: none;
+    font-weight:normal;
 }
 
 #leftnav a:hover {
-	color: #0f2659;
+    color: #0f2659;
 }
 
 #leftnav a#active {
-	color: #2c65af;
+    color: #2c65af;
 }
-
