@@ -75,6 +75,16 @@ User.prototype.presave = function( ){
     // Either this.uniqueness_hash is missing or name/email has changed
     // Either way, scan the DB for users with these attributes
 
+    if(this.name == ""){
+        throw "name is required";
+    }
+    if(this.email == ""){
+        throw "email is required";
+    }
+    if(this.nickname == ""){
+        throw "nickname is required";
+    }
+
     var t = this;
 
     if(t._id)
