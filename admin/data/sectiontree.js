@@ -15,10 +15,10 @@ return {
         },
     },
     'editor': {
-        $: 'ed'
+        $: '/admin/ed'
     },
     'git': {
-        $: 'gitLocal'
+        $: '/admin/gitLocal'
     },
     'docs': {
     },
