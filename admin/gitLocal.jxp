@@ -71,6 +71,7 @@ Push failed. Try pulling first.
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
             core.admin.pieces.gitpushedrev(z);
         });
+        g.fetch();
     }
 }
 else if ( request.action == "add" && request.untracked_file ){
@@ -108,6 +109,10 @@ else if ( request.action == "checkout" && request.changed_file ){
     print("Performing checkout...<br>");
     var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
+}
+
+if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
+    core.admin.pieces.gitNotPushed();
 }
 
 var parsed = g.status().parsed;
@@ -166,6 +171,7 @@ if(request.untracked_file)
     request.getParameters('untracked_file').forEach(function(z){
         checked[z] = "checked";
     });
+
 %>
 <form method="POST">
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >

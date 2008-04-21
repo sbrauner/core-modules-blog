@@ -207,6 +207,8 @@ assert(listRevs.parsed.revs[1].message == "test commit 3");
 
 // FIXME: test rm
 
+// FIXME: test fetch
+
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 
 

@@ -35,6 +35,13 @@ Object.extend(git.Repo.prototype, {
         return ref;
     },
 
+    showRef: function(ref){
+        var ret =  this._exec( "show-ref " + ref );
+        ret.parsed = {rev: ret.out.trim().split(/\s/)[0]};
+
+        return ret;
+    },
+
     getCommit: function(rev){
         var ret = this._exec( "log -n 1 "+rev );
         var parsed = {};
@@ -231,6 +238,10 @@ Object.extend(git.Repo.prototype, {
         return parsed;
     },
 
+    fetch: function(){
+        var cmd = "fetch";
+        return this._exec( cmd );
+    },
 
     add: function(files){
         this._validate(files);
