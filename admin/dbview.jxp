@@ -42,22 +42,52 @@ for( var i in f) {
 %>
 
 <h3><%=hdr%></h3>
-<% if(!top) {
+
+<%
+/* find the indices */
+if(!top) {
     %>
     <a href="dbview" style="display: block;">Back to Collection View</a>
     <div> Indices:
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
+
     var i=0;
-    while(i<metarows.length-1 && metarows[i+1].name.indexOf("$") > 0) {
-        obj = metarows[++i];
-        var idx=obj.name.indexOf("$");
-        if( obj.name && idx>=0 ) {
-            print("<div>"+obj.name.substring(idx+1)+"</div>");
+    while(i<metarows.length && metarows[i].name.indexOf("$") > 0) {
+        obj = metarows[i++];
+        var idx = obj.name.indexOf("$");
+        if( obj.name ) {
+            print('<div><input type="checkbox" name="<%= request.ns %>" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
         }
     }
     %>
+    <input type="button" onclick="dropIndices()" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
+    </div>
+
+    <div>
+    <div><%= request.ns %> Search/Filter</div>
+    <textarea id="searchbox"></textarea>
+    <input type="button" value="Validate" />
+    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''" />
+    <input type="button" onclick="doCommand()" value="Execute" /></div>
+    </div>
+
+
+    <div>
+    <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
+    </div>
+    <div id="viewOptions">
+    <div class="hd">View Options</div>
+    <div class="bd">Select the columns that you wish to display.
+    <% for(var i in f) {
+        if(!ignore[i])
+            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked /></div>');
+    }%>
+    </div>
+    <div class="ft">
+    <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
+    </div>
     </div>
     <%
 } %>
@@ -103,6 +133,18 @@ function printObj(cursor, field) {
     }
     return text;
 }
+
+function changeView() {
+    var elems = document.getElementsByName("viewopts");
+    for(var i=0; i<elems.length; i++) {
+        if(!elems[i].checked)
+            myDataTable.hideColumn(myDataTable.getColumn(i));
+        else
+            myDataTable.showColumn(myDataTable.getColumn(i));
+    }
+    viewOptionsPanel.hide();
+}
+
 
 function showObj(i) {
          document.getElementById(i).style.display = "block";
@@ -211,6 +253,34 @@ function deleteProp(num, path) {
     simpledialog1.bringToTop();
     simpledialog1.show();
 }
+
+var createIndex = function() {
+    this.hide();
+}
+
+function createIndex() {
+    var idx = '<%
+    for(var i in f) {
+        if(!ignore[i])
+            print('<div><input type="checkbox" name="'+i+'" /> '+i+'</div>');
+    } %>';
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+        { width: "300px",
+          fixedcenter: true,
+          draggable: true,
+          visible: false,
+          close: true,
+          text: "Select fields for the new index: "+idx,
+        buttons: [ { text:"Yes", handler:_createIndex() }, { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Ensure Index");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.bringToTop();
+    simpledialog1.show();
+
+}
+
 
 // currentObj stores edits to the fields
 var currentObj = {};
@@ -639,13 +709,13 @@ if(top) {
 
     function dropIndices(tname) {
         tablename = tname;
-    var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
-        this.hide();
-    }
+        var handleIDrop = function() {
+            var list = getSelectedIndices(",");
+            ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+                refreshTable();
+            });
+            this.hide();
+        }
         var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
@@ -883,8 +953,13 @@ else {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(!oData) {
+        if(oColumn.key in oRecord._oData && !oData) {
+            elCell.innerHTML = 'null';
+            YAHOO.util.Dom.addClass(elCell, "nullfield");
+        }
+        else if (!oData) {
             elCell.innerHTML = '<img src="NOCDN/~~/admin/assets/nonexistent.png">';
+            YAHOO.util.Dom.addClass(elCell, "nofield");
         }
         else if(oData.length >= 20) {
             var fullText = document.createElement("div");
@@ -933,6 +1008,10 @@ else {
     editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
     editRowPanel.render("myMarkedUpContainer");
     document.getElementById("editRecord").style.display = "block";
+
+    viewOptionsPanel = new YAHOO.widget.Panel("viewOptions", {visible: false, contraintoviewport: true, fixedcenter: true });
+    viewOptionsPanel.render("myMarkedUpContainer");
+    document.getElementById("viewOptions").style.display = "block";
     <%
 }
 %>
