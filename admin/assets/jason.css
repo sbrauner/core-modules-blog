@@ -68,6 +68,38 @@ img {
 	color: #95ca17;
 }
 
+
+#login_status {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height:30px;
+        margin: 0px !important;
+        padding: 0px !important;
+}
+
+#login_status span {
+	margin: 0;
+	padding: .4em .5em .4em 1em;
+	line-height: 2em;
+	background:url(img/header_login_left.gif) no-repeat left bottom;	
+	background-color:#0f2659;
+	font-size: 11px;
+	color: #ffffff;
+}
+
+#login_status a, #login_status a:visited {
+	font-size: 11px;
+	text-decoration: none;
+	color: #ffffff;
+}
+
+#login_status a:hover, #login_status a:visited:hover {
+	color: #95ca17;
+}
+
+/* Layout */
+
 div.onecolumn {
 	clear:left;
 	width:100%; 
@@ -82,6 +114,10 @@ div.container {
 	min-width: 975px;
 }
 
+td.maincontent {
+	padding: 0 16px 0 18px;
+}
+
 /* Footer */
 
 p.footer {
@@ -89,3 +125,4 @@ p.footer {
 	text-align: center;
 	font-size: 11px;
 }
+
