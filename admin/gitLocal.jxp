@@ -1,4 +1,8 @@
 <%
+
+if ( request.getHost().equals( "corejs.10gen.com" ) )
+    return print( "you can't do this" );
+
 core.git.repo();
 core.ext.pluck();
 core.content.html();
