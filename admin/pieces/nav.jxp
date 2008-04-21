@@ -39,6 +39,7 @@ if ( config.onlyBase )
     config.noScriptTags = true;
 
 head.addScript( "/@@/yui/current/yuiloader/yuiloader-beta-min.js" );
+menu = [];
 
 if ( allowModule ){
     for ( var mod in allowModule ){
