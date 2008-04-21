@@ -84,14 +84,15 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
     if (!methodName) return; // this should really throw an exception
     if (!(type == 'GET' || type == 'POST')) return;
 
-    xmlHTTPRequest = new XMLHttpRequest();
+    var xmlHTTPRequest = new XMLHttpRequest();
     parameters.api_key = this.apiKey;
     parameters.format = 'json';
-
+    
     var signature = this.__getSignature(parameters);
     parameters.sig = signature;
-    processedParameters = this.__objectToArray(this.__flatten(parameters)).join('&');
+    var processedParameters = this.__objectToArray(this.__flatten(parameters)).join('&');
 
+    var content;
     if (type == 'GET') {
         url = this.apiUrl + '/' + methodName + '?' + processedParameters;
         content = '';
@@ -99,7 +100,7 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
         url = this.apiUrl + '/' + methodName;
         content = processedParameters;
     }
-    
+
     xmlHTTPRequest.setRequestHeader('User-Agent', 'Triggermail API 10gen Client v' + this.version);
     xmlHTTPRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
@@ -128,8 +129,8 @@ ws.impl.triggermail.TriggermailClient.prototype.send = function(template, emailA
     var parameters = {email: emailAddress, template: template};
     if (vars) parameters.vars = vars;
     if (opts) parameters.options = opts;
-    SYSOUT(tojson(parameters));
-    SYSOUT(tojson({ "email" : "dana15@sociabledesign.com" , "template" : "Welcome Email" , "vars" : {  "first_name" : "d" ,  "last_name" : "spiegel"   }}));
+    log.ws.triggermail.info(tojson(parameters));
+    log.ws.triggermail.info(tojson({ "email" : "dana15@sociabledesign.com" , "template" : "Welcome Email" , "vars" : {  "first_name" : "d" ,  "last_name" : "spiegel"   }}));
     return this.__callRemoteMethod('POST', 'send', parameters);
 }
 
