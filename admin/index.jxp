@@ -30,6 +30,7 @@ var sectionMap = {
     'system': ['system'],
 
     'users': ['system', 'users'],
+    'user': ['system', 'users'],
 
     'database': ['system', 'database'],
     'dbview': ['system', 'database', 'dbview'],
