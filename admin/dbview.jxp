@@ -2,6 +2,7 @@
 /* dbview.jxp - database content viewer utility */
 head.push('<link rel="stylesheet" href="NOCDN/~~/admin/assets/dbview.css" />');
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>');
 core.content.html();
 
 // top == show all collections
@@ -57,9 +58,7 @@ if(!top) {
     while(i<metarows.length && metarows[i].name.indexOf("$") > 0) {
         obj = metarows[i++];
         var idx = obj.name.indexOf("$");
-        if( obj.name ) {
-            print('<div><input type="checkbox" name="<%= request.ns %>" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
-        }
+        print('<div><input type="checkbox" name="<%= request.ns %>" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
     }
     %>
     <input type="button" onclick="dropIndices()" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
@@ -68,7 +67,7 @@ if(!top) {
     <div>
     <div><%= request.ns %> Search/Filter</div>
     <textarea id="searchbox"></textarea>
-    <input type="button" value="Validate" />
+    <input type="button" value="Validate" onclick="validateSearchbox()" />
     <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''" />
     <input type="button" onclick="doCommand()" value="Execute" /></div>
     </div>
@@ -132,6 +131,22 @@ function printObj(cursor, field) {
         text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
     }
     return text;
+}
+
+function doCommand() {
+    ajax("action=eval&cmd="+document.getElementById("searchbox").value, "editDb", function(response) {
+        if(response == "-1")
+            alert("Your command threw an exception.");
+        else
+            refreshTable();
+    });
+}
+
+function validateSearchbox() {
+    if(checkRun(document.getElementById("searchbox").value))
+        alert("Syntax ok.");
+    else
+        alert("Syntax Error.");
 }
 
 function changeView() {
@@ -225,6 +240,7 @@ function printDiv(val, type, i, bd, id, path) {
     bd.appendChild(fieldDiv);
 }
 
+<% if(!top) { %>
 // alright, so what really should be done is checkboxes, but this will work for now
 function deleteProp(num, path) {
     var deleteThis = function() {
@@ -492,6 +508,9 @@ function editField(id, type, dbid, path) {
 }
 
 
+<% } // end of if(!top)
+%>
+
 var createRecordPanel;
 var createTablePanel;
 var viewOptionsPanel;
@@ -499,6 +518,7 @@ var viewOptionsPanel;
 function addRecord() {
     createRecordPanel.show()
 }
+
 function createTable() {
     createTablePanel.show();
 }

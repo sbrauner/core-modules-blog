@@ -33,6 +33,7 @@ head.addCSS("NOCDN/~~/admin/assets/shell.css");
 
 <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>
 <script type="text/javascript">
 // FIXME: this screws up the prompts shown in the transcript; they could have
 // been different in the past
@@ -45,25 +46,25 @@ var getUserPromptHTML = function(){
 
 var loader = new YAHOO.util.YUILoader();
 loader.insert({
-    require: ['fonts', 'dragdrop', 'logger', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
+    require: ['fonts', 'dragdrop', 'logger', 'container', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
     base: '/@@/yui/2.5.1/',
     onSuccess: function(loader) {
         objectList = [];
         loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
         loader.objectTreeView.subscribe("expand", onNodeExpand);
         loader.objectTreeView.subscribe("collapse", onNodeCollapse);
-        
+
         loader.objectNodes = [];
-        
+
         // ***** Console widget *****
-        
+
         // Log reader (the main console window)
         // Dynamically create textarea for input:
         // <div class="yui-ac">
         //   <span class="prompt">js&gt;</span>
         //   <textarea class="shellinput" id="commandac"></textarea>
         // </div>
-        
+
         var t = document.createElement("textarea");
         t.id = "commandac";
         t.focus();
@@ -71,7 +72,7 @@ loader.insert({
         // Borrow the AC styling
         t.className += " yui-ac-input";
         t.rows = 1;
-        
+
         var acdiv = document.createElement("div");
         prompt = document.createElement("span");
         prompt.className = "prompt";
@@ -99,8 +100,8 @@ loader.insert({
                                              function(){
                                                  focusTextIfNotSelecting(t);
                                              });
-                
-                
+
+
                 scratch = document.createElement("div");
                 scratchText = document.createElement("textarea");
                 scratchText.className = "scratchtext";
@@ -112,7 +113,7 @@ loader.insert({
                 YAHOO.widget.LogReader.prototype._printBuffer.call(this);
                 this._elBd.scrollTop = this._elBd.scrollHeight;
             }});
-        
+
         var sources = this.myLogReader.getSources();
         this.myLogReader.hideSource("global");
         this.myLogReader.hideSource("LogReader");
@@ -128,17 +129,17 @@ loader.insert({
                 e.preventDefault();
             blockOne = false;
         });
-        
+
         YAHOO.util.Event.addListener(window, "keydown",
                                      function(e){
                                          focusTextIfSelecting(t, e);
                                      });
-        
+
         YAHOO.util.Event.addListener(t,"keypress",function(e){
             if(e.keyCode == 13){
                 window.lastSent = encodeURIComponent(t.value);
                 var value = t.value;
-                var check = checkRun(t);
+                var check = checkRun(t.value);
                 if(check == true) {
                     t.rows = 1;
                     e.preventDefault();
@@ -183,7 +184,7 @@ loader.insert({
                         obj.$printed = [obj.$printed];
                     for(var i = 0; i < obj.$printed.length; i++){
                         var p = obj.$printed[i];
-                        
+
                         if(typeof(p) == "string")
                             s += "<span class=\"output\">" + p + "</span><br/>";
                         else if(p.$command == "clear"){
@@ -241,12 +242,12 @@ loader.insert({
 
         oldHeight = parseInt(Dom.getStyle(row1, "height"), 10);
         scratchResize.on('resize', function(ev) {
-            var oldScrollHeight = row1.scrollHeight, 
+            var oldScrollHeight = row1.scrollHeight,
                 oldScrollTop = row1.scrollTop;
             var w = ev.height;
 
             // The height here has to be enough for the resize handle
-            // and the textarea size. So we set the size of the 
+            // and the textarea size. So we set the size of the
             // textarea to the size of the div, minus the margin the
             // textarea has.
             Dom.setStyle(scratchText, "height", w - parseInt(Dom.getStyle(scratchText, "margin-top"), 10)+"px");
@@ -295,9 +296,9 @@ loader.insert({
             }
             YAHOO.log("</span>", "format", "shell");
             YAHOO.log("<hr/>", "format", "shell");
-            
+
             this.myLogReader._printBuffer();
-            
+
             replay = false;
         }
         // History popup
@@ -372,7 +373,7 @@ var focusTextIfSelecting = function(t, e){
         return;
     if(e.inScratchText)
         return;
-    
+
     return t.focus();
 };
 
@@ -414,7 +415,7 @@ var setcmd = function () {
         cmd.value = pastCommands[historyAry[historyAry.length + historyLocation]];
     }
     resizeRows(cmd, cmd.value, false);
-    
+
 }
 
 var histfunc = function( e ) {
@@ -537,97 +538,6 @@ lastIndexOf = function(ary, v){
     return -1;
 };
 
-function checkRun(el){
-    var usr = el.value;
-
-    // Eliot/Geir say this should be a call to client-side eval(), and
-    // we should keep it as long as there's a syntax error.
-
-    // This is a bad idea. What if we actually invoke client code, like
-    // print() or something else horrible?
-    try {
-        //eval(usr);
-    }
-    catch(e){
-        if(e.toString().match(/SyntaxError/)) return false;
-        // We assume that other errors are probably because we're missing stuff
-        // client-side that would be there on server-side. So send it over.
-    }
-    // Either the eval succeeded or the error wasn't syntactic. Either way, OK.
-    //return true;
-
-    // Strip strings and regexps
-    /* OK, so, when checking for [](){}, first strip regexps and quotes.
-
-       "...." and '....' go away.
-       "...\"..." go away. So do '...\'...' and '..."...'.
-
-       We don't care what happens in the place of these strings; we're
-       not doing any syntax analysis. For the time being, replace them with
-       the empty string.
-
-       /.../[gim] has to go away.
-
-       Be careful of 12 / 1 + [ 1 / 12 ].
-
-       Also, watch out (as usual) for /..\/../.
-
-       A regular expression can't begin after a number or identifier. So we
-       could just look for a pair of slashes and then afterwards post-process
-       them to skip any that start after a digit or letter.. except that
-       there's no way to get the locations of the matches. So..
-
-       /(\d|\w)\s*\// -> "$"
-
-       HA HA HA
-
-       /\/.*\\\// -> "/$"
-
-       THIS IS HOW WE DO SOPHISTICATED SYNTAX ANALYSIS IN JS
-
-       /\/.+\// -> ""
-
-    */
-    var repeat = function(s, f){
-        var new_s = s;
-        do{
-            s = new_s;
-            new_s = f(s);
-        }while(new_s != s);
-        return s;
-    }
-    var newusr = repeat(usr, function(s) { return s.replace(/'.*?\\'/, "'$"); });
-    newusr = repeat(newusr, function(s) { return s.replace(/".*?\\"/, '"$'); });
-    newusr = repeat(newusr, function(s) { return s.replace(/\/.*?\\\//, "/$"); });
-    // Strip strings
-    newusr = newusr.replace(/".*?"/g, '""').replace(/'.*?'/g, '""');
-
-    // Replace / after char or digit (division operator) with nonexistent $
-    // operator
-    newusr = newusr.replace(/(\w|\d)\s*\//g, "$1$");
-    // Strip regexes
-    newusr = newusr.replace(/\/.*?\/[igm]?/g, '""');
-
-    // simple check right now -- count {/}, [/], (/) and make sure they're equal
-    var checkMatch = function(usr, left, right){
-        var leftMatch = usr.match(new RegExp(left, "g"));
-        if (leftMatch) leftMatch = leftMatch.length;
-        else leftMatch = 0;
-        var rightMatch = usr.match(new RegExp(right, "g"));
-        if (rightMatch) rightMatch = rightMatch.length;
-        else rightMatch = 0;
-        return leftMatch == rightMatch;
-    };
-    if(! checkMatch(newusr, "{", "}") ) return false;
-    if(! checkMatch(newusr, "\\[", "\\]") ) return false;
-    if(! checkMatch(newusr, "\\(", "\\)") ) return false;
-
-    var match = newusr.replace(/""/g, "").match(/[\'\"].*$/);
-    if(match)
-        return match;
-
-    return true;
-}
 
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
