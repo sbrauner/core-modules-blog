@@ -107,6 +107,9 @@ if(request.save == "true"){
     if(session == null) 
         // Is this an error? or is it because the session was just removed?
         return;
+    if(session.user == null)
+        // DBRef breakage; the user isn't really on this site?
+        return;
     session.push(request.command, tojson(res));
     db.shell.sessions.save(session);
 }
