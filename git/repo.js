@@ -127,23 +127,35 @@ Object.extend(git.Repo.prototype, {
         }
         else if(exec.err.match(/-> \w*\n/)){
             // new-style git format
+            var t = this;
             lines = lines.filter(function(l){ return l.match(/->/);});
             lines.forEach(function(l){
-                var m = l.match(/(.+) -> (.+)/);
-                if(m[1] == this.getCurrentHeadSymbolic().parsed.head){
-                    m = l.match(/(.+)\.\.(.+)/);
-                    parsed.from = m[0];
-                    parsed.to = m[1];
-                    parsed.success = true;
+                var m = l.match(/([^\s]+) -> (.+)/);
+                if(m[1] == t.getCurrentBranch().parsed.branch){
+                    if(l[1] == '!') parsed.failed = true;
+                    else {
+                        m = l.match(/(\w+)\.\.(\w+)/);
+                        parsed.from = m[1];
+                        parsed.to = m[2];
+                        parsed.success = true;
+                    }
                 }
             });
         }
         else {
             for(var i = 0; i < lines.length-1; ++i){
                 var m = lines[i].match(/remote '.+?' is not a strict subset of local ref '(.+?)'/);
-                var ref = m[1];
-                if(ref == this.getCurrentHeadSymbolic().parsed.head)
-                    parsed.pullFirst = true;
+                if(m){
+                    var ref = m[1];
+                    if(ref == this.getCurrentHeadSymbolic().parsed.head)
+                        parsed.pullFirst = true;
+                }
+                else if(lines[i][1] == "!") {
+                    var m = lines[i].match(/(\w+) -> (\w+) \((.+)\)/);
+                    if(m[1] == this.getCurrentBranch().parsed.branch && m[3] == "non-fast forward"){
+                        parsed.pullFirst = true;
+                    }
+                }
             }
             if(! parsed.pullFirst)
                 parsed.upToDate = true;
