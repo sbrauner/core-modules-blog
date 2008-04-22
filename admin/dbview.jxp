@@ -1,8 +1,8 @@
 <%
 /* dbview.jxp - database content viewer utility */
-head.push('<link rel="stylesheet" href="NOCDN/~~/admin/assets/dbview.css" />');
+head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addScript("NOCDN/~~/admin/assets/interpreter.js");
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
-head.push('<script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>');
 core.content.html();
 
 // top == show all collections
@@ -40,13 +40,12 @@ for( var i in f) {
     fields.push(f[i]);
 }
 
-%>
-
-<h3><%=hdr%></h3>
-
-<%
 /* find the indices */
 if(!top) {
+    var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
+    var introMsg = x.result;
+
+
     %>
     <a href="dbview" style="display: block;">Back to Collection View</a>
     <div> Indices:
@@ -55,13 +54,16 @@ if(!top) {
     var metarows = db["system.namespaces"].find({name: r}).toArray();
 
     var i=0;
-    while(i<metarows.length && metarows[i].name.indexOf("$") > 0) {
-        obj = metarows[i++];
-        var idx = obj.name.indexOf("$");
-        print('<div><input type="checkbox" name="<%= request.ns %>" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
+    while(i<metarows.length) {
+        obj = metarows[i];
+        if(metarows[i].name.indexOf("$") > 0) {
+            var idx = obj.name.indexOf("$");
+            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
+        }
+        i++;
     }
     %>
-    <input type="button" onclick="dropIndices()" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
+    <input type="button" onclick="dropIndices('<%= request.ns %>')" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
     </div>
 
     <div>
@@ -109,55 +111,6 @@ if(!top) {
 <script type="text/javascript">
 var lastSearch = "";
 
-var objcount = 0;
-function printObj(cursor, field) {
-    if(!cursor || !cursor[field]) return;
-    var text = "";
-
-    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
-        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
-    }
-    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
-    } else if(typeof cursor[field] == "object") {
-        var name;
-        var desc;
-        if(cursor[field] instanceof Date) {
-            name = field;
-            desc = cursor[field].toString();
-        }
-        else if(cursor[field] instanceof Array) {
-            name = field;
-            desc = "["+cursor[field].length+"]";
-        }
-        else {
-            name = field;
-            desc = "{...}";
-        }
-        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
-        var tempobj = objcount;
-        objcount++;
-        for(var q in cursor[field]) {
-            text += printObj(cursor[field], q);
-        }
-        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
-    } else {
-        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
-    }
-    return text;
-}
-
-function setSearchFilter() {
-    var cmd = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.find({ ";
-    var cmdAr = [];
-    var terms = document.getElementsByName("search");
-    for(var t in terms) {
-        if(terms[t].value && terms[t].value.trim() != "") {
-            cmdAr.push(terms[t].id +": "+terms[t].value);
-        }
-    }
-    document.getElementById("searchbox").value = cmd+cmdAr.join(", ")+"});";
-}
 
 function doCommand() {
     myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
@@ -290,6 +243,20 @@ function deleteProp(num, path) {
     simpledialog1.bringToTop();
     simpledialog1.show();
 }
+
+
+function setSearchFilter() {
+    var cmd = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.find({ ";
+    var cmdAr = [];
+    var terms = document.getElementsByName("search");
+    for(var t in terms) {
+        if(terms[t].value && terms[t].value.trim() != "") {
+            cmdAr.push(terms[t].id +": "+terms[t].value);
+        }
+    }
+    document.getElementById("searchbox").value = cmd+cmdAr.join(", ")+"});";
+}
+
 
 function changeSearchbox() {
     newEI = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.ensureIndex({";
@@ -720,17 +687,6 @@ var handleNo = function() {
 <%
 if(top) {
     %>
-    var tablename = "";
-
-    function getSelectedIndices(separator) {
-        var idxes = document.getElementsByName(tablename);
-        var list = [];
-        for(var i=0; i<idxes.length; i++) {
-            if (idxes[i].checked)
-                list.push( idxes[i].value );
-        }
-        return list.join(separator);
-    }
 
     var handleDrop = function() {
         ajax("action=drop&ns="+tablename, "editDb", function(x) {
@@ -775,39 +731,58 @@ if(top) {
         simpledialog1.show();
     }
 
-    function dropIndices(tname) {
-        tablename = tname;
-        var handleIDrop = function() {
-            var list = getSelectedIndices(",");
-            ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-                refreshTable();
-            });
-            this.hide();
-        }
-        var prettyList = getSelectedIndices(", ");
-        if(prettyList.length == 0) {
-            alert("You must check at least one index.");
-            return;
-        }
-        var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
-            { width: "300px",
-            fixedcenter: true,
-            draggable: true,
-            visible: false,
-            close: true,
-            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-            text: "Are you sure you want to drop "+prettyList+" from "+tablename+"?",
-            buttons: [ { text:"Yes", handler:handleIDrop },
-            { text:"No", handler:handleNo, isDefault:true } ]
-            } );
-        simpledialog1.setHeader("Drop Indices");
-        simpledialog1.render("myMarkedUpContainer");
-        simpledialog1.show();
-    }
-
     <%
 }
 %>
+
+var tablename = "";
+
+function getSelectedIndices(separator) {
+    var idxes = document.getElementsByName(tablename);
+    var list = [];
+    for(var i=0; i<idxes.length; i++) {
+        if (idxes[i].checked)
+            list.push( idxes[i].value );
+    }
+    return list.join(separator);
+}
+
+
+function dropIndices(tname) {
+    tablename = tname;
+    var handleIDrop = function() {
+        var list = getSelectedIndices(",");
+        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+            var idxes = document.getElementsByName(tablename);
+            for(var i=0; i<idxes.length; i++) {
+                if (idxes[i].checked)
+                    YAHOO.util.Dom.getAncestorByTagName(idxes[i], "div").style.display = "none";
+            }
+            refreshTable();
+        });
+        this.hide();
+    }
+    var prettyList = getSelectedIndices(", ");
+    if(prettyList.length == 0) {
+        alert("You must check at least one index.");
+        return;
+    }
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+        text: "Are you sure you want to drop "+prettyList+" from "+tablename+"?",
+        buttons: [ { text:"Yes", handler:handleIDrop },
+        { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Drop Indices");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
+}
+
 
 function refreshTable(passData){
     if(passData)
@@ -873,7 +848,7 @@ var sortDate = function(a, b, desc) {
 }
 
 
-myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
+/*myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
@@ -942,8 +917,28 @@ var myColumnDefs = [ <% if(top) {
 
                    ];
 
+*/
 
-var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
+
+<%
+if(top) {
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+}
+else {
+    var th = [];
+    th.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        th.push({"name" : i, className: "" });
+    }
+    th.push({"name": "Delete", className: "center" });
+}
+%>
+
+
+
+/*var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
+var myDataTable;
 
 var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
 myDataTable.onEventSortColumn = function(e, target) {
@@ -972,92 +967,92 @@ updateCaseTable = {
 
 
 myDataSource.liveData = "showTable?";
-
-function fnCallback(e) {
-    if(e.target.className=="obj" || e.target.className == "button")
-        return;
-
-    if(e.ctrlKey == false) {
-        var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
-        for(var i=0; i<divs.length; i++) {
-            divs[i].style.display = "none";
-        }
-    }
-    if(YAHOO.util.Dom.getNextSibling(e.target))
-        YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
-}
+*/
 
 <%
-if(top) {
-    %>
-    dropIdxFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(oRecord.getData("index").length > 0)
-            elCell.innerHTML = oRecord.getData("index")+'<input type="button" onclick="dropIndices(\''+oRecord.getData("name")+'\')" value="Drop Index">';
-        else
-            elCell.innerHTML = oRecord.getData("index");
-    }
-    nameLinkFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<a href="?ns='+oRecord.getData("name")+'">'+oRecord.getData("name").substring(oRecord.getData("name").indexOf(".")+1)+"</a>";
-    }
-    statsBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Stats" onclick="getValidation(\''+oRecord.getData("name")+'\')" />';
-    }
-    dropBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Drop Collection" onclick="dropTable(\''+oRecord.getData("name")+'\')" />';
+if(!top) {
+    idFormatter = function(oData) {
+        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
     }
 
-    YAHOO.widget.DataTable.Formatter.dropIdx = dropIdxFormatter;
-    YAHOO.widget.DataTable.Formatter.nameLink = nameLinkFormatter;
-    YAHOO.widget.DataTable.Formatter.statsBtn = statsBtnFormatter;
-    YAHOO.widget.DataTable.Formatter.dropBtn = dropBtnFormatter;
-    <%
-}
-else {
-    %>
-    idFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    deleteBtnFormatter = function(id) {
+        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
     }
-    deleteBtnFormatter = function(elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
-    }
-    strFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(oColumn.key in oRecord._oData && !oData) {
-            elCell.innerHTML = 'null';
-            YAHOO.util.Dom.addClass(elCell, "nullfield");
-        }
-        else if (!oData) {
-            elCell.innerHTML = '<img src="NOCDN/~~/admin/assets/nonexistent.png">';
-            YAHOO.util.Dom.addClass(elCell, "nofield");
-        }
-        else if(oData.length >= 20) {
-            var fullText = document.createElement("div");
-            fullText.setAttribute("class","fullText");
-            fullText.setAttribute("id", "fullText"+fcount++);
 
-            if (YAHOO.lang.JSON.isValid(oData)) {
-                var x = YAHOO.lang.JSON.parse(oData);
-                fullText.innerHTML = "";
-                for(var q in x)
-                    fullText.innerHTML += printObj(x, q);
-                oData = '<span style="cursor:default">(Object)</span>';
+    var objcount = 0;
+    function printObj(cursor, field) {
+        if(!cursor || !cursor[field]) return;
+        var text = "";
+
+        if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+        }
+        else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+        } else if(typeof cursor[field] == "object") {
+            var name;
+            var desc;
+            if(cursor[field] instanceof Date) {
+                name = field;
+                desc = cursor[field].toString();
+            }
+            else if(cursor[field] instanceof Array) {
+                name = field;
+                desc = "["+cursor[field].length+"]";
             }
             else {
-                fullText.innerHTML = oData;
-                oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
+                name = field;
+                desc = "{...}";
             }
-            elCell.innerHTML = oData;
-            elCell.appendChild(fullText);
-            YAHOO.util.Event.addListener(elCell, "click", fnCallback);
+            text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+            var tempobj = objcount;
+            objcount++;
+            for(var q in cursor[field]) {
+                text += printObj(cursor[field], q);
+            }
+            text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+        } else {
+            text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
         }
-        else
-            elCell.innerHTML = oData;
-
+        return text;
     }
 
-    YAHOO.widget.DataTable.Formatter.id = idFormatter;
-    YAHOO.widget.DataTable.Formatter.deleteBtn = deleteBtnFormatter;
-    YAHOO.widget.DataTable.Formatter.str = strFormatter;
-    <%
+
+    strFormatter = function(obj, field) {
+        if(field in obj && !obj[field]) {
+            return '<div class="nullfield">null</div>';
+        }
+        else if (!obj[field]) {
+            return '<div class="nofield"><img src="NOCDN/~~/admin/assets/nonexistent.png"></div>';
+        }
+        else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
+            return obj[field];
+        }
+        else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
+            var subobj = obj[field];
+            var str = "";
+            var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
+            fcount++;
+
+            if (subobj instanceof Date) {
+                fullText += subobj.toString();
+                str = '<span  style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+            }
+            else if (typeof subobj == "object") {
+                for(var q in subobj)
+                    fullText += printObj(subobj, q);
+                str = '<span style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText += subobj;
+                str = '<span  style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+            }
+            fullText += '</div>';
+            return str+fullText;
+        }
+        else
+            return obj[field];
+    }
 }
 
 if(top) {
@@ -1087,5 +1082,56 @@ else {
     <%
 }
 %>
+
+</script>
+
+<%
+
+var table = core.admin.table();
+
+if(top) {
+    var introMsg = "";
+    table.top = true;
+    for(var i in table.rows) {
+        table.rows[i].url = "dbview?ns="+table.rows[i].name;
+        table.rows[i].name = table.rows[i].name.substring( table.rows[i].name.indexOf('.')+1 );
+    }
+}
+else {
+    table.top = false;
+    for(var i in table.rows) {
+        table.rows[i].id = "";
+        for(var field in th) {
+            if(th[field].name == "_id") table.rows[i].id = idFormatter(table.rows[i]._id);
+            if(th[field].name == "Delete")  table.rows[i].Delete = deleteBtnFormatter(table.rows[i]._id);
+            else table.rows[i][th[field].name] = strFormatter(table.rows[i], th[field].name);
+        }
+    }
+}
+
+core.admin.pieces.dbview({ hdr : hdr,
+                           introMsg: introMsg,
+                           th : th,
+                           table : table,
+                           page : [] });
+%>
+
+<script>
+
+function fnCallback(e) {
+    if(e.target.className=="obj" || e.target.className == "button")
+        return;
+
+    if(e.ctrlKey == false) {
+        var divs = YAHOO.util.Dom.getElementsByClassName("fullText");
+        for(var i=0; i<divs.length; i++) {
+            divs[i].style.display = "none";
+        }
+    }
+    if(YAHOO.util.Dom.getNextSibling(e.target))
+        YAHOO.util.Dom.getNextSibling(e.target).style.display = "block";
+}
+
+document.getElementById("myCollection").addEventListener('click', fnCallback, false);
 
 </script>
