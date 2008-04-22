@@ -1,0 +1,136 @@
+<%
+
+var hdr = obj.hdr;
+var introMsg = obj.introMsg;
+var th = obj.th;
+var table = obj.table;
+var page = obj.page;
+
+%>
+
+
+
+		<!-- Heading and links-table Links -->
+	  <h1 style="margin:0;">
+		<div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Database Documentation</a></div>
+		<nobr>$hdr</nobr>
+	  </h1>
+
+
+
+		<p>$introMsg</p>
+
+		<!-- Search -->
+		<table width="100%" border="0">
+		  <tr class="search-table">
+		    <td class="left">
+			  <form>
+			  	<select>
+					<option>OPTION 1</option>
+					<option>Option 2</option>
+					<option>Option 3</option>
+				</select>
+			</td>
+			<td><input class="text" size="40" value="" type="text"></td>
+			<td><input type="image" src="/~~/admin/assets/img/button_search_on_tan.gif" value="Search" alt="Search"></td>
+			<td><input type="image" src="/~~/admin/assets/img/button_add_on_tan.gif" value="Search" alt="Search"></td>
+			<!--td><div class="formbuttons"><a href="/"><span>SUBMIT</span></a></div></td>
+			<td><div class="formbuttons"><a href="/"><span>+</span></a></div></td-->
+			<td class="right" width="100%">
+			  <!--div class="formbuttons" style="float: right; "><a href="/"><span>REFRESH</span></a></div-->
+			  <input type="image" src="/~~/admin/assets/img/button_refresh_on_tan.gif" value="Refresh" alt="Refresh">
+			  </form>
+			</td>
+		  </tr>
+		</table>
+
+		<!-- White table -->
+		<table width=100% border="0">
+		  <tr class="white-top">
+			<!-- Top area -->
+		    <td class="left">&nbsp;</td>
+			<td class="middle">&nbsp;</td>
+			<td class="right">&nbsp;</td>
+		  </tr>
+		</table>
+		<table id="myCollection" width=100% border="0">
+		  <tr class="white-main">
+			<!-- Main area -->
+		    <td class="left">&nbsp;</td>
+                    <forin i th>
+                      <th class="$th[i].className"><a href="">$th[i].name</a></th>
+                    </forin>
+                    <td class="right">&nbsp;</td>
+		  </tr>
+                  <if (table.top)>
+                    <forin row table.rows>
+		      <tr class="white-main">
+		        <td class="left">&nbsp;</td>
+                        <td><a href="$table.rows[row].url">$table.rows[row].name</a></td>
+                        <td>$table.rows[row].index
+			  <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop">
+		        </td>
+		        <td class="center">$table.rows[row].fixed</td>
+		        <td class="center">
+			  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats">
+		        </td>
+		        <td class="center">
+			  <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop">
+		        </td>
+		        <td class="right">&nbsp;</td>
+		      </tr>
+                    </forin>
+                  </if>
+                  <if (!table.top)>
+                    <forin row table.rows>
+		      <tr class="white-main">
+		        <td class="left">&nbsp;</td>
+                        <td>$table.rows[row].id</td>
+                        <forin field th>
+                          <if (th[field].name != "_id") >
+                            <td >$table.rows[row][th[field].name]</td>
+                          </if>
+                        </forin>
+                        <td class="right">&nbsp;</td>
+                      </tr>
+                    </forin>
+                  </if>
+		</table>
+
+		<table width=100% border="0">
+		  <tr class="white-bottom">
+			<!-- Bottom area -->
+		    <td class="left">&nbsp;</td>
+			<td class="middle">&nbsp;</td>
+			<td class="right">&nbsp;</td>
+		  </tr>
+		</table>
+
+		<!-- Paging -->
+		<table width="100%" border="0">
+		  <tr class="paging-table">
+		    <td width="15" class="left">&nbsp;</td>
+			<td>
+			  <div id="paging">
+			    <ul>
+				  <li class="cycle" style="margin-right: 1em; "><a href="/">&#60;&#60;</a></li>
+				  <li class="cycle" style="margin-right: 1em; "><a href="/">&#60;</a></li>
+                                  <forin p page>
+				    <li class="$page[p]"><a href="/">$page[p]</a></li>
+                                  </forin>
+				  <li class="active">1</li>
+				  <li><a href="/">2</a></li>
+				  <li><a href="/">9</a></li>
+				  <li class="mod"><a href="/dsf">10</a></li>
+				  <li class="mod"><a href="/">11</a></li>
+				  <li class="modactive">12</li>
+				  <li class="mod"><a href="/">13</a></li>
+				  <li class="cycle" style="margin-left: 1em; "><a href="/">&#62;</a></li>
+				  <li class="cycle" style="margin-left: 1em; "><a href="/">&#62;&#62</a></li>
+				</ul>
+			  </div>
+			</td>
+			<td width="15" class="right">&nbsp;</td>
+		  </tr>
+		</table>
+

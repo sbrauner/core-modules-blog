@@ -9,6 +9,7 @@ if(request.action == "delete") {
 }
 else if(request.action == "createidx") {
     collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+   log(db[request.ns.substring( request.ns.indexOf('.')+1 )]);
     idxes = request.idx.split(",");
     var idxObj = {};
     for(var i=0; i<idxes.length; i++) {
