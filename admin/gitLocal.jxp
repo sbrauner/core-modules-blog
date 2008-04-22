@@ -47,7 +47,7 @@ if ( request.action == "pull" ){
         else {
             log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
             g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-                core.admin.pieces.gitPulledrev(z);
+                core.admin.pieces.gitPulledRev(z);
             });
         }
     }
@@ -69,7 +69,7 @@ Push failed. Try pulling first.
     }
     else {
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-            core.admin.pieces.gitPushedrev(z);
+            core.admin.pieces.gitPushedRev(z);
         });
         g.fetch();
     }
