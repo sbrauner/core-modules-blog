@@ -1,4 +1,8 @@
 <% core.core.sys.pieces.header(); %>
+<style>
+    .js { color: red; }
+    .ed { color: blue; }
+</style>
 
 <%
 core.ext.asstring();
@@ -18,7 +22,7 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
 
     var st = all.get( myThread );
     var buf = Ext.asString(function(){ 
-        core.core.sys.pieces.thread( myThread , st ); 
+        core.core.sys.pieces.threadDetail( myThread , st ); 
     });
 
     print(buf);
