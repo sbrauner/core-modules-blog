@@ -1,7 +1,8 @@
 <%
 /* dbview.jxp - database content viewer utility */
+head.push('<link rel="stylesheet" href="NOCDN/~~/admin/assets/dbview.css" />');
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
-
+head.push('<script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>');
 core.content.html();
 
 // top == show all collections
@@ -42,22 +43,64 @@ for( var i in f) {
 %>
 
 <h3><%=hdr%></h3>
-<% if(!top) {
+
+<%
+/* find the indices */
+if(!top) {
     %>
     <a href="dbview" style="display: block;">Back to Collection View</a>
     <div> Indices:
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
+
     var i=0;
-    while(i<metarows.length-1 && metarows[i+1].name.indexOf("$") > 0) {
-        obj = metarows[++i];
-        var idx=obj.name.indexOf("$");
-        if( obj.name && idx>=0 ) {
-            print("<div>"+obj.name.substring(idx+1)+"</div>");
-        }
+    while(i<metarows.length && metarows[i].name.indexOf("$") > 0) {
+        obj = metarows[i++];
+        var idx = obj.name.indexOf("$");
+        print('<div><input type="checkbox" name="<%= request.ns %>" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
     }
     %>
+    <input type="button" onclick="dropIndices()" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
+    </div>
+
+    <div>
+    <div><%= request.ns %> Search/Filter <input type="button" onclick="searchFilterPanel.show()" value="*" /></div>
+    <textarea id="searchbox"></textarea>
+    <input type="button" value="Validate" onclick="validateSearchbox()" />
+    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''; refreshTable()" />
+    <input type="button" onclick="doCommand()" value="Execute" /></div>
+    </div>
+
+
+    <div>
+    <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
+    </div>
+    <div id="viewOptions" style="display: none">
+    <div class="hd">View Options</div>
+    <div class="bd">Select the columns that you wish to display.
+    <% for(var i in f) {
+        if(!ignore[i])
+            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked /></div>');
+    }%>
+    </div>
+    <div class="ft">
+    <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
+    </div>
+    </div>
+
+    <div id="searchFilter" style="display:none;">
+    <div class="hd">Search/Filter Panel</div>
+    <div class="bd"><table><tr><th>Column</th><!--<th>Yes</th><th>No</th><th>Whatever</th>--><th>Search Term</th></tr>
+    <%
+    for(var i in f) {
+        if(!ignore[i])
+            print('<tr><td>'+i+'</td><!--<td><input type="radio" name="'+i+'" value="0" /></td><td><input type="radio" name="'+i+'" value="1" /></td><td><input type="radio" name="'+i+'" value="2" /></td>--><td><input type="text" onblur="setSearchFilter()" name="search" id="'+i+'" /></td></tr>');
+    }
+    %>
+    </table>
+    </div>
+    <div class="ft"><input type="button" value="OK" onclick="doCommand(); searchFilterPanel.hide()" /><input type="button" value="Cancel" onclick="searchFilterPanel.hide()" /></div>
     </div>
     <%
 } %>
@@ -103,6 +146,41 @@ function printObj(cursor, field) {
     }
     return text;
 }
+
+function setSearchFilter() {
+    var cmd = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.find({ ";
+    var cmdAr = [];
+    var terms = document.getElementsByName("search");
+    for(var t in terms) {
+        if(terms[t].value && terms[t].value.trim() != "") {
+            cmdAr.push(terms[t].id +": "+terms[t].value);
+        }
+    }
+    document.getElementById("searchbox").value = cmd+cmdAr.join(", ")+"});";
+}
+
+function doCommand() {
+    myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
+}
+
+function validateSearchbox() {
+    if(checkRun(document.getElementById("searchbox").value))
+        alert("Syntax ok.");
+    else
+        alert("Syntax Error.");
+}
+
+function changeView() {
+    var elems = document.getElementsByName("viewopts");
+    for(var i=0; i<elems.length; i++) {
+        if(!elems[i].checked)
+            myDataTable.hideColumn(myDataTable.getColumn(i));
+        else
+            myDataTable.showColumn(myDataTable.getColumn(i));
+    }
+    viewOptionsPanel.hide();
+}
+
 
 function showObj(i) {
          document.getElementById(i).style.display = "block";
@@ -183,6 +261,7 @@ function printDiv(val, type, i, bd, id, path) {
     bd.appendChild(fieldDiv);
 }
 
+<% if(!top) { %>
 // alright, so what really should be done is checkboxes, but this will work for now
 function deleteProp(num, path) {
     var deleteThis = function() {
@@ -211,6 +290,58 @@ function deleteProp(num, path) {
     simpledialog1.bringToTop();
     simpledialog1.show();
 }
+
+function changeSearchbox() {
+    newEI = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.ensureIndex({";
+    eiAr = [];
+
+    var newidx = document.getElementsByName("createidx");
+    for(var i=0; i<newidx.length; i++) {
+        if(newidx[i].checked)
+            newEI += newidx[i].value + ": 1, ";
+    }
+    newEI = newEI.substring(0, newEI.length-2) + " });";
+
+    var sb = document.getElementById("searchbox");
+    sb.value = newEI;
+}
+
+var _createIndex = function() {
+    var passData="action=createidx&ns=<%= request.ns %>&idx=";
+    var newidx = document.getElementsByName("createidx");
+    for(var i=0; i<newidx.length; i++) {
+        if(newidx[i].checked)
+            passData+=newidx[i].value+",";
+    }
+    ajax(passData.substring(0, passData.length-1), "editDb", function(response) {
+        refreshTable();
+    });
+    this.hide();
+}
+
+function createIndex() {
+    var idx = '<%
+    for(var i in f) {
+        if(!ignore[i])
+            print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
+    } %>';
+
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
+        { width: "300px",
+          fixedcenter: true,
+          draggable: true,
+          visible: false,
+          close: true,
+          text: "Select fields for the new index: "+idx,
+        buttons: [ { text:"Yes", handler: _createIndex }, { text:"No", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader("Ensure Index");
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.bringToTop();
+    simpledialog1.show();
+
+}
+
 
 // currentObj stores edits to the fields
 var currentObj = {};
@@ -398,12 +529,18 @@ function editField(id, type, dbid, path) {
 }
 
 
+<% } // end of if(!top)
+%>
+
 var createRecordPanel;
 var createTablePanel;
+var viewOptionsPanel;
+var searchFilterPanel;
 
 function addRecord() {
     createRecordPanel.show()
 }
+
 function createTable() {
     createTablePanel.show();
 }
@@ -541,6 +678,7 @@ if(top) {
 <script type="text/javascript" src="/@@/yui/current/datatable/datatable-beta-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/logger/logger-debug.js"></script>
 <script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>
+<script type="text/javascript" src="/@@/yui/current/utilities/utilities.js"></script>
 
 <script type="text/javascript">
 
@@ -639,13 +777,13 @@ if(top) {
 
     function dropIndices(tname) {
         tablename = tname;
-    var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
-        this.hide();
-    }
+        var handleIDrop = function() {
+            var list = getSelectedIndices(",");
+            ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
+                refreshTable();
+            });
+            this.hide();
+        }
         var prettyList = getSelectedIndices(", ");
         if(prettyList.length == 0) {
             alert("You must check at least one index.");
@@ -704,8 +842,6 @@ function getSearchArgs() {
     passData = pairs.join('&');
     return passData;
 }
-
-(function(){var B=YAHOO.widget.DataTable,A=YAHOO.util.Dom;B.prototype._setColumnWidth=function(I,D,J){I=this.getColumn(I);if(I){J=J||"hidden";if(!B._bStylesheetFallback){var N;if(!B._elStylesheet){N=document.createElement("style");N.type="text/css";B._elStylesheet=document.getElementsByTagName("head").item(0).appendChild(N)}if(B._elStylesheet){N=B._elStylesheet;var M=".yui-dt-col-"+I.getId();var K=B._oStylesheetRules[M];if(!K){if(N.styleSheet&&N.styleSheet.addRule){N.styleSheet.addRule(M,"overflow:"+J);N.styleSheet.addRule(M,"width:"+D);K=N.styleSheet.rules[N.styleSheet.rules.length-1]}else{if(N.sheet&&N.sheet.insertRule){N.sheet.insertRule(M+" {overflow:"+J+";width:"+D+";}",N.sheet.cssRules.length);K=N.sheet.cssRules[N.sheet.cssRules.length-1]}else{B._bStylesheetFallback=true}}B._oStylesheetRules[M]=K}else{K.style.overflow=J;K.style.width=D}return }B._bStylesheetFallback=true}if(B._bStylesheetFallback){if(D=="auto"){D=""}var C=this._elTbody?this._elTbody.rows.length:0;if(!this._aFallbackColResizer[C]){var H,G,F;var L=["var colIdx=oColumn.getKeyIndex();","oColumn.getThEl().firstChild.style.width="];for(H=C-1,G=2;H>=0;--H){L[G++]="this._elTbody.rows[";L[G++]=H;L[G++]="].cells[colIdx].firstChild.style.width=";L[G++]="this._elTbody.rows[";L[G++]=H;L[G++]="].cells[colIdx].style.width="}L[G]="sWidth;";L[G+1]="oColumn.getThEl().firstChild.style.overflow=";for(H=C-1,F=G+2;H>=0;--H){L[F++]="this._elTbody.rows[";L[F++]=H;L[F++]="].cells[colIdx].firstChild.style.overflow=";L[F++]="this._elTbody.rows[";L[F++]=H;L[F++]="].cells[colIdx].style.overflow="}L[F]="sOverflow;";this._aFallbackColResizer[C]=new Function("oColumn","sWidth","sOverflow",L.join(""))}var E=this._aFallbackColResizer[C];if(E){E.call(this,I,D,J);return }}}else{}};B.prototype._syncColWidths=function(){var J=this.get("scrollable");if(this._elTbody.rows.length>0){var M=this._oColumnSet.keys,C=this.getFirstTrEl();if(M&&C&&(C.cells.length===M.length)){var O=false;if(J&&(YAHOO.env.ua.gecko||YAHOO.env.ua.opera)){O=true;if(this.get("width")){this._elTheadContainer.style.width="";this._elTbodyContainer.style.width=""}else{this._elContainer.style.width=""}}var I,L,F=C.cells.length;for(I=0;I<F;I++){L=M[I];if(!L.width){this._setColumnWidth(L,"auto","visible")}}for(I=0;I<F;I++){L=M[I];var H=0;var E="hidden";if(!L.width){var G=L.getThEl();var K=C.cells[I];if(J){var N=(G.offsetWidth>K.offsetWidth)?G.firstChild:K.firstChild;if(G.offsetWidth!==K.offsetWidth||N.offsetWidth<L.minWidth){H=Math.max(0,L.minWidth,N.offsetWidth-(parseInt(A.getStyle(N,"paddingLeft"),10)|0)-(parseInt(A.getStyle(N,"paddingRight"),10)|0))}}else{if(K.offsetWidth<L.minWidth){E=K.offsetWidth?"visible":"hidden";H=Math.max(0,L.minWidth,K.offsetWidth-(parseInt(A.getStyle(K,"paddingLeft"),10)|0)-(parseInt(A.getStyle(K,"paddingRight"),10)|0))}}}else{H=L.width}if(L.hidden){L._nLastWidth=H;this._setColumnWidth(L,"1px","hidden")}else{if(H){this._setColumnWidth(L,H+"px",E)}}}if(O){var D=this.get("width");this._elTheadContainer.style.width=D;this._elTbodyContainer.style.width=D}}}this._syncScrollPadding()}})();
 
 function collapseCol(key) {
     var col = myDataTable.getColumn(key);
@@ -791,10 +927,10 @@ var myColumnDefs = [ <% if(top) {
     print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
 } else {
     if(rows) {
-        print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\'_id\\\')" id="arrow_id"><img src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , resizeable: true, sortable: false, children: [{ label: addSearchForm("_id"), sortable: false, children: [{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true }]}]},');
+        print('{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true, resizeable: true },');
         for(var i in f) {
             if(!ignore[i] && i != "_id") {
-                print('{ label: \'<div style="text-align: center; cursor: pointer;" onclick="collapseCol(\\\''+i+'\\\')"><img id="arrow'+i+'" src="NOCDN/~~/admin/assets/arrow_in.png" alt="Collapse Column" /></div>\' , resizeable: true, sortable: false, children: [{ label: addSearchForm("'+i+ '"), sortable: false, children: [{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true } ] }]},');
+                print('{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true, resizeable: true },');
             }
        }
     }
@@ -885,8 +1021,13 @@ else {
         elCell.innerHTML = '<input type="button" value="Delete" onclick="deleteRow(\''+oRecord.getData("_id")+'\')" />';
     }
     strFormatter = function(elCell, oRecord, oColumn, oData) {
-        if(!oData) {
+        if(oColumn.key in oRecord._oData && !oData) {
+            elCell.innerHTML = 'null';
+            YAHOO.util.Dom.addClass(elCell, "nullfield");
+        }
+        else if (!oData) {
             elCell.innerHTML = '<img src="NOCDN/~~/admin/assets/nonexistent.png">';
+            YAHOO.util.Dom.addClass(elCell, "nofield");
         }
         else if(oData.length >= 20) {
             var fullText = document.createElement("div");
@@ -901,7 +1042,7 @@ else {
                 oData = '<span style="cursor:default">(Object)</span>';
             }
             else {
-                fullText.innerHTML = oData; //+'<br /><input type="button" onclick="showFullText('+fcount+')" value="Close" />';
+                fullText.innerHTML = oData;
                 oData = '<span  style="cursor:default">'+oData.substring(0, 18)+"...</span>";
             }
             elCell.innerHTML = oData;
@@ -935,6 +1076,14 @@ else {
     editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
     editRowPanel.render("myMarkedUpContainer");
     document.getElementById("editRecord").style.display = "block";
+
+    viewOptionsPanel = new YAHOO.widget.Panel("viewOptions", {visible: false, contraintoviewport: true, fixedcenter: true });
+    viewOptionsPanel.render("myMarkedUpContainer");
+    document.getElementById("viewOptions").style.display = "block";
+
+    searchFilterPanel = new YAHOO.widget.Panel("searchFilter", {visible: false, contraintoviewport: true, fixedcenter: true });
+    searchFilterPanel.render("myMarkedUpContainer");
+    document.getElementById("searchFilter").style.display = "block";
     <%
 }
 %>

@@ -7,6 +7,16 @@ if(request.action == "delete") {
     var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
     collection.remove({_id : request.id});
 }
+else if(request.action == "createidx") {
+    collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+    idxes = request.idx.split(",");
+    var idxObj = {};
+    for(var i=0; i<idxes.length; i++) {
+        idxObj[idxes[i]] = 1;
+    }
+    log(tojson(idxObj));
+    collection.ensureIndex(idxObj);
+}
 else if(request.action == "create") {
     var opts = {};
     if(request.fixed) opts.capped = true;

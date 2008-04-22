@@ -18,7 +18,5 @@ var g = arguments[0];
 
 <%
 var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
+core.admin.pieces.gitDiff({output: foo.out});
 %>
-<pre>
-<%= content.HTML.escape(foo.out) %>
-</pre>

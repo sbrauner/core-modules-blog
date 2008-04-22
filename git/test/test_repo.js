@@ -201,9 +201,13 @@ assert(listRevs.parsed.revs[0].message == "test commit 2");
 assert(listRevs.parsed.revs[1].id == lastCommit);
 assert(listRevs.parsed.revs[1].message == "test commit 3");
 
-// FIXME: try a push on a branch when another branch is not a local subset?
+// FIXME: try a push on a branch when another branch is not a local subset
+// obviously we don't support branches at all yet, but you could do a sysexec
+// to create branches or whatever
 
 // FIXME: test rm
+
+// FIXME: test fetch
 
 sc.eval('sysexec("rm -r /tmp/gitrepo");');
 

@@ -46,7 +46,8 @@
 }
 
 #console .yui-log-bd {
-    height: 75%;
+/*    height: 75%; */
+    height: 400px;
 }
 
 #console .scratch {

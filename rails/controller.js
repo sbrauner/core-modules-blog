@@ -52,7 +52,7 @@ ApplicationController.prototype.dispatch = function( request , response ){
         anythingRendered = true;
     };
     
-    f.getScope( true ).respond_to = 
+    f.getScope( true ).respond_to = function( b ){
         [
             { 
                 html : function(){
@@ -64,7 +64,8 @@ ApplicationController.prototype.dispatch = function( request , response ){
                     return false;
                 }
             }
-        ];
+        ].forEach( b );
+    };
     
     f( request , response );
 

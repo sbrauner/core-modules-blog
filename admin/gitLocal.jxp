@@ -1,10 +1,14 @@
 <%
+
+if ( request.getHost().equals( "corejs.10gen.com" ) )
+    return print( "you can't do this" );
+
 core.git.repo();
 core.ext.pluck();
 core.content.html();
 
-head.addScript("/~~/admin/assets/gitPopup.js");
-head.addCSS("/~~/admin/assets/gitLocal.css");
+head.addScript("NOCDN/~~/admin/assets/gitPopup.js");
+head.addCSS("NOCDN/~~/admin/assets/gitLocal.css");
 
 var g = new git.Repo(); 
 
@@ -12,7 +16,7 @@ var revid = g.getCurrentRev().parsed.rev;
 var revmsg = g.getCommit(revid).parsed.message;
 revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
-core.admin.pieces.githeader({revid: revid, revmsg: revmsg,
+core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
                             });
 
 var output_command = function(foo){
@@ -29,11 +33,24 @@ if ( request.action == "pull" ){
     var foo = g.pull();
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
         print("Pull failed: conflicts<br/>");
+        output_command(foo);
     }
     else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
         print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+        output_command(foo);
     }
-    output_command(foo);
+    else {
+        log(tojson(foo));
+        if(foo.parsed.upToDate){
+            print("Already up-to-date.");
+        }
+        else {
+            log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
+            g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+                core.admin.pieces.gitPulledRev(z);
+            });
+        }
+    }
 }
 else if ( request.action == "push" ){
     // No files
@@ -52,8 +69,9 @@ Push failed. Try pulling first.
     }
     else {
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
-            core.admin.pieces.gitpushedrev(z);
+            core.admin.pieces.gitPushedRev(z);
         });
+        g.fetch();
     }
 }
 else if ( request.action == "add" && request.untracked_file ){
@@ -66,7 +84,7 @@ else if ( request.action == "diff" && request.changed_file ){
     // Changed files
     print( "Diffinf...<br>" );
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
-    output_command(foo);
+    core.admin.pieces.gitDiff({output: foo.out});
 }
 else if ( request.action == "commit" && request.changed_file ){
     // Changed files
@@ -91,6 +109,10 @@ else if ( request.action == "checkout" && request.changed_file ){
     print("Performing checkout...<br>");
     var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
+}
+
+if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
+    core.admin.pieces.gitNotPushed();
 }
 
 var parsed = g.status().parsed;
@@ -133,7 +155,10 @@ if(parsed.unmerged){
     }
 }
 
-var buttons = {"changed": ['diff', {name: 'checkout', disabled: conflicts}, 'commit'], 'untracked': ['add']};
+var changedbuttons = [{name: 'checkout', disabled: conflicts}, 'commit'];
+if(parsed.changed && parsed.changed.length != 1) 
+    changedbuttons = ['diff'].concat(changedbuttons);
+var buttons = {"changed": changedbuttons, 'untracked': ['add']};
 
 var diffLinks = {"changed": true, 'untracked': false};
 
@@ -146,6 +171,7 @@ if(request.untracked_file)
     request.getParameters('untracked_file').forEach(function(z){
         checked[z] = "checked";
     });
+
 %>
 <form method="POST">
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
@@ -155,7 +181,7 @@ if(request.untracked_file)
   <form method="POST">
 <%
 for ( type in parsed ){ 
-    core.admin.pieces.gitfilelist({title: type, actions: buttons[type],
+    core.admin.pieces.gitFileList({title: type, actions: buttons[type],
                                    checked: checked,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
@@ -165,5 +191,4 @@ for ( type in parsed ){
 %>
   </form>
 </table>
-<hr>
 

@@ -1,0 +1,28 @@
+<pre><code>
+<%
+head.addCSS('NOCDN/~~/admin/assets/gitDiff.css');
+obj.output = content.HTML.escape(obj.output);
+var output = obj.output.trim().split(/\n/);
+var styleLine = function(line, style){
+    print("<span class='"+style+"'>");
+    print(line);
+    print("</span>");
+    print("\n");
+};
+
+for(var i = 0; i < output.length; ++i){
+    if(output[i].match(/^[-]{3}/))
+        styleLine(output[i], 'gitdiff-oldfile');
+    else if(output[i].match(/^[+]{3}/))
+        styleLine(output[i], 'gitdiff-newfile');
+    else if(output[i].match(/^[-]/))
+        styleLine(output[i], 'gitdiff-oldfile');
+    else if(output[i].match(/^[+]/))
+        styleLine(output[i], 'gitdiff-newfile');
+    else {
+        print(output[i]+"\n");
+    }
+       
+}
+%>
+</code></pre>

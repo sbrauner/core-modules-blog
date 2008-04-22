@@ -1,6 +1,8 @@
 <%
 
-log.app.wiki.info("got page "+ wikiPage.name + "; db.wiki constructor is " + db.wiki.getConstructor());
+if(wikiPage.getDisplayName == null){
+   log.app.wiki.fatal("Horrible breakage!! db.wiki constructor is " + db.wiki.getConstructor() + "; wiki page is " + tojson(wikiPage));
+}
 
 if (request.edit) 
     head.push('<script type="text/javascript">isEditPage = true;</script>');
@@ -15,8 +17,6 @@ if( !request.edit )
     head.push('<script type="text/javascript" src="assets/client.js"></script>');
 if (!app.wiki.config.readOnly) 
     head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
-
-log.wiki.header_wikipage.debug("wiki page is " + tojson(wikiPage));
 
 %>
 <% htmlheader('Wiki | ' + wikiPage.getDisplayName()); %>
