@@ -9,8 +9,11 @@ core.content.html();
 var collection;
 // ignore internal transient variables
 var ignore= { _ns:1, _save:1, _update:1 };
-var rowsPerPage = (request.rowsPerPage) ? request.rowsPerPage : 50;
+
+// Table display options
+var rowsPerPage = (request.rowsPerPage) ? request.rowsPerPage : 10;
 var currentPage = (request.currentPage) ? request.currentPage : 1;
+var totalNumPages;
 
 // Print validation information
 if(request.action == "validation") {
@@ -134,15 +137,28 @@ else {
     }
 
     rows = collection.find().sort( { name : 1 } ).toArray();
+
 }
 if(request.reverse)
     rows.reverse();
 
 
-var done = false;
-function outp(x, id, name) {
-        return (typeof x)+":"+x;
-}
+
+/* get the paging info and only return the necessary rows */
+totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
+if(currentPage > totalNumPages)
+    currentPage = totalNumPages;
+
+var start = (currentPage - 1)*rowsPerPage;
+var end = (currentPage)*rowsPerPage - 1;
+rows = rows.splice(start, end);
+
+
+var dbTable = { rows: [] };
+dbTable.totalNumPages = totalNumPages;
+dbTable.currentPage = currentPage;
+dbTable.rowsPerPage = rowsPerPage;
+
 
 var fields = [];
 var f = {};
@@ -156,8 +172,6 @@ for( var i in f) {
     fields.push(f[i]);
 }
 
-
-var dbTable = { rows: [] };
 
 if( top ) {
     var k = 0;
@@ -184,9 +198,157 @@ if( top ) {
     }
 }
 else
-    dbTable = { rows: rows };
+    dbTable.rows = rows;
 
 
-return dbTable;
+
+
+
+/* Formatting */
+
+var fcount = 0;
+
+if(top) {
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+}
+else {
+    var th = [];
+    th.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        th.push({"name" : i, className: "" });
+    }
+    th.push({"name": "Delete", className: "center" });
+
+    idFormatter = function(oData) {
+        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
+
+    deleteBtnFormatter = function(id) {
+        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
+    }
+
+    var objcount = 0;
+    function printObj(cursor, field) {
+        if(!cursor || !cursor[field]) return;
+        var text = "";
+
+        if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+        }
+        else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+        } else if(typeof cursor[field] == "object") {
+            var name;
+            var desc;
+            if(cursor[field] instanceof Date) {
+                name = field;
+                desc = cursor[field].toString();
+            }
+            else if(cursor[field] instanceof Array) {
+                name = field;
+                desc = "["+cursor[field].length+"]";
+            }
+            else {
+                name = field;
+                desc = "{...}";
+            }
+            text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+            var tempobj = objcount;
+            objcount++;
+            for(var q in cursor[field]) {
+                text += printObj(cursor[field], q);
+            }
+            text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+        } else {
+            text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+        }
+        return text;
+    }
+
+
+    strFormatter = function(obj, field) {
+        if(field in obj && !obj[field]) {
+            return '<div class="nullfield">null</div>';
+        }
+        else if (!obj[field]) {
+            return '<div class="nofield"><img src="NOCDN/~~/admin/assets/nonexistent.png"></div>';
+        }
+        else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
+            return obj[field];
+        }
+        else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
+            var subobj = obj[field];
+            var str = "";
+            var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
+            fcount++;
+
+            if (subobj instanceof Date) {
+                fullText += subobj.toString();
+                str = '<span  style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+            }
+            else if (typeof subobj == "object") {
+                for(var q in subobj)
+                    fullText += printObj(subobj, q);
+                str = '<span style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText += subobj;
+                str = '<span  style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+            }
+            fullText += '</div>';
+            return str+fullText;
+        }
+        else
+            return obj[field];
+    }
+}
+
+
+if(top) {
+    dbTable.top = true;
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
+        dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
+    }
+}
+else {
+    dbTable.top = false;
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].id = "";
+        for(var field in th) {
+            if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
+            if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
+        }
+    }
+}
+
+var page = [];
+for(var i=1; i<=dbTable.totalNumPages; i++) {
+    if(dbTable.currentPage == i) {
+        if(i < 10)
+            page.push({ name: i, className: "active" });
+        else
+            page.push({ name: i, className: "modactive" });
+    }
+    else {
+        if(i < 10)
+            page.push({ name: i, className: "" });
+        else
+            page.push({ name: i, className: "mod" });
+    }
+}
+
+var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
+var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
+
+core.admin.pieces.dbviewTable({ th : th,
+                                table : dbTable,
+                                page: page,
+                                prevPage: prevPage,
+                                nextPage: nextPage });
+
+
 
 %>

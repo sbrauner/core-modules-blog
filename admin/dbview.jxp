@@ -684,6 +684,12 @@ var handleNo = function() {
     this.hide();
 }
 
+function loadPage(pagenum) {
+    ajax("currentPage="+pagenum+"&<%= (request.ns) ? 'ns='+request.ns : '' %>"+lastSearch, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+
 <%
 if(top) {
     %>
@@ -920,22 +926,6 @@ var myColumnDefs = [ <% if(top) {
 */
 
 
-<%
-if(top) {
-   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
-}
-else {
-    var th = [];
-    th.push({"name" : "_id", className: "sort-up" });
-    for(var i in f) {
-        if(ignore[i] || i == "_id") continue;
-        th.push({"name" : i, className: "" });
-    }
-    th.push({"name": "Delete", className: "center" });
-}
-%>
-
-
 
 /*var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
 var myDataTable;
@@ -1087,33 +1077,10 @@ else {
 
 <%
 
-var table = core.admin.table();
-
-if(top) {
-    var introMsg = "";
-    table.top = true;
-    for(var i in table.rows) {
-        table.rows[i].url = "dbview?ns="+table.rows[i].name;
-        table.rows[i].name = table.rows[i].name.substring( table.rows[i].name.indexOf('.')+1 );
-    }
-}
-else {
-    table.top = false;
-    for(var i in table.rows) {
-        table.rows[i].id = "";
-        for(var field in th) {
-            if(th[field].name == "_id") table.rows[i].id = idFormatter(table.rows[i]._id);
-            if(th[field].name == "Delete")  table.rows[i].Delete = deleteBtnFormatter(table.rows[i]._id);
-            else table.rows[i][th[field].name] = strFormatter(table.rows[i], th[field].name);
-        }
-    }
-}
-
 core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg,
-                           th : th,
-                           table : table,
-                           page : [] });
+                           introMsg: introMsg  });
+core.admin.table();
+
 %>
 
 <script>
