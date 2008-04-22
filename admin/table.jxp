@@ -142,7 +142,7 @@ else {
 if(request.reverse)
     rows.reverse();
 
-
+log("numrows: "+rows.length);
 
 /* get the paging info and only return the necessary rows */
 totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
@@ -153,6 +153,7 @@ var start = (currentPage - 1)*rowsPerPage;
 var end = (currentPage)*rowsPerPage - 1;
 rows = rows.splice(start, end);
 
+log("num rows on display: "+rows.length);
 
 var dbTable = { rows: [] };
 dbTable.totalNumPages = totalNumPages;
