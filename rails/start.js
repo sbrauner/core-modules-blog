@@ -57,8 +57,12 @@ controllersDir.listFiles().forEach(
         if ( ! z.filename.endsWith( "_controller.rb" ) )
             return;
         
-        var f = local.app.controllers[ z.filename.replace( /\.rb$/ , "" ) ];
-        
+        var shortName = z.filename.replace( /\.rb$/ , "" );
+
+        var f = local.app.controllers[ shortName ];
+        if ( ! f )
+            throw "couldn't load controller [" + shortName + "]";
+
         scope.setGlobal( true );
         f();
 
