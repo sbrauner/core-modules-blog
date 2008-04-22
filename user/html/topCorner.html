@@ -12,14 +12,14 @@ head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
 <div id="login_status">
 
   <if user >
-    <span>
-      <nobr>
+    <nobr>
+      <span>
         Logged in as <%= user.name %> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
         <if user.isAdmin()>
           <a href="/admin/">*</a>
         </if>
-      </nobr>
-    </span>
+      </span>
+    </nobr>
   </if>
   
   <if ( ! user )  >
