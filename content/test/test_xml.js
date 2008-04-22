@@ -144,3 +144,24 @@ assert(x.$ == "test");
 var s = "<?xml version=\"1.0\"?><result><!-- comment 1 -->hi<!-- comment 2 --></result>";
 var x = xml.fromString(s);
 assert(x.$ == "hi");
+
+var s = "<moo>hi</moo>invalid";
+var e = true;
+try {
+    var x = xml.fromString(s);
+    e = false;
+}
+catch (e) {
+    print(e);
+}
+
+var s = "invalid";
+var e = true;
+try {
+    var x = xml.fromString(s);
+    e = false;
+}
+catch(e) {
+    print(e);
+}
+assert(e);

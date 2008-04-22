@@ -306,7 +306,14 @@ xml = {
         }
         else tokenizer.lookahead = next;
 
-        return xml._from(tokenizer)[0]; // root is always one element
+        var root = xml._from(tokenizer);
+        if(typeof root != "object"){
+            throw "root is not an element";
+        }
+        if(root.length != 1){
+            throw "things outside of root";
+        }
+        return root[0]; // root is always one element
     } ,
 
     _from : function( tokenizer ){
