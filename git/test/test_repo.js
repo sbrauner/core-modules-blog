@@ -167,8 +167,8 @@ var s = File.open('/tmp/gitrepo/test/file1').asString();
 assert(s == "hello there\n");
 
 assert(push.parsed);
-assert(push.parsed.from == endCommit);
-assert(push.parsed.to == lastCommit);
+assert(endCommit.match(push.parsed.from));
+assert(lastCommit.match(push.parsed.to));
 assert(! push.parsed.pullFirst);
 
 // commit changes to both g1 and g3 (make conflicts)
