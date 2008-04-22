@@ -125,6 +125,19 @@ Object.extend(git.Repo.prototype, {
             parsed.to = torev;
             parsed.success = true;
         }
+        else if(exec.err.match(/-> \w*\n/)){
+            // new-style git format
+            lines = lines.filter(function(l){ return l.match(/->/);});
+            lines.forEach(function(l){
+                var m = l.match(/(.+) -> (.+)/);
+                if(m[1] == this.getCurrentHeadSymbolic().parsed.head){
+                    m = l.match(/(.+)\.\.(.+)/);
+                    parsed.from = m[0];
+                    parsed.to = m[1];
+                    parsed.success = true;
+                }
+            });
+        }
         else {
             for(var i = 0; i < lines.length-1; ++i){
                 var m = lines[i].match(/remote '.+?' is not a strict subset of local ref '(.+?)'/);
