@@ -358,7 +358,7 @@ xml = {
                     if(next == "<"){ tokenizer(); next = tokenizer(); }
                     tokenizer();
                     if(name != next) {
-                        print ("Error: malformed XML -- "+name+" does not match "+next);
+                        throw ("Error: malformed XML -- "+name+" does not match "+next);
                     }
                 }
                 else var result = null;

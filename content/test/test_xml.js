@@ -165,3 +165,14 @@ catch(e) {
     print(e);
 }
 assert(e);
+
+var s = "<abc></invalid>";
+var e = true;
+
+try {
+    var x = xml.fromString(s);
+    e = false;
+}
+catch(e) {
+    print(e);
+}
