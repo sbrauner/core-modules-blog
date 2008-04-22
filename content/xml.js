@@ -140,6 +140,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
@@ -232,6 +233,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
@@ -304,7 +306,14 @@ xml = {
         }
         else tokenizer.lookahead = next;
 
-        return xml._from(tokenizer)[0]; // root is always one element
+        var root = xml._from(tokenizer);
+        if(typeof root != "object"){
+            throw "root is not an element";
+        }
+        if(root.length != 1){
+            throw "things outside of root";
+        }
+        return root[0]; // root is always one element
     } ,
 
     _from : function( tokenizer ){
@@ -349,7 +358,7 @@ xml = {
                     if(next == "<"){ tokenizer(); next = tokenizer(); }
                     tokenizer();
                     if(name != next) {
-                        print ("Error: malformed XML -- "+name+" does not match "+next);
+                        throw ("Error: malformed XML -- "+name+" does not match "+next);
                     }
                 }
                 else var result = null;

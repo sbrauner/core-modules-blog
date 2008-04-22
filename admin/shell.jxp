@@ -33,6 +33,7 @@ head.addCSS("NOCDN/~~/admin/assets/shell.css");
 
 <script type="text/javascript" src="/~~/ui/js/compat.js"></script>
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
+<script type="text/javascript" src="/@@/dojo/current/dojo/dojo.js"></script>
 <script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>
 <script type="text/javascript">
 // FIXME: this screws up the prompts shown in the transcript; they could have
@@ -211,7 +212,7 @@ loader.insert({
 
                 obj = obj["$"];
                 if(obj instanceof Function) obj = string(obj.toString());
-                else obj = string(YAHOO.lang.JSON.stringify(obj));
+                else obj = string(dojo.toJson(obj));
                 return s += obj;
             }
         };
