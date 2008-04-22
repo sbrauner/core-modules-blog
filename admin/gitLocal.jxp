@@ -84,7 +84,7 @@ else if ( request.action == "diff" && request.changed_file ){
     // Changed files
     print( "Diffinf...<br>" );
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
-    output_command(foo);
+    core.admin.pieces.gitDiff({output: foo.out});
 }
 else if ( request.action == "commit" && request.changed_file ){
     // Changed files
