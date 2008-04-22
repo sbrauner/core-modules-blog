@@ -140,6 +140,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
@@ -232,6 +233,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
