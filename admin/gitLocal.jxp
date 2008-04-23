@@ -9,6 +9,7 @@ head.addScript("NOCDN/@@/yui/current/container/container-min.js");
 core.git.repo();
 core.ext.pluck();
 core.content.html();
+core.core.file();
 
 head.addCSS("NOCDN/~~/admin/assets/gitLocal.css");
 head.addCSS("NOCDN/@@/yui/current/container/assets/container.css");
@@ -29,6 +30,61 @@ var output_command = function(foo){
           content.HTML.escape(foo.err) + "</pre>");
     print("<hr>");
 };
+
+// Get current status of working directory.
+var parsed = g.status().parsed;
+
+// Marge staged and changed so that files only appear once, changed first.
+if(parsed.staged){
+    var files = {};
+    parsed.staged.forEach(function(z){
+        files[z.name] = z.type;
+    });
+
+    // If a file is both in staged and changed, remove it from changed
+    if(parsed.changed){
+        parsed.changed = parsed.changed.filter(function(z){
+            return !(files[z.name]);
+        });
+    }
+    parsed.changed = (parsed.changed || []).concat(parsed.staged);
+    delete parsed.staged;
+}
+
+// Manipulate unmerged files.
+// Marge parsed.unmerged with parsed.changed, unmerged files first.
+var conflicts = false;
+// Save the unmerged files for later.
+var unmerged = {};
+if(parsed.unmerged){
+    // Remove from unmerged those files which
+    // have actually been merged (as shown by lack of commit markers).
+    parsed.unmerged = parsed.unmerged.filter(function(z){
+        var s = File.open(z.name).asString();
+        if(s.match(/(^|\n)<<<<<<</, "m")) return true;
+    });
+
+
+    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+    delete parsed.unmerged;
+    conflicts = true;
+
+    if(parsed.changed){
+        var conflictFiles = parsed.changed.filter(function(z){
+            if(unmerged[z.name]){
+                z.type = "CONFLICT";
+                return true;
+            }
+            return false;
+        });
+        var otherFiles = parsed.changed.filter(function(z){
+            return !(unmerged[z.name]);
+        });
+        parsed.changed = conflictFiles.concat(otherFiles);
+    }
+}
+
+// END status
 
 if ( request.action == "pull" ){
     // No files
@@ -118,47 +174,8 @@ if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev
     core.admin.pieces.gitNotPushed();
 }
 
-var parsed = g.status().parsed;
-
-if(parsed.staged){
-    var files = {};
-    parsed.staged.forEach(function(z){
-        files[z.name] = z.type;
-    });
-
-    // If a file is both in staged and changed, remove it from changed
-    if(parsed.changed){
-        parsed.changed = parsed.changed.filter(function(z){
-            return !(files[z.name]);
-        });
-    }
-    parsed.changed = (parsed.changed || []).concat(parsed.staged);
-    delete parsed.staged;
-}
-
-var conflicts = false;
-var unmerged = {};
-if(parsed.unmerged){
-    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
-    delete parsed.unmerged;
-    conflicts = true;
-
-    if(parsed.changed){
-        var conflictFiles = parsed.changed.filter(function(z){
-            if(unmerged[z.name]){
-                z.type = "CONFLICT";
-                return true;
-            }
-            return false;
-        });
-        var otherFiles = parsed.changed.filter(function(z){
-            return !(unmerged[z.name]);
-        });
-        parsed.changed = conflictFiles.concat(otherFiles);
-    }
-}
-
-var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 'commit'];
+var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
+    {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 'untracked': ['add']};
