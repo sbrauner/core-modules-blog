@@ -7,6 +7,7 @@
    var filetypes = obj.filetypes;
    var actions = obj.actions;
    var unmerged = obj.unmerged;
+   var unadd = obj.unadd;
    var fileDiff = obj.fileDiff;
 %>
     <tr>
@@ -26,9 +27,14 @@
                  print("(" + filetypes[file] + ")");
              }
 %>
-        <if fileDiff>
-          (<a href="gitDiff?file=$filenames[file]" target="new" onclick="return popup(this.href)">diff</a>)
-        </if></td>
+          <if fileDiff>
+            (<a href="gitDiff?file=$filenames[file]" target="new" onclick="return popup(this.href)">diff</a>)
+          </if>
+
+          <if (unadd[filenames[file]])>
+            <input type="submit" name="action" value="unadd" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">
+          </if>
+        </td>
       </tr>
     </forin>
     <tr>

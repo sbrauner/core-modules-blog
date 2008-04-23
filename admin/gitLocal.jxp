@@ -31,59 +31,66 @@ var output_command = function(foo){
     print("<hr>");
 };
 
-// Get current status of working directory.
-var parsed = g.status().parsed;
-
-// Marge staged and changed so that files only appear once, changed first.
-if(parsed.staged){
-    var files = {};
-    parsed.staged.forEach(function(z){
-        files[z.name] = z.type;
-    });
-
-    // If a file is both in staged and changed, remove it from changed
-    if(parsed.changed){
-        parsed.changed = parsed.changed.filter(function(z){
-            return !(files[z.name]);
-        });
-    }
-    parsed.changed = (parsed.changed || []).concat(parsed.staged);
-    delete parsed.staged;
-}
-
-// Manipulate unmerged files.
-// Marge parsed.unmerged with parsed.changed, unmerged files first.
-var conflicts = false;
-// Save the unmerged files for later.
 var unmerged = {};
-if(parsed.unmerged){
-    // Remove from unmerged those files which
-    // have actually been merged (as shown by lack of commit markers).
-    parsed.unmerged = parsed.unmerged.filter(function(z){
-        var s = File.open(z.name).asString();
-        if(s.match(/(^|\n)<<<<<<</, "m")) return true;
-    });
-
-
-    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
-    delete parsed.unmerged;
-    conflicts = true;
-
-    if(parsed.changed){
-        var conflictFiles = parsed.changed.filter(function(z){
-            if(unmerged[z.name]){
-                z.type = "CONFLICT";
-                return true;
-            }
-            return false;
+var newfiles;
+var parseStatus = function(){
+    // Get current status of working directory.
+    var parsed = g.status().parsed;
+    
+    newfiles = {};
+    // Marge staged and changed so that files only appear once, changed first.
+    if(parsed.staged){
+        var files = {};
+        parsed.staged.forEach(function(z){
+            files[z.name] = z.type;
         });
-        var otherFiles = parsed.changed.filter(function(z){
-            return !(unmerged[z.name]);
-        });
-        parsed.changed = conflictFiles.concat(otherFiles);
+        
+        // If a file is both in staged and changed, remove it from changed
+        if(parsed.changed){
+            parsed.changed = parsed.changed.filter(function(z){
+                return !(files[z.name]);
+            });
+        }
+        parsed.changed = (parsed.changed || []).concat(parsed.staged);
+        newfiles = files;
+        delete parsed.staged;
     }
-}
+    
+    // Manipulate unmerged files.
+    // Marge parsed.unmerged with parsed.changed, unmerged files first.
+    var conflicts = false;
+    if(parsed.unmerged){
+        // Remove from unmerged those files which
+        // have actually been merged (as shown by lack of commit markers).
+        parsed.unmerged = parsed.unmerged.filter(function(z){
+            var s = File.open(z.name).asString();
+            if(s.match(/(^|\n)<<<<<<</, "m")) return true;
+        });
+        
+        
+        // Save the unmerged files for later.
+        parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+        delete parsed.unmerged;
+        conflicts = true;
+        
+        if(parsed.changed){
+            var conflictFiles = parsed.changed.filter(function(z){
+                if(unmerged[z.name]){
+                    z.type = "CONFLICT";
+                    return true;
+                }
+                return false;
+            });
+            var otherFiles = parsed.changed.filter(function(z){
+                return !(unmerged[z.name]);
+            });
+            parsed.changed = conflictFiles.concat(otherFiles);
+        }
+    }
+    return parsed;
+};
 
+var parsed = parseStatus();
 // END status
 
 if ( request.action == "pull" ){
@@ -169,6 +176,16 @@ else if ( request.action == "checkout" && request.changed_file ){
     var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
 }
+else if ( request.action && request.action.match(/^unadd_/)){
+    // This is kind of clumsy, but it simplifies the form rewriting on the 
+    // client
+    var fname = request.action.replace(/^unadd_/, '');
+    if(!newfiles[fname]) print("This file isn't new!");
+    var foo = g.rm([fname], {cached: true});
+    output_command(foo);
+}
+
+var parsed = parseStatus();
 
 if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
     core.admin.pieces.gitNotPushed();
@@ -203,7 +220,7 @@ if(request.untracked_file)
 <%
 for ( type in parsed ){ 
     core.admin.pieces.gitFileList({title: type, actions: buttons[type],
-                                   checked: checked,
+                                   checked: checked, unadd: newfiles,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    filetypes: parsed[type].map(Ext.pluck('type')),
