@@ -20,7 +20,7 @@ var nextPage = obj.nextPage;
     <forin row table.rows>
       <tr class="white-main">
 	<td class="left">&nbsp;</td>
-        <td><a href="$table.rows[row].url">$table.rows[row].name</a></td>
+        <td><a href="$table.rows[row].url&refPage=$table.currentPage">$table.rows[row].name</a></td>
         <td>$table.rows[row].index
           <if (table.rows[row].index != "")>
 	    <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropIndices('$table.rows[row].name')">

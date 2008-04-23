@@ -236,7 +236,7 @@ function addToSearch() {
     for(var i in currentSearch) {
         terms.push( i+": "+currentSearch[i] );
     }
-    document.getElementById("searchbox").value = "db.<%= request.ns.substring(request.ns.indexOf('.')+1) %>.find({ " + terms.join(",") + " });";
+    document.getElementById("searchbox").value = "<%= (request.ns) ? 'db.'+request.ns.substring(request.ns.indexOf('.')+1) : 'db[system.namespaces]' %>.find({ " + terms.join(",") + " });";
 }
 
 <% if(!top) { %>

@@ -145,6 +145,7 @@ else {
     rows = collection.find().sort( { name : 1 } ).toArray();
 
 }
+/* if this is a log, the rows should be in the opposite order */
 if(request.reverse)
     rows.reverse();
 
@@ -156,10 +157,10 @@ if(top) {
             numrows++;
         }
     }
-    totalNumPages = Math.floor(numrows / rowsPerPage ) + 1;
+    totalNumPages = Math.floor((numrows - 1) / rowsPerPage ) + 1;
 }
 else {
-    totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
+    totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
 }
 
 if(currentPage > totalNumPages)
@@ -171,15 +172,16 @@ var end = (currentPage)*rowsPerPage-1;
 /* if this is all collections, indices will be listed as rows. */
 if(top) {
     var urow = [];
-    tableCount = 0;
+    tableCount = -1;
     for(var i=0; i<rows.length; i++) {
-        if(start <= tableCount && tableCount <= end)
-            urow.push(rows[i]);
         if(rows[i].name.indexOf("$") == -1) {
             tableCount++;
         }
+        if(start <= tableCount && tableCount <= end)
+            urow.push(rows[i]);
     }
     rows = urow;
+    log(urow);
 }
 else {
     rows = rows.splice(start, end);
