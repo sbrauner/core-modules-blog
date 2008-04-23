@@ -47,7 +47,7 @@ if(!top) {
 
 
     %>
-    <a href="dbview" style="display: block;">Back to Collection View</a>
+    <a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a>
     <div> Indices:
     <%
     var r = new RegExp(request.ns+".*");
@@ -111,16 +111,35 @@ if(!top) {
 <script type="text/javascript">
 var lastSearch = "";
 
-
+<% if(!top) { %>
 function doCommand() {
-    myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(x) {
+        refreshTable();
+    });
+}
+<% } %>
+
+function infoDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
 }
 
 function validateSearchbox() {
+    /* external function checkRun matches parens */
     if(checkRun(document.getElementById("searchbox").value))
-        alert("Syntax ok.");
+        infoDlg("Syntax Validation", "Syntax ok.");
     else
-        alert("Syntax Error.");
+        infoDlg("Syntax Validation", "Syntax Error.");
 }
 
 function changeView() {
@@ -214,6 +233,27 @@ function printDiv(val, type, i, bd, id, path) {
     bd.appendChild(fieldDiv);
 }
 
+var currentSearch = {};
+
+/* should we support multiple searches on one key? */
+function addToSearch() {
+    var sel = document.getElementById("searchopt");
+    var key = sel.value;
+    var val = document.getElementById("searchtext").value;
+    currentSearch[key] = val;
+
+    // reset search fields
+    sel.options[0].selected = true;
+    document.getElementById("searchtext").value = "";
+
+    // update searchbox
+    var terms = [];
+    for(var i in currentSearch) {
+        terms.push( i+": "+currentSearch[i] );
+    }
+    document.getElementById("searchbox").value = "<%= (request.ns) ? 'db.'+request.ns.substring(request.ns.indexOf('.')+1) : 'db[system.namespaces]' %>.find({ " + terms.join(",") + " });";
+}
+
 <% if(!top) { %>
 // alright, so what really should be done is checkboxes, but this will work for now
 function deleteProp(num, path) {
@@ -274,15 +314,7 @@ function changeSearchbox() {
 }
 
 var _createIndex = function() {
-    var passData="action=createidx&ns=<%= request.ns %>&idx=";
-    var newidx = document.getElementsByName("createidx");
-    for(var i=0; i<newidx.length; i++) {
-        if(newidx[i].checked)
-            passData+=newidx[i].value+",";
-    }
-    ajax(passData.substring(0, passData.length-1), "editDb", function(response) {
-        refreshTable();
-    });
+    doCommand();
     this.hide();
 }
 
@@ -672,10 +704,10 @@ function doSearch() {
     refreshTable();
 }
 function clearSearch() {
-    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    for(var i in myarr) {
-        myarr[i].value = "";
-    }
+    document.getElementById("searchtext").value = "";
+    document.getElementById("searchbox").value = "";
+    document.getElementById("searchopt").options[0].selected = true;
+    currentSearch = {};
     lastSearch = "";
     refreshTable();
 }
@@ -704,7 +736,7 @@ if(top) {
     }
 
     function getValidation(tablename) {
-        ajax("action=validation&ns="+tablename, "showTable", function(response) {
+        ajax("action=validation&ns="+tablename, "table", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
                 { width: "300px",
                 fixedcenter: true,
@@ -761,18 +793,13 @@ function dropIndices(tname) {
     var handleIDrop = function() {
         var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            var idxes = document.getElementsByName(tablename);
-            for(var i=0; i<idxes.length; i++) {
-                if (idxes[i].checked)
-                    YAHOO.util.Dom.getAncestorByTagName(idxes[i], "div").style.display = "none";
-            }
             refreshTable();
         });
         this.hide();
     }
     var prettyList = getSelectedIndices(", ");
     if(prettyList.length == 0) {
-        alert("You must check at least one index.");
+        infoDlg("Drop Indices", "You must check at least one index.");
         return;
     }
     var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
@@ -804,28 +831,7 @@ function refreshTable(passData){
 
 
 function getSearchArgs() {
-    var passData = "";
-    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    var dict = {};
-    // FIXME:
-    // This looks convoluted, but YUI inserts bonus accessibility fields
-    // that get duplicate headers (i.e. input boxes) and so need to be
-    // stripped out. I'd love to use whichever field was changed most
-    // recently, but that's hard, and this hack is easy.
-    // Overwrite earlier input fields with the values from later ones.
-
-    for(var i=0; i<myarr.length; i++) {
-        if(myarr[i].value != "") {
-            dict[myarr[i].name] = myarr[i].value;
-        }
-    }
-    var pairs = [];
-    for(var key in dict){
-        pairs.push(key+"="+dict[key]);
-    }
-
-    passData = pairs.join('&');
-    return passData;
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
 }
 
 function collapseCol(key) {
@@ -847,110 +853,6 @@ function collapseCol(key) {
     }
 }
 
-/*myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.connXhrMode = "queueRequests";
-
-var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 50,
-    alwaysVisible : false
-});
-
-oConfigs = {
-    initialRequest: "",
-    paginator: myPaginator,
-    sortedBy: { <%= top ? 'key:"name"' : 'key:"_id"' %>, dir:YAHOO.widget.DataTable.CLASS_ASC }
-};
-
-myDataSource.responseSchema = {
-    resultsList: "rows",
-    fields: [ <% if(top) {
-        for(var i in cols) {
-            print('{ key: '+tojson(cols[i])+", parser:YAHOO.util.DataSource.parseString },");
-        }
-    } else {
-        %>
-
-        {key: "delete"}, <%
-        var f = {};
-        if(rows) {
-            for(var rownum in rows) {
-                for(var i in rows[rownum]) {
-                    if(!ignore[i] && !f[i]) {
-                        f[i] = 1;
-                    }
-                }
-            }
-            for(var i in f) {
-                print('{ key: "'+i+'"');
-                print(', parser:YAHOO.util.DataSource.parseString');
-                print('},');
-            }
-        }
-    }
-              %>
-
-            ]
-};
-
-var myColumnDefs = [ <% if(top) {
-    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
-    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
-    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
-    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
-    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
-} else {
-    if(rows) {
-        print('{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true, resizeable: true },');
-        for(var i in f) {
-            if(!ignore[i] && i != "_id") {
-                print('{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true, resizeable: true },');
-            }
-       }
-    }
-    %>
-    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
-    <%
-}
-                     %>
-
-                   ];
-
-*/
-
-
-
-/*var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
-var myDataTable;
-
-var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
-myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = {};
-    currentSort.key = e.column.parent.children[0].key;
-    currentSort.dir = e.dir;
-}
-myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
-
-updateCaseTable = {
-    argument : {
-        sorting : {
-    key : currentSort.key,
-    dir : currentSort.dir
-        }
-    },
-    success : function(){
-        updateCaseTable.argument.sorting.key = currentSort.key;
-        updateCaseTable.argument.sorting.dir = currentSort.dir;
-        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
-        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
-    },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
-};
-
-
-myDataSource.liveData = "showTable?";
-*/
 
 <%
 if(top) {
@@ -987,8 +889,20 @@ else {
 if(top)
     var introMsg = "";
 
+if(top) {
+   var searchopts = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"} ];
+}
+else {
+    var searchopts = [];
+    searchopts.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        searchopts.push({"name" : i, className: "" });
+    }
+}
 core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg  });
+                           introMsg: introMsg,
+                           th: searchopts });
 %>
 <div id="myCollection">
 <%
