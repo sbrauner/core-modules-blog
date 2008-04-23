@@ -119,12 +119,27 @@ function doCommand() {
 }
 <% } %>
 
+function infoDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
+}
+
 function validateSearchbox() {
     /* external function checkRun matches parens */
     if(checkRun(document.getElementById("searchbox").value))
-        alert("Syntax ok.");
+        infoDlg("Syntax Validation", "Syntax ok.");
     else
-        alert("Syntax Error.");
+        infoDlg("Syntax Validation", "Syntax Error.");
 }
 
 function changeView() {
@@ -784,7 +799,7 @@ function dropIndices(tname) {
     }
     var prettyList = getSelectedIndices(", ");
     if(prettyList.length == 0) {
-        alert("You must check at least one index.");
+        infoDlg("Drop Indices", "You must check at least one index.");
         return;
     }
     var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
@@ -838,110 +853,6 @@ function collapseCol(key) {
     }
 }
 
-/*myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.connXhrMode = "queueRequests";
-
-var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 50,
-    alwaysVisible : false
-});
-
-oConfigs = {
-    initialRequest: "",
-    paginator: myPaginator,
-    sortedBy: { <%= top ? 'key:"name"' : 'key:"_id"' %>, dir:YAHOO.widget.DataTable.CLASS_ASC }
-};
-
-myDataSource.responseSchema = {
-    resultsList: "rows",
-    fields: [ <% if(top) {
-        for(var i in cols) {
-            print('{ key: '+tojson(cols[i])+", parser:YAHOO.util.DataSource.parseString },");
-        }
-    } else {
-        %>
-
-        {key: "delete"}, <%
-        var f = {};
-        if(rows) {
-            for(var rownum in rows) {
-                for(var i in rows[rownum]) {
-                    if(!ignore[i] && !f[i]) {
-                        f[i] = 1;
-                    }
-                }
-            }
-            for(var i in f) {
-                print('{ key: "'+i+'"');
-                print(', parser:YAHOO.util.DataSource.parseString');
-                print('},');
-            }
-        }
-    }
-              %>
-
-            ]
-};
-
-var myColumnDefs = [ <% if(top) {
-    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
-    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
-    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
-    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
-    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
-} else {
-    if(rows) {
-        print('{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true, resizeable: true },');
-        for(var i in f) {
-            if(!ignore[i] && i != "_id") {
-                print('{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true, resizeable: true },');
-            }
-       }
-    }
-    %>
-    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
-    <%
-}
-                     %>
-
-                   ];
-
-*/
-
-
-
-/*var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
-var myDataTable;
-
-var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
-myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = {};
-    currentSort.key = e.column.parent.children[0].key;
-    currentSort.dir = e.dir;
-}
-myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
-
-updateCaseTable = {
-    argument : {
-        sorting : {
-    key : currentSort.key,
-    dir : currentSort.dir
-        }
-    },
-    success : function(){
-        updateCaseTable.argument.sorting.key = currentSort.key;
-        updateCaseTable.argument.sorting.dir = currentSort.dir;
-        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
-        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
-    },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
-};
-
-
-myDataSource.liveData = "showTable?";
-*/
 
 <%
 if(top) {
