@@ -1,13 +1,15 @@
 <% core.core.sys.pieces.header(); %>
-
 <style>
     .js { color: red; }
     .ed { color: blue; }
 </style>
-<%
 
-    if ( request.f )
-	f = new RegExp( request.f );
+<%
+core.ext.asstring();
+if(! request.id ){
+   response.sendRedirectTemporary("threads");
+   return;
+}
 
 all = javaStatic( "java.lang.Thread" , "getAllStackTraces" );
 cur = javaStatic( "java.lang.Thread" , "currentThread" );
@@ -16,25 +18,16 @@ var holder =  javaStatic( "ed.lang.StackTraceHolder" , "getInstance" );
 
 for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
     var myThread = i.next();
-    if ( cur == myThread )
-	continue;
+    if(myThread.getId() != request.id) continue;
 
-    var savePrint = print;
-    var buf = "";
-    print = function(z){
-	buf += z;
-    }
-    
     var st = all.get( myThread );
-    core.core.sys.pieces.thread( myThread , st );
-    print = savePrint;
-    
-    if ( f && ! buf.match( f ) )
-	continue;
-    
-    print( buf );
+    var buf = Ext.asString(function(){ 
+        core.core.sys.pieces.threadDetail( myThread , st ); 
+    });
+
+    print(buf);
 }
+   
+%>
 
-
- %>
 <% core.core.sys.pieces.footer(); %>
