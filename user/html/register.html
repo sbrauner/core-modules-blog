@@ -1,6 +1,8 @@
 <% processArgs("opts");
    opts = opts || {};
    var login = User.findMyLocation();
+   // FIXME: this form dynamically recomputes itself to do checks and stuff
+   // login_user -> username, etc. If JS is disabled, registration is impossible
 %>
 <div id="register">
 
