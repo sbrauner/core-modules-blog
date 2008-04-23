@@ -1,8 +1,10 @@
 <% if(! request.file) return; %>
 <%
-core.content.html();
-core.git.repo();
-var g = new git.Repo();
-var diff = g.diff([request.file], {rev: "HEAD"});
-core.admin.pieces.gitDiff({output: diff.out});
+request.getParameters('file').forEach(function(file){
+    core.content.html();
+    core.git.repo();
+    var g = new git.Repo();
+    var diff = g.diff([file], {rev: "HEAD"});
+    core.admin.pieces.gitDiff({output: diff.out});
+});
 %>
