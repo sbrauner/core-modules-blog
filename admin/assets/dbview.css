@@ -55,7 +55,7 @@ h4 {
 p, .help {
 	padding: 0em 0px 1em 0px;
 	line-height: 1.5em;
-	color:#333333;
+	color: #333333;
 }
 
 hr {
@@ -69,6 +69,7 @@ hr {
 
 td {
     padding:0;
+	color: #333333;
 }
 
 div.hr hr {
@@ -237,7 +238,6 @@ img {
 	margin: 0;
 	padding: 0;
 	text-align: center;
-        cursor: default;
 }
 
 #paging ul li.active {
@@ -360,9 +360,15 @@ td.maincontent div.links-table a:hover.external {
 	background:url(img/icon_external_link_gold_hover.gif) no-repeat 100% bottom;
 }
 
+/* Search Table */
+
 td.maincontent tr.search-table td {
 	padding: 10px 3px 3px 3px;
 	background-color: #e7e4d6;
+}
+
+td.maincontent tr.search-table td.info {
+	font-size: 11px;
 }
 
 td.maincontent tr.search-table td.left {
@@ -375,11 +381,13 @@ td.maincontent .search-table form {
 }
 
 select {
+	height: 20px;
 	padding: 2px;
 	cursor: pointer;
 }
 
 input.text {
+	height: 15px;
 	padding: 1px;
 }
 
@@ -388,6 +396,46 @@ td.maincontent tr.search-table td.right {
 	text-align: right;
 	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
 }
+
+td.maincontent tr.search-table td.right a{
+	font-size: 12px;
+}
+
+/* Modified top for main table */
+
+td.maincontent tr.search-top td {
+	background-color: #e7e4d6;
+	margin:0;
+	padding:0;
+}
+
+td.maincontent tr.empty td {
+	font-size: 4px;
+}
+
+td.maincontent tr.search-top ul {
+	margin: 0;
+	padding: 0;
+	width: 1000;
+}
+
+td.maincontent tr.search-top ul li {
+	float: left;
+	margin: 0 .5em 0 0;
+	padding: .7em 0 0 0;
+	height: 1.8em;
+}
+
+td.maincontent tr.search-top td.left {
+	background: #e7e4d6 url(img/mtbox_topleft.gif) no-repeat left top;
+}
+
+td.maincontent tr.search-top td.right {
+	text-align: right;
+	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
+}
+
+/* Paging Area */
 
 td.maincontent tr.paging-table td {
 	padding: .3em 3px .6em 3px;
@@ -404,6 +452,25 @@ td.maincontent tr.paging-table td.right {
 	padding-right: 7px;
 	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
 }
+
+/* Modified bottom for main table */
+
+td.maincontent tr.paging-bottom td {
+	background-color: #e7e4d6;
+	text-align: center;
+}
+
+td.maincontent tr.paging-bottom td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_botleft.gif) no-repeat left bottom;
+}
+
+td.maincontent tr.paging-bottom td.right {
+	padding-right: 7px;
+	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
+}
+
+/* White top */
 
 td.maincontent tr.white-top td {
 	margin: 0;
@@ -454,13 +521,14 @@ td.maincontent tr.white-bottom th.right, td.maincontent tr.white-bottom td.right
 
 td.maincontent tr.white-main th, td.maincontent tr.white-main td {
 	margin: 0;
-	padding: 0 1px 0 0;
+	padding: 0 1.5em 0 0;
 	background-color: #ffffff;
+	font-size: 11px;
 	line-height: 2em;
 }
 
 td.maincontent p {
-	margin: 0;
+	margin: .5em 0 0 0;
 	font-size: 12px;
 }
 
@@ -477,7 +545,13 @@ tr.white-main th a, tr.white-main th a:visited {
 	font-weight: bold;
 }
 
-tr.white-main td a, tr.white-main td a:visited {
+tr.white-main td.error {
+	color: #ff8c0b;
+}
+
+tr.white-main td.fatal {
+	font-weight: bold;
+	color: #d41f1f;
 }
 
 tr.white-main th a.sort-down, tr.white-main th a.sort-down:visited {
@@ -501,7 +575,7 @@ tr.white-main th a#active {
 }
 
 td.maincontent tr.white-main td {
-	padding: .4em 0 .5em 0;
+	padding: .4em 1em .5em 0;
 	vertical-align: top;
 	border-top:1px solid #cccccc;
 	line-height: 1.5em;
@@ -512,7 +586,7 @@ td.maincontent tr.white-main td.left {
 	padding: 0;
 	width: 14px;
 	background-image: url(img/mwbox_left.gif);
-	repeat: repeat-y;
+	background-repeat: repeat-y;
 	border-top: 0px;
 }
 
@@ -573,11 +647,11 @@ td.maincontent tr.white-main td.right {
 }
 
 #leftnav li ul li a {
-	line-height: 1.7em;
+	line-height: 1.4em;
 }
 
 #leftnav li ul li.current-heading {
-	padding-bottom: .3em;
+	padding-bottom: 0em;
 }
 
 #leftnav li ul li.current-heading a {
@@ -604,10 +678,11 @@ td.maincontent tr.white-main td.right {
 /* Footer */
 
 p.footer {
-	padding: 2em 18px 0 0;
+	margin: 1em 15px 4em 15px;
+	padding: 0;
 	text-align: right;
 	font-size: 11px;
-	color: #c3c0b5;
+	color: #aaaaaa;
 }
 
 /* Layout */

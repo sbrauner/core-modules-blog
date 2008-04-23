@@ -83,7 +83,7 @@ if(!top) {
     <div class="bd">Select the columns that you wish to display.
     <% for(var i in f) {
         if(!ignore[i])
-            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked /></div>');
+            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked onclick="toggleCollapse(\''+i+'\')"/></div>');
     }%>
     </div>
     <div class="ft">
@@ -834,22 +834,13 @@ function getSearchArgs() {
     return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
 }
 
-function collapseCol(key) {
-    var col = myDataTable.getColumn(key);
-    var x = col.parent.parent._elTh;
-    var curWidth = YAHOO.util.Dom.getStyle(x, "width");
-    var arrow = document.getElementById("arrow"+key);
-    var oldWidth = arrow.getAttribute("oldWidth");
-
-    if(oldWidth && parseInt(oldWidth) > parseInt(curWidth)) {
-        var arrow = document.getElementById("arrow"+key);
-        var oldWidth = arrow.getAttribute("oldWidth");
-        myDataTable.setColumnWidth(col, parseInt(oldWidth));
-        arrow.setAttribute("oldWidth", "0");
+function toggleCollapse(key) {
+    // build colspanElems the first time through
+    if(!document.getElementById("col"+key).style.visibility || !document.getElementById("col"+key).style.visibility == "visible") {
+        document.getElementById("col"+key).style.visibility = "collapse";
     }
     else {
-        myDataTable.setColumnWidth(col, 10);
-        arrow.setAttribute("oldWidth", curWidth.substring(0, curWidth.length-2));
+        document.getElementById("col"+key).style.visibility = "visible";
     }
 }
 
@@ -900,9 +891,10 @@ else {
         searchopts.push({"name" : i, className: "" });
     }
 }
-core.admin.pieces.dbview({ hdr : hdr,
+/*core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
                            th: searchopts });
+*/
 %>
 <div id="myCollection">
 <%

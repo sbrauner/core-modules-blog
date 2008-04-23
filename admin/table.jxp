@@ -181,7 +181,6 @@ if(top) {
             urow.push(rows[i]);
     }
     rows = urow;
-    log(urow);
 }
 else {
     rows = rows.splice(start, end);
@@ -359,7 +358,7 @@ else {
 var page = [];
 var pageStart = Math.max(1, dbTable.currentPage-2);
 var pageEnd = Math.min(parseInt(dbTable.totalNumPages), parseInt(dbTable.currentPage)+2);
-log(pageStart+" "+pageEnd);
+
 for(var i=pageStart; i<=pageEnd; i++) {
     if(dbTable.currentPage == i) {
         if(i < 10)
@@ -377,6 +376,8 @@ for(var i=pageStart; i<=pageEnd; i++) {
 
 var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
+dbTable.colspan = th.length;
+
 
 core.admin.pieces.dbviewTable({ th: th,
                                 table: dbTable,
