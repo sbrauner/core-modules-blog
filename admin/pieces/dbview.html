@@ -2,51 +2,48 @@
 
 var hdr = obj.hdr;
 var introMsg = obj.introMsg;
-
+var th = obj.th;
 %>
 
 
 
-		<!-- Heading and links-table Links -->
-	  <h1 style="margin:0;">
-		<div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Database Documentation</a></div>
-		<nobr>$hdr</nobr>
-	  </h1>
+<!-- Heading and links-table Links -->
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Database Documentation</a></div>
+  <nobr>$hdr</nobr>
+</h1>
 
 
 
-		<p>$introMsg</p>
+<p>$introMsg</p>
 
-		<!-- Search -->
-		<table width="100%" border="0">
-		  <tr class="search-table">
-		    <td class="left">
-			  <form>
-			  	<select>
-					<option>OPTION 1</option>
-					<option>Option 2</option>
-					<option>Option 3</option>
-				</select>
-			</td>
-			<td><input class="text" size="40" value="" type="text"></td>
-			<td><input type="image" src="/~~/admin/assets/img/button_search_on_tan.gif" value="Search" alt="Search"></td>
-			<td><input type="image" src="/~~/admin/assets/img/button_add_on_tan.gif" value="Search" alt="Search"></td>
-			<!--td><div class="formbuttons"><a href="/"><span>SUBMIT</span></a></div></td>
-			<td><div class="formbuttons"><a href="/"><span>+</span></a></div></td-->
-			<td class="right" width="100%">
-			  <!--div class="formbuttons" style="float: right; "><a href="/"><span>REFRESH</span></a></div-->
-			  <img src="/~~/admin/assets/img/button_refresh_on_tan.gif" onclick="clearSearch()">
-			  </form>
-			</td>
-		  </tr>
-		</table>
+<!-- Search -->
+<table width="100%" border="0">
+  <tr class="search-table">
+    <td class="left">
+      <form>
+	<select id="searchopt">
+          <forin i th>
+	    <option value="$th[i].name">$th[i].name</option>
+          </forin>
+	</select>
+    </td>
+    <td><input class="text" id="searchtext" size="40" value="" type="text"></td>
+    <td><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></td>
+    <td><img src="/~~/admin/assets/img/button_add_on_tan.gif" alt="Add to Search" onclick="addToSearch()"></td>
+    <td class="right" width="100%">
+      <img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()">
+    </form>
+</td>
+</tr>
+</table>
 
-		<!-- White table -->
-		<table width=100% border="0">
-		  <tr class="white-top">
-			<!-- Top area -->
-		    <td class="left">&nbsp;</td>
-			<td class="middle">&nbsp;</td>
-			<td class="right">&nbsp;</td>
-		  </tr>
-		</table>
+<!-- White table -->
+<table width=100% border="0">
+  <tr class="white-top">
+    <!-- Top area -->
+    <td class="left">&nbsp;</td>
+    <td class="middle">&nbsp;</td>
+    <td class="right">&nbsp;</td>
+  </tr>
+</table>

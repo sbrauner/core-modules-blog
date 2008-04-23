@@ -218,6 +218,27 @@ function printDiv(val, type, i, bd, id, path) {
     bd.appendChild(fieldDiv);
 }
 
+var currentSearch = {};
+
+/* should we support multiple searches on one key? */
+function addToSearch() {
+    var sel = document.getElementById("searchopt");
+    var key = sel.value;
+    var val = document.getElementById("searchtext").value;
+    currentSearch[key] = val;
+
+    // reset search fields
+    sel.options[0].selected = true;
+    document.getElementById("searchtext").value = "";
+
+    // update searchbox
+    var terms = [];
+    for(var i in currentSearch) {
+        terms.push( i+": "+currentSearch[i] );
+    }
+    document.getElementById("searchbox").value = "db.<%= request.ns.substring(request.ns.indexOf('.')+1) %>.find({ " + terms.join(",") + " });";
+}
+
 <% if(!top) { %>
 // alright, so what really should be done is checkboxes, but this will work for now
 function deleteProp(num, path) {
@@ -668,11 +689,11 @@ function doSearch() {
     refreshTable();
 }
 function clearSearch() {
-/*    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    for(var i in myarr) {
-        myarr[i].value = "";
-    }
-    lastSearch = "";*/
+    document.getElementById("searchtext").value = "";
+    document.getElementById("searchbox").value = "";
+    document.getElementById("searchopt").options[0].selected = true;
+    currentSearch = {};
+    lastSearch = "";
     refreshTable();
 }
 
@@ -795,28 +816,7 @@ function refreshTable(passData){
 
 
 function getSearchArgs() {
-    var passData = "";
-    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    var dict = {};
-    // FIXME:
-    // This looks convoluted, but YUI inserts bonus accessibility fields
-    // that get duplicate headers (i.e. input boxes) and so need to be
-    // stripped out. I'd love to use whichever field was changed most
-    // recently, but that's hard, and this hack is easy.
-    // Overwrite earlier input fields with the values from later ones.
-
-    for(var i=0; i<myarr.length; i++) {
-        if(myarr[i].value != "") {
-            dict[myarr[i].name] = myarr[i].value;
-        }
-    }
-    var pairs = [];
-    for(var key in dict){
-        pairs.push(key+"="+dict[key]);
-    }
-
-    passData = pairs.join('&');
-    return passData;
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
 }
 
 function collapseCol(key) {
@@ -978,8 +978,20 @@ else {
 if(top)
     var introMsg = "";
 
+if(top) {
+   var searchopts = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"} ];
+}
+else {
+    var searchopts = [];
+    searchopts.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        searchopts.push({"name" : i, className: "" });
+    }
+}
 core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg  });
+                           introMsg: introMsg,
+                           th: searchopts });
 %>
 <div id="myCollection">
 <%
