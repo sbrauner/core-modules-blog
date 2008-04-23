@@ -16,7 +16,7 @@ content.HTML._entities = [{s: '&', r: "&amp;"},
 
 content.HTML.escape = function(str){
     for(var i in content.HTML._entities){
-        pair = content.HTML._entities[i];
+        var pair = content.HTML._entities[i];
         str = str.replace(new RegExp(pair.s, 'g'), pair.r);
     }
     return str;
@@ -26,7 +26,7 @@ content.HTML.escape_html = content.HTML.escape;
 
 content.HTML.unescape_html = function(str){
     for(var i in content.HTML._entities){
-        pair = content.HTML._entities[i];
+        var pair = content.HTML._entities[i];
         str = str.replace(new RegExp(pair.r, 'g'), pair.s);
     }
     return str;

@@ -1,0 +1,10 @@
+<% if(! request.file) return; %>
+<%
+core.content.html();
+core.git.repo();
+core.core.file();
+request.getParameters('file').forEach(function(file){
+    var contents = File.open(file).asString();
+    print("<pre>"+content.HTML.escape(contents)+"</pre>");
+});
+%>
