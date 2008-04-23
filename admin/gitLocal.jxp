@@ -3,12 +3,15 @@
 if ( request.getHost().equals( "corejs.10gen.com" ) )
     return print( "you can't do this" );
 
+head.addScript("NOCDN/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js");
+head.addScript("NOCDN/@@/yui/current/container/container-min.js");
+
 core.git.repo();
 core.ext.pluck();
 core.content.html();
 
-head.addScript("NOCDN/~~/admin/assets/gitPopup.js");
 head.addCSS("NOCDN/~~/admin/assets/gitLocal.css");
+head.addCSS("NOCDN/@@/yui/current/container/assets/container.css");
 
 var g = new git.Repo(); 
 
@@ -155,9 +158,9 @@ if(parsed.unmerged){
     }
 }
 
-var changedbuttons = [{name: 'checkout', disabled: conflicts}, 'commit'];
+var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 'commit'];
 if(parsed.changed && parsed.changed.length != 1) 
-    changedbuttons = ['diff'].concat(changedbuttons);
+    changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 'untracked': ['add']};
 
 var diffLinks = {"changed": true, 'untracked': false};
@@ -178,7 +181,8 @@ if(request.untracked_file)
 <input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
 </form>
 <table>
-  <form method="POST">
+  <form method="POST" name="gitFiles">
+    <input type="hidden" name="toBeDetermined" />
 <%
 for ( type in parsed ){ 
     core.admin.pieces.gitFileList({title: type, actions: buttons[type],
@@ -192,3 +196,12 @@ for ( type in parsed ){
   </form>
 </table>
 
+<div class="yui-skin-sam">
+  <div style="display: none;" id="confirmCheckout">
+    <div class="hd">Checkout these files?</div>
+    <div class="bd">Are you sure you want to checkout the selected files? Checking out files will overwrite any changes that were made to the selected files.</div>
+    <div class="ft">
+    </div>
+  </div>
+</div>
+<script src="NOCDN/~~/admin/assets/gitPopup.js" type="text/javascript">

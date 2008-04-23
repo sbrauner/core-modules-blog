@@ -3,6 +3,7 @@
 core.content.html();
 core.git.repo();
 var g = new git.Repo();
-var diff = g.diff([request.file], {rev: "HEAD"});
+var diff = g.diff(request.getParameters("file"), {rev: "HEAD"});
 core.admin.pieces.gitDiff({output: diff.out});
+
 %>
