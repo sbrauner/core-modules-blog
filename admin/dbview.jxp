@@ -700,7 +700,7 @@ if(top) {
     }
 
     function getValidation(tablename) {
-        ajax("action=validation&ns="+tablename, "showTable", function(response) {
+        ajax("action=validation&ns="+tablename, "table", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
                 { width: "300px",
                 fixedcenter: true,

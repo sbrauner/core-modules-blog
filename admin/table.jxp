@@ -22,7 +22,7 @@ if(request.action == "validation") {
         return;
     }
 
-    var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
+    var x = validate(request.ns);
     print(x.result ? x.result : x.errmsg);
     return;
 }
