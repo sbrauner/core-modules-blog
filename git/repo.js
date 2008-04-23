@@ -412,6 +412,7 @@ Object.extend(git.Repo.prototype, {
         var ret = this._exec( cmd );
         if(ret.out.trim() == "" && ret.err.trim() == "")
             ret.parsed = {success: true};
+        return ret;
     },
 });
 
