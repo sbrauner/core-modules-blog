@@ -984,6 +984,8 @@ else {
 </script>
 
 <%
+if(top)
+    var introMsg = "";
 
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg  });
