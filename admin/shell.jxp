@@ -351,9 +351,9 @@ var resizeRows = function(t, value, newlinepressed){
     newlines = newlines + (newlinepressed? 1 : 0);
 
     // if I have one newline, I have two rows: rows = newlines + 1
-    // firefox seems to make textareas with 1 row have two lines??
+    // firefox < v.3 seems to make textareas with 1 row have two lines??
     // no way to make a one-line textarea in firefox??
-    t.rows = newlines + 1 - (YAHOO.env.ua.gecko?1:0);
+    t.rows = newlines + 1 - (YAHOO.env.ua.gecko<1.9?1:0);
 
     var row1 = document.getElementById("consolebody");
     row1.scrollTop = row1.scrollHeight;

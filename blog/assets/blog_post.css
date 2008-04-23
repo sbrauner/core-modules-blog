@@ -17,6 +17,202 @@ img.full {
     margin: 0 0 20px 0;
 }
 
-body {margin: 0 auto; padding: 0; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 12px;}
+body {margin: 0 auto; padding: .5em; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 13px;}
 
 div {text-align:left; }
+
+div, p, ul, ol {
+	font-size: 100%;	
+}
+
+h1, h2, h3, p, ul, ol, dl {
+	margin-bottom: 1em;  
+}
+
+h1 {
+	margin-bottom: .7em;
+	font-size: 167%;
+	color: #0e5290;
+}  
+
+h2 {
+	margin-bottom: 0;
+	font-size: 131%;
+	color: #0e5290;
+}  
+
+h3 {
+	font-size: 108%;
+}  
+
+h4 {
+	margin-bottom: 0;
+	font-size: 100%;
+}  
+
+p, .help {
+	padding: 0;   
+	line-height: 1.5em;
+	color:#222222;
+}
+
+hr {
+	margin: 10px 10px 10px 0;
+	padding: 0;
+	border: 0;
+	color: #dddddd;
+	background-color: #dddddd;
+	height: 1px;
+}
+
+td {
+    padding: .5em;
+	line-height: 1.5em;
+	font-size: 100%;
+	color:#222222;
+}
+
+div.hr hr {
+	display: none;
+}
+
+ul, ol {position: relative; }
+
+ul, ol {
+	margin-left: 3em;
+	line-height: 1.5em;
+}
+
+li {
+  padding-left: 0;
+  list-style-type: bullet;
+}
+
+li ul, li ol {
+	margin-left: 0px;
+	padding-bottom:0;
+}
+
+img {
+	border: none;
+}
+
+input.submit {
+	cursor:pointer; 		
+}
+
+ul.nav {
+	margin: 0;
+	padding:0; 
+}
+
+ul.nav li {
+	display: inline; 
+	padding: 0	;
+	background-image: none;
+	list-style-type: none;
+	list-style-image: none;
+}
+
+ul.nav li.divide {
+	margin: 0 .3em 0 .3em;
+	color: #ffffff;
+}
+
+ul.nav li a {
+	font-size: 93%; 
+	color: #ffffff;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+ul.nav li a:hover {
+	color: #a9d6ff;
+}
+
+ul.nav li a#active, ul.nav li a.active_page {
+	color: #a9d6ff;
+}
+
+.clearleft {
+	clear: left;	
+}
+
+#footer p {
+	padding-top:1em; 
+	text-align: center;
+	color: #99906d;
+	font-size: 93%;
+}
+
+.globalnav {
+	height: 20px; 
+	margin: .8em 0 0 0; 
+	padding: .5em 0 0 0; 
+	border-top: 1px solid #ffffff;
+}
+
+div.footer {
+	height: 20px; 
+	margin: 0 0 .2em 0; 
+	padding: 0 0 .8em 0; 
+	border-bottom: 1px solid #ffffff;
+	border-top: 0;
+}
+
+p.footer {
+	margin-top: .8em;
+	font-size: 93%; 
+	color: #ffffff;
+	font-weight: normal;
+}
+
+.globalnav .left {
+	width: 750px; 
+	float: left;
+}
+
+.globalnav .right {
+	float: right;
+	text-align: right; 
+}
+
+.navright {
+	padding-bottom: 14px; 
+}
+
+div.search {
+	text-align: right;
+	padding-bottom: 8px;
+}
+
+div.login {
+	text-align: right;
+	margin-top: .1em;
+	margin-bottom: 6px;
+	color: white;
+}
+
+div.login a, div.login a:link, div.login a:visited {
+	color: #fff; 
+	text-decoration: none;
+}
+
+div.login a:hover, div.login a:active {
+	color: #fff; 
+	text-decoration: underline;
+}
+
+input {
+	height: 17px;
+	border: 1px solid #cccccc;
+}
+
+input.submit {
+	font-size: 85%; 
+	height: 20px; 	
+	color: #fff; 
+	border: 1px solid #cccccc;
+	background-color: #0e5290;
+	cursor:pointer;
+}

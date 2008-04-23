@@ -237,6 +237,7 @@ img {
 	margin: 0;
 	padding: 0;
 	text-align: center;
+        cursor: default;
 }
 
 #paging ul li.active {
