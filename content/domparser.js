@@ -1,14 +1,14 @@
 
+log = log.content.domparser;
+
 core.content.saxparser();
 
 domparser = {
 	fromString : function(xml) {
-		
 		var handler = {
 			root: null,
 			stack : [],
 			startElement : function(uri, localName, name, attributes) {
-				print("start ELm " + localName);
 				
 				var node = {
 					localName: localName,
@@ -26,17 +26,13 @@ domparser = {
 				
 				
 				if(this.stack.length > 0) {
-					print("adding as child");
 					this.stack[this.stack.length - 1].elements.push(node);
 				} else {
-					print("setting as root");
 					this.root = node;
 				}
-				print("pusing on stack");
 				this.stack.push(node);
 			},
 			endElement : function(uri, localName, name) {
-				print("done " + localName);
 				this.stack.pop();
 			},
 			text : function(text) {
@@ -48,10 +44,20 @@ domparser = {
 					textOwner.textString = text;
 
 				textOwner.text.push(text);
+			},
+			warning: function(msg) {
+				log.warn(msg);
+			},
+			error: function(msg) {
+				log.error(msg)
+			},
+			fatalError: function(msg) {
+				log.error("FATAL: " + msg);
 			}
 		};
 		
-		var parser = saxparser(handler, xml);
+		
+		saxparser(handler, xml);
 		
 		return handler.root;
 	}

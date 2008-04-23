@@ -1,4 +1,5 @@
 
 saxparser = function(handler, xmlString) {
-	return javaStatic("ed.js.JSSaxParser", "getParser")(handler, xml);
+	log.content.saxparser.debug("calling javaStatic");
+	return javaStatic("ed.js.JSSaxParser", "getParser")(handler, xmlString);
 };
