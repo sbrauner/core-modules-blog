@@ -47,7 +47,7 @@ if(!top) {
 
 
     %>
-    <a href="dbview" style="display: block;">Back to Collection View</a>
+    <a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a>
     <div> Indices:
     <%
     var r = new RegExp(request.ns+".*");

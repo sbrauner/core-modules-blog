@@ -357,7 +357,10 @@ else {
 }
 
 var page = [];
-for(var i=1; i<=dbTable.totalNumPages; i++) {
+var pageStart = Math.max(1, dbTable.currentPage-2);
+var pageEnd = Math.min(parseInt(dbTable.totalNumPages), parseInt(dbTable.currentPage)+2);
+log(pageStart+" "+pageEnd);
+for(var i=pageStart; i<=pageEnd; i++) {
     if(dbTable.currentPage == i) {
         if(i < 10)
             page.push({ name: i, className: "active" });
