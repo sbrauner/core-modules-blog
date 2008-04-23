@@ -157,7 +157,7 @@ if(parsed.unmerged){
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts}, 'commit'];
 if(parsed.changed && parsed.changed.length != 1) 
-    changedbuttons = ['diff'].concat(changedbuttons);
+    changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 'untracked': ['add']};
 
 var diffLinks = {"changed": true, 'untracked': false};
