@@ -223,7 +223,7 @@ if( top ) {
 	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        dbTable.rows[k].fixed = currentRow.capped;
+        dbTable.rows[k].fixed = (currentRow.capped) ? currentRow.capped : "";
         k++;
     }
 }
