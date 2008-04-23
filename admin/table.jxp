@@ -342,7 +342,7 @@ else {
         dbTable.rows[i].id = "";
         for(var field in th) {
             if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
-            if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
