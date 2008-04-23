@@ -19,3 +19,35 @@ var popupDiffAll = function(){
     var href = "gitDiff?"+myParams.join("&");
     popup(href);
 };
+
+var checkoutOK = function(){
+    confirmCheckout.hide();
+    document.gitFiles.toBeDetermined.value = "checkout";
+    document.gitFiles.toBeDetermined.name = "action";
+    document.gitFiles.submit();
+};
+
+var checkoutCancel = function(){
+    confirmCheckout.hide();
+};
+
+new YAHOO.util.YUILoader({
+    onSuccess: function(){
+        confirmCheckout = new YAHOO.widget.Dialog("confirmCheckout", {
+            visible: false,
+            width: "400px",
+            fixedcenter: true,
+            buttons: [{text: "Checkout", handler: checkoutOK},
+                      {text: "Cancel", handler: checkoutCancel}]
+        });
+
+        confirmCheckout.render();
+        document.getElementById("confirmCheckout").style.display = "block";
+    }
+}).insert();
+
+var showConfirm = function(checkoutBtn){
+    confirmCheckout.show();
+    confirmCheckout.button = checkoutBtn;
+};
+
