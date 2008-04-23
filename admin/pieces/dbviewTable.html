@@ -22,14 +22,16 @@ var nextPage = obj.nextPage;
 		        <td class="left">&nbsp;</td>
                         <td><a href="$table.rows[row].url">$table.rows[row].name</a></td>
                         <td>$table.rows[row].index
-			  <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop">
+                          <if (table.rows[row].index != "")>
+			    <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropIndices('$table.rows[row].name')">
+                          </if>
 		        </td>
 		        <td class="center">$table.rows[row].fixed</td>
 		        <td class="center">
-			  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats">
+			  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
 		        </td>
 		        <td class="center">
-			  <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop">
+			  <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropTable('$table.rows[row].name')">
 		        </td>
 		        <td class="right">&nbsp;</td>
 		      </tr>
@@ -66,24 +68,26 @@ var nextPage = obj.nextPage;
 		    <td width="15" class="left">&nbsp;</td>
 			<td>
 			  <div id="paging">
-			    <ul>
-                              <if prevPage>
-				<li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>
-				<li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('$prevPage')">&#60;</a></li>
-                              </if>
-                              <forin p page>
-                                <if (page[p].className == "active" || page[p].className == "modactive") >
-                                  <li class="$page[p].className">$page[p].name</li>
+                            <if (page.length > 1)>
+			      <ul>
+                                <if prevPage>
+				  <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>
+				  <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('$prevPage')">&#60;</a></li>
                                 </if>
-                                <if (page[p].className != "active" && page[p].className != "modactive") >
-                                  <li class="$page[p].className"><a onclick="loadPage('$page[p].name')">$page[p].name</a></li>
+                                <forin p page>
+                                  <if (page[p].className == "active" || page[p].className == "modactive") >
+                                    <li class="$page[p].className">$page[p].name</li>
+                                  </if>
+                                  <if (page[p].className != "active" && page[p].className != "modactive") >
+                                    <li class="$page[p].className"><a onclick="loadPage('$page[p].name')">$page[p].name</a></li>
+                                  </if>
+                                </forin>
+                                <if nextPage>
+				  <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
+				  <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
                                 </if>
-                              </forin>
-                              <if nextPage>
-				<li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
-				<li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
-                              </if>
-			    </ul>
+			      </ul>
+                            </if>
 			  </div>
 			</td>
 			<td width="15" class="right">&nbsp;</td>

@@ -111,12 +111,16 @@ if(!top) {
 <script type="text/javascript">
 var lastSearch = "";
 
-
+<% if(!top) { %>
 function doCommand() {
-    myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(x) {
+        refreshTable();
+    });
 }
+<% } %>
 
 function validateSearchbox() {
+    /* external function checkRun matches parens */
     if(checkRun(document.getElementById("searchbox").value))
         alert("Syntax ok.");
     else
@@ -274,15 +278,7 @@ function changeSearchbox() {
 }
 
 var _createIndex = function() {
-    var passData="action=createidx&ns=<%= request.ns %>&idx=";
-    var newidx = document.getElementsByName("createidx");
-    for(var i=0; i<newidx.length; i++) {
-        if(newidx[i].checked)
-            passData+=newidx[i].value+",";
-    }
-    ajax(passData.substring(0, passData.length-1), "editDb", function(response) {
-        refreshTable();
-    });
+    doCommand();
     this.hide();
 }
 
@@ -761,11 +757,6 @@ function dropIndices(tname) {
     var handleIDrop = function() {
         var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            var idxes = document.getElementsByName(tablename);
-            for(var i=0; i<idxes.length; i++) {
-                if (idxes[i].checked)
-                    YAHOO.util.Dom.getAncestorByTagName(idxes[i], "div").style.display = "none";
-            }
             refreshTable();
         });
         this.hide();
