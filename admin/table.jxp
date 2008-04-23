@@ -27,7 +27,7 @@ if(request.action == "validation") {
     return;
 }
 
-// Return one row
+// Return one row (row edit uses this)
 if(request.ns && request.id) {
     collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
     x = collection.findOne({ _id : request.id });
@@ -142,18 +142,42 @@ else {
 if(request.reverse)
     rows.reverse();
 
-log("numrows: "+rows.length);
-
 /* get the paging info and only return the necessary rows */
-totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
+if(top) {
+    var numrows = 0;
+    for(var i=0; i<rows.length; i++) {
+        if(rows[i].name.indexOf("$") == -1) {
+            numrows++;
+        }
+    }
+    totalNumPages = Math.floor(numrows / rowsPerPage ) + 1;
+}
+else {
+    totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
+}
+
 if(currentPage > totalNumPages)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
-var end = (currentPage)*rowsPerPage - 1;
-rows = rows.splice(start, end);
+var end = (currentPage)*rowsPerPage-1;
 
-log("num rows on display: "+rows.length);
+/* if this is all collections, indices will be listed as rows. */
+if(top) {
+    var urow = [];
+    tableCount = 0;
+    for(var i=0; i<rows.length; i++) {
+        if(start <= tableCount && tableCount <= end)
+            urow.push(rows[i]);
+        if(rows[i].name.indexOf("$") == -1) {
+            tableCount++;
+        }
+    }
+    rows = urow;
+}
+else {
+    rows = rows.splice(start, end);
+}
 
 var dbTable = { rows: [] };
 dbTable.totalNumPages = totalNumPages;
@@ -173,10 +197,9 @@ for( var i in f) {
     fields.push(f[i]);
 }
 
-
 if( top ) {
     var k = 0;
-    for( var i=0; i < rowsPerPage && i < rows.length; i++ ) {
+    for( var i=0; i < rows.length; i++ ) {
         var j=0;
         dbTable.rows[k] = {};
 
@@ -344,8 +367,9 @@ for(var i=1; i<=dbTable.totalNumPages; i++) {
 var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 
-core.admin.pieces.dbviewTable({ th : th,
-                                table : dbTable,
+
+core.admin.pieces.dbviewTable({ th: th,
+                                table: dbTable,
                                 page: page,
                                 prevPage: prevPage,
                                 nextPage: nextPage });
