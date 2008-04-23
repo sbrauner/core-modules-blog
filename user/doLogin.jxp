@@ -1,10 +1,12 @@
 <%
-    core.user.auth();
+core.user.auth();
 user = Auth.getUser( request , response );
 
 if ( ! user ){
-    print( "invalid username/password" );
-    Auth.cookie.reject( request , response );
+    htmlheader("Login");
+    print( "<div class='notice'>invalid username/password</div>" );
+    core.user.html.login( { to: request.to || request.getHeader("Referer")}) ;
+    htmlfooter();
     return;
 }
 
