@@ -17,7 +17,7 @@
          if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
       <tr class="<%= classes.join(' ') %>">
         <td><input type="checkbox" name="$filevar" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
-        <td>$filenames[file]
+        <td><a href="gitShowFile?file=$filenames[file]" target="new" onclick="return popup(this.href)">$filenames[file]</a>
           <%
              if(filetypes[file] == "CONFLICT"){
                  print("<span class='conflicttype'>CONFLICT</span>");
