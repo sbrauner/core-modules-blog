@@ -5,7 +5,7 @@ user = Auth.getUser( request , response );
 if ( ! user ){
     htmlheader("Login");
     print( "<div class='notice'>invalid username/password</div>" );
-    core.user.html.login( { to: request.to || request.getHeader("Referer")}) ;
+    core.user.html.login( { to: request.to } );
     htmlfooter();
     return;
 }
