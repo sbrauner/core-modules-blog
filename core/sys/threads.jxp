@@ -15,7 +15,7 @@ cur = javaStatic( "java.lang.Thread" , "currentThread" );
 var holder =  javaStatic( "ed.lang.StackTraceHolder" , "getInstance" );
 
 for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
-    myThread = i.next();
+    var myThread = i.next();
     if ( cur == myThread )
 	continue;
 

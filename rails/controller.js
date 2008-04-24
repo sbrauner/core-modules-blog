@@ -1,6 +1,7 @@
 
 function ApplicationController(){
-    
+    this.shortName = null;
+    this.className = null;
 };
 
 ApplicationController.prototype.__magic = 17;
@@ -45,31 +46,20 @@ ApplicationController.prototype.dispatch = function( request , response ){
         return;
     }
     
-    var anythingRendered = false;
-    
+    var appResponse = new ApplicationResponse( this , method );
+
     f.getScope( true ).render_text = function(s){
         print( s );
-        anythingRendered = true;
+        appResponse.anythingRendered = true;
     };
     
     f.getScope( true ).respond_to = function( b ){
-        [
-            { 
-                html : function(){
-                    print( "found an html want thingy" );
-                    anythingRendered = true;
-                } ,
-                
-                xml : function(){
-                    return false;
-                }
-            }
-        ].forEach( b );
+        b( appResponse );
     };
     
     f( request , response );
 
-    if ( ! anythingRendered ){
+    if ( ! appResponse.anythingRendered ){
 
         if ( ! local.app.views )
             throw "no views directory";
@@ -89,4 +79,31 @@ ApplicationController.prototype.dispatch = function( request , response ){
 
 ApplicationController.prototype.toString = function(){
     return "{ shortName : " + this.shortName + " , className : " + this.className + " }";
+};
+
+
+
+function ApplicationResponse( controller , method ){
+    this.controller = controller;
+    this.method = method;
+
+    this.anythingRendered = false;
+};
+
+ApplicationResponse.prototype.html = function(){
+    if ( ! local.app.views )
+        throw "no views directory";
+    
+    if ( ! local.app.views[ this.controller.shortName ] )
+        throw "no view directory for : " + this.controller.shortName;
+    
+    var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
+    print( template );
+    
+    print( ".html called<br>" );
+    this.anythingRendered = true;
+};
+
+ApplicationResponse.prototype.xml = function(){
+    return false;
 };

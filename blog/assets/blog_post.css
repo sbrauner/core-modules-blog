@@ -17,6 +17,49 @@ img.full {
     margin: 0 0 20px 0;
 }
 
-body {margin: 0 auto; padding: 0; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 12px;}
+body {margin: 0 auto; padding: .5em; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 13px;}
 
 div {text-align:left; }
+
+div, p, ul, ol {
+	font-size: 13px;	
+}
+
+p, .help {
+	padding: 0;   
+	line-height: 1.5em;
+	color:#222222;
+}
+
+hr {
+	margin: 10px 10px 10px 0;
+	padding: 0;
+	border: 0;
+	color: #dddddd;
+	background-color: #dddddd;
+	height: 1px;
+}
+
+th, td {
+    padding: .1em;
+	line-height: 1.5em;
+	font-size: 13px;
+	color:#222222;
+}
+
+ul, ol {position: relative; }
+
+ul, ol {
+	margin-left: 3em;
+	line-height: 1.5em;
+}
+
+li {
+  padding-left: 0;
+  list-style-type: bullet;
+}
+
+li ul, li ol {
+	margin-left: 0px;
+	padding-bottom:0;
+}

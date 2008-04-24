@@ -6,13 +6,13 @@ var sectionTree = core.admin.data.sectiontree();
 <!-- Top Layout -->
 <div class="container">
   <div class="onecolumn topbar">
-	
-	  <!-- 10gen Logo -->
-<div class="blhd-left"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="100" height="50" alt="10gen logo"></div>
-	
-	  <!-- Global Nav -->
-	  <div id="navcontainer">
-	    <ul>
+    
+    <!-- 10gen Logo -->
+    <div class="blhd-left"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="100" height="50" alt="10gen logo"></div>
+    
+    <!-- Global Nav -->
+    <div id="navcontainer">
+      <ul>
 <%
 var className;
 for(var key in sectionTree){
@@ -25,9 +25,9 @@ for(var key in sectionTree){
 <% 
 }
 %>
-		</ul>
-	  </div>
-	
+      </ul>
+    </div>
+    
   </div>	
 </div>
 

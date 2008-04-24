@@ -1,5 +1,6 @@
 <%
-    core.user.auth();
+core.user.auth();
+core.content.regexp();
 
 if(!request.username){
     htmlheader("Register");
@@ -42,7 +43,7 @@ try {
     if ( db.users.findOne( { name : username } ) )
         throw "This username is already taken.";
     
-    if ( db.users.findOne( { email : email } ) )
+    if ( db.users.findOne( { email : content.RegExp.literal(email, "i") } ) )
         throw "A user with this email already exists.";
 
     if ( db.users.findOne( { nickname : nickname } ) )

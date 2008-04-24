@@ -1,7 +1,8 @@
 
 <hr>
 <%= Date() %>
-<meta http-equiv="refresh" content="5" />
 
+<script type="text/javascript" src="/~~/ui/js/refresh.js"></script>
+</script>
 </body>
 </html>

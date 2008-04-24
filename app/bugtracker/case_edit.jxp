@@ -17,7 +17,14 @@ var feature = null;
 if ( request.id ){
     feature = db.bugtracker.cases.findOne( { _id : request.id } );
 }
-else{
+else if(request.number){
+    // FIXME: Check if there are two?
+    feature = db.bugtracker.cases.findOne( { number: parseInt(request.number) } );
+    if(feature == null){
+        print("Bug not found");
+    }
+}
+else {
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
 }

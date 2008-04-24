@@ -1,0 +1,33 @@
+<% core.core.sys.pieces.header(); %>
+<style>
+    .js { color: red; }
+    .ed { color: blue; }
+</style>
+
+<%
+core.ext.asstring();
+if(! request.id ){
+   response.sendRedirectTemporary("threads");
+   return;
+}
+
+all = javaStatic( "java.lang.Thread" , "getAllStackTraces" );
+cur = javaStatic( "java.lang.Thread" , "currentThread" );
+
+var holder =  javaStatic( "ed.lang.StackTraceHolder" , "getInstance" );
+
+for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
+    var myThread = i.next();
+    if(myThread.getId() != request.id) continue;
+
+    var st = all.get( myThread );
+    var buf = Ext.asString(function(){ 
+        core.core.sys.pieces.threadDetail( myThread , st ); 
+    });
+
+    print(buf);
+}
+   
+%>
+
+<% core.core.sys.pieces.footer(); %>

@@ -1,0 +1,17 @@
+<%
+
+var fields = fields;
+var table = obj.table;
+
+%>
+
+<forin i table.rows>
+  <tr class="white-main">
+    <td class="left"></td>
+    <forin j fields>
+      <td>$table.rows[i][fields[j]]</td>
+    </forin>
+    <td class="right"></td>
+  </tr>
+</forin>
+</div>

@@ -1,0 +1,42 @@
+<tr>
+  <td>
+    <a href="threadDetail?id=$getId()">$getId()</a>
+  </td>
+<!--  <td>
+    $getName()
+  </td> -->
+  <td>
+    <% var z = arguments[1][arguments[1].length-1];
+       z = holder.fix(z);
+       var s = z.toString();
+       s = s.replace(/\._+\(.+\)/, "");
+       %>
+    <%= s %>
+  </td>
+  <td>
+    $getState()
+  </td>
+  <td>
+    Runtime
+  </td>
+  <td>
+    Active time
+  </td>
+  <td>
+    Instance
+  </td>
+  <td>
+    <% var z = arguments[1][0];
+       z = holder.fix( z );
+       if ( z == null ) return;
+       z = z.toString();
+       var cls = "";
+       if ( z.startsWith( "ed.js.gen." ) ) cls = "js";
+       else if ( z.startsWith( "ed." ) ) cls = "ed";
+     %>
+    <span class="<%= cls %>" ><%= z %></span>
+  </td>
+  <td>
+    User expression
+  </td>
+</tr>
