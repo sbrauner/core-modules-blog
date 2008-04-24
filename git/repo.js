@@ -379,14 +379,22 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted|renamed):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];
+                if(filetype == "renamed"){
+                    parts = filename.split(/ -> /);
+                    filename = parts[1];
+                    oldfilename = parts[0];
+                }
                 file = {name: filename, type: filetype};
                 if(filetype == "unmerged"){
                     unmerged.push(file);
                     continue;
+                }
+                if(filetype == "renamed"){
+                    file.oldName = oldfilename;
                 }
             }
             else {

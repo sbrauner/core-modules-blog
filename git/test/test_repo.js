@@ -1,13 +1,13 @@
 core.core.file();
 
+
+scope.makeThreadLocal();
 log.git.tests.level = log.LEVEL.ERROR;
 
 u = {name: "Test Framework", email: "test@10gen.com"};
 
-sc = scopeWithRoot(".");
-
-sc.eval('sysexec("rm -r /tmp/gitrepo");');
-sc.eval('sysexec("mkdir -p /tmp/gitrepo/test");');
+sysexec("rm -r /tmp/gitrepo");
+sysexec("mkdir -p /tmp/gitrepo/test");
 
 var repoAt = function(root){
     var s = scopeWithRoot(root);
@@ -76,8 +76,8 @@ gr_checkStatus = function(spec){
 };
 
 var gr_dumpFile = function(file, contents){
-    sc.eval('var f = File.create("'+contents.replace(/\n/g, "\\n")+'");');
-    sc.eval("f.writeToLocalFile('"+this.root + "/" + file + "');");
+    var f = File.create(contents);
+    f.writeToLocalFile(this.root + "/" + file);
 };
 
 var g = repoAt("/tmp/gitrepo/test");
@@ -119,7 +119,6 @@ assert(startCommit == g3.getCurrentRev().parsed.rev);
 
 // Commit "upstream"
 
-sc.makeThreadLocal();
 g.dumpFile("file1", "hi there\n");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
@@ -201,6 +200,15 @@ assert(listRevs.parsed.revs[0].message == "test commit 2");
 assert(listRevs.parsed.revs[1].id == lastCommit);
 assert(listRevs.parsed.revs[1].message == "test commit 3");
 
+sysexec("mv /tmp/gitrepo/test/file1 /tmp/gitrepo/test/file2");
+g.rm(["file1"]);
+g.add(["file2"]);
+
+var status = g.status();
+assert(status.parsed.staged.length == 1);
+assert(status.parsed.staged[0].oldName == "file1");
+assert(status.parsed.staged[0].name == "file2");
+
 // FIXME: try a push on a branch when another branch is not a local subset
 // obviously we don't support branches at all yet, but you could do a sysexec
 // to create branches or whatever
@@ -209,6 +217,6 @@ assert(listRevs.parsed.revs[1].message == "test commit 3");
 
 // FIXME: test fetch
 
-sc.eval('sysexec("rm -r /tmp/gitrepo");');
+sysexec("rm -r /tmp/gitrepo");
 
 
