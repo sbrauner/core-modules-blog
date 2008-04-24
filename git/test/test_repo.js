@@ -201,6 +201,15 @@ assert(listRevs.parsed.revs[0].message == "test commit 2");
 assert(listRevs.parsed.revs[1].id == lastCommit);
 assert(listRevs.parsed.revs[1].message == "test commit 3");
 
+sc.eval('sysexec("mv /tmp/gitrepo/test/file1 /tmp/gitrepo/test/file2")');
+g.rm(["file1"]);
+g.add(["file2"]);
+
+var status = g.status();
+assert(status.parsed.staged.length == 1);
+assert(status.parsed.staged[0].oldName == "file1");
+assert(status.parsed.staged[0].name == "file2");
+
 // FIXME: try a push on a branch when another branch is not a local subset
 // obviously we don't support branches at all yet, but you could do a sysexec
 // to create branches or whatever
