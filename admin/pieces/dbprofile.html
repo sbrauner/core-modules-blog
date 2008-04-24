@@ -1,0 +1,128 @@
+<%
+
+var th = obj.th;
+var table = obj.table;
+var page = obj.page;
+var prevPage = obj.prevPage;
+var nextPage = obj.nextPage;
+
+%>
+
+	  <h1 style="margin:0;">
+		<div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Logs Documentation</a></div>
+		<nobr>Scrolling Logs</nobr>
+	  </h1>
+
+		<p>The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.</p>
+
+	  <!-- Data Table Begins -->
+	  <table width="100%" border="0">
+	    <tr class="search-top">
+		  <td class="left">&nbsp;</td>
+<!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+	      <td colspan="4">
+
+		<!-- Search -->
+		  <ul>
+		    <li><nobr>Show Only</nobr></li>
+		    <li>
+		      <select onchange="filterResults('log_level')" name="log_level" id="log_level">
+			<option value="ALL">All</option>
+			<option value="DEBUG">Debug</option>
+			<option value="INFO">Info</option>
+			<option value="ERROR">Error</option>
+			<option value="FATAL">Fatal</option>
+		      </select>
+		    </li>
+		    <li>
+		      <select onchange="filterResults('logger)" name="logger" id="logger">
+		      </select>
+		    </li>
+		    <li style="padding-left: 2em; text-align: right; "><nobr>Filter By</nobr></li>
+		    <li><input class="text" size="40" value="" type="text"></li>
+		    <li><input type="image" src="/~~/admin/assets/img/button_filter_on_tan.gif" value="Filter" alt="Filter"></li>
+		    <li style="float: right; "><div><a href="#" onclick="togglePause()" />Pause</a></div></li>
+		    </ul>
+
+		  	</td>
+			<td class="right">&nbsp;</td>
+		  </tr>
+		<!-- White table -->
+		  <tr class="white-top">
+			<!-- Top area -->
+		        <td class="left"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+                          <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+			<td class="middle" colspan="4">&nbsp;</td>
+			<td class="right"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+		  </tr>
+
+		  <tr class="white-main">
+			<!-- Main area -->
+		    <td class="left">&nbsp;</td>
+                    <forin i th>
+                      <th><nobr><a href="">$th[i].name</a></nobr></th>
+                    </forin>
+			<td class="right">&nbsp;</td>
+		  </tr>
+
+
+                <forin i table.rows>
+		  <tr class="white-main">
+		    <td class="left">&nbsp;</td>
+                        <forin j th>
+			  <td>$table.rows[i][th[j].name]</td>
+                        </forin>
+			<td class="right">&nbsp;</td>
+		  </tr>
+                </forin>
+
+		  <tr class="white-bottom">
+			<!-- Bottom area -->
+		    <td class="left">&nbsp;</td>
+<!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+			<td class="middle" colspan="4">&nbsp;</td>
+			<td class="right">&nbsp;</td>
+		  </tr>
+		<!-- Tan/Beige Area -->
+  <!-- Paging -->
+  <tr class="paging-bottom">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$table.colspan">
+      <div id="paging">
+        <if (page.length > 1)>
+	  <ul>
+            <if prevPage>
+	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>
+	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('$prevPage')">&#60;</a></li>
+            </if>
+            <forin p page>
+              <if (page[p].className == "active" || page[p].className == "modactive") >
+                <li class="$page[p].className">$page[p].name</li>
+              </if>
+              <if (page[p].className != "active" && page[p].className != "modactive") >
+                <li class="$page[p].className"><a onclick="loadPage('$page[p].name')">$page[p].name</a></li>
+              </if>
+            </forin>
+            <if nextPage>
+	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
+	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
+            </if>
+	  </ul>
+        </if>
+      </div>
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+</table>
+
+</div>
+
+<!-- Footer -->
+<div class="onecolumn">
+  <p class="footer">&copy; 2008 10gen. All rights reserved.</p>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Logs Documentation</a></div>
+  <nobr>Scrolling Logs</nobr>
+</h1>
+
+<p>The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.</p>
+
+<!-- Data Table Begins -->
+<table width="100%" border="0">
+  <tr class="search-top">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$colspan">
+
+      <!-- Search -->
+      <ul>
+	<li><nobr>Show Only</nobr></li>
+	<li>
+	  <select onchange="filterResults('log_level')" name="log_level" id="log_level">
+	    <option value="ALL">All</option>
+	    <option value="DEBUG">Debug</option>
+	    <option value="INFO">Info</option>
+	    <option value="ERROR">Error</option>
+	    <option value="FATAL">Fatal</option>
+	  </select>
+	</li>
+	<li>
+	  <select onchange="filterResults('logger)" name="logger" id="logger">
+	  </select>
+	</li>
+	<li style="padding-left: 2em; text-align: right; "><nobr>Filter By</nobr></li>
+	<li><input class="text" size="40" value="" type="text" name="filter" id="filter"></li>
+	<li><img src="/~~/admin/assets/img/button_filter_on_tan.gif" onclick="filterResults('filter')" alt="Filter"></li>
+        <li><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" onclick="refreshFilter()" value="Refresh" /></li>
+	<li style="float: right; "><div><a href="#" onclick="togglePause()" />Pause</a></div></li>
+</ul>
+
+</td>
+<td class="right">&nbsp;</td>
+</tr>
+<!-- White table -->
+<tr class="white-top">
+  <!-- Top area -->
+  <td class="left"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+  <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+  <td class="middle" colspan="$colspan">&nbsp;</td>
+  <td class="right"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+</tr>
+
+<tr class="white-main" id="pushNode"> <!-- new log entries will be inserted after this node -->
+  <!-- Main area -->
+  <td class="left">&nbsp;</td>
+  <th><nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr></th>
+  <th><a href="">LEVEL</a></th>
+  <th><a href="">COMPONENT</a></th>
+  <th><a href="">MESSAGE</a></th>
+  <td class="right">&nbsp;</td>
+</tr>
+
