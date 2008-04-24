@@ -1,10 +1,10 @@
 core.core.file();
 
+
+scope.makeThreadLocal();
 log.git.tests.level = log.LEVEL.ERROR;
 
 u = {name: "Test Framework", email: "test@10gen.com"};
-
-sc = scopeWithRoot(".");
 
 sysexec("rm -r /tmp/gitrepo");
 sysexec("mkdir -p /tmp/gitrepo/test");
@@ -76,8 +76,8 @@ gr_checkStatus = function(spec){
 };
 
 var gr_dumpFile = function(file, contents){
-    sc.eval('var f = File.create("'+contents.replace(/\n/g, "\\n")+'");');
-    sc.eval("f.writeToLocalFile('"+this.root + "/" + file + "');");
+    var f = File.create(contents);
+    f.writeToLocalFile(this.root + "/" + file);
 };
 
 var g = repoAt("/tmp/gitrepo/test");
@@ -119,7 +119,6 @@ assert(startCommit == g3.getCurrentRev().parsed.rev);
 
 // Commit "upstream"
 
-sc.makeThreadLocal();
 g.dumpFile("file1", "hi there\n");
 
 assert(g.diff([]).out.match(/\n\+hi there\n/));
