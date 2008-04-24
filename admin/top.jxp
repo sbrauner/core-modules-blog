@@ -3,6 +3,7 @@
     .js { color: red; }
     .ed { color: blue; }
 </style>
+<table>
 <%
 
 head.addScript("/~~/ui/js/refresh.js");
@@ -26,7 +27,7 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
     }
     
     var st = all.get( myThread );
-    core.core.sys.pieces.thread( myThread , st );
+    core.admin.pieces.thread( myThread , st );
     print = savePrint;
     
     if ( f && ! buf.match( f ) )
@@ -37,3 +38,4 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
 
 
  %>
+</table>
