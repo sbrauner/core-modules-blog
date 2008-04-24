@@ -245,12 +245,12 @@ if(top) {
 }
 else {
     var th = [];
-    th.push({"name" : "_id", className: "sort-up" });
+    if(request.action != "searchprofile") th.push({"name" : "_id", className: "sort-up" });
     for(var i in f) {
         if(ignore[i] || i == "_id") continue;
         th.push({"name" : i, className: "" });
     }
-    th.push({"name": "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
@@ -344,7 +344,7 @@ if(top) {
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
     }
 }
-else {
+else if(request.action != "searchprofile") {
     dbTable.top = false;
     for(var i in dbTable.rows) {
         dbTable.rows[i].id = "";
@@ -354,6 +354,9 @@ else {
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
+}
+else {
+    dbTable.top = false;
 }
 
 var page = [];
@@ -380,7 +383,7 @@ var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(
 dbTable.colspan = th.length;
 
 if(request.action == "searchprofile") {
-    core.admin.pieces.dbprofile( { th: th,
+    core.admin.pieces.dbprofileTable( { th: th,
                              table: dbTable,
                              page: page,
                              prevPage: prevPage,
