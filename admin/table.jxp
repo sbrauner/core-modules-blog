@@ -62,7 +62,7 @@ var top = request.ns == null;
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
-// dbprofiler
+// dbprofile
 if(request.action == "searchprofile") {
     var searchObj = {};
     var dateStart, dateEnd;
@@ -83,6 +83,7 @@ if(request.action == "searchprofile") {
     }
 
     rows = db.system.profile.find( searchObj ).toArray();
+    top = false;
 }
 // dbview
 else if(request.action == "search") {
@@ -316,16 +317,16 @@ else {
 
             if (subobj instanceof Date) {
                 fullText += subobj.toString();
-                str = '<span  style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
             }
             else if (typeof subobj == "object") {
                 for(var q in subobj)
                     fullText += printObj(subobj, q);
-                str = '<span style="cursor:default">(Object)</span>';
+                str = '<span class="partialText" style="cursor:default">(Object)</span>';
             }
             else {
                 fullText += subobj;
-                str = '<span  style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
             }
             fullText += '</div>';
             return str+fullText;
@@ -378,13 +379,20 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
-
-core.admin.pieces.dbviewTable({ th: th,
-                                table: dbTable,
-                                page: page,
-                                prevPage: prevPage,
-                                nextPage: nextPage });
-
+if(request.action == "searchprofile") {
+    core.admin.pieces.dbprofile( { th: th,
+                             table: dbTable,
+                             page: page,
+                             prevPage: prevPage,
+                             nextPage: nextPage  });
+}
+else {
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
+}
 
 
 %>
