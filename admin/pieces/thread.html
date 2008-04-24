@@ -2,8 +2,16 @@
   <td>
     <a href="threadDetail?id=$getId()">$getId()</a>
   </td>
-  <td>
+<!--  <td>
     $getName()
+  </td> -->
+  <td>
+    <% var z = arguments[1][arguments[1].length-1];
+       z = holder.fix(z);
+       var s = z.toString();
+       s = s.replace(/\._+\(.+\)/, "");
+       %>
+    <%= s %>
   </td>
   <td>
     $getState()
@@ -18,7 +26,7 @@
     Instance
   </td>
   <td>
-    <% z = arguments[1][0];
+    <% var z = arguments[1][0];
        z = holder.fix( z );
        if ( z == null ) return;
        z = z.toString();
