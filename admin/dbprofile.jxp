@@ -1,5 +1,8 @@
 <p>
 <%
+
+head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+
 core.db.db();
 core.content.table();
 if( request.set != null ) {
@@ -50,9 +53,16 @@ if( request.set != null ) {
 </div>
 </div>
 
-<div id="myMarkedUpContainer" class="yui-skin-sam">
-
+<% core.admin.pieces.dbprofile({th:[{name: "Timestamp"}, {name: "Message"}, {name: "Milliseconds"}]}); %>
+<div id="myCollection">
+<%
+request.action = "searchprofile";
+request.reverse = "true";
+var table = core.admin.table();
+%>
 </div>
+
+<div id="myMarkedUpContainer" class="yui-skin-sam"></div>
 
 
 <!--CSS file (default YUI Sam Skin) -->
@@ -81,7 +91,16 @@ if( request.set != null ) {
 
 <script type="text/javascript">
 
-myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile&reverse=true');
+var currentPage = 1;
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    ajax("currentPage="+pagenum+"&action=searchprofile&"+lastSearch, "table", function(response) {
+
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+
+/*myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile&reverse=true');
 myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
 myDataSource.connXhrMode = "queueRequests";
 
@@ -175,7 +194,7 @@ myDateFormatter = function(elCell, oRecord, oColumn, oData) {
 YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 
 // End of table code
-
+*/
 
 
 // Initial setup of page
@@ -206,8 +225,17 @@ function doSearch() {
     lastSearch = passData;
     refreshTable();
 }
+
 function refreshSearch() {
     lastSearch = "";
+    document.getElementById("time_from").value="YYYY-MM-DD HH:MM:SS";
+    document.getElementById("time_to").value="YYYY-MM-DD HH:MM:SS";
+    document.getElementById("ms_from").value = "0";
+    document.getElementById("ms_to").value="999";
+    document.getElementById("refilter").checked = false;
+    document.getElementById("timefilter").checked = false;
+    document.getElementById("msfilter").checked = false;
+    document.getElementById("re").value = "";
     refreshTable();
 }
 
@@ -269,25 +297,8 @@ function changeRecordType() {
 
 
 <%
-/*    var tab = new htmltable(
-    {
-     searchable : true,
-     ns : db.system.profile,
-     cols : [
-     { name: "ts", searchWidth: 8,
-       view: function(x) { var z = new Date(x); return z.format("yyyy-MM-dd HH:mm:ss"); }
-     },
-    { name: "millis", searchWidth: 4,
-       view: function(x) { return x.toFixed(); }
-     },
-     { name: "info", searchWidth: 40 }
-     ]
-
-    }
-			    );
 
 
 
-tab.dbview( tab.find({},{$natural:-1}) );*/
 %>
 
