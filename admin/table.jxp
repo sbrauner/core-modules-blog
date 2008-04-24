@@ -168,7 +168,6 @@ if(currentPage > totalNumPages)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
-var end = (currentPage)*rowsPerPage-1;
 
 /* if this is all collections, indices will be listed as rows. */
 if(top) {
@@ -178,14 +177,15 @@ if(top) {
         if(rows[i].name.indexOf("$") == -1) {
             tableCount++;
         }
-        if(start <= tableCount && tableCount <= end)
+        if(start <= tableCount && tableCount <= start+rowsPerPage)
             urow.push(rows[i]);
     }
     rows = urow;
 }
 else {
-    rows = rows.splice(start, end);
+    rows = rows.splice(start, rowsPerPage);
 }
+
 
 var dbTable = { rows: [] };
 dbTable.totalNumPages = totalNumPages;
