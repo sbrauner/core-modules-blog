@@ -23,7 +23,7 @@ function getXMLRequestObject(){
 
     if ( window.XMLHttpRequest )
         return new XMLHttpRequest();
-    
+
     if (window.ActiveXObject) // branch for IE/Windows ActiveX version
         return new ActiveXObject("Microsoft.XMLHTTP");
 
@@ -47,13 +47,26 @@ function loadDocAsync( url , handler , data , passFullRequest ){
 
     var req = getXMLRequestObject();
     req.open( data ? "POST" : "GET", url, true );
-    
+
     req.onreadystatechange = function() {
         if ( req.readyState == 4 && handler ){
             handler( passFullRequest ? req : req.responseText );
         }
     }
-            
+
+    req.send( data );
+}
+
+function loadXMLAsync( url, handler, data ) {
+    var req = getXMLRequestObject();
+    req.open( data ? "POST" : "GET", url, true );
+
+    req.onreadystatechange = function() {
+        if ( req.readyState == 4 && handler ){
+            handler( req.responseXML );
+        }
+    }
+
     req.send( data );
 }
 

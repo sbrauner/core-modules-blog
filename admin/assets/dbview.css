@@ -387,7 +387,6 @@ select {
 }
 
 input.text {
-	height: 15px;
 	padding: 1px;
 }
 
@@ -416,7 +415,7 @@ td.maincontent tr.empty td {
 td.maincontent tr.search-top ul {
 	margin: 0;
 	padding: 0;
-	width: 1000;
+	width: 100%;
 }
 
 td.maincontent tr.search-top ul li {
