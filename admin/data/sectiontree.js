@@ -27,9 +27,11 @@ return {
         $: '/admin/ed'
     },
     'git': {
-        $: '/admin/gitLocal'
+        $: '/admin/gitLocal',
+        'git': {}
     },
     'docs': {
+        'docs': {}
     },
     'applications': applications
 
