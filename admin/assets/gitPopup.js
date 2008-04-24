@@ -51,3 +51,8 @@ var showConfirm = function(checkoutBtn){
     confirmCheckout.button = checkoutBtn;
 };
 
+var unaddSubmit = function(btn){
+    document.gitFiles.toBeDetermined.value = btn.id;
+    document.gitFiles.toBeDetermined.name = "action";
+    document.gitFiles.submit();
+};
