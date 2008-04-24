@@ -56,3 +56,45 @@ var unaddSubmit = function(btn){
     document.gitFiles.toBeDetermined.name = "action";
     document.gitFiles.submit();
 };
+
+var handleCheckAll = function(btn){
+    var name = btn.name;
+    var type = btn.name.replace(/^checkAll_/, "");
+    var newState = btn.checked;
+    var checks = YAHOO.util.Dom.getElementsByClassName("check_"+type, 'input');
+    for(var i = 0; i < checks.length; ++i){
+        var check = checks[i];
+        check.checked = newState;
+    }
+};
+
+var setupCheckAll = function(cls){
+    var checks = YAHOO.util.Dom.getElementsByClassName("check_"+cls, "input");
+    var checkAllButtons = YAHOO.util.Dom.getElementsBy(function(i){ return i.name == "checkAll_"+cls; }, "input");
+    var handler = function(e){
+        var check = this;
+        // if we were just unchecked, then we can no longer be "checked all",
+        // so uncheck all the checkALlButtons
+        if(! check.checked){
+            console.log("Unchecking");
+            for(var i = 0; i < checkAllButtons.length; i++){
+                checkAllButtons[i].checked = false;
+            }
+        }
+        // If we were just checked, then maybe we just completed the set.
+        else {
+            for(var i = 0; i < checks.length; ++i){
+                if(checks[i].checked == false) return;
+            }
+            // If we got here, then all the checks are checked
+            for(var i = 0; i < checkAllButtons.length; ++i){
+                checkAllButtons[i].checked = true;
+            }
+        }
+    };
+
+    YAHOO.util.Event.addListener(checks, "click", handler);
+};
+
+setupCheckAll("changed_file");
+setupCheckAll("untracked_file");
