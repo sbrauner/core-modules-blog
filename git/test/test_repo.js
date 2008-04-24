@@ -6,8 +6,8 @@ u = {name: "Test Framework", email: "test@10gen.com"};
 
 sc = scopeWithRoot(".");
 
-sc.eval('sysexec("rm -r /tmp/gitrepo");');
-sc.eval('sysexec("mkdir -p /tmp/gitrepo/test");');
+sysexec("rm -r /tmp/gitrepo");
+sysexec("mkdir -p /tmp/gitrepo/test");
 
 var repoAt = function(root){
     var s = scopeWithRoot(root);
@@ -201,7 +201,7 @@ assert(listRevs.parsed.revs[0].message == "test commit 2");
 assert(listRevs.parsed.revs[1].id == lastCommit);
 assert(listRevs.parsed.revs[1].message == "test commit 3");
 
-sc.eval('sysexec("mv /tmp/gitrepo/test/file1 /tmp/gitrepo/test/file2")');
+sysexec("mv /tmp/gitrepo/test/file1 /tmp/gitrepo/test/file2");
 g.rm(["file1"]);
 g.add(["file2"]);
 
@@ -218,6 +218,6 @@ assert(status.parsed.staged[0].name == "file2");
 
 // FIXME: test fetch
 
-sc.eval('sysexec("rm -r /tmp/gitrepo");');
+sysexec("rm -r /tmp/gitrepo");
 
 
