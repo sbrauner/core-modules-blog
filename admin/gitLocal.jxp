@@ -201,7 +201,7 @@ if(parsed.changed && parsed.changed.length != 1)
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 'untracked': ['add']};
 
-var diffLinks = {"changed": true, 'untracked': false};
+var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 'untracked': ['add']};
 
 var checked = {};
 if(request.changed_file)
@@ -248,7 +248,7 @@ log(tojson(parsed));
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    filetypes: parsed[type].map(Ext.pluck('type')),
-                                   fileDiff: diffLinks[type] });
+                                   fileActions: fileActions[type] });
 });
 %>
 		<tr class="white-bottom">

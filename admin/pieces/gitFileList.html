@@ -17,7 +17,9 @@
         <% var action = massActions[acti], name = action.name || action; %>
         <input type="image" src="assets/img/button_<%= name %>_on_white.gif" value="<%= name %>" class="<%= action.disabled? "disabled" : "" %>" <%= action.onclick? 'onclick="'+action.onclick+'"' : "" %>>
       </forin>
-    </div><nobr><a href="">$title</a></nobr></th>
+    </div>
+    <nobr>$title</nobr>
+  </th>
   <td class="right">&nbsp;</td>
 </tr>
 <tr class="white-main">
@@ -41,10 +43,12 @@
                  print("(" + filetypes[file] + ")");
              }
 %>
-          <if fileDiff>
-            (<a href="gitDiff?file=$filenames[file]" target="new" onclick="return popup(this.href)">diff</a>)
-          </if>
-          
+          <forin acti fileActions>
+            <% var action = fileActions[acti], name = action.name || action,
+                   onclick = action.onclick? filenames[file].replace(/^(.+)$/, action.onclick) : "",
+                   href = action.href? filenames[file].replace(/^(.+)$/, action.href) : "#"; %>
+            <a href="<%= href %>" target="new" onclick="<%= onclick %>"><%= name %></a>
+          </forin>
           <if (unadd[filenames[file]])>
             <input type="submit" name="action" value="unadd" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">
           </if>

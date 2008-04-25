@@ -318,6 +318,11 @@ td.maincontent tr.white-main th, td.maincontent tr.white-main td {
 	line-height: 2em;
 }
 
+td.maincontent tr.white-main th {
+        color: #333333;
+        font-weight: bold;
+}
+
 td.maincontent tr.white-main th.lmod {
 	padding-left: 1em; line-height:1em;
 }
