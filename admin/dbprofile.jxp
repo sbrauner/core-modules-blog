@@ -1,10 +1,12 @@
 <p>
 <%
-
 head.addCSS("NOCDN/~~/admin/assets/dbview.css");
 
 core.db.db();
 core.content.table();
+
+var rowsPerPage = 100;
+
 if(user.permissions["0"] == "admin") {
     if( request.set != null ) {
         print("Setting profiling level to " + request.set);
@@ -44,10 +46,10 @@ if(user.permissions["0"] == "admin") {
 <input type="text" disabled onclick="clearTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
 <input type="text" disabled name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
 </div>
-<div class="field"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999')">
+<div class="field"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999999')">
   <label for="msfilter">Millisecond filter between </label>
 <input type="text" disabled name="ms_from" onclick="clearTextBox('ms_from', '0')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
-<input type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999')" onblur="resetTextBox('ms_to', '999')" id="ms_to" value="999" />
+<input type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999999')" onblur="resetTextBox('ms_to', '999999')" id="ms_to" value="999999" />
 </div>
 <div class="field"><input type="checkbox" name="refilter" id="refilter" onclick="toggleEnableText('re', '')">
   <label for="refilter">Information RegExp filter </label>
@@ -62,7 +64,7 @@ if(user.permissions["0"] == "admin") {
 <%
 request.action = "searchprofile";
 request.reverse = "true";
-request.rowsPerPage = 100;
+request.rowsPerPage = rowsPerPage;
 var table = core.admin.table();
 %>
 </div>
@@ -99,10 +101,7 @@ var table = core.admin.table();
 var currentPage = 1;
 function loadPage(pagenum) {
     currentPage = pagenum;
-    ajax("currentPage="+pagenum+"&action=searchprofile&"+lastSearch, "table", function(response) {
-
-        document.getElementById("myCollection").innerHTML = response;
-    });
+    refreshTable("currentPage="+pagenum);
 }
 
 /*
@@ -182,7 +181,7 @@ function refreshTable(passData){
     else
         passData = "";
 
-    ajax("&action=searchprofile&"+passData+lastSearch, "table", function(response) {
+    ajax("&action=searchprofile&rowsPerPage=<%= rowsPerPage %>&reverse=true&"+passData+lastSearch, "table", function(response) {
         var tbd = YAHOO.util.Dom.getNextSibling(pushNode);
         while(tbd) {
             parent.removeChild(tbd);
@@ -209,11 +208,16 @@ function refreshSearch() {
     document.getElementById("time_from").value="YYYY-MM-DD HH:MM:SS";
     document.getElementById("time_to").value="YYYY-MM-DD HH:MM:SS";
     document.getElementById("ms_from").value = "0";
-    document.getElementById("ms_to").value="999";
+    document.getElementById("ms_to").value="999999";
     document.getElementById("refilter").checked = false;
     document.getElementById("timefilter").checked = false;
     document.getElementById("msfilter").checked = false;
     document.getElementById("re").value = "";
+    document.getElementById("time_from").disabled = true;
+    document.getElementById("time_to").disabled = true;
+    document.getElementById("ms_from").disabled = true;
+    document.getElementById("ms_to").disabled = true;
+    document.getElementById("re").disabled = true;
     refreshTable();
 }
 
@@ -263,7 +267,7 @@ function simpleDlg(hd, msg) {
         visible: false,
         close: true,
         text: msg,
-        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        buttons: [ { text:"OK", handler:function(){this.hide();}, isDefault:true } ]
         } );
     simpledialog1.setHeader(hd);
     simpledialog1.render("myMarkedUpContainer");
@@ -275,7 +279,8 @@ function validateTime() {
     return re.test(document.getElementById("time_from").value) && re.test(document.getElementById("time_to").value);
 }
 function validateMs() {
-    return /^\d{1,3}$/.test(document.getElementById("ms_to").value) && /^\d{1,3}$/.test(document.getElementById("ms_to").value);
+    return (/^\d{1,6}$/.test(document.getElementById("ms_to").value) && /^\d{1,6}$/.test(document.getElementById("ms_to").value)) &&
+    (parseInt(document.getElementById("ms_to").value) <= parseInt(document.getElementById("ms_to").value));
 }
 function validateRe() {
     try {
