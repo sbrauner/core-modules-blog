@@ -10,15 +10,23 @@
    var unadd = obj.unadd;
    var fileDiff = obj.fileDiff;
 %>
-    <tr>
-      <td colspan="2"><input type="checkbox" name="checkAll_$filevar" onclick="handleCheckAll(this)">$title</td>
-    </tr>
-    <forin file filenames>
-      <% var classes = [];
-         if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
-      <tr class="<%= classes.join(' ') %>">
-        <td><input type="checkbox" name="$filevar" value="$filenames[file]" class="check_$filevar" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
-        <td><a href="gitShowFile?file=$filenames[file]" target="new" onclick="return popup(this.href)">$filenames[file]</a>
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <th class="lmod"><div class="float-right"><input type="image" src="/~~/admin/assets/img/button_diff_on_white.gif" value="Drop" alt="Drop"><input type="image" src="/~~/admin/assets/img/button_checkout_on_white.gif" value="Checkout" alt="Checkout"> <input type="image" src="/~~/admin/assets/img/button_commit_as_res_on_white.gif" value="Drop" alt="Drop"></div><nobr><a href="">$title</a></nobr></th>
+</tr>
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <td class="lmod">
+    <table cellpadding=0 cellspacing=0 border="0">
+      <forin file filenames>
+        <% var classes = [];
+           if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
+        <tr class="<%= classes.join(' ') %>">
+          <td>
+            <input type="checkbox" name="$filevar" value="$filenames[file]" class="check_$filevar" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> >
+            <a href="gitShowFile?file=$filenames[file]" target="new" onclick="return popup(this.href)">$filenames[file]</a>
+          </td>
+          <td>
           <%
              if(filetypes[file] == "CONFLICT"){
                  print("<span class='conflicttype'>CONFLICT</span>");
@@ -30,17 +38,21 @@
           <if fileDiff>
             (<a href="gitDiff?file=$filenames[file]" target="new" onclick="return popup(this.href)">diff</a>)
           </if>
-
+          
           <if (unadd[filenames[file]])>
             <input type="submit" name="action" value="unadd" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">
           </if>
+          </td>
+        </tr>
+      </forin>
+      <tr>
+        <td colspan="2">
+          <forin action actions>
+            <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %> <%= actions[action].onclick? 'onclick="'+actions[action].onclick+'"' : ""%>>
+          </forin>
         </td>
       </tr>
-    </forin>
-    <tr>
-      <td colspan="2">
-      <forin action actions>
-        <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %> <%= actions[action].onclick? 'onclick="'+actions[action].onclick+'"' : ""%>>
-      </forin>
-      </td>
-    </tr>
+    </table>
+  </td>
+  <td class="right">&nbsp;</td>
+</tr>

@@ -1,0 +1,27 @@
+
+<%
+    if ( request.action == "Reset Scope" ){
+        if ( request.sure ){
+            __instance__.reset();
+            print( "scope reset" );
+        }
+        else {
+            print( "are you sure you want to reset scope?" );
+            %>
+<form>
+  <input type="hidden" name="action" value="Reset Scope">
+  <input type="submit" name="sure" value="yes">
+</form>
+<hr>
+
+<%
+        }
+    }
+%>
+
+<b>Created</b> : <%= __instance__.getWhenCreated() %><br>
+<b>Num Requests</b> : <%= __instance__.getNumRequests() %><br>
+<form>
+  <input type="submit" name="action" value="Reset Scope">
+</form>
+
