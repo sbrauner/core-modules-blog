@@ -229,6 +229,10 @@ td.maincontent tr.white-main th, td.maincontent tr.white-main td {
 	line-height: 2em;
 }
 
+td.maincontent tr.white-main th.lmod {
+	padding-left: 1em; line-height:1em;
+}
+
 td.maincontent p {
 	margin: .5em 0 0 0;
 	font-size: 12px;
@@ -237,6 +241,46 @@ td.maincontent p {
 tr.white-main th.center, tr.white-main td.center {
 	padding: 0;
 	text-align: center;
+}
+
+td.maincontent tr.white-main td {
+	padding: .4em 1em .5em 0;
+	vertical-align: top;
+	border-top:1px solid #cccccc;
+	line-height: 1.5em;
+	font-size: 11px;
+}
+
+td.maincontent tr.white-main td.lmod {
+	padding: .5em 0 1.5em 1em;
+}
+
+td.maincontent tr.white-main td.lmod td {
+	padding-top: 0px;
+	padding-bottom: 1px;
+	border:none;
+}
+
+td.maincontent tr.white-main td.lmod tr.conflict td div {
+	color: #d41f1f;
+	font-weight: bold;
+	font-style: italic;
+}
+
+tr.conflict a, tr.conflict a:visited {
+	color: #d41f1f;	
+}
+
+tr.conflict a:hover {
+	color: #961212;	
+}
+
+tr.white-main th a, tr.white-main th a:visited {
+	line-height: 2em;
+	font-size: 11px;
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
 }
 
 tr.white-main th a, tr.white-main th a:visited {
@@ -276,6 +320,76 @@ tr.white-main th a#active {
 	color: #333333;
 }
 
+tr.white-main ul {
+	clear: both;
+	margin: 0;
+	padding: 0;
+	font-size: 118%;
+}
+
+tr.white-main ul li {
+	float: left;
+	margin: 0 1em 0 0;
+	padding: 0 0 0 0;
+	height: 1.8em;
+}
+
+tr.white-main ul li.glm-left {
+	float: left;
+	width: 13em;
+	text-align: right;
+	font-weight: bold;
+}
+
+td.maincontent tr.white-main td.glm {
+	border-top: 0; 
+	font-size: 12px;
+}
+td.maincontent tr.white-main td.glm-info {
+	border-top: 0; 
+	font-size: 11px;
+}
+
+td.maincontent tr.white-main td.glm-info li {
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.glm-info li.title {
+	width: 12.5em;
+	border-top: 0; 
+	text-align: right;
+	font-weight: bold;
+}
+
+td.maincontent tr.white-main td.glm-top {
+	border-top: 0;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.sec {
+	padding-bottom: 2em;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.conflicts {
+	color: #d41f1f;
+}
+
+td.maincontent tr.white-main td.glm-heading {
+	padding-left: 1em;
+	text-align: right;
+	font-weight: bold;
+	border-top: 0; 
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.glm a {
+	font-size: 12px;
+}
+
+
 td.maincontent tr.white-main td {
 	padding: .4em 1em .5em 0;
 	vertical-align: top;
@@ -301,6 +415,23 @@ td.maincontent tr.white-main td.right {
 	border-top: 0px;
 }
 
+/* Modified bottom for main table */
+
+td.maincontent tr.paging-bottom td {
+	background-color: #e7e4d6;
+	text-align: center;
+}
+
+td.maincontent tr.paging-bottom td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_botleft.gif) no-repeat left bottom;
+}
+
+td.maincontent tr.paging-bottom td.right {
+	padding-right: 7px;
+	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
+}
+
 /* leftnav stuff in leftNav.css */
 
 /* Footer */
@@ -312,6 +443,10 @@ p.footer {
 }
 
 /* Layout */
+
+div.float-right {
+	float: right;
+}
 
 div.container {
 	min-width: 975px;
