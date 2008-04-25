@@ -251,6 +251,18 @@ log(tojson(parsed));
                                    fileDiff: diffLinks[type] });
 });
 %>
+		<tr class="white-bottom">
+		  <!-- Bottom area -->
+		  <td class="left">&nbsp;</td>	
+		  <td class="middle">&nbsp;<br /><br /></td>
+		  <td class="right">&nbsp;</td>
+		</tr>
+		<!-- Tan/Beige Area -->
+		<tr class="paging-bottom empty">
+		  <td class="left">&nbsp;</td>
+		  <td>&nbsp;</td>
+		  <td class="right">&nbsp;</td>
+		</tr>		
   </form>
 </table>
 

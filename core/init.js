@@ -24,7 +24,7 @@ function mapUrlToJxpFileCore( uri , request , response ){
 
     // admin
     if ( ( uri.match( /^(\/|\/~~\/)admin\// )
-	   || uri.match( /^\/admin/ )
+           || uri.match( /^\/admin/ )
          ) ){
         if ( uri.match(/assets/) ){
             var idx = uri.indexOf( "/admin" );
@@ -37,8 +37,8 @@ function mapUrlToJxpFileCore( uri , request , response ){
 
     // these are special things which you can't override.
     if ( uri.match( /^\/~~\// ) ||
-	 uri.match( /^\/@@\// ) )
-	return uri;
+         uri.match( /^\/@@\// ) )
+        return uri;
 
     if ( routes && routes.apply ){
         var res = routes.apply( uri , request , response );
