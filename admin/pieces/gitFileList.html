@@ -5,14 +5,19 @@
    // filevar = "untracked_file", "changed_file" (the "name" field for a checkbox)
    var filenames = obj.filenames;
    var filetypes = obj.filetypes;
-   var actions = obj.actions;
+   var massActions = obj.massActions;
    var unmerged = obj.unmerged;
    var unadd = obj.unadd;
-   var fileDiff = obj.fileDiff;
+   var fileActions = obj.fileActions;
 %>
 <tr class="white-main">
   <td class="left">&nbsp;</td>
-  <th class="lmod"><div class="float-right"><input type="image" src="/~~/admin/assets/img/button_diff_on_white.gif" value="Drop" alt="Drop"><input type="image" src="/~~/admin/assets/img/button_checkout_on_white.gif" value="Checkout" alt="Checkout"> <input type="image" src="/~~/admin/assets/img/button_commit_as_res_on_white.gif" value="Drop" alt="Drop"></div><nobr><a href="">$title</a></nobr></th>
+  <th class="lmod"><div class="float-right">
+      <forin acti massActions>
+        <% var action = massActions[acti], name = action.name || action; %>
+        <input type="image" src="assets/img/button_<%= name %>_on_white.gif" value="<%= name %>" class="<%= action.disabled? "disabled" : "" %>" <%= action.onclick? 'onclick="'+action.onclick+'"' : "" %>>
+      </forin>
+    </div><nobr><a href="">$title</a></nobr></th>
   <td class="right">&nbsp;</td>
 </tr>
 <tr class="white-main">
@@ -46,13 +51,6 @@
           </td>
         </tr>
       </forin>
-      <tr>
-        <td colspan="2">
-          <forin action actions>
-            <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %> <%= actions[action].onclick? 'onclick="'+actions[action].onclick+'"' : ""%>>
-          </forin>
-        </td>
-      </tr>
     </table>
   </td>
   <td class="right">&nbsp;</td>

@@ -243,7 +243,7 @@ var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED 
 log(tojson(parsed));
 ["changed", "untracked"].forEach(function(type){
     if(! parsed[type]) return;
-    core.admin.pieces.gitFileList({title: filetitles[type], actions: buttons[type],
+    core.admin.pieces.gitFileList({title: filetitles[type], massActions: buttons[type],
                                    checked: checked, unadd: newfiles,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
