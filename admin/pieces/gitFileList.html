@@ -18,6 +18,7 @@
         <input type="image" src="assets/img/button_<%= name %>_on_white.gif" value="<%= name %>" class="<%= action.disabled? "disabled" : "" %>" <%= action.onclick? 'onclick="'+action.onclick+'"' : "" %>>
       </forin>
     </div>
+    <input type="checkbox" name="checkAll_$filevar" onclick="handleCheckAll(this)">
     <nobr>$title</nobr>
   </th>
   <td class="right">&nbsp;</td>
