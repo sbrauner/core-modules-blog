@@ -24,16 +24,19 @@ function mapUrlToJxpFileCore( uri , request , response ){
 
     // admin
     if ( (
-	  uri.match( /^(\/|\/~~\/)admin\// )
-	  || uri.match( /^\/admin/ )
-	  )
-	 && ! uri.match(/assets/))
+          uri.match( /^(\/|\/~~\/)admin\// )
+          || uri.match( /^\/admin/ )
+          )
+         && ! uri.match(/assets/))
         return "~~/admin/index.jxp";
+
+    if ( uri.match(/^\/admin\/assets/) )
+        return uri.replace(/^\/admin\/assets/, "~~/admin/assets/");
 
     // these are special things which you can't override.
     if ( uri.match( /^\/~~\// ) ||
-	 uri.match( /^\/@@\// ) )
-	return uri;
+         uri.match( /^\/@@\// ) )
+        return uri;
 
     if ( routes && routes.apply ){
         var res = routes.apply( uri , request , response );
