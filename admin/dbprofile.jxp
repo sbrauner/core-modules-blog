@@ -68,7 +68,7 @@ var table = core.admin.table();
 </div>
 
 <div id="myMarkedUpContainer" class="yui-skin-sam"></div>
-
+<table id="temp"></table>
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
@@ -105,85 +105,7 @@ function loadPage(pagenum) {
     });
 }
 
-/*myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile&reverse=true');
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.connXhrMode = "queueRequests";
-
-var parseDateStr = function(str) {
-    var dateObj = {};
-    dateObj.yyyy = str.substring(0,4);
-    dateObj.MM = str.substring(5,7);
-    dateObj.dd = str.substring(8,10);
-    dateObj.hh = str.substring(11,13);
-    dateObj.mm = str.substring(14,16);
-    dateObj.ss = str.substring(17,19);
-    return dateObj;
-}
-
-var sortMyDates = function(a, b, desc) {
-    // Check for invalid dates (I don't think this can happen, but just in case...)
-    if(!a || a.length != 19)
-        return (!b || !b.length != 19) ? 0 : 1;
-    else if(!b || b.length != 19)
-        return -1;
-
-    var lt = desc ? 1 : -1;
-    var gt = desc ? -1 : 1;
-
-    a = parseDateStr(a.getData("ts"));
-    b = parseDateStr(b.getData("ts"));
-    if(a.yyyy != b.yyyy) return a.yyyy > b.yyyy ? gt : lt;
-    if(a.MM != b.MM) return a.MM > b.MM ? gt : lt;
-    if(a.dd != b.dd) return a.dd > b.dd ? gt : lt;
-    if(a.hh != b.hh) return a.hh > b.hh ? gt : lt;
-    if(a.mm != b.mm) return a.mm > b.mm ? gt : lt;
-    if(a.ss != b.ss) return a.ss > b.ss ? gt : lt;
-    return 0;
-}
-
-var myPaginator = new YAHOO.widget.Paginator({ rowsPerPage: 50, alwaysVisible : false } );
-
-oConfigs = {
-    initialRequest: "",
-    paginator: myPaginator,
-    sortedBy: { key: "ts", dir:YAHOO.widget.DataTable.CLASS_DESC }
-};
-
-myDataSource.responseSchema = {
-    resultsList: "rows",
-    fields: [
-      {key: "ts"},
-      {key: "info"},
-      {key: "millis", parser:YAHOO.util.DataSource.parseNumber}
-    ]
-};
-
-var myColumnDefs = [ { label: "Timestamp", key: "ts", sortable: true, sortOptions: { sortFunction : sortMyDates }, formatter: "myDate" },
-                     { label: "Length (ms)", key: "millis", sortable: true },
-                     { label: "Information", key: "info", sortable: true }
-                   ];
-
-var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
-
-var currentSort = {key: "ts", dir: "yui-dt-asc"};
-myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = {};
-    currentSort.key = e.column.parent.children[0].key;
-    currentSort.dir = e.dir;
-}
-myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
-
-updateCaseTable = {
-    success : function(){
-        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
-        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
-    },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
-};
-
-
-myDataSource.liveData = "showTable?ns=admin.system.profile&reverse=true";
+/*
 
 myDateFormatter = function(elCell, oRecord, oColumn, oData) {
     var d = new Date(oData);
@@ -198,13 +120,12 @@ myDateFormatter = function(elCell, oRecord, oColumn, oData) {
 
 YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 
-// End of table code
 */
 
 <%
 if(user.permissions["0"] == "admin") {
     // Initial setup of page
-    print('document.getElementById("set").options['+ parseInt(request.set ? request.set : "-1")+1 +'].selected = true');
+    print('document.getElementById("set").options['+ ((request.set ? parseInt(request.set) : -1)+1) +'].selected = true');
 }
 %>
 
@@ -252,13 +173,30 @@ function toggleEnableText(id, defaultVal, defaultVal2) {
 }
 
 var passData, lastSearch;
+var pushNode = document.getElementById( "pushNode" );
+var parent = pushNode.parentNode;
+
 function refreshTable(passData){
     if(passData)
         passData = passData+"&";
     else
         passData = "";
-    myDataSource.sendRequest("&action=searchprofile&"+passData+lastSearch, updateCaseTable);
+
+    ajax("&action=searchprofile&"+passData+lastSearch, "table", function(response) {
+        var tbd = YAHOO.util.Dom.getNextSibling(pushNode);
+        while(tbd) {
+            parent.removeChild(tbd);
+            tbd = YAHOO.util.Dom.getNextSibling(pushNode);
+        }
+
+        document.getElementById("temp").innerHTML = response;
+        var trs = document.getElementById("temp").childNodes[1].childNodes;
+        for(var i=trs.length-1; i>=0; i--) {
+            YAHOO.util.Dom.insertAfter(trs[i], pushNode);
+        }
+    });
 }
+
 function doSearch() {
     var passData = getSearchArgs();
     if(passData == -1) return;
