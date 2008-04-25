@@ -57,8 +57,8 @@ var unaddSubmit = function(btn){
     document.gitFiles.submit();
 };
 
-var addSubmit = function(fname){
-    document.gitFiles.toBeDetermined.value = "add";
+var submitGit = function(action, fname){
+    document.gitFiles.toBeDetermined.value = action;
     document.gitFiles.toBeDetermined.name = "action";
     if(fname){
         document.gitFiles.toBeFilename.value = fname;

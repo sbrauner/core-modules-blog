@@ -198,14 +198,15 @@ if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev
 }
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
-    {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
+    {name: 'commit', disabled: (Object.keys(unmerged).length != 0), 
+    onclick: "return submitGit('commit')"}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 
-    'untracked': [{name: 'add', onclick: "return addSubmit(null)"}]};
+    'untracked': [{name: 'add', onclick: "return submitGit('add', null)"}]};
 
 var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
-    'untracked': [{name: 'add', onclick: "return addSubmit('$1')"}]};
+    'untracked': [{name: 'add', onclick: "return submitGit('add', '$1')"}]};
 
 var checked = {};
 if(request.changed_file)
