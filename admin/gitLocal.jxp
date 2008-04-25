@@ -100,7 +100,7 @@ var parsed = parseStatus();
 if ( request.action == "pull" ){
     // No files
     print( "pulling...<br>" );
-    var foo = g.pull();
+    var foo = g.pull(user);
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
         print("Pull failed: conflicts<br/>");
         output_command(foo);

@@ -17,10 +17,10 @@ Object.extend(git.Repo.prototype, {
 
         return foo;
     },
-    _gitEnv: function(){
+    _gitEnv: function(user){
         // We pass this environment on commit and pull commands.
         var env = {};
-        
+
         env.GIT_AUTHOR_NAME = user.name;
         env.GIT_COMMITTER_NAME = user.name;
         env.GIT_AUTHOR_EMAIL = user.email;
@@ -175,12 +175,12 @@ Object.extend(git.Repo.prototype, {
         return parsed;
     },
 
-    pull: function(){
+    pull: function(u){
         // Pass gitEnv when we are doing a pull.
         // The reason is that when we're doing a pull, we might make a merge
         // commit. We need the right information in the environment when
         // that happens.
-        var ret = sysexec( "git pull" , "" , this._gitEnv() );
+        var ret = sysexec( "git pull" , "" , this._gitEnv(u) );
         ret.parsed = this._parsePull(ret);
         return ret;
     },
@@ -320,16 +320,15 @@ Object.extend(git.Repo.prototype, {
         return this._exec( cmd );
     },
     commit: function(files, msg, u){
-        user = u;
         if(!msg) throw "git commit needs a message";
         this._validate(files);
         var cmd = "git commit -F - ";
 
-        cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
+        cmd += " --author \"" + u.name + " <" + u.email + ">\" ";
 
         files.forEach( function( z ){ cmd += " " + z; } );
         log.git.repo.debug("committing; git command: " + cmd);
-        var foo = sysexec( cmd , msg , this._gitEnv() );
+        var foo = sysexec( cmd , msg , this._gitEnv(u) );
         foo.cmd = cmd;
         return foo;
     },
@@ -341,7 +340,6 @@ Object.extend(git.Repo.prototype, {
         return ret;
     },
     _parseStatus: function(exec){
-        log(tojson(exec));
         var output = exec.out;
         var info = {};
         var stat = output.trim();
