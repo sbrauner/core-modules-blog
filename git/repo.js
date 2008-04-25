@@ -17,6 +17,17 @@ Object.extend(git.Repo.prototype, {
 
         return foo;
     },
+    _gitEnv: function(user){
+        // We pass this environment on commit and pull commands.
+        var env = {};
+
+        env.GIT_AUTHOR_NAME = user.name;
+        env.GIT_COMMITTER_NAME = user.name;
+        env.GIT_AUTHOR_EMAIL = user.email;
+        env.GIT_COMMITTER_EMAIL = user.email;
+        return env;
+    },
+
     _init: function(){
         print(scope.getRoot());
         return this._exec("init");
@@ -164,8 +175,12 @@ Object.extend(git.Repo.prototype, {
         return parsed;
     },
 
-    pull: function(){
-        var ret = this._exec( "pull" );
+    pull: function(u){
+        // Pass gitEnv when we are doing a pull.
+        // The reason is that when we're doing a pull, we might make a merge
+        // commit. We need the right information in the environment when
+        // that happens.
+        var ret = sysexec( "git pull" , "" , this._gitEnv(u) );
         ret.parsed = this._parsePull(ret);
         return ret;
     },
@@ -304,22 +319,16 @@ Object.extend(git.Repo.prototype, {
         }
         return this._exec( cmd );
     },
-    commit: function(files, msg, user){
+    commit: function(files, msg, u){
         if(!msg) throw "git commit needs a message";
         this._validate(files);
         var cmd = "git commit -F - ";
 
-        cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
-        var env = {};
-
-        env.GIT_AUTHOR_NAME = user.name;
-        env.GIT_COMMITTER_NAME = user.name;
-        env.GIT_AUTHOR_EMAIL = user.email;
-        env.GIT_COMMITTER_EMAIL = user.email;
+        cmd += " --author \"" + u.name + " <" + u.email + ">\" ";
 
         files.forEach( function( z ){ cmd += " " + z; } );
         log.git.repo.debug("committing; git command: " + cmd);
-        var foo = sysexec( cmd , msg , env );
+        var foo = sysexec( cmd , msg , this._gitEnv(u) );
         foo.cmd = cmd;
         return foo;
     },
@@ -379,14 +388,22 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted|renamed):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];
+                if(filetype == "renamed"){
+                    parts = filename.split(/ -> /);
+                    filename = parts[1];
+                    oldfilename = parts[0];
+                }
                 file = {name: filename, type: filetype};
                 if(filetype == "unmerged"){
                     unmerged.push(file);
                     continue;
+                }
+                if(filetype == "renamed"){
+                    file.oldName = oldfilename;
                 }
             }
             else {

@@ -20,7 +20,7 @@ head.addCSS("NOCDN/~~/admin/assets/shell.css");
      <div id="console"></div>
      <div id="treeview"></div>
      <div class="clear"></div>
-     <div class="button" onclick="showHistory()">Show history</div>
+     <div class="button" onclick="showHistory()">Show history</div> | 
      <div class="button" onclick="toggleTreeView()"><span id="treeViewShowVerb">Hide</span> object inspector</div>
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>

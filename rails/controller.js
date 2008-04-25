@@ -48,15 +48,19 @@ ApplicationController.prototype.dispatch = function( request , response ){
     
     var appResponse = new ApplicationResponse( this , method );
 
-    f.getScope( true ).render_text = function(s){
+    var funcScope = f.getScope( true );
+
+    funcScope.render_text = function(s){
         print( s );
         appResponse.anythingRendered = true;
     };
     
-    f.getScope( true ).respond_to = function( b ){
+    funcScope.respond_to = function( b ){
         b( appResponse );
     };
     
+    funcScope.params = request;
+
     f( request , response );
 
     if ( ! appResponse.anythingRendered ){
@@ -96,11 +100,10 @@ ApplicationResponse.prototype.html = function(){
     
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
-    
+   
     var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
-    print( template );
-    
-    print( ".html called<br>" );
+    log.rails.response.debug( template + ".html" + called );
+    template();
     this.anythingRendered = true;
 };
 

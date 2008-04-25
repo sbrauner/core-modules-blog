@@ -1,0 +1,46 @@
+<% core.ui.elements.refreshTimer(); %>
+<style>
+    .js { color: red; }
+    .ed { color: blue; }
+</style>
+<table>
+<%
+
+var userStackFrame = function(z){
+    if(!z) return false;
+    return z.toString().startsWith("ed.js.gen.");
+    return true;
+};
+
+head.addScript("/~~/ui/js/refresh.js");
+if ( request.f )
+    f = new RegExp( request.f );
+
+all = javaStatic( "java.lang.Thread" , "getAllStackTraces" );
+cur = javaStatic( "java.lang.Thread" , "currentThread" );
+
+var holder =  javaStatic( "ed.lang.StackTraceHolder" , "getInstance" );
+
+for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
+    var myThread = i.next();
+    if ( cur == myThread )
+	continue;
+
+    var st = all.get( myThread );
+    st = st.filter(userStackFrame);
+    if(st.length == 0) continue;
+
+    var savePrint = print;
+    var buf = "";
+    
+    print = function(z){
+        buf += z;
+    }
+    core.admin.pieces.thread( myThread , st );
+    print = savePrint;
+    if ( f && ! buf.match( f ) )
+	continue;
+    print( buf );
+}
+ %>
+</table>

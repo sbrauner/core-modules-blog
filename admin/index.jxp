@@ -46,10 +46,10 @@ var sectionMap = {
     'logScroll': ['system', 'logs', 'scrolling'],
     'logMemory': ['system', 'logs', 'memory'],
 
-    'editor': ['editor'],
-    'gitLocal': ['git'],
+    'editor': ['editor', 'editor'],
+    'gitLocal': ['git', 'git'],
 
-    'doc': ['doc'],
+    'doc': ['docs', 'docs'],
     'applications': ['applications'],
 };
 var sectionList = sectionMap[sectionName];

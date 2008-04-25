@@ -11,9 +11,15 @@ var collection;
 var ignore= { _ns:1, _save:1, _update:1 };
 
 // Table display options
-var rowsPerPage = (request.rowsPerPage) ? request.rowsPerPage : 10;
-var currentPage = (request.currentPage) ? request.currentPage : 1;
+var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
+var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
 var totalNumPages;
+
+/* get sort obj */
+var mySort = {};
+if(request.sortcol && request.sortcol != "_id") {
+    mySort[request.sortcol] = request.sortdir;
+}
 
 // Print validation information
 if(request.action == "validation") {
@@ -62,7 +68,7 @@ var top = request.ns == null;
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
-// dbprofiler
+// dbprofile
 if(request.action == "searchprofile") {
     var searchObj = {};
     var dateStart, dateEnd;
@@ -83,6 +89,7 @@ if(request.action == "searchprofile") {
     }
 
     rows = db.system.profile.find( searchObj ).toArray();
+    top = false;
 }
 // dbview
 else if(request.action == "search") {
@@ -99,7 +106,7 @@ else if(request.action == "search") {
         searchobj["name"] = query;
     }
     for(q in request) {
-        if(q == "action" || q == "ns" || q == "currentPage" )
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
             continue;
         if(top && (q == "index" || q == "name"))
             continue;
@@ -108,9 +115,9 @@ else if(request.action == "search") {
         searchobj[q] = query;
     }
     if(top)
-        rows = collection.find(searchobj).sort({name: 1}).toArray();
+        rows = collection.find(searchobj).sort(mySort).toArray();
     else
-        rows = collection.find(searchobj).toArray();
+        rows = collection.find(searchobj).sort(mySort).toArray();
 }
 else if(request.action == "eval") {
     try {
@@ -163,11 +170,10 @@ else {
     totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
 }
 
-if(currentPage > totalNumPages)
+if(currentPage > totalNumPages && totalNumPages > 0)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
-var end = (currentPage)*rowsPerPage-1;
 
 /* if this is all collections, indices will be listed as rows. */
 if(top) {
@@ -177,14 +183,15 @@ if(top) {
         if(rows[i].name.indexOf("$") == -1) {
             tableCount++;
         }
-        if(start <= tableCount && tableCount <= end)
+        if(start <= tableCount && tableCount <= start+rowsPerPage)
             urow.push(rows[i]);
     }
     rows = urow;
 }
 else {
-    rows = rows.splice(start, end);
+    rows = rows.splice(start, rowsPerPage);
 }
+
 
 var dbTable = { rows: [] };
 dbTable.totalNumPages = totalNumPages;
@@ -201,7 +208,7 @@ for( var i=0; i < rows.length; i++ ) {
 }
 if(top) { fields.push("name"); fields.push("index"); }
 for( var i in f) {
-    fields.push(f[i]);
+    fields.push(i);
 }
 
 if( top ) {
@@ -244,12 +251,12 @@ if(top) {
 }
 else {
     var th = [];
-    th.push({"name" : "_id", className: "sort-up" });
+    if(request.action != "searchprofile") th.push({"name" : "_id", className: "sort-up" });
     for(var i in f) {
         if(ignore[i] || i == "_id") continue;
         th.push({"name" : i, className: "" });
     }
-    th.push({"name": "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
@@ -303,7 +310,7 @@ else {
             return '<div class="nullfield">null</div>';
         }
         else if (!obj[field]) {
-            return '<div class="nofield"><img src="NOCDN/~~/admin/assets/nonexistent.png"></div>';
+            return '<div class="nullfield"><b>-</b></div>';
         }
         else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
             return obj[field];
@@ -316,16 +323,16 @@ else {
 
             if (subobj instanceof Date) {
                 fullText += subobj.toString();
-                str = '<span  style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
             }
             else if (typeof subobj == "object") {
                 for(var q in subobj)
                     fullText += printObj(subobj, q);
-                str = '<span style="cursor:default">(Object)</span>';
+                str = '<span class="partialText" style="cursor:default">(Object)</span>';
             }
             else {
                 fullText += subobj;
-                str = '<span  style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
             }
             fullText += '</div>';
             return str+fullText;
@@ -343,7 +350,7 @@ if(top) {
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
     }
 }
-else {
+else if(request.action != "searchprofile") {
     dbTable.top = false;
     for(var i in dbTable.rows) {
         dbTable.rows[i].id = "";
@@ -353,6 +360,9 @@ else {
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
+}
+else {
+    dbTable.top = false;
 }
 
 var page = [];
@@ -378,13 +388,23 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
-
-core.admin.pieces.dbviewTable({ th: th,
-                                table: dbTable,
-                                page: page,
-                                prevPage: prevPage,
-                                nextPage: nextPage });
-
+if(request.action == "searchprofile") {
+    if(dbTable.rows.length == 0) {
+        dbTable.colspan = 3;
+    }
+    core.admin.pieces.dbprofileTable( { th: th,
+                             table: dbTable,
+                             page: page,
+                             prevPage: prevPage,
+                             nextPage: nextPage  });
+}
+else {
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
+}
 
 
 %>

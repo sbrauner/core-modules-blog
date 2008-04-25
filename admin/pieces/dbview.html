@@ -2,7 +2,7 @@
 
 var hdr = obj.hdr;
 var introMsg = obj.introMsg;
-var th = obj.th;
+
 %>
 
 
@@ -17,33 +17,3 @@ var th = obj.th;
 
 <p>$introMsg</p>
 
-<!-- Search -->
-<table width="100%" border="0">
-  <tr class="search-table">
-    <td class="left">
-      <form>
-	<select id="searchopt">
-          <forin i th>
-	    <option value="$th[i].name">$th[i].name</option>
-          </forin>
-	</select>
-    </td>
-    <td><input class="text" id="searchtext" size="40" value="" type="text"></td>
-    <td><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></td>
-    <td><img src="/~~/admin/assets/img/button_add_on_tan.gif" alt="Add to Search" onclick="addToSearch()"></td>
-    <td class="right" width="100%">
-      <img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()">
-    </form>
-</td>
-</tr>
-</table>
-
-<!-- White table -->
-<table width=100% border="0">
-  <tr class="white-top">
-    <!-- Top area -->
-    <td class="left">&nbsp;</td>
-    <td class="middle">&nbsp;</td>
-    <td class="right">&nbsp;</td>
-  </tr>
-</table>

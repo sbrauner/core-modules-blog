@@ -113,8 +113,8 @@ var lastSearch = "";
 
 <% if(!top) { %>
 function doCommand() {
-    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(x) {
-        refreshTable();
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
     });
 }
 <% } %>
@@ -153,13 +153,29 @@ function changeView() {
     viewOptionsPanel.hide();
 }
 
+var currentSort = { col : <%= top ? 'name' : '_id' %>, dir: 1 };
+function sortBy(col) {
+    if(currentSort.col == col)
+        currentSort.dir = -1 * currentSort.dir;
+    else
+        currentSort.dir = 1;
+    currentSort.col = col;
+
+    refreshTable();
+    var oldSort = YAHOO.util.Dom.getElementsByClassName("sort-up");
+    if(oldSort.length > 0) oldSort[0].className = "";
+    oldSort = YAHOO.util.Dom.getElementsByClassName("sort-down");
+    if(oldSort.length > 0) oldSort[0].className = "";
+
+    document.getElementById("col"+col).className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
+}
 
 function showObj(i) {
-         document.getElementById(i).style.display = "block";
+    document.getElementById(i).style.display = "block";
 }
 
 function hideObj(i) {
-         document.getElementById(i).style.display = "none";
+    document.getElementById(i).style.display = "none";
 }
 
 function deleteRow(id) {
@@ -824,7 +840,7 @@ function refreshTable(passData){
         passData = passData+"&";
     else
         passData = "";
-    ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&"+passData+lastSearch, "table", function(response) {
+    ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
     });
 }
@@ -837,7 +853,8 @@ function getSearchArgs() {
 function toggleCollapse(key) {
     // build colspanElems the first time through
     if(!document.getElementById("col"+key).style.visibility || !document.getElementById("col"+key).style.visibility == "visible") {
-        document.getElementById("col"+key).style.visibility = "collapse";
+        document.getElementById("col"+key).style.width = "1px";
+//        document.getElementById("col"+key).style.visibility = "collapse";
     }
     else {
         document.getElementById("col"+key).style.visibility = "visible";
@@ -891,10 +908,9 @@ else {
         searchopts.push({"name" : i, className: "" });
     }
 }
-/*core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg,
-                           th: searchopts });
-*/
+core.admin.pieces.dbview({ hdr : hdr,
+                           introMsg: introMsg });
+
 %>
 <div id="myCollection">
 <%
@@ -905,7 +921,7 @@ core.admin.table();
 <script>
 
 function fnCallback(e) {
-    if(e.target.className=="obj" || e.target.className == "button")
+    if(e.target.className != "partialText" )
         return;
 
     if(e.ctrlKey == false) {
