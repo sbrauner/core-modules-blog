@@ -1,10 +1,12 @@
-
+<%
+var th = th;
+%>
 <h1 style="margin:0;">
   <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Logs Documentation</a></div>
-  <nobr>Scrolling Logs</nobr>
+  <nobr>$title</nobr>
 </h1>
 
-<p>The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.</p>
+<p>$tagline</p>
 
 <!-- Data Table Begins -->
 <table width="100%" border="0">
@@ -51,10 +53,9 @@
 <tr class="white-main" id="pushNode"> <!-- new log entries will be inserted after this node -->
   <!-- Main area -->
   <td class="left">&nbsp;</td>
-  <th><nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr></th>
-  <th><a href="">LEVEL</a></th>
-  <th><a href="">COMPONENT</a></th>
-  <th><a href="">MESSAGE</a></th>
+  <forin i th>
+    <th>$th[i]</th>
+  </forin>
   <td class="right">&nbsp;</td>
 </tr>
 

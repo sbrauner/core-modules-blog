@@ -1,23 +1,26 @@
 <%
-    
+head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+
+
 var ma = MemoryAppender.find( log );
 
 if ( request.l && request.l != 0 ){
-    
+
     print( "<h2> Logger : " + request.l + "</h2>" );
-    cols = [
-            { name : "date" } ,
-            { name : "thread" , view : function(z) {
-                return z == null ? "null" : z.getName();
-                } } ,
-            { name : "level" } ,
-            { name : "msg" } ,
-            { name : "throwable" }
-            ];
-    
-    var tab = new htmltable( { cols : cols } );
-    if ( ma.cache[ request.l ] )
-        tab.arrview( ma.cache[ request.l ] );
+
+    fields = ["date", "thread", "level", "msg", "throwable"];
+    var table = { rows: ma.cache[request.l], fields: fields};
+
+   var th = ['<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
+       '<a href="">THREAD</a>',
+       '<a href="">LEVEL</a>',
+       '<a href="">MESSAGE</a>',
+       '<a href="">THROWABLE</a>'];
+
+    core.admin.pieces.logHeader({title: "Logs in Memory", tagline: "Most recent log messages in memory.", th: th, colspan: fields.length});
+    core.admin.pieces.log({table: table});
+    core.admin.pieces.logFooter({colspan: fields.length});
+
 }
 else {
     print( "<h2>Menu</h2>" );
@@ -25,7 +28,7 @@ else {
     for ( var foo in ma.cache ){
         all.push( foo );
     }
-    
+
     all = all.sort();
     print( "<ul>" );
     for ( var i=0; i != all.length; i++ ){
