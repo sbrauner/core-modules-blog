@@ -130,7 +130,7 @@ assert(g.getCommit(endCommit).parsed.message == "test commit 2");
 
 // Try a pull on g3
 
-var pull = g3.pull();
+var pull = g3.pull(u);
 
 var s = File.open('/tmp/gitrepo/test2/file1').asString();
 
@@ -176,7 +176,7 @@ g.dumpFile("file1", "howdy there\n");
 g.commit(["file1"], "revise with howdy", u);
 
 g3.dumpFile("file1", "yo there\n");
-var pull = g3.pull();
+var pull = g3.pull(u);
 
 assert(pull.parsed.failed.notuptodate == "file1");
 
@@ -185,7 +185,7 @@ var push = g3.push();
 
 assert(push.parsed.pullFirst);
 
-pull = g3.pull();
+pull = g3.pull(u);
 
 assert(pull.parsed.failed.conflicts.file1);
 
