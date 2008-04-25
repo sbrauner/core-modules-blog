@@ -20,7 +20,7 @@ Object.extend(git.Repo.prototype, {
     _gitEnv: function(){
         // We pass this environment on commit and pull commands.
         var env = {};
-
+        
         env.GIT_AUTHOR_NAME = user.name;
         env.GIT_COMMITTER_NAME = user.name;
         env.GIT_AUTHOR_EMAIL = user.email;
@@ -319,7 +319,8 @@ Object.extend(git.Repo.prototype, {
         }
         return this._exec( cmd );
     },
-    commit: function(files, msg, user){
+    commit: function(files, msg, u){
+        user = u;
         if(!msg) throw "git commit needs a message";
         this._validate(files);
         var cmd = "git commit -F - ";
