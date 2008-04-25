@@ -28,7 +28,7 @@
     <table cellpadding=0 cellspacing=0 border="0">
       <forin file filenames>
         <% var classes = [];
-           if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
+           if(filenames[file] in unmerged) classes.push("conflict"); %>
         <tr class="<%= classes.join(' ') %>">
           <td>
             <input type="checkbox" name="$filevar" value="$filenames[file]" class="check_$filevar" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> >
@@ -36,10 +36,7 @@
           </td>
           <td>
           <%
-             if(filetypes[file] == "CONFLICT"){
-                 print("<span class='conflicttype'>CONFLICT</span>");
-             }
-             else if(filetypes[file]){
+             if(filetypes[file] && filetypes[file] != "CONFLICT"){
                  print("(" + filetypes[file] + ")");
              }
 %>
@@ -50,8 +47,13 @@
             <a href="<%= href %>" target="new" onclick="<%= onclick %>"><%= name %></a>
           </forin>
           <if (unadd[filenames[file]])>
-            <input type="submit" name="action" value="unadd" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">
+            <a href="#" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">un-add</a>
           </if>
+<%
+   if(filetypes[file] == "CONFLICT"){
+       print("<td><div>*conflict</div></td>");
+   }
+%>
           </td>
         </tr>
       </forin>
