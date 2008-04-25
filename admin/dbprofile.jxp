@@ -5,21 +5,25 @@ head.addCSS("NOCDN/~~/admin/assets/dbview.css");
 
 core.db.db();
 core.content.table();
-if( request.set != null ) {
-    print("Setting profiling level to " + request.set);
-    print(" ");
-    print(tojson(setDbProfilingLevel(parseInt(request.set))));
-    print("<p>");
-}
-%>
-<form>DB Profiling is...
-  <select onchange="submit()" id="set" name="set">
+if(user.permissions["0"] == "admin") {
+    if( request.set != null ) {
+        print("Setting profiling level to " + request.set);
+        print(" ");
+        print(tojson(setDbProfilingLevel(parseInt(request.set))));
+        print("<p>");
+    }
+    %>
+    <form>DB Profiling is...
+    <select onchange="submit()" id="set" name="set">
     <option value="">&nbsp</option>
     <option value="0">Off</option>
     <option value="1">On for slow operations</option>
     <option value="2">On for all operations</option>
-  </select>
-</form>
+    </select>
+    </form>
+    <%
+}
+%>
 
 <a href="http://www.10gen.com/wiki/db.profile">Help</a>
 <p>
@@ -35,19 +39,19 @@ if( request.set != null ) {
   </select>
 </div>
 
-<div class="field"><input type="checkbox" name="timefilter" id="timefilter">
+<div class="field"><input type="checkbox" name="timefilter" id="timefilter" onclick="toggleEnableText('time', 'YYYY-MM-DD HH:MM:SS')">
   <label for="timefilter">Timestamp filter between </label>
-  <input type="text" onclick="clearTextBox('time_from')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
-  <input type="text" name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
+<input type="text" disabled onclick="clearTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
+<input type="text" disabled name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
 </div>
-<div class="field"><input type="checkbox" name="msfilter" id="msfilter">
+<div class="field"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999')">
   <label for="msfilter">Millisecond filter between </label>
-  <input type="text" name="ms_from" onclick="clearTextBox('ms_from')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
-  <input type="text" name="ms_to"  onclick="clearTextBox('ms_to')" onblur="resetTextBox('ms_to', '999')" id="ms_to" value="999" />
+<input type="text" disabled name="ms_from" onclick="clearTextBox('ms_from', '0')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
+<input type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999')" onblur="resetTextBox('ms_to', '999')" id="ms_to" value="999" />
 </div>
-<div class="field"><input type="checkbox" name="refilter" id="refilter">
+<div class="field"><input type="checkbox" name="refilter" id="refilter" onclick="toggleEnableText('re', '')">
   <label for="refilter">Information RegExp filter </label>
-  <input type="text" name="re" id="re" />
+  <input type="text" name="re" id="re" disabled />
   <input type="button" onclick="doSearch()" value="Search" />
   <input type="button" onclick="refreshSearch()" value="Refresh" />
 </div>
@@ -58,6 +62,7 @@ if( request.set != null ) {
 <%
 request.action = "searchprofile";
 request.reverse = "true";
+request.rowsPerPage = 100;
 var table = core.admin.table();
 %>
 </div>
@@ -196,18 +201,53 @@ YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 // End of table code
 */
 
-
-// Initial setup of page
-document.getElementById("set").options[<%= parseInt(request.set ? request.set : "-1")+1 %>].selected = true;
+<%
+if(user.permissions["0"] == "admin") {
+    // Initial setup of page
+    print('document.getElementById("set").options['+ parseInt(request.set ? request.set : "-1")+1 +'].selected = true');
+}
+%>
 
 // Form handling
-function clearTextBox(id) {
-    document.getElementById(id).value = "";
+function clearTextBox(id, defaultVal) {
+    var target = document.getElementById(id)
+    if(target.value == defaultVal)
+        target.value = "";
 }
 function resetTextBox(id, str) {
     var elem = document.getElementById(id);
     if(elem.value.trim() == "") {
         elem.value = str
+    }
+}
+function toggleEnableText(id, defaultVal, defaultVal2) {
+    if(id == "re") {
+        var elem = document.getElementById(id);
+        if(elem.disabled) {
+            elem.disabled = false;
+            clearTextBox(elem.id, defaultVal);
+            elem.focus();
+        }
+        else {
+            resetTextBox(elem.id, defaultVal);
+            elem.disabled = true;
+        }
+    }
+    else {
+        var from = document.getElementById(id+"_from");
+        var to = document.getElementById(id+"_to");
+        if(from.disabled) {
+            to.disabled = false;
+            from.disabled = false;
+            clearTextBox(from.id, defaultVal);
+            from.focus();
+        }
+        else {
+            to.disabled = true;
+            from.disabled = true;
+            resetTextBox(from.id, defaultVal);
+            resetTextBox(from.id, (defaultVal2) ? defaultVal2 : defaultVal);
+        }
     }
 }
 
@@ -248,7 +288,7 @@ function getSearchArgs() {
             pairs.push("time_to="+document.getElementById("time_to").value);
         }
         else {
-            alert("Timestamp filters must have the format: \"YYYY-MM-DD HH:MM:SS\"");
+            alert("Bad TimeStamp","Please make sure the beginning timestamp value in your filter is before your ending timestamp value");
             return -1;
         }
     }
@@ -259,7 +299,7 @@ function getSearchArgs() {
             pairs.push("ms_to="+document.getElementById("ms_to").value);
         }
         else {
-            alert("Millisecond filters must be numbers between 0 and 999.");
+            simpleDlg("Bad Millisecond Range", "Please make sure the beginning millisecond value in your filter is before your ending millisecond value");
             return -1;
         }
     }
@@ -268,7 +308,7 @@ function getSearchArgs() {
         if(validateRe())
             pairs.push("re="+document.getElementById("re").value);
         else {
-            alert("Regular expressions must be of the form \"/regexp/opts\"");
+            simpleDlg("Bad Information RegExp", "Your Regular Expression is not valid; Please fix and resubmit");
             return -1;
         }
     }
@@ -276,6 +316,22 @@ function getSearchArgs() {
 
     return pairs.join('&');
 }
+
+function simpleDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("someDialog",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
+}
+
 function validateTime() {
     re = new RegExp(/^\d{4}-\d{2}-\d{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/);
     return re.test(document.getElementById("time_from").value) && re.test(document.getElementById("time_to").value);
@@ -284,8 +340,13 @@ function validateMs() {
     return /^\d{1,3}$/.test(document.getElementById("ms_to").value) && /^\d{1,3}$/.test(document.getElementById("ms_to").value);
 }
 function validateRe() {
-    val = new RegExp(document.getElementById("re").value);
-    return val != null;
+    try {
+        val = new RegExp(document.getElementById("re").value);
+    }
+    catch(e) {
+        return false;
+    }
+    return true;
 }
 
 function changeRecordType() {

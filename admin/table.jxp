@@ -11,8 +11,8 @@ var collection;
 var ignore= { _ns:1, _save:1, _update:1 };
 
 // Table display options
-var rowsPerPage = (request.rowsPerPage) ? request.rowsPerPage : 10;
-var currentPage = (request.currentPage) ? request.currentPage : 1;
+var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
+var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
 var totalNumPages;
 
 // Print validation information
