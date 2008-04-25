@@ -3,6 +3,8 @@
 if ( request.getHost().equals( "corejs.10gen.com" ) )
     return print( "you can't do this" );
 
+log(tojson(request));
+
 head.addScript("NOCDN/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js");
 head.addScript("NOCDN/@@/yui/current/container/container-min.js");
 
@@ -199,9 +201,11 @@ var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConf
     {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
-var buttons = {"changed": changedbuttons, 'untracked': ['add']};
+var buttons = {"changed": changedbuttons, 
+    'untracked': [{name: 'add', onclick: "return addSubmit(null)"}]};
 
-var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 'untracked': ['add']};
+var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
+    'untracked': [{name: 'add', onclick: "return addSubmit('$1')"}]};
 
 var checked = {};
 if(request.changed_file)
@@ -222,6 +226,7 @@ var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED 
 </form>
 <form method="POST" name="gitFiles">
   <input type="hidden" name="toBeDetermined" />
+  <input type="hidden" name="toBeFilename" />
   <table width="100%" border="0">
     <tr class="search-top">
       <td class="left">&nbsp;</td>

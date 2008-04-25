@@ -57,6 +57,17 @@ var unaddSubmit = function(btn){
     document.gitFiles.submit();
 };
 
+var addSubmit = function(fname){
+    document.gitFiles.toBeDetermined.value = "add";
+    document.gitFiles.toBeDetermined.name = "action";
+    if(fname){
+        document.gitFiles.toBeFilename.value = fname;
+        document.gitFiles.toBeFilename.name = "untracked_file";
+    }
+    document.gitFiles.submit();
+    return false;
+};
+
 var handleCheckAll = function(btn){
     var name = btn.name;
     var type = btn.name.replace(/^checkAll_/, "");
