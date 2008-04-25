@@ -9,8 +9,8 @@ var th = ['<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-04
     '<a href="">LEVEL</a>',
     '<a href="">COMPONENT</a>',
     '<a href="">MESSAGE</a>'];
-
-core.admin.pieces.logHeader({title: "Scrolling Logs", tagline: "The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.", colspan : colspan, th: th});
+var pausible = true;
+core.admin.pieces.logHeader({title: "Scrolling Logs", tagline: "The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.", colspan : colspan, th: th, pausible: pausible});
 core.admin.pieces.logFooter({colspan : colspan});
 
 %>
@@ -25,8 +25,13 @@ var all = [];
 
 function togglePause() {
     pause = !pause;
-    if(!pause)
+    if(!pause) {
+        document.getElementById("pause_btn").innerHTML = "Pause";
         updateLog();
+    }
+    else {
+        document.getElementById("pause_btn").innerHTML = "Play";
+    }
 }
 
 function debug( s ){

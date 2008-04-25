@@ -15,6 +15,12 @@ var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
 var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
 var totalNumPages;
 
+/* get sort obj */
+var mySort = {};
+if(request.sortcol && request.sortcol != "_id") {
+    mySort[request.sortcol] = request.sortdir;
+}
+
 // Print validation information
 if(request.action == "validation") {
     if(request.ns == "") {
@@ -100,7 +106,7 @@ else if(request.action == "search") {
         searchobj["name"] = query;
     }
     for(q in request) {
-        if(q == "action" || q == "ns" || q == "currentPage" )
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
             continue;
         if(top && (q == "index" || q == "name"))
             continue;
@@ -109,9 +115,9 @@ else if(request.action == "search") {
         searchobj[q] = query;
     }
     if(top)
-        rows = collection.find(searchobj).sort({name: 1}).toArray();
+        rows = collection.find(searchobj).sort(mySort).toArray();
     else
-        rows = collection.find(searchobj).toArray();
+        rows = collection.find(searchobj).sort(mySort).toArray();
 }
 else if(request.action == "eval") {
     try {
