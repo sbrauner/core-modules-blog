@@ -1,8 +1,11 @@
-
-htmlheader = function(title) {
+processRequestNotice = function(){
     if(request.notice){
         addToNotice("request", request.notice);
     }
+};
+
+htmlheader = function(title) {
+    processRequestNotice();  // I'm not sure this is the right thing in general
 
     title = title || '10gen Application';
 
