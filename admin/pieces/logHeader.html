@@ -1,6 +1,8 @@
 <%
 var th = th;
+var pausible = pausible;
 %>
+
 <h1 style="margin:0;">
   <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Logs Documentation</a></div>
   <nobr>$title</nobr>
@@ -35,7 +37,9 @@ var th = th;
 	<li><input class="text" size="40" value="" type="text" name="filter" id="filter"></li>
 	<li><img src="/~~/admin/assets/img/button_filter_on_tan.gif" onclick="filterResults('filter')" alt="Filter"></li>
         <li><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" onclick="refreshFilter()" value="Refresh" /></li>
-	<li style="float: right; "><div><a href="#" onclick="togglePause()" />Pause</a></div></li>
+        <if pausible>
+	  <li style="float: right; "><div><a href="#" id="pause_btn" onclick="togglePause()" />Pause</a></div></li>
+        </if>
 </ul>
 
 </td>

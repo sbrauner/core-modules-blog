@@ -164,7 +164,7 @@ else {
     totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
 }
 
-if(currentPage > totalNumPages)
+if(currentPage > totalNumPages && totalNumPages > 0)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
@@ -202,7 +202,7 @@ for( var i=0; i < rows.length; i++ ) {
 }
 if(top) { fields.push("name"); fields.push("index"); }
 for( var i in f) {
-    fields.push(f[i]);
+    fields.push(i);
 }
 
 if( top ) {
@@ -304,7 +304,7 @@ else {
             return '<div class="nullfield">null</div>';
         }
         else if (!obj[field]) {
-            return '<div class="nofield"><img src="NOCDN/~~/admin/assets/nonexistent.png"></div>';
+            return '<div class="nullfield"><b>-</b></div>';
         }
         else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
             return obj[field];
@@ -383,6 +383,9 @@ var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(
 dbTable.colspan = th.length;
 
 if(request.action == "searchprofile") {
+    if(dbTable.rows.length == 0) {
+        dbTable.colspan = 3;
+    }
     core.admin.pieces.dbprofileTable( { th: th,
                              table: dbTable,
                              page: page,

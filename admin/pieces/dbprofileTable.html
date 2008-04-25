@@ -22,7 +22,7 @@ var nextPage = obj.nextPage;
     <!-- Bottom area -->
     <td class="left">&nbsp;</td>
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td class="middle" colspan="$th.length">&nbsp;</td>
+    <td class="middle" colspan="$table.colspan">&nbsp;</td>
     <td class="right">&nbsp;</td>
   </tr>
   <!-- Tan/Beige Area -->
@@ -30,7 +30,7 @@ var nextPage = obj.nextPage;
   <tr class="paging-bottom">
     <td class="left">&nbsp;</td>
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td colspan="$th.length">
+    <td colspan="$table.colspan">
       <div id="paging">
         <if (page.length > 1)>
 	  <ul>
