@@ -198,12 +198,11 @@ if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev
 }
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
-    {name: 'commit', disabled: (Object.keys(unmerged).length != 0), 
-    onclick: "return submitGit('commit')"}];
+    {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 
-    'untracked': [{name: 'add', onclick: "return submitGit('add', null)"}]};
+    'untracked': ['add']};
 
 var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
     'untracked': [{name: 'add', onclick: "return submitGit('add', '$1')"}]};
@@ -221,13 +220,8 @@ if(request.untracked_file)
 var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED FILES"};
 
 %>
-<form method="POST">
 <input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
 <input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
-</form>
-<form method="POST" name="gitFiles">
-  <input type="hidden" name="toBeDetermined" />
-  <input type="hidden" name="toBeFilename" />
   <table width="100%" border="0">
     <tr class="search-top">
       <td class="left">&nbsp;</td>
@@ -235,11 +229,16 @@ var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED 
         <ul>
           <li><nobr><b>Revision ID:</b> <a href=""><%= revid %></a></nobr></li>
           <% // fixme -- NOCDN needed? %>          
-          <li style="float: right;"><div><input type="image" src="/~~/admin/assets/img/button_push_on_tan.gif" value="Push" alt="Push">&nbsp;<input type="image" src="/~~/admin/assets/img/button_pull_on_tan.gif" value="Pull" alt="Pull"></div></li>
+<form method="POST">
+          <li style="float: right;"><div><input type="image" src="/~~/admin/assets/img/button_push_on_tan.gif" name="action" value="push" alt="Push">&nbsp;<input type="image" src="/~~/admin/assets/img/button_pull_on_tan.gif" name="action" value="pull" alt="Pull"></div></li>
+</form>
         </ul>
       </td>
       <td class="right">&nbsp;</td>
     </tr>
+<form method="POST" name="gitFiles">
+  <input type="hidden" name="toBeDetermined" />
+  <input type="hidden" name="toBeFilename" />
     <tr class="white-top">
       <td class="left"><img src="NOCDN/~~/admin/assets/images/transparent.gif" width="14" height="1"></td>
       <td class="middle">&nbsp;</td>
