@@ -11,6 +11,7 @@ function mapUrlToJxpFileCore( uri , request , response ){
            || ua.match( /\bneon\b/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider DAV/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider Protocol Discovery/ )
+           || ua.match(/WebDrive/)
            )
          ){
         return "/~~/webdav.jxp";
