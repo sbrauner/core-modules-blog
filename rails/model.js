@@ -27,3 +27,9 @@ ActiveRecord.Base.prototype.find = function( filter ){
 };
 
 
+// form stuff
+
+ActiveRecord.Base.prototype.text_area = function( name ){
+    return "text field for (" + name + ")";
+};
+
