@@ -37,7 +37,7 @@ for( var i=0; i < rows.length; i++ ) {
     }
 }
 for( var i in f) {
-    fields.push(f[i]);
+    fields.push(i);
 }
 
 /* find the indices */
@@ -153,7 +153,7 @@ function changeView() {
     viewOptionsPanel.hide();
 }
 
-var currentSort = { col : <%= top ? 'name' : '_id' %>, dir: 1 };
+var currentSort = { col : '<%= top ? 'name' : ((fields.indexOf('_id') != -1) ? '_id' : fields[0]) %>', dir: 1 };
 function sortBy(col) {
     if(currentSort.col == col)
         currentSort.dir = -1 * currentSort.dir;
