@@ -109,7 +109,9 @@ var parsed = parseStatus();
 if ( request.action == "pull" ){
     // No files
     output += ( "pulling...<br>" );
+    var oldRev = g.getCurrentRev().parsed.rev;
     var foo = g.pull(user);
+    var newRev = g.getCurrentRev().parsed.rev;
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
         output += ("Pull failed: conflicts<br/>");
         output_command(foo);
@@ -124,9 +126,9 @@ if ( request.action == "pull" ){
             output += ("Already up-to-date.");
         }
         else {
-            log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
+            log("from: " + oldRev + " to: " + newRev + " revs: " + tojson(g.listRevs(oldRev, newRev).parsed.revs));
             showHeader();
-            g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            g.listRevs(oldRev, newRev).parsed.revs.forEach(function(z){ 
                 core.admin.pieces.gitPulledRev(z);
             });
         }
