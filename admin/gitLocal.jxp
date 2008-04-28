@@ -72,12 +72,15 @@ var parseStatus = function(){
     // Manipulate unmerged files.
     // Marge parsed.unmerged with parsed.changed, unmerged files first.
     var conflicts = false;
+    var resolved = {};
     if(parsed.unmerged){
+
         // Remove from unmerged those files which
         // have actually been merged (as shown by lack of commit markers).
         parsed.unmerged = parsed.unmerged.filter(function(z){
             var s = File.open(z.name).asString();
             if(s.match(/(^|\n)<<<<<<</, "m")) return true;
+            else resolved[z.name] = true;
         });
         
         
@@ -92,6 +95,10 @@ var parseStatus = function(){
                     z.type = "CONFLICT";
                     return true;
                 }
+                if(resolved[z.name]){
+                    z.type = "resolved";
+                }
+
                 return false;
             });
             var otherFiles = parsed.changed.filter(function(z){

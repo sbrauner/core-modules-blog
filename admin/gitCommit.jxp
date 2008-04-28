@@ -8,7 +8,7 @@ var g = arguments[0];
   <input type="hidden" name="changed_file" value="<%= z %>">
   <% }); %>
   <div class="field">
-    <textarea name="msg" rows="8" cols="80"><%= request.msg || "" %></textarea>
+    <textarea name="msg" rows="8" cols="80"><%= request.msg || g.mergeMessage() || "" %></textarea>
   </div>
   <div class="field">
     <input type="submit" name="action" value="commit">
