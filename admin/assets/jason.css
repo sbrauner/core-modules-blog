@@ -15,7 +15,7 @@ div, p, ul, ol {
 	font-size: 100%;
 }
 
-h2, h3, h4, p, ul, ol, dl {
+h2, h3, h4, p, ul, ol, dl, pre {
 	margin-bottom: 1em;
 }
 
@@ -231,8 +231,8 @@ td.maincontent p.abstract {
 	padding: 0;
 }
 
-td.maincontent p.msg {
-	margin: 0;
+td.maincontent .msg {
+	margin: 0 0 1em 0;
 	color: #9c905f;
 }
 

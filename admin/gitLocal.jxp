@@ -20,9 +20,10 @@ var g = new git.Repo();
 
 
 var output = "";
+var revid;
 
 var showHeader = function(){
-    var revid = g.getCurrentRev().parsed.rev;
+    revid = g.getCurrentRev().parsed.rev;
     var revmsg = g.getCommit(revid).parsed.message;
     revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
     core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
@@ -35,9 +36,13 @@ var showHeader = function(){
 var output_command = function(foo){
     log(tojson(foo));
     output += (content.HTML.escape(foo.cmd) + "<br>");
-    output += ("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
-               content.HTML.escape(foo.err) + "</pre>");
-    output += ("<hr>");
+    if(foo.out || foo.err){
+        output += "<pre>";
+        output += content.HTML.escape(foo.out);
+        if(foo.out && foo.err) output += "\n---\n";
+        output += content.HTML.escape(foo.err);
+        output += "</pre>";
+    }
 };
 
 var unmerged = {};
