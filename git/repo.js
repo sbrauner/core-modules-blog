@@ -198,13 +198,18 @@ Object.extend(git.Repo.prototype, {
         var upToDate;
         var success;
 
-        if(lines.length > 0 && exec.out.match(/\nFast forward\n/)) {
-            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
-                lines[0].indexOf('.'));
-            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
-            mergetype = "fastforward";
+        var m;
 
-            for(var i = 2; i < lines.length; i++){
+        var parseMerge = function(start){
+            if(start)
+                var i = start;
+            else {
+                for(var i = 0; i < lines.length; ++i){
+                    if(lines[i].match(/Merge made by/)) break;
+                }
+                ++i;
+            }
+            for(; i < lines.length; i++){
                 if(lines[i].indexOf('|') == -1) break;
                 var pipes = lines[i].split(/\|/);
                 var filename = pipes[0].trim();
@@ -225,11 +230,43 @@ Object.extend(git.Repo.prototype, {
                     var filename = line.substring(thirdFieldEnd);
                     created[filename] = line;
                 }
-                else if( false ){ // FIXME: deleted files
-
+                else if( line.match(/^ delete /) ){
+                    var firstFieldEnd = line.indexOf(/ /, 1);
+                    var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
+                    var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
+                    var filename = line.substring(thirdFieldEnd);
+                    deleted[filename] = line;
                 }
             }
+
+        };
+
+        if(lines.length > 0 && exec.out.match(/\nFast forward\n/)) {
+            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
+                lines[0].indexOf('.'));
+            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
+            mergetype = "fastforward";
+            parseMerge(2);
+
             success = true;
+        }
+        else if(lines.length > 0 && (m = exec.out.match(/Merge made by ([^\n]+)\./)) && m){
+            mergetype = m[1];
+            parseMerge();
+            var errlines = exec.err.trim().split(/\n/);
+
+            // Sometimes git doesn't have an output line saying which revisions were
+            // pulled and merged. Thanks for nothing.
+            for(var i = 0; i < errlines.length; ++i){
+                if(m = errlines[i].match(/ ([0-9a-f]+)\.\.([0-9a-f]+)\s+([\w.]+)\s*->\s*([\w.+])/) && m){
+                    if(m[3] != this.getCurrentBranch().parsed.branch) continue;
+                    fromrev = m[1];
+                    torev = m[2];
+                    success = true;
+                    break;
+                }
+            }
+
         }
         else if(lines.length == 1 && lines[0] == "Already up-to-date."){
             upToDate = true;
