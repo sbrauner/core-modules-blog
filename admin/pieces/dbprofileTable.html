@@ -8,7 +8,7 @@ var nextPage = obj.nextPage;
 
 %>
 
-  <forin i table.rows>
+ <forin i table.rows>
     <tr class="white-main">
       <td class="left">&nbsp;</td>
       <forin j th>
@@ -17,6 +17,7 @@ var nextPage = obj.nextPage;
       <td class="right">&nbsp;</td>
     </tr>
   </forin>
+
 
   <tr class="white-bottom">
     <!-- Bottom area -->
@@ -32,7 +33,7 @@ var nextPage = obj.nextPage;
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
     <td colspan="$table.colspan">
       <div id="paging">
-        <if (page.length > 1)>
+        <if (1 < page.length)>
 	  <ul>
             <if prevPage>
 	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>

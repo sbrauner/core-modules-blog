@@ -1,5 +1,5 @@
 <%
-head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
 
 
 var ma = MemoryAppender.find( log );
@@ -8,15 +8,19 @@ if ( request.l && request.l != 0 ){
 
     print( "<h2> Logger : " + request.l + "</h2>" );
 
-    fields = ["date", "thread", "level", "msg", "throwable"];
-    var table = { rows: ma.cache[request.l], fields: fields};
-
    var th = ['<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
        '<a href="">THREAD</a>',
        '<a href="">LEVEL</a>',
        '<a href="">MESSAGE</a>',
        '<a href="">THROWABLE</a>'];
 
+    fields = ["date", "thread", "level", "msg", "throwable"];
+    var table = { rows: ma.cache[request.l], fields: fields};
+    table.rows.reverse();
+    for(var i in table.rows) {
+        if(table.rows[i].date instanceof Date)
+            table.rows[i].date = table.rows[i].date.format("E MMM dd, yyyy HH:mm:ss");
+    }
     core.admin.pieces.logHeader({title: "Logs in Memory", tagline: "Most recent log messages in memory.", th: th, colspan: fields.length});
     core.admin.pieces.log({table: table});
     core.admin.pieces.logFooter({colspan: fields.length});

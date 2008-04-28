@@ -31,7 +31,6 @@ if ( since ){
     } );
 }
 
-
 n.forEach( function(z){
     if ( z == null )
 	throw "why is z null";
@@ -39,6 +38,7 @@ n.forEach( function(z){
     z._id = null;
     z.level = z.level.toString();
     z.msg = z.msg.replace( /[\r\n]+/ , "<br />" );
+    z.date = z.date.format("E MMM dd, yyyy HH:mm:ss");
     if ( z.throwable )
 	z.throwable = z.throwable.toString();
 } );

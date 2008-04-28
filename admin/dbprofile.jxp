@@ -1,6 +1,6 @@
 <p>
 <%
-head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
 
 core.db.db();
 core.content.table();

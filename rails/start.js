@@ -44,9 +44,6 @@ if ( modelsDir.exists() ){
                 
                 log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
                 
-                Rails.baseThis[ name ] = model;
-                Rails.baseThis[ model.collectionName ] = model;
-
                 assert( model.find );
                 assert( model.collectionName );
                 

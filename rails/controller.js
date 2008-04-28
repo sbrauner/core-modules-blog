@@ -104,6 +104,7 @@ function ApplicationResponse( controller , method ){
     this.anythingRendered = false;
 
     this.requestThis = Rails.baseThis.child();
+
 };
 
 ApplicationResponse.prototype.html = function(){
@@ -130,8 +131,9 @@ ApplicationResponse.prototype.html = function(){
             template.apply( blah , arguments );
         } );
     }
-    else
-        template.apply( this.requestThis );
+    else {
+        template.apply( blah );
+    }
         
     this.anythingRendered = true;
 };

@@ -1,5 +1,5 @@
 <%
-head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
 head.addScript("/@@/yui/current/yuiloader/yuiloader-beta-min.js");
 head.addScript("/@@/yui/current/dom/dom-min.js");
 head.addScript("/@@/yui/current/json/json-min.js");
