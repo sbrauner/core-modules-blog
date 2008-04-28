@@ -42,7 +42,7 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
     };
     
     funcScope.respond_to = function( b ){
-        b( appResponse );
+        b.call( appResponse.requestThis , appResponse );
     };
     
     funcScope.params = request;
