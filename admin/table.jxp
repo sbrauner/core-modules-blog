@@ -118,6 +118,7 @@ else if(request.action == "search") {
         rows = collection.find(searchobj).sort(mySort).toArray();
     else
         rows = collection.find(searchobj).sort(mySort).toArray();
+
 }
 else if(request.action == "eval") {
     try {
@@ -337,6 +338,7 @@ else {
 
 dbTable.top = top;
 if(top) {
+    dbTable.idxes = {};
     for(var i in dbTable.rows) {
         dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
@@ -403,8 +405,6 @@ if(request.action == "searchprofile") {
                              nextPage: nextPage  });
 }
 else {
-    dbTable.idxes = {};
-    dbTable.idxes.NAME = 1;
     core.admin.pieces.dbviewTable({ th: th,
                                     table: dbTable,
                                     page: page,

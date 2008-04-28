@@ -53,15 +53,19 @@ var nextPage = obj.nextPage;
   <tr class="white-main">
     <td class="left">&nbsp;</td>
     <forin i th>
-      <if (table.idxes[th[i].name])>
-        <th onclick="sortBy('$th[i].name')" class="$th[i].className">
-          <a>$th[i].name</a>
+      <th>
+        <if (top && th[i].name == "NAME")>
+          <a onclick="sortBy('name')" class="name">$th[i].name</a>
           <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
-        </th>
-      </if>
-      <if (table.idxes[th[i].name] == null)>
-        <th>$th[i].name</th>
-      </if>
+        </if>
+        <if (table.idxes[th[i].name])>
+          <a onclick="sortBy('$th[i].name')" class="$th[i].className">$th[i].name</a>
+          <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+        </if>
+        <if (!(top && th[i].name == "NAME") && !table.idxes[th[i].name])>
+          $th[i].name
+        </if>
+      </th>
     </forin>
     <td class="right">&nbsp;</td>
   </tr>
