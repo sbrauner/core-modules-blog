@@ -1,22 +1,25 @@
 <%
 var g = arguments[0]; 
+var files = arguments[1];
+var merge = g.mergeMessage() != null;
 %>
 
 <form method="POST">
   <input type="hidden" name="viewedDiff" value="1"/>
-  <% request.getParameters('changed_file').forEach(function(z){ %>
+  <% files.forEach(function(z){ %>
   <input type="hidden" name="changed_file" value="<%= z %>">
   <% }); %>
+  </if>
   <div class="field">
     <textarea name="msg" rows="8" cols="80"><%= request.msg || g.mergeMessage() || "" %></textarea>
   </div>
   <div class="field">
-    <input type="submit" name="action" value="commit">
+    <% core.admin.pieces.gitButton(merge? 'commit_as_res': 'commit'); %>
     <input type="submit" name="action" value="never mind">
   </div>
 </form>
 
 <%
-var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
+var foo = g.diff(files, {rev: "HEAD"});
 core.admin.pieces.gitDiff({output: foo.out});
 %>
