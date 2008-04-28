@@ -227,6 +227,11 @@ else if ( request.action && request.action.match(/^unadd_/)){
     var foo = g.rm([fname], {cached: true});
     output_command(foo);
 }
+else if ( request.action && request.action.match(/^add_/)){
+    var fname = request.action.replace(/^add_/, '');
+    var foo = g.add([fname]);
+    output_command(foo);
+}
 
 var parsed = parseStatus();
 
@@ -238,7 +243,7 @@ var buttons = {"changed": changedbuttons,
     'untracked': ['add']};
 
 var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
-    'untracked': [{name: 'add', onclick: "return submitGit('add', '$1')"}]};
+    'untracked': [{name: 'add', onclick: "return submitGit('add_$1')"}]};
 
 var checked = {};
 if(request.changed_file)
