@@ -12,18 +12,23 @@ flash.notice = "";
 
 // find the controller
 
-var myController = null;
-Rails.controllers.forEach( function(z){
-        if ( z.wants( request.getURI() ) )
-            myController = z;
-    } 
-    );
+matchingRoute = Rails.routes.find( request );
 
-if ( ! myController ){
-    print( "No Controller Found for : " + request.getURI() );
-    return;
+if ( ! matchingRoute )
+    return print( "no route for : " + request.getURI() );
+
+var myController = null;
+for ( var i=0; i<Rails.controllers.length; i++ ){
+    if ( Rails.controllers[i].shortName == matchingRoute.controller ){
+        myController = Rails.controllers[i];
+        break;
+    }
 }
 
-myController.dispatch( request , response );
+if ( ! myController )
+    return print( "can't find controller [" + matchingRoute.controller + "]" );
+
+
+myController.dispatch( request , response , matchingRoute );
 %>
 

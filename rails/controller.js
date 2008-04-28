@@ -1,7 +1,17 @@
 
 Rails.mapURI = function( uri ){
-    if ( uri.match( /\.(css|jpg|gif)$/ ) )
+    
+    var mime = MimeTypes.get( uri );
+    
+    if ( (  mime && 
+            ( mime.startsWith( "image/" ) 
+              || mime.startsWith( "video/" )
+            ) )
+         ||
+         uri.match( /\.(css|js)$/ )
+       )
         return "/public" + uri;
+         
     return "/~~/rails/rails.jxp";
 };
 
@@ -12,47 +22,15 @@ function ApplicationController(){
 
 ApplicationController.prototype.__magic = 17;
 
-ApplicationController.prototype.wants = function( uri ){
+ApplicationController.prototype.dispatch = function( request , response , matchingRoute ){
 
-    if ( ! uri.startsWith( "/" + this.shortName ) )
-        return false;
-    
-    var rest = uri.substring( this.shortName.length + 1 );
-
-    if ( rest.length == 0 )
-        return "/index";
-    
-    if ( rest.startsWith( "/" ) )
-        return rest;
-    
-    return false;
-};
-
-ApplicationController.prototype.dispatch = function( request , response ){
-    var rest = this.wants( request.getURI() );
-    assert( rest );
-    
-    if ( rest.startsWith( "/" ) )
-        rest = rest.substring(1);
-
-    if ( rest.length == 0 )
-        rest = "index";
-    
-    var method = null;
-
-    var idx = rest.indexOf( "/" );
-    if ( idx < 0 )
-        method = rest;
-    else
-        method = res.substring( 0 , idx );
-
-    var f = this[method];
+    var f = this[matchingRoute.action];
     if ( ! f ){
-        print( "can't find [" + method + "] in [" + this.className + "]" );
+        print( "can't find [" + matchingRoute.action + "] in [" + this.className + "]" );
         return;
     }
     
-    var appResponse = new ApplicationResponse( this , method );
+    var appResponse = new ApplicationResponse( this , matchingRoute.action );
 
     // --- setup scope
     
@@ -98,8 +76,12 @@ ApplicationController.prototype.toString = function(){
 
 
 function ApplicationResponse( controller , method ){
+
     this.controller = controller;
+    assert( this.controller );
+
     this.method = method;
+    assert( this.method );
 
     this.anythingRendered = false;
 
