@@ -54,6 +54,8 @@ ApplicationController.prototype.dispatch = function( request , response ){
     
     var appResponse = new ApplicationResponse( this , method );
 
+    // --- setup scope
+    
     var funcScope = f.getScope( true );
 
     funcScope.render_text = function(s){
@@ -67,10 +69,12 @@ ApplicationController.prototype.dispatch = function( request , response ){
     
     funcScope.params = request;
 
-    f( request , response );
+    // --- invoke action
 
+    f.call( appResponse.requestThis );
+    
     if ( ! appResponse.anythingRendered ){
-
+        
         if ( ! local.app.views )
             throw "no views directory";
         

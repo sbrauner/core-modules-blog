@@ -1,6 +1,9 @@
 
-// this is what starts rails
+// this is what rails init starts
 
+// -------------------
+// ----- models -----
+// -------------------
 
 Rails.models = [];
 
@@ -60,6 +63,10 @@ if ( modelsDir.exists() ){
 };
 
 
+// -------------------
+// ----- controllers -----
+// -------------------
+
 var controllersDir = openFile("app/controllers" );
 if ( ! controllersDir.exists() )
     throw "you need an app/controllers directory";
@@ -97,3 +104,14 @@ controllersDir.listFiles().forEach(
     }
 
 );
+
+
+
+// -------------------
+// ----- routes -----
+// -------------------
+
+Rails.routes = new ActionController.Routing.Routes();
+
+if ( local.config && local.config.routes )
+    local.config.routes();

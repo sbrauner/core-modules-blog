@@ -48,7 +48,37 @@ ActiveRecord.Base.prototype.check_box = function( name ){
 };
 
 ActiveRecord.Base.prototype.datetime_select = function( name ){
-    return "datetime select for (" + name + ")";
+    var colName = this.collectionName;
+    var html = "";
+
+    var start = function( num ){
+        return "\n<select " + 
+            "  id='" + colName + "_" + name + "_" + num + "i' " + 
+            " name='" + colName + "[" + name + "(" + num + "i)]'>";
+    };
+
+    var range = function( cur , begin , end  , num ){
+        html += start( num );
+        for ( var i=begin; i<=end; i++ ){
+            html += "<option value='" + i + "' " + ( cur == i ? "selected" : "" ) + ">" + i + "</option>";
+        }
+        html += "</select>\n";
+        
+    }
+    
+    var curYear = (new Date()).getYear();
+    range( curYear , curYear - 5 , curYear + 5 , 1 );
+
+    range( (new Date()).getMonth() , 1 , 12 , 2 );
+    range( (new Date()).getDay() , 1 , 31 , 3);
+
+    html += " &mdash; ";
+
+    range( (new Date()).getHourOfDay() , 1 , 59 , 4);
+    html += ":";
+    range( (new Date()).getMinute() , 1 , 59 , 5);
+    
+    return html;
 };
 
 ActiveRecord.Base.prototype.submit = function( name ){
