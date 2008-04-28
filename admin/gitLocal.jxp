@@ -220,8 +220,6 @@ if(request.untracked_file)
 var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED FILES"};
 
 %>
-<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
-<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
   <table width="100%" border="0">
     <tr class="search-top">
       <td class="left">&nbsp;</td>
