@@ -162,7 +162,7 @@ Object.extend(git.Repo.prototype, {
                         parsed.pullFirst = true;
                 }
                 else if(lines[i][1] == "!") {
-                    var m = lines[i].match(/(\w+) -> (\w+) \((.+)\)/);
+                    var m = lines[i].match(/([\w.]+) -> ([\w.]+) \((.+)\)/);
                     if(m[1] == this.getCurrentBranch().parsed.branch && m[3] == "non-fast forward"){
                         parsed.pullFirst = true;
                     }
