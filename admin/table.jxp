@@ -360,7 +360,10 @@ else if(request.action != "searchprofile") {
         }
     }
 }
-else {
+else { //format date for dbprofile
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].ts = dbTable.rows[i].ts.format("E MMM dd, yyyy HH:mm:ss");
+    }
     dbTable.top = false;
 }
 
