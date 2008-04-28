@@ -13,11 +13,11 @@
   <b>Last Commit Comment:</b>
 </p> 
 <ul>
-  <li>Modified tagline and formatting for timestamp.</li>
+  <li>$revmsg</li>
 </ul>
 
-<p class="msg">
-  Already up-to-date.
-</p>
-
-<h3>Revision <a href="/git/gitweb.cgi?p=.git;a=commitdiff;h=$revid">$revid</a>: $revmsg</h3> (<a href="gitLocal">refresh</a>)
+<if obj.msg>
+  <p class="msg">
+    $msg
+  </p>
+</if>
