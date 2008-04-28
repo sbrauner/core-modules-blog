@@ -23,8 +23,17 @@ ActiveRecord.Base.prototype.find = function( filter ){
     return db[ this.collectionName ].find();
 };
 
+// ---------
+// save/update/etc... stuff
+// ---------
 
+ActiveRecord.Base.prototype.save = function(){
+    throw "save called on [" + this.collectionName + "]" + tojson( this );
+};
+
+// ---------
 // form stuff
+// ---------
 
 ActiveRecord.Base.prototype.text_area = function( name ){
     return "<textarea " + 

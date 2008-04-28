@@ -13,7 +13,7 @@ form_for = function( what , frm ){
     if ( ! what )
         throw "form_for passed null";
 
-    print( "<form action='broken' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>" );
+    print( "\n<form action='/" + myController.shortName + "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
 
     var newThing = what;
     if ( isFunction( what ) ){
@@ -21,7 +21,7 @@ form_for = function( what , frm ){
     }
 
     frm( newThing );
-    print( "</form>" );
+    print( "\n</form>\n" );
 };
 
 stylesheet_link_tag = function( name ){
