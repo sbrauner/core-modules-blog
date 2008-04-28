@@ -18,13 +18,13 @@ head.addCSS("NOCDN/@@/yui/current/container/assets/container.css");
 
 var g = new git.Repo(); 
 
-var revid = g.getCurrentRev().parsed.rev;
-var revmsg = g.getCommit(revid).parsed.message;
-revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
 var output = "";
 
 var showHeader = function(){
+    var revid = g.getCurrentRev().parsed.rev;
+    var revmsg = g.getCommit(revid).parsed.message;
+    revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
     core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
                                  msg: output
                                 });
@@ -72,12 +72,15 @@ var parseStatus = function(){
     // Manipulate unmerged files.
     // Marge parsed.unmerged with parsed.changed, unmerged files first.
     var conflicts = false;
+    var resolved = {};
     if(parsed.unmerged){
+
         // Remove from unmerged those files which
         // have actually been merged (as shown by lack of commit markers).
         parsed.unmerged = parsed.unmerged.filter(function(z){
             var s = File.open(z.name).asString();
             if(s.match(/(^|\n)<<<<<<</, "m")) return true;
+            else resolved[z.name] = true;
         });
         
         
@@ -92,6 +95,10 @@ var parseStatus = function(){
                     z.type = "CONFLICT";
                     return true;
                 }
+                if(resolved[z.name]){
+                    z.type = "resolved";
+                }
+
                 return false;
             });
             var otherFiles = parsed.changed.filter(function(z){
@@ -142,7 +149,7 @@ else if ( request.action == "push" ){
         output_command(foo);
         showHeader();
 %>
-Push failed. Try pulling first.
+<p class="msg">Push failed. Try pulling first.</p>
 <form method="POST"><input type="image" src="/~~/admin/assets/img/button_pull_on_white.gif" name="action" value="pull" alt="Push"></form>
 <%
         return;
@@ -151,6 +158,7 @@ Push failed. Try pulling first.
         output += ("Everything up to date on this branch.");
     }
     else {
+        showHeader();
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
             core.admin.pieces.gitPushedRev(z);
         });
@@ -169,9 +177,17 @@ else if ( request.action == "diff" && request.changed_file ){
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     core.admin.pieces.gitDiff({output: foo.out});
 }
-else if ( request.action == "commit" && request.changed_file ){
+else if ( (request.action == "commit" && request.changed_file) || request.action == "commit_as_res" ){
+    if(request.action == 'commit_as_res' && ! g.mergeMessage()){
+        print("Holy crap, committing as resolved without merge??");
+        return;
+    }
+
     // Changed files
     var showDiff = false;
+    // If doing a merge, commits must be total.
+    var files = request.getParameters('changed_file') || [];
+
     if ( ! request.viewedDiff ) showDiff = true;
     else if ( ! request.msg.trim() ){
         output += ( "need a message!" );
@@ -180,12 +196,16 @@ else if ( request.action == "commit" && request.changed_file ){
 
     if ( showDiff ) {
         showHeader();
-        return core.admin.gitCommit(g);
+        return core.admin.gitCommit(g, files);
     }
     else {
 	output += ( "Commit...<br>" );
         
-	var foo = g.commit( request.getParameters('changed_file') , request.msg , user );
+        if(request.action == 'commit_as_res'){
+            g.add(parsed.changed.map(function(z){ return z.name; }));
+        }
+    
+	var foo = g.commit( files , request.msg , user );
         output_command(foo);
     }
 }
@@ -206,7 +226,7 @@ else if ( request.action && request.action.match(/^unadd_/)){
 var parsed = parseStatus();
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
-    {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
+    {name: g.mergeMessage()?'commit_as_res':'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 
