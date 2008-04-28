@@ -82,7 +82,9 @@ var nextPage = obj.nextPage;
     <forin row table.rows>
       <tr class="white-main">
         <td class="left">&nbsp;</td>
-        <td>$table.rows[row].id</td>
+        <if (table.rows[row].id)>
+          <td>$table.rows[row].id</td>
+        </if>
         <forin field th>
           <if (th[field].name != "_id") >
             <td >$table.rows[row][th[field].name]</td>
