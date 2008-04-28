@@ -18,13 +18,13 @@ head.addCSS("NOCDN/@@/yui/current/container/assets/container.css");
 
 var g = new git.Repo(); 
 
-var revid = g.getCurrentRev().parsed.rev;
-var revmsg = g.getCommit(revid).parsed.message;
-revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
 var output = "";
 
 var showHeader = function(){
+    var revid = g.getCurrentRev().parsed.rev;
+    var revmsg = g.getCommit(revid).parsed.message;
+    revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
     core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
                                  msg: output
                                 });
