@@ -4,6 +4,8 @@
 
 Rails.models = [];
 
+Rails.baseThis = scope.child( "Rails Scope" );
+
 var modelsDir = openFile("app/models" );
 if ( modelsDir.exists() ){
     
@@ -32,12 +34,25 @@ if ( modelsDir.exists() ){
                 if ( ! ( model && model._isModel ) )
                     continue;
                 
-                model.setFile( z.filename );
+                model.prototype.setFile( z.filename );
 
                 Rails.models.add( model );
                 globals.getParent().putExplicit( name , model );
                 
-                log.rails.init.model.info( "added:" + name + " : " + model );
+                log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
+                
+                Rails.baseThis[ name ] = model;
+                Rails.baseThis[ model.collectionName ] = model;
+
+                assert( model.find );
+                assert( model.collectionName );
+                
+                var thing = new model();
+                assert( thing.setFile );
+                
+                log.rails.init.model.info(  thing.collectionName );
+                assert( thing.collectionName == model.collectionName );
+                model.find();
             }
         }
     )

@@ -1,4 +1,10 @@
 
+Rails.mapURI = function( uri ){
+    if ( uri.match( /\.(css|jpg|gif)$/ ) )
+        return "/public" + uri;
+    return "/~~/rails/rails.jxp";
+};
+
 function ApplicationController(){
     this.shortName = null;
     this.className = null;
@@ -92,6 +98,8 @@ function ApplicationResponse( controller , method ){
     this.method = method;
 
     this.anythingRendered = false;
+
+    this.requestThis = Rails.baseThis.child();
 };
 
 ApplicationResponse.prototype.html = function(){
@@ -103,7 +111,24 @@ ApplicationResponse.prototype.html = function(){
    
     var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
     log.rails.response.debug( template + ".html" + called );
-    template();
+    
+    var layout = null;
+    if ( local.app.views.layouts )
+        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
+    
+    var blah = this.requestThis;
+
+    if ( layout ){
+        // TODO: fix this...
+        layout.getScope( true ).controller = { action_name : this.method };
+        
+        layout( function(){
+            template.apply( blah , arguments );
+        } );
+    }
+    else
+        template.apply( this.requestThis );
+        
     this.anythingRendered = true;
 };
 

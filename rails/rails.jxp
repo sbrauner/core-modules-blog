@@ -6,6 +6,12 @@ if ( ! Rails.ready ){
     //Rails.ready = true;
 }
 
+// setup rails globals
+flash = {};
+flash.notice = "";
+
+// find the controller
+
 var myController = null;
 Rails.controllers.forEach( function(z){
         if ( z.wants( request.getURI() ) )
