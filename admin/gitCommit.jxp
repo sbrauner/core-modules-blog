@@ -15,7 +15,7 @@ var merge = g.mergeMessage() != null;
   </div>
   <div class="field">
     <% core.admin.pieces.gitButton(merge? 'commit_as_res': 'commit'); %>
-    <input type="submit" name="action" value="never mind">
+    <% core.admin.pieces.gitButton('never_mind'); %>
   </div>
 </form>
 
