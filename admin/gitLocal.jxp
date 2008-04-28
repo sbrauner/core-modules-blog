@@ -22,15 +22,22 @@ var revid = g.getCurrentRev().parsed.rev;
 var revmsg = g.getCommit(revid).parsed.message;
 revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
-core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
-                            });
+var output = "";
+
+var showHeader = function(){
+    core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
+                                 msg: output
+                                });
+    // disable future calls to showHeader
+    showHeader = function(){};
+};
 
 var output_command = function(foo){
     log(tojson(foo));
-    print(content.HTML.escape(foo.cmd) + "<br>");
-    print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
-          content.HTML.escape(foo.err) + "</pre>");
-    print("<hr>");
+    output += (content.HTML.escape(foo.cmd) + "<br>");
+    output += ("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
+               content.HTML.escape(foo.err) + "</pre>");
+    output += ("<hr>");
 };
 
 var unmerged = {};
@@ -101,24 +108,27 @@ var parsed = parseStatus();
 
 if ( request.action == "pull" ){
     // No files
-    print( "pulling...<br>" );
+    output += ( "pulling...<br>" );
+    var oldRev = g.getCurrentRev().parsed.rev;
     var foo = g.pull(user);
+    var newRev = g.getCurrentRev().parsed.rev;
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
-        print("Pull failed: conflicts<br/>");
+        output += ("Pull failed: conflicts<br/>");
         output_command(foo);
     }
     else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
-        print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+        output += ("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
         output_command(foo);
     }
     else {
         log(tojson(foo));
         if(foo.parsed.upToDate){
-            print("Already up-to-date.");
+            output += ("Already up-to-date.");
         }
         else {
-            log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
-            g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            log("from: " + oldRev + " to: " + newRev + " revs: " + tojson(g.listRevs(oldRev, newRev).parsed.revs));
+            showHeader();
+            g.listRevs(oldRev, newRev).parsed.revs.forEach(function(z){ 
                 core.admin.pieces.gitPulledRev(z);
             });
         }
@@ -126,18 +136,19 @@ if ( request.action == "pull" ){
 }
 else if ( request.action == "push" ){
     // No files
-    print( "pushing...<br>" );
+    output += ( "pushing...<br>" );
     var foo = g.push();
     if(foo.parsed.pullFirst){
         output_command(foo);
+        showHeader();
 %>
 Push failed. Try pulling first.
-        <form method="POST"><input type="submit" name="action" value="pull"></form>
+<form method="POST"><input type="image" src="/~~/admin/assets/img/button_pull_on_white.gif" name="action" value="pull" alt="Push"></form>
 <%
         return;
     }
     else if(foo.parsed.upToDate){
-        print("Everything up to date on this branch.");
+        output += ("Everything up to date on this branch.");
     }
     else {
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
@@ -148,13 +159,13 @@ Push failed. Try pulling first.
 }
 else if ( request.action == "add" && request.untracked_file ){
     // Untracked files
-    print( "Adding...<br>" );
+    output += ( "Adding...<br>" );
     var foo = g.add(request.getParameters('untracked_file'));
     output_command(foo);
 }
 else if ( request.action == "diff" && request.changed_file ){
     // Changed files
-    print( "Diffinf...<br>" );
+    output += ( "Diffinf...<br>" );
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     core.admin.pieces.gitDiff({output: foo.out});
 }
@@ -163,22 +174,23 @@ else if ( request.action == "commit" && request.changed_file ){
     var showDiff = false;
     if ( ! request.viewedDiff ) showDiff = true;
     else if ( ! request.msg.trim() ){
-        print( "need a message!" );
+        output += ( "need a message!" );
         showDiff = true;
     }
 
     if ( showDiff ) {
+        showHeader();
         return core.admin.gitCommit(g);
     }
     else {
-	print( "Commit...<br>" );
+	output += ( "Commit...<br>" );
         
 	var foo = g.commit( request.getParameters('changed_file') , request.msg , user );
         output_command(foo);
     }
 }
 else if ( request.action == "checkout" && request.changed_file ){
-    print("Performing checkout...<br>");
+    output += ("Performing checkout...<br>");
     var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
 }
@@ -186,16 +198,12 @@ else if ( request.action && request.action.match(/^unadd_/)){
     // This is kind of clumsy, but it simplifies the form rewriting on the 
     // client
     var fname = request.action.replace(/^unadd_/, '');
-    if(!newfiles[fname]) print("This file isn't new!");
+    if(!newfiles[fname]) output += ("This file isn't new!");
     var foo = g.rm([fname], {cached: true});
     output_command(foo);
 }
 
 var parsed = parseStatus();
-
-if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
-    core.admin.pieces.gitNotPushed();
-}
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
     {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
@@ -219,9 +227,14 @@ if(request.untracked_file)
 
 var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED FILES"};
 
+showHeader();
+
+if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
+    core.admin.pieces.gitNotPushed();
+}
+
+
 %>
-<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
-<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
   <table width="100%" border="0">
     <tr class="search-top">
       <td class="left">&nbsp;</td>
