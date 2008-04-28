@@ -142,7 +142,7 @@ else if ( request.action == "push" ){
         output_command(foo);
         showHeader();
 %>
-Push failed. Try pulling first.
+<p class="msg">Push failed. Try pulling first.</p>
 <form method="POST"><input type="image" src="/~~/admin/assets/img/button_pull_on_white.gif" name="action" value="pull" alt="Push"></form>
 <%
         return;
@@ -151,6 +151,7 @@ Push failed. Try pulling first.
         output += ("Everything up to date on this branch.");
     }
     else {
+        showHeader();
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
             core.admin.pieces.gitPushedRev(z);
         });
@@ -169,7 +170,7 @@ else if ( request.action == "diff" && request.changed_file ){
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     core.admin.pieces.gitDiff({output: foo.out});
 }
-else if ( request.action == "commit" && request.changed_file ){
+else if ( (request.action == "commit" || request.action == "commit_as_res") && request.changed_file ){
     // Changed files
     var showDiff = false;
     if ( ! request.viewedDiff ) showDiff = true;
@@ -206,7 +207,7 @@ else if ( request.action && request.action.match(/^unadd_/)){
 var parsed = parseStatus();
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
-    {name: 'commit', disabled: (Object.keys(unmerged).length != 0)}];
+    {name: g.mergeMessage()?'commit_as_res':'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
     changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
 var buttons = {"changed": changedbuttons, 

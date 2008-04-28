@@ -1,3 +1,5 @@
+core.core.file();
+
 git.Repo = function(){
 
 };
@@ -467,6 +469,14 @@ Object.extend(git.Repo.prototype, {
         if(ret.out.trim() == "" && ret.err.trim() == "")
             ret.parsed = {success: true};
         return ret;
+    },
+
+    mergeMessage: function(){
+        // .git/MERGE_MSG
+        // if it's not there, return null (not merging)
+        var f = File.open('.git/MERGE_MSG');
+        if(!f.exists()) return null;
+        return f.asString();
     },
 });
 

@@ -15,7 +15,12 @@
   <th class="lmod"><div class="float-right">
       <forin acti massActions>
         <% var action = massActions[acti], name = action.name || action; %>
-        <input type="image" src="assets/img/button_<%= name %>_on_white.gif" value="<%= name %>" class="<%= action.disabled? "disabled" : "" %>" <%= action.onclick? 'onclick="'+action.onclick+'"' : "" %> name="action" value="<%= name %>">
+        <input type="image" src="assets/img/button_<%= name %>_on_white.gif" value="<%= name %>" class="<%= action.disabled? "disabled" : "" %>"
+               <%
+                  if(action.onclick) print('onclick="'+action.onclick+'"');
+                  else if(action.disabled) print('onclick="return false"');
+                  %>
+name="action" value="<%= name %>">
       </forin>
     </div>
     <input type="checkbox" name="checkAll_$filevar" onclick="handleCheckAll(this)">
