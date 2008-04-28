@@ -9,8 +9,17 @@ error_messages_for = function( what ){
 };
 
 form_for = function( what , frm ){
+
+    if ( ! what )
+        throw "form_for passed null";
+
     print( "<form action='broken' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>" );
-    var newThing = new what();
+
+    var newThing = what;
+    if ( isFunction( what ) ){
+        newThing = new what();
+    }
+
     frm( newThing );
     print( "</form>" );
 };
