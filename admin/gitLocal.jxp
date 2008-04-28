@@ -178,10 +178,16 @@ else if ( request.action == "diff" && request.changed_file ){
     core.admin.pieces.gitDiff({output: foo.out});
 }
 else if ( (request.action == "commit" && request.changed_file) || request.action == "commit_as_res" ){
+    if(request.action == 'commit_as_res' && ! g.mergeMessage()){
+        print("Holy crap, committing as resolved without merge??");
+        return;
+    }
+
     // Changed files
     var showDiff = false;
     // If doing a merge, commits must be total.
     var files = request.getParameters('changed_file') || [];
+
     if ( ! request.viewedDiff ) showDiff = true;
     else if ( ! request.msg.trim() ){
         output += ( "need a message!" );
@@ -195,6 +201,10 @@ else if ( (request.action == "commit" && request.changed_file) || request.action
     else {
 	output += ( "Commit...<br>" );
         
+        if(request.action == 'commit_as_res'){
+            g.add(parsed.changed.map(function(z){ return z.name; }));
+        }
+    
 	var foo = g.commit( files , request.msg , user );
         output_command(foo);
     }
