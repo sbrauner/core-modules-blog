@@ -1,9 +1,5 @@
 
 
-link_to = function( pretty ){
-    return "<a href='#'>" + pretty + "(broken)</a>";
-};
-
 error_messages_for = function( what ){
     return "(this should be error messages for: " + what + ")<br>";
 };
@@ -24,9 +20,26 @@ form_for = function( what , frm ){
     print( "\n</form>\n" );
 };
 
+// -----
+// -- ui 
+// -----
+
+
 stylesheet_link_tag = function( name ){
     return "<link href='/stylesheets/" + name + ".css' media='screen' rel='stylesheet' type='text/css' />";
 }
+
+// TODO: ???
+
+h = function( thing ){
+    return thing; 
+}
+
+link_to = function( pretty , thing ){
+    return "<a href='" + Rails.routes.getLinkFor( thing ) + "'>" + pretty + "(broken)</a>";
+};
+
+
 
 // crap
 
@@ -34,3 +47,6 @@ edit_person_path = function(){
   return "broken";
 };
 
+edit_todo_path = function(){
+    return "broken";
+};
