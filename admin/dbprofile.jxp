@@ -17,7 +17,6 @@ if(user.permissions["0"] == "admin") {
     %>
     <form>DB Profiling is...
     <select onchange="submit()" id="set" name="set">
-    <option value="">&nbsp</option>
     <option value="0">Off</option>
     <option value="1">On for slow operations</option>
     <option value="2">On for all operations</option>
@@ -124,7 +123,8 @@ YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 <%
 if(user.permissions["0"] == "admin") {
     // Initial setup of page
-    print('document.getElementById("set").options['+ ((request.set ? parseInt(request.set) : -1)+1) +'].selected = true');
+    core.db.db();
+    print('document.getElementById("set").options['+ getDbProfilingLevel() +'].selected = true');
 }
 %>
 
