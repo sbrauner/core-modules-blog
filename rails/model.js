@@ -10,9 +10,11 @@ ActiveRecord.Base = function( obj ){
 ActiveRecord.Base.prototype._isModel = true;
 
 ActiveRecord.Base.prototype.setFile = function( filename ){
-    //assert( ! ActiveRecord.Base.prototype.collectionName );
     this.collectionName = filename.replace( /\.rb$/ , "" );
-    //this.collectionName = filename.replace( /\.rb$/ , "" );
+};
+
+ActiveRecord.Base.prototype.setConstructor = function( cons ){
+    db[ this.collectionName ].setConstructor( cons );
 };
 
 ActiveRecord.Base.prototype.find = function( filter ){
@@ -37,29 +39,58 @@ ActiveRecord.Base.prototype.save = function(){
     return true;
 };
 
+ActiveRecord.Base.prototype.update_attributes = function( other ){
+    Object.extend( this , other );
+    return this.save();
+};
+
+ActiveRecord.Base.prototype.destroy = function(){
+
+    if ( ! this._id )
+        return true;
+    
+    db[this.collectionName].remove( { _id : this._id } );
+    return true;
+};
+
 // ---------
 // form stuff
 // ---------
 
 ActiveRecord.Base.prototype.text_area = function( name ){
-    return "<textarea " + 
+    var html = 
+        "<textarea " + 
         " id=\"" + this.collectionName + "_" + name + "\" " +
         " name=\"" + this.collectionName + "[" + name + "]\" " +
-        " cols=\"40\" rows=\"20\" ></textarea>";
+        " cols=\"40\" rows=\"20\" >";
+    if ( this[name] )
+        html += this[name];
+    html += "</textarea>";
+    return html;
 };
 
 ActiveRecord.Base.prototype.text_field = function( name ){
-    return "<input " + 
+    var html = 
+        "<input " + 
         " id=\"" + this.collectionName + "_" + name + "\" " +
         " name=\"" + this.collectionName + "[" + name + "]\" " +
-        " size=\"30\" type=\"text\" />";
+        " size=\"30\" type=\"text\" ";
+    if ( this[name] )
+        html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
+    html += "/>";
+    return html;
 };
 
 ActiveRecord.Base.prototype.check_box = function( name ){
-    return "<input " + 
+    var html =
+        "<input " + 
         " id=\"" + this.collectionName + "_" + name + "\" " +
         " name=\"" + this.collectionName + "[" + name + "]\" " +
-        " value=\"1\" type=\"checkbox\" />";
+        " value=\"1\" type=\"checkbox\" ";
+    if ( this[name] )
+        html += " selected ";
+    html += " />";
+    return html;
 };
 
 ActiveRecord.Base.prototype.datetime_select = function( name ){
@@ -80,18 +111,22 @@ ActiveRecord.Base.prototype.datetime_select = function( name ){
         html += "</select>\n";
         
     }
+
+    var touse = this[name];
+    if ( ! touse )
+        touse = new Date();
     
-    var curYear = (new Date()).getYear();
+    var curYear = touse.getYear();
     range( curYear , curYear - 5 , curYear + 5 , 1 );
 
-    range( (new Date()).getMonth() , 1 , 12 , 2 );
-    range( (new Date()).getDay() , 1 , 31 , 3);
+    range( touse.getMonth() , 1 , 12 , 2 );
+    range( touse.getDay() , 1 , 31 , 3);
 
     html += " &mdash; ";
 
-    range( (new Date()).getHourOfDay() , 1 , 59 , 4);
+    range( touse.getHourOfDay() , 1 , 59 , 4);
     html += ":";
-    range( (new Date()).getMinute() , 1 , 59 , 5);
+    range( touse.getMinute() , 1 , 59 , 5);
     
     return html;
 };

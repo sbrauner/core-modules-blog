@@ -35,9 +35,15 @@ RailsRoute.prototype.match = function( request , other ){
     if ( ! ( other && other instanceof RailsURI ) )
         return null;
 
+    var method = request._method;
+    if ( ! method )
+        method = request.getMethod();
+
+    method = method.toUpperCase();
+
     if ( this.options && 
          this.options.method &&
-         this.options.method != request.getMethod() )
+         this.options.method != method )
         return null;
 
     if ( other.pieces.length > this.ruri.pieces.length )
@@ -101,20 +107,47 @@ ActionController.Routing.Routes.prototype.connect = function( r , options ){
 * - destroy
 */
 ActionController.Routing.Routes.prototype.resources = function( r ){
-    this.il.info( "resources : " + r );
+    var singularName = r.substring( 0 , r.length - 1 );
+
+    this.il.info( "resources : " + r + " [" + singularName + "]" );
+    
+
+    globals.putExplicit( r + "_path" , "/" + r );
+    globals.putExplicit( r + "_url" , "/" + r );
+
+    // new
+    globals.putExplicit( "new_" + singularName + "_path" , "/" + r + "/new2" );
 
     // create
     this.connect( "/" + r , { controller : r , 
                               method : "POST" , 
                               action: "create" } );
 
+    // delete
+    this.connect( "/" + r + "/:id" , { controller : r , 
+                                       method : "DELETE" , 
+                                       action: "destroy" } );
+
+    // update
+    this.connect( "/" + r + "/:id" , { controller : r , 
+                                       method : "POST" , 
+                                       action: "update" } );
+
+
     // edit
     this.connect( "/" + r + "/:id/edit" , { controller : r , 
                                             action : "edit" ,
-                                            id : /\d+/
+                                            id : Rails.idRegex
                                           } );
-
-
+    
+    globals.putExplicit( "edit_" + singularName + "_path" , 
+                         function( obj ){
+                             if ( ! obj )
+                                 return scope[ "new_" + singularName + "_path" ];
+                             return "/" + r + "/" + obj._id + "/edit";
+                         } 
+                       );
+                         
     // show
     this.connect( "/" + r + "/:id" , { controller : r , 
                                        method : "GET" , 
@@ -151,12 +184,14 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 
 
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
-
-    if ( ! thing )
-        //throw "can't link to null";
-        return "/BROKEN";
     
-    if ( thing.collectionName ){
+    if ( ! thing )
+        throw "can't link to null";
+
+    if ( isString( thing ) )
+        return thing;
+    
+    if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
-    }
+
 };
