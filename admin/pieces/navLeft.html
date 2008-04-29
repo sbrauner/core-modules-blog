@@ -1,7 +1,7 @@
 <%
 var obj = arguments[0] || {};
 // We always want to print this table, but the links on the left side are chosen
-// based on the first element of the sectionList. If we have no idea what 
+// based on the first element of the sectionList. If we have no idea what
 // section we're in, use the dummy section "$" which doesn't have a section
 // in the section tree, thereby rendering no links.
 var sectionList = obj.sectionList || ["$"];
@@ -25,7 +25,6 @@ var sectionNames = {
         <!-- Left Side -->
     <td width="180" valign="top">
       <div id="leftnav">
-                <h1>navigation</h1>
                   <ul>
                     <% for(var key in sectionTree[topSection]){
                        if(key == "$") continue;
