@@ -32,7 +32,7 @@ var sectionMap = {
     'users': ['system', 'users'],
     'user': ['system', 'users'],
 
-    'database': ['system', 'database'],
+    'database': ['system', 'database', 'dbview'],
     'dbview': ['system', 'database', 'dbview'],
     'dbprofile': ['system', 'database', 'dbprofile'],
 
@@ -42,9 +42,9 @@ var sectionMap = {
     'cron': ['system', 'cron'],
     'editCron': ['system', 'cron'],
 
-    'logs': ['system', 'logs'],
-    'logScroll': ['system', 'logs', 'scrolling'],
-    'logMemory': ['system', 'logs', 'memory'],
+    'logs': ['system', 'logs', 'logScroll'],
+    'logScroll': ['system', 'logs', 'logScroll'],
+    'logMemory': ['system', 'logs', 'logMemory'],
 
     'editor': ['editor', 'editor'],
     'gitLocal': ['git', 'git'],
