@@ -11,8 +11,8 @@ return {
     'system': {
         'users': {},
         'database': {
-            'dbprofile': true,
             'dbview': true,
+            'dbprofile': true,
         },
         'files': {
         },
