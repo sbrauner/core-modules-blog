@@ -21,18 +21,22 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 }
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
-if ( sectionName.match( /^index/ ) )
-    sectionName = "";
+if ( sectionName == "" || sectionName.match( /^index/ ) )
+    sectionName = "usage";
 
 
 // Maps jxp names to sections
 var sectionMap = {
     'system': ['system'],
 
+    'statistics' : ['system', 'statistics', 'usage'],
+    'usage' : ['system', 'statistics', 'usage'],
+    'analytics' : ['system', 'statistics', 'analytics'],
+
     'users': ['system', 'users'],
     'user': ['system', 'users'],
 
-    'database': ['system', 'database'],
+    'database': ['system', 'database', 'dbview'],
     'dbview': ['system', 'database', 'dbview'],
     'dbprofile': ['system', 'database', 'dbprofile'],
 
@@ -42,9 +46,9 @@ var sectionMap = {
     'cron': ['system', 'cron'],
     'editCron': ['system', 'cron'],
 
-    'logs': ['system', 'logs'],
-    'logScroll': ['system', 'logs', 'scrolling'],
-    'logMemory': ['system', 'logs', 'memory'],
+    'logs': ['system', 'logs', 'logScroll'],
+    'logScroll': ['system', 'logs', 'logScroll'],
+    'logMemory': ['system', 'logs', 'logMemory'],
 
     'editor': ['editor', 'editor'],
     'gitLocal': ['git', 'git'],

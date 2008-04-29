@@ -14,10 +14,12 @@ if(! sectionTree[topSection]){
 }
 
 var sectionNames = {
-    'system/database/dbview': 'View Collections',
-    'system/database/dbprofile': 'Profiling',
-    'system/logs/logScroll': 'Scrolling Logs',
-    'system/logs/logMemory': 'Logs in Memory',
+   'system/statistics/usage': 'Usage',
+   'system/statistics/analytics': 'Analytics',
+   'system/database/dbview': 'View Collections',
+   'system/database/dbprofile': 'Profiling',
+   'system/logs/logScroll': 'Scrolling Logs',
+   'system/logs/logMemory': 'Logs in Memory',
 };
 %>
 <table cellpadding="0" cellspacing="0" border="0">
@@ -25,24 +27,29 @@ var sectionNames = {
         <!-- Left Side -->
     <td width="180" valign="top">
       <div id="leftnav">
-                  <ul>
-                    <% for(var key in sectionTree[topSection]){
-                       if(key == "$") continue;
-                        if(key != sectionList[1]){ %>
-                        <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
-                        <% } else { %>
-                        <li>
-                          <ul>
-                                <li class="current-heading"><a href=""><%= key.toUpperCase() %></a></li>
-                                <% for(var subkey in sectionTree[topSection][key]){ %>
-                                <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
-                                <% } %>
-                          </ul>
-                        </li>
+        <ul>
+          <% for(var key in sectionTree[topSection]){
+             if(key == "$") continue;
+                 if(key != sectionList[1]){ %>
+                   <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
+                   <%
+                 } else {
+                    %>
+                    <li>
+                      <ul>
+                        <li class="current-heading"><a href=""><%= key.toUpperCase() %></a></li>
+                        <% for(var subkey in sectionTree[topSection][key]){ %>
+                        <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
                         <% } %>
-                        <% } %>
-                  </ul>
-                </div>
-        </td>
-        <!-- Right Side -->
+                      </ul>
+                    </li>
+                    <%
+                 } %>
+                 <%
+             } %>
+        </ul>
+      </div>
+    </td>
+    <!-- Right Side -->
         <td class="maincontent" width="100%" valign="top">
+

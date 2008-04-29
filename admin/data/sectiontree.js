@@ -9,10 +9,14 @@ if ( allowModule ){
 
 return {
     'system': {
+        'statistics' : {
+            'usage': true,
+            'analytics': true,
+        },
         'users': {},
         'database': {
-            'dbprofile': true,
             'dbview': true,
+            'dbprofile': true,
         },
         'files': {
         },
