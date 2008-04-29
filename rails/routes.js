@@ -101,20 +101,34 @@ ActionController.Routing.Routes.prototype.connect = function( r , options ){
 * - destroy
 */
 ActionController.Routing.Routes.prototype.resources = function( r ){
-    this.il.info( "resources : " + r );
+    var singularName = r.substring( 0 , r.length - 1 );
+
+    this.il.info( "resources : " + r + " [" + singularName + "]" );
+
+
+    // new
+    
+    globals.putExplicit( "new_" + singularName + "_path" , "/" + r + "/new2" );
 
     // create
     this.connect( "/" + r , { controller : r , 
                               method : "POST" , 
                               action: "create" } );
-
     // edit
     this.connect( "/" + r + "/:id/edit" , { controller : r , 
                                             action : "edit" ,
-                                            id : /\d+/
+                                            id : Rails.idRegex
                                           } );
+    
+    globals.putExplicit( "edit_" + singularName + "_path" , 
+                         function( obj ){
+                             if ( ! obj )
+                                 return scope[ "new_" + singularName + "_path" ];
+                             return "/" + r + "/" + obj._id + "/edit";
 
-
+                         } 
+                       );
+                         
     // show
     this.connect( "/" + r + "/:id" , { controller : r , 
                                        method : "GET" , 
@@ -151,12 +165,15 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 
 
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
-
+    
     if ( ! thing )
         //throw "can't link to null";
         return "/BROKEN";
+
+    if ( isString( thing ) )
+        return thing;
     
-    if ( thing.collectionName ){
+    if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
-    }
+
 };
