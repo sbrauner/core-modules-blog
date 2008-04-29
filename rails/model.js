@@ -19,7 +19,10 @@ ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
     
     var jsFilter = {};
-    if ( filter == "all" ){
+    if ( filter == null || filter == "all" ){
+    }
+    else if ( isString( filter ) && filter.length == 24 ){
+        return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
     
     return db[ this.collectionName ].find();

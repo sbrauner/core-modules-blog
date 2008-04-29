@@ -1,5 +1,7 @@
 
-Rails.Params = function( request ){
+Rails.Params = function( request , matchingRoute ){
+    
+    Object.extend( this , matchingRoute );
 
     for ( var foo in request )
         this.__add( this , foo , request[foo] );

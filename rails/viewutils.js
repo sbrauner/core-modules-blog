@@ -1,9 +1,5 @@
 
 
-link_to = function( pretty ){
-    return "<a href='#'>" + pretty + "(broken)</a>";
-};
-
 error_messages_for = function( what ){
     return "(this should be error messages for: " + what + ")<br>";
 };
@@ -34,9 +30,15 @@ stylesheet_link_tag = function( name ){
 }
 
 // TODO: ???
+
 h = function( thing ){
     return thing; 
 }
+
+link_to = function( pretty , thing ){
+    return "<a href='" + Rails.routes.getLinkFor( thing ) + "'>" + pretty + "(broken)</a>";
+};
+
 
 
 // crap

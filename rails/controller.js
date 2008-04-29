@@ -45,7 +45,7 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
         b.call( appResponse.requestThis , appResponse );
     };
     
-    funcScope.params = new Rails.Params( request );
+    funcScope.params = new Rails.Params( request , matchingRoute );
 
     // --- invoke action
 
