@@ -9,6 +9,7 @@ if ( allowModule ){
 
 return {
     'system': {
+        'usage' : {},
         'users': {},
         'database': {
             'dbview': true,

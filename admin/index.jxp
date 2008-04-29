@@ -21,13 +21,15 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 }
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
-if ( sectionName.match( /^index/ ) )
-    sectionName = "";
+if ( sectionName == "" || sectionName.match( /^index/ ) )
+    sectionName = "usage";
 
 
 // Maps jxp names to sections
 var sectionMap = {
     'system': ['system'],
+
+    'usage' : ['system', 'usage'],
 
     'users': ['system', 'users'],
     'user': ['system', 'users'],

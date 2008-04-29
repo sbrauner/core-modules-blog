@@ -14,10 +14,10 @@ if(! sectionTree[topSection]){
 }
 
 var sectionNames = {
-    'system/database/dbview': 'View Collections',
-    'system/database/dbprofile': 'Profiling',
-    'system/logs/logScroll': 'Scrolling Logs',
-    'system/logs/logMemory': 'Logs in Memory',
+   'system/database/dbview': 'View Collections',
+   'system/database/dbprofile': 'Profiling',
+   'system/logs/logScroll': 'Scrolling Logs',
+   'system/logs/logMemory': 'Logs in Memory',
 };
 %>
 <table cellpadding="0" cellspacing="0" border="0">
@@ -28,19 +28,23 @@ var sectionNames = {
         <ul>
           <% for(var key in sectionTree[topSection]){
              if(key == "$") continue;
-             if(key != sectionList[1]){ %>
-          <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
-          <% } else { %>
-          <li>
-            <ul>
-              <li class="current-heading"><a href=""><%= key.toUpperCase() %></a></li>
-              <% for(var subkey in sectionTree[topSection][key]){ %>
-              <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
-              <% } %>
-            </ul>
-          </li>
-          <% } %>
-          <% } %>
+                 if(key != sectionList[1]){ %>
+                   <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
+                   <%
+                 } else {
+                    %>
+                    <li>
+                      <ul>
+                        <li class="current-heading"><a href=""><%= key.toUpperCase() %></a></li>
+                        <% for(var subkey in sectionTree[topSection][key]){ %>
+                        <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
+                        <% } %>
+                      </ul>
+                    </li>
+                    <%
+                 } %>
+                 <%
+             } %>
         </ul>
       </div>
     </td>
