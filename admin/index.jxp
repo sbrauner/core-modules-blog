@@ -58,7 +58,12 @@ var sectionMap = {
 };
 var sectionList = sectionMap[sectionName];
 
-
+// map main sections to default pages
+var defaultPage = { 'system' : 'usage',
+    'statistics' : 'usage',
+    'database' : 'dbview',
+    'logs' : 'logScroll'
+    };
 
 var section = null;
 
@@ -92,8 +97,12 @@ if ( section == null && sectionName.match( /\// ) ){
     }
 }
 
-if ( section == null )
-    section = core.admin[ sectionName ];
+if ( section == null ) {
+    if(defaultPage[sectionName])
+        section = core.admin[ defaultPage[sectionName] ];
+    else
+        section = core.admin[ sectionName ];
+}
 
 if ( isFunction( section ) &&
      ( section.getName().match( /\._/ )
