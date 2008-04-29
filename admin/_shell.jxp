@@ -102,11 +102,11 @@ if(command.startsWith("/")){
             ;
         if(command[i] == ' ') {
             var args = command.substring(i+1);
-            args = args.split(/\s+/).join(', ');
+            args = tojson(args.split(/\s+/));
             command = command.substring(0, i) + '(' + args + ')';
         }
     }
-    command = "out = sh."+command+"; print(out.out + '\\n' + out.err);";
+    command = "out = sh."+command+"; print(out.out + (out.out && out.err? '\\n': '') + out.err);";
     log.debug("processing command " + command);
 }
 
