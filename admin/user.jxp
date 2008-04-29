@@ -55,14 +55,50 @@ print.setFormObject( u );
   <input type="submit" name="action" value="cancel">
 </form>
 
-<form method="post" action="user_delete">
-  <input type="hidden" name="id" value="<%= u._id %>">
-  Delete this user: (beware, there will not be a confirmation)
-  <input type="submit" name="action" value="delete">
-</form>
 <%
 print.setFormObject( null );
-
 %>
+
+<% if( ! request._id ) return; %>
+<form method="post" action="user_delete" name="delete_form">
+  <input type="hidden" name="id" value="<%= u._id %>">
+  Delete this user:
+  <input type="submit" name="action" value="delete" onclick="deletePanel.show(); return false">
+</form>
+
+<div class="yui-skin-sam">
+<div id="deletePanel" style="display: none;">
+<div class="hd">Delete this user?</div>
+<div class="bd">Are you sure you want to delete the user <%= u.name %>?</div>
+<div class="ft"></div>
+</div>
+</div>
+<script type="text/javascript">
+  var deleteOK = function(){
+      deletePanel.hide();
+      document.delete_form.submit();
+  };
+
+var deleteCancel = function(){
+    deletePanel.hide();
+};
+
+  var loader = new YAHOO.util.YUILoader();
+  loader.insert({
+      require: ['container'],
+      base: '/@@/yui/2.5.1/',
+      onSuccess: function(loader){
+          deletePanel = new YAHOO.widget.Dialog('deletePanel', {
+              fixedcenter: true,
+              draggable: true,
+              visible: false,
+              buttons: [{text: "Delete", handler: deleteOK},
+                        {text: "Cancel", handler: deleteCancel}]
+          });
+          document.getElementById("deletePanel").style.display = "block";
+          deletePanel.render();
+      }
+  });
+</script>
 
 
