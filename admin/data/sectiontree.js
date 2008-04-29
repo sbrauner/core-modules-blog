@@ -26,6 +26,8 @@ return {
             'logMemory': true,
             'logScroll': true
         },
+        'shell': {
+        },
     },
     'editor': {
         $: '/admin/ed'
