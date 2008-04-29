@@ -410,7 +410,7 @@ tr.white-main th.center, tr.white-main td.center {
 }
 
 td.maincontent tr.white-main td {
-	padding: .4em 1em .5em 0;
+	padding: .3em 1em .1em 0;
 	vertical-align: top;
 	border-top:1px solid #cccccc;
 	line-height: 1.5em;
@@ -700,14 +700,59 @@ td.maincontent div.links-table a:hover.external {
 	color: #555656;
 }
 
+/* Form Edit */
 
-/* leftnav stuff in leftNav.css */
+form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
+  font:100% verdana,arial,sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+form.edit textarea {
+  width: auto;	
+}
+
+form.edit fieldset {
+  border: 1px solid #157491;
+  padding: 20px 10px;        /* padding in fieldset support spotty in IE */
+  margin: 0;
+  / * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
+}
+
+form.edit input {
+  border: 1px solid #cccccc;
+}
+
+form.edit label { 
+	display: block;  /* block float the labels to left column, set a width */
+	float: left; 
+	width: 100px; 
+	padding: 0; 
+	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
+	text-align: right; 
+}
+
+form.edit input, form.edit textarea {
+	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
+	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
+	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
+                              label aligns textarea better in IE */
+}
+
+form.edit textarea { overflow: auto; }
+
+form.edit .required{font-weight:bold;} /* uses class instead of div, more efficient */
+
+form.edit br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}
 
 /* Footer */
 
 p.footer {
 	margin: 1em 15px 4em 15px;
-	padding: 0;
+	padding: 1em 0;
 	text-align: right;
 	font-size: 11px;
 	color: #aaaaaa;
@@ -764,6 +809,7 @@ div.onecolumn {
 tr.white-main td {
     white-space: nowrap;
 }
+
 td div.nofield {
     text-align: center;
     background: #CCCCCC;
