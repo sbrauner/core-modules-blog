@@ -12,8 +12,10 @@
 all = javaStatic( "java.lang.Thread" , "getAllStackTraces" );
 cur = javaStatic( "java.lang.Thread" , "currentThread" );
 
+var holder =  javaStatic( "ed.lang.StackTraceHolder" , "getInstance" );
+
 for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
-    myThread = i.next();
+    var myThread = i.next();
     if ( cur == myThread )
 	continue;
 
@@ -22,7 +24,9 @@ for ( var i=all.keySet().iterator() ; i.hasNext() ;  ){
     print = function(z){
 	buf += z;
     }
-    core.core.sys.pieces.thread( myThread , all.get( myThread ) );
+    
+    var st = all.get( myThread );
+    core.core.sys.pieces.thread( myThread , st );
     print = savePrint;
     
     if ( f && ! buf.match( f ) )

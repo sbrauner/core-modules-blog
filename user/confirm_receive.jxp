@@ -25,6 +25,7 @@ try {
     }
 }
 catch (e) {
+    log.user.confirm_receive.debug("Caught e" + e.toString());
     User.abort(e);
 }
 

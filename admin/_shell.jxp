@@ -15,23 +15,76 @@ if ( ! holder ){
     gg.setTLPreferred( s );
 }
 
+
 var theScope = holder[ shellId ];
-if ( ! theScope ){
-    theScope = gg.child( "_shell scope : " + shellId );
-    theScope.setGlobal( true );
-    holder[ shellId ] = theScope;
+var populate = function(theScope){
     // FIXME: run the stored session commands here to populate the scope??
     // Load the scope from the DB?? Not sure..
 
-    theScope.__clear = function(){
+    theScope.clearCommandHistory = function(){
         db.shell.sessions.remove({user: user});
-    }
+        print.termCommand("reload");
+    };
+
+    theScope.clearScope = function(){
+        for(var key in theScope){
+            delete theScope[key];
+        }
+    };
+
+    theScope.clearTranscript = function(){
+        print.termCommand("clear");
+        return "";
+    };
+
+    theScope.clearAll = function(){
+        theScope.clearScope();
+        theScope.clearTranscript();
+    };
+
+    theScope.setPrompt = function(prompt){
+        print.termCommand("setprompt", {$prompt: prompt});
+        user.shell = user.shell || {};
+        user.shell.prompt = prompt;
+        db.users.save(user);
+    };
 }
+
+if ( ! theScope ){
+    log("Creating scope for " + shellId);
+    parent = gg.child( "_shell scope parent : " + shellId );
+    populate(parent);
+    theScope = parent.child( "_shell scope : " + shellId );
+    theScope.setGlobal( true );
+    holder[ shellId ] = theScope;
+}
+
 theScope.setGlobal( true );
 var res = null;
 var exc = null;
 var oldprint = print;
-var buffer = Ext.buffer();
+
+var Buffer = function(){
+    var _buffer = [];
+    return Object.extend(function(s){
+        if(_buffer.length == 0 || _buffer[_buffer.length-1].$command)
+            _buffer.push(s.toString());
+        else
+            _buffer[_buffer.length-1] += s;
+
+    }, {
+        termCommand: function(command, args){
+            // args is an Object
+            args = args || {};
+            _buffer.push(Object.extend(args, {$command: command}));
+        },
+        getBuffer: function(){
+            return _buffer;
+        }
+    });
+};
+
+var buffer = Buffer();
 print = buffer;
 try {
     res = theScope.eval( request.command , "aaaa" + shellId , null );
@@ -51,6 +104,12 @@ print( tojson( res ) );
 if(request.save == "true"){
     // Only the client knows whether to save this command.
     var session = db.shell.sessions.findOne({user: user});
+    if(session == null) 
+        // Is this an error? or is it because the session was just removed?
+        return;
+    if(session.user == null)
+        // DBRef breakage; the user isn't really on this site?
+        return;
     session.push(request.command, tojson(res));
     db.shell.sessions.save(session);
 }

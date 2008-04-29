@@ -19,7 +19,8 @@ xml = {
         return s;
     } ,
 
-    to : function( append , name , obj , indent ){
+    to : function( append , name , obj , indent , isPrettyPrint ){
+        isPrettyPrint = (typeof(isPrettyPrint) == "boolean")? isPrettyPrint : "true";
 
         if ( ! indent ) indent = 0;
 
@@ -29,7 +30,9 @@ xml = {
         var newLine = false;
 
         if ( name && name != "PCDATA" ){
-            xml._indent( append , indent );
+            if(isPrettyPrint)
+                xml._indent( append , indent );
+
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
@@ -53,7 +56,9 @@ xml = {
         else if ( isObject( obj ) ){
 
             newLine = true;
-            append( "\n" );
+            if(isPrettyPrint)
+                append( "\n" );
+
             for ( var prop in obj ){
                 if ( prop == "_props" || prop == "_name" || prop == "$" || prop == "children" )
                     continue;
@@ -61,9 +66,9 @@ xml = {
                 var child = obj[prop];
 
                 if ( isArray( obj ) && isObject( child ) && child._name && prop.match( /\d+/ ) )
-                    xml.to( append , null , child , indent + 1 );
+                    xml.to( append , null , child , indent + 1, isPrettyPrint );
                 else
-                    xml.to( append , prop , child , indent + 1 );
+                    xml.to( append , prop , child , indent + 1, isPrettyPrint );
             }
         }
         else {
@@ -71,16 +76,20 @@ xml = {
         }
 
         if ( isObject( obj ) && obj["$"] )
-            xml.to(append, null, obj["$"], indent+1);
+            xml.to(append, null, obj["$"], indent+1, isPrettyPrint);
 
         if ( isObject( obj ) && isArray(obj.children) )
-            xml.to(append, null, obj.children, indent+1);
+            xml.to(append, null, obj.children, indent+1, isPrettyPrint);
 
 
         if ( name && name != "PCDATA" ){
-            if ( newLine )
-                xml._indent( append , indent );
-            append( "</" + name + ">\n" );
+            if(isPrettyPrint) {
+                if ( newLine )
+                    xml._indent( append , indent );
+                append( "</" + name + ">\n" );
+            } else {
+                append( "</" + name + ">" );
+            }
         }
 
     } ,
@@ -97,12 +106,13 @@ xml = {
     } ,
 
     fromString : function( s ){
+        s = s.replace(/<!--.*?-->/gm, "");
         return xml.from(xml._xmlTokenizerchar(s));
     },
 
     _re_nonspace : /[^ \t\n]/,
     _re_space : /[ \t\n]/,
-    _re_word : /[^\w&;]/,
+    _re_word : /[^\w&;:]/,
     _re_close_cdata: /\]\]>/,
 
     _xmlTokenizerre : function( s ){
@@ -139,6 +149,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
@@ -231,6 +242,7 @@ xml = {
                     return "<";
                 }
                 var next = sub.indexOf("<");
+                if(next == -1) next = sub.length;
                 s = sub.substring(next, sub.length);
                 // CDATA node
                 return content.HTML.unescape_html(sub.substring(0, next).trim());
@@ -257,7 +269,7 @@ xml = {
                 }
                 if(!tagName){
                     i = 0;
-                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i]) || sub[i] == ":") ++i;
                     var s2 = i;
                     s = s.substring(start+s2, s.length);
                     tagName = true;
@@ -265,7 +277,7 @@ xml = {
                 }
                 if(!attrName){
                     i = 0;
-                    while(isAlpha(sub[i]) || isDigit(sub[i])) ++i;
+                    while(isAlpha(sub[i]) || isDigit(sub[i]) || sub[i] == ":") ++i;
                     var s2 = i;
                     s = sub.substring(s2, sub.length);
                     attrName = true;
@@ -303,7 +315,14 @@ xml = {
         }
         else tokenizer.lookahead = next;
 
-        return xml._from(tokenizer)[0]; // root is always one element
+        var root = xml._from(tokenizer);
+        if(typeof root != "object"){
+            throw "root is not an element";
+        }
+        if(root.length != 1){
+            throw "things outside of root";
+        }
+        return root[0]; // root is always one element
     } ,
 
     _from : function( tokenizer ){
@@ -348,7 +367,7 @@ xml = {
                     if(next == "<"){ tokenizer(); next = tokenizer(); }
                     tokenizer();
                     if(name != next) {
-                        print ("Error: malformed XML -- "+name+" does not match "+next);
+                        throw ("Error: malformed XML -- "+name+" does not match "+next);
                     }
                 }
                 else var result = null;

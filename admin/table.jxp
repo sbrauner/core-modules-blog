@@ -1,0 +1,416 @@
+<%
+core.ext.pluck();
+core.io.marshal();
+core.io.encode.json();
+core.db.db();
+core.content.html();
+core.content.html();
+
+var collection;
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
+
+// Table display options
+var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
+var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
+var totalNumPages;
+
+/* get sort obj */
+var mySort = {};
+if(request.sortcol && request.sortcol != "_id") {
+    mySort[request.sortcol] = request.sortdir;
+}
+
+// Print validation information
+if(request.action == "validation") {
+    if(request.ns == "") {
+        print("No table chosen.");
+        return;
+    }
+
+    var x = validate(request.ns);
+    print(x.result ? x.result : x.errmsg);
+    return;
+}
+
+// Return one row (row edit uses this)
+if(request.ns && request.id) {
+    collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
+    x = collection.findOne({ _id : request.id });
+    if(!x) {
+        print("-1");
+        return;
+    }
+
+    var getObjTypes = function(x) {
+        var type = {};
+        for(var i in x) {
+            if(x[i] == null)
+                type[i] = null;
+            else if( x[i] instanceof Date)
+                type[i] = "Date";
+            else if(typeof x[i] == "object")
+                type[i] = getObjTypes(x[i]);
+            else if(i != "_id" && !ignore[i])
+                type[i] = typeof x[i];
+        }
+        return type;
+    }
+
+    myObj = {};
+    myObj.val = x;
+    myObj.type = getObjTypes(x);
+    print(tojson_u(myObj));
+    return;
+}
+
+var top = request.ns == null;
+var rows;
+var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
+
+// dbprofile
+if(request.action == "searchprofile") {
+    var searchObj = {};
+    var dateStart, dateEnd;
+    if(request.time_from) {
+        var t1 = request.time_from, t2 = request.time_to;
+        dateStart = new Date(t1.substring(0,4), t1.substring(5,7), t1.substring(8,10), t1.substring(11,13), t1.substring(14,16), t1.substring(17,19));
+        dateEnd = new Date(t2.substring(0,4), t2.substring(5,7), t2.substring(8,10), t2.substring(11,13), t2.substring(14,16), t2.substring(17,19));
+        searchObj.ts = { $gte: dateStart, $lte: dateEnd };
+    }
+    if(request.ms_from) {
+        searchObj.millis = { $gte : parseInt(request.ms_from), $lte : parseInt(request.ms_to) };
+    }
+    if(request.re) {
+        searchObj.info = new RegExp(request.re, "i");
+    }
+    if(request.record_type && request.record_type != "all") {
+        searchObj.info = new RegExp("^"+request.record_type+".*");
+    }
+
+    rows = db.system.profile.find( searchObj ).toArray();
+    top = false;
+}
+// dbview
+else if(request.action == "search") {
+    collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
+    var searchobj = {};
+    var tempLive;
+    if(top) {
+        q = "";
+        if(request.name)
+            q = request.name;
+        if(request.index)
+            q = q+"\\$.*"+request.index;
+        var query = new RegExp(".*"+q+".*", "i");
+        searchobj["name"] = query;
+    }
+    for(q in request) {
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
+            continue;
+        if(top && (q == "index" || q == "name"))
+            continue;
+
+        var query = new RegExp(".*"+request[q]+".*", "i");
+        searchobj[q] = query;
+    }
+    if(top)
+        rows = collection.find(searchobj).sort(mySort).toArray();
+    else
+        rows = collection.find(searchobj).sort(mySort).toArray();
+
+}
+else if(request.action == "eval") {
+    try {
+        var collection = scope.eval(request.cmd);
+        rows = collection;
+        if(!rows)
+            rows = db[request.ns.substring( request.ns.indexOf('.')+1 )].find();
+        rows = rows.toArray();
+        top = false;
+    }
+    catch(e) {
+        log("e: "+e);
+        return -1;
+    }
+}
+else {
+    var collection;
+    if( top ) {
+        collection = db["system.namespaces"];
+        collection.ensureIndex( {name:true} );
+        rows = collection.find().sort( { name : 1 } ).toArray();
+    }
+    else {
+        collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+        rows = collection.find().toArray();
+    }
+}
+/* if this is a log, the rows should be in the opposite order */
+if(request.reverse)
+    rows.reverse();
+
+/* get the paging info and only return the necessary rows */
+if(top) {
+    var numrows = 0;
+    for(var i=0; i<rows.length; i++) {
+        if(rows[i].name.indexOf("$") == -1) {
+            numrows++;
+        }
+    }
+    totalNumPages = Math.floor((numrows - 1) / rowsPerPage ) + 1;
+}
+else {
+    totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
+}
+
+if(currentPage > totalNumPages && totalNumPages > 0)
+    currentPage = totalNumPages;
+
+var start = (currentPage - 1)*rowsPerPage;
+
+/* if this is all collections, indices will be listed as rows. */
+if(top) {
+    var urow = [];
+    tableCount = -1;
+    for(var i=0; i<rows.length; i++) {
+        if(rows[i].name.indexOf("$") == -1) {
+            tableCount++;
+        }
+        if(start <= tableCount && tableCount <= start+rowsPerPage)
+            urow.push(rows[i]);
+    }
+    rows = urow;
+}
+else {
+    rows = rows.splice(start, rowsPerPage);
+}
+
+
+var dbTable = { rows: [] };
+dbTable.totalNumPages = totalNumPages;
+dbTable.currentPage = currentPage;
+dbTable.rowsPerPage = rowsPerPage;
+
+
+var fields = [];
+var f = {};
+for( var i=0; i < rows.length; i++ ) {
+    for( var e in rows[i] ) {
+        if( !f[e] ) f[e] = 1;
+    }
+}
+if(top) { fields.push("name"); fields.push("index"); }
+for( var i in f) {
+    fields.push(i);
+}
+
+if( top ) {
+    var k = 0;
+    for( var i=0; i < rows.length; i++ ) {
+        var j=0;
+        dbTable.rows[k] = {};
+
+        var obj=rows[i];
+        var currentRow = obj;
+        dbTable.rows[k][fields[j++]] = obj.name;
+        dbTable.rows[k][fields[j]] = "";
+        while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
+            obj = rows[++i];
+            var idx=top ? obj.name.indexOf("$") : -1;
+            if( obj.name && idx>=0 ) {
+	        var idxname = obj.name.substring(idx+1);
+                dbTable.rows[k][fields[j]] += '<input type="checkbox" name="'+dbTable.rows[k].name.substring(dbTable.rows[k].name.indexOf(".")+1)+'" value="'+idxname+'" /> index '+idxname+" ";
+	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
+	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
+            }
+        }
+        dbTable.rows[k].fixed = (currentRow.capped) ? currentRow.capped : "";
+        k++;
+    }
+}
+else
+    dbTable.rows = rows;
+
+
+
+
+
+/* Formatting */
+
+var fcount = 0;
+
+if(top) {
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+}
+else {
+    var th = [];
+    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        th.push({"name" : i, className: "" });
+    }
+    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
+
+    idFormatter = function(oData) {
+        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
+
+    deleteBtnFormatter = function(id) {
+        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
+    }
+
+    var objcount = 0;
+    function printObj(cursor, field) {
+        if(!cursor || !cursor[field]) return;
+        var text = "";
+
+        if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+        }
+        else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+        } else if(typeof cursor[field] == "object") {
+            var name;
+            var desc;
+            if(cursor[field] instanceof Date) {
+                name = field;
+                desc = cursor[field].toString();
+            }
+            else if(cursor[field] instanceof Array) {
+                name = field;
+                desc = "["+cursor[field].length+"]";
+            }
+            else {
+                name = field;
+                desc = "{...}";
+            }
+            text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+            var tempobj = objcount;
+            objcount++;
+            for(var q in cursor[field]) {
+                text += printObj(cursor[field], q);
+            }
+            text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+        } else {
+            text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+        }
+        return text;
+    }
+
+
+    strFormatter = function(obj, field) {
+        if(field in obj && !obj[field]) {
+            return '<div class="nullfield">null</div>';
+        }
+        else if (!obj[field]) {
+            return '<div class="nullfield"><b>-</b></div>';
+        }
+        else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
+            return obj[field];
+        }
+        else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
+            var subobj = obj[field];
+            var str = "";
+            var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
+            fcount++;
+
+            if (subobj instanceof Date) {
+                fullText += subobj.toString();
+                str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+            }
+            else if (typeof subobj == "object") {
+                for(var q in subobj)
+                    fullText += printObj(subobj, q);
+                str = '<span class="partialText" style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText += subobj;
+                str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+            }
+            fullText += '</div>';
+            return str+fullText;
+        }
+        else
+            return obj[field];
+    }
+}
+
+dbTable.top = top;
+if(top) {
+    dbTable.idxes = {};
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
+        dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
+    }
+}
+else if(request.action != "searchprofile") {
+    // get any indices for the collection
+    var idxObj = {};
+    idxObj.name = new RegExp(request.ns+"\\.\\$");
+    var idxes = db["system.namespaces"].find(idxObj).toArray();
+    dbTable.idxes = {};
+    // indices are of the form namespace.collection.specifier.$idxname_1, and we only want idxname
+    for(var i in idxes) {
+        idxes[i] = idxes[i].name.substring(idxes[i].name.indexOf("$")+1);
+        // some names might have underscores in them (e.g., _system) and indices can have multiple fields, so this is done seperately
+        dbTable.idxes[idxes[i].substring(0, idxes[i].indexOf("_"))] = 1;
+    }
+    for(var i in dbTable.rows) {
+        if("_id" in f) dbTable.rows[i].id = "";
+        for(var field in th) {
+            if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
+            else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
+        }
+    }
+}
+else { //format date for dbprofile
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].ts = dbTable.rows[i].ts.format("E MMM dd, yyyy HH:mm:ss");
+    }
+}
+
+var page = [];
+var pageStart = Math.max(1, dbTable.currentPage-2);
+var pageEnd = Math.min(parseInt(dbTable.totalNumPages), parseInt(dbTable.currentPage)+2);
+
+for(var i=pageStart; i<=pageEnd; i++) {
+    if(dbTable.currentPage == i) {
+        if(i < 10)
+            page.push({ name: i, className: "active" });
+        else
+            page.push({ name: i, className: "modactive" });
+    }
+    else {
+        if(i < 10)
+            page.push({ name: i, className: "" });
+        else
+            page.push({ name: i, className: "mod" });
+    }
+}
+
+var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
+var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
+dbTable.colspan = th.length;
+
+if(request.action == "searchprofile") {
+    if(dbTable.rows.length == 0) {
+        dbTable.colspan = 3;
+    }
+    core.admin.pieces.dbprofileTable( { th: th,
+                             table: dbTable,
+                             page: page,
+                             prevPage: prevPage,
+                             nextPage: nextPage  });
+}
+else {
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
+}
+
+
+%>

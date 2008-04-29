@@ -1,0 +1,1 @@
+ws.impl.triggermail = Object();

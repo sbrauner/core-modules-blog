@@ -11,4 +11,5 @@ a.forEach( function(z){ %>
 
 
 %>
+<% core.ui.elements.refreshTimer(); %>
 <hr>

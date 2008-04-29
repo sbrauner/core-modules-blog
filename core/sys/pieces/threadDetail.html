@@ -1,0 +1,52 @@
+<h3>$getName()</h3>
+<table>
+  <tbody>
+    <tr>
+      <td>Process detail</td>
+      <td><a href="threadDetail?id=$getId()">$getId()</a></td>
+    </tr>
+    <tr>
+      <td>Context</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td>$getState()</td>
+    </tr>
+    <tr>
+      <td>Runtime</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Instance</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Stack Trace</td>
+      <td>
+        <% arguments[1].forEach( function( z ){ 
+           z = holder.fix( z );
+	   if ( z == null ) return;
+           z = z.toString();
+           var cls = "";
+	   if ( z.startsWith( "ed.js.gen." ) ) cls = "js";
+	   else if ( z.startsWith( "ed." ) ) cls = "ed";
+           %>
+        <li class="<%= cls %>" ><%= z %></li>
+        <% } ); %>
+      </td>
+    </tr>
+    <tr>
+      <td>Scope</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Request</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Response</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>

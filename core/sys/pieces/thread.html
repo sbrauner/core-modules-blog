@@ -1,8 +1,11 @@
 <div>
+  <a href="threadDetail?id=$getId()">$getId()</a>
    $getName() $getState()
    <br>
    <ul> 
      <% arguments[1].forEach( function( z ){ 
+          z = holder.fix( z );
+	  if ( z == null ) return;
           z = z.toString();
           var cls = "";
 	  if ( z.startsWith( "ed.js.gen." ) ) cls = "js";

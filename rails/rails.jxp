@@ -1,0 +1,34 @@
+<%
+// this is the main entry point into rails
+
+if ( ! Rails.ready ){
+    core.rails.start();
+    //Rails.ready = true;
+}
+
+// setup rails globals
+flash = {};
+flash.notice = "";
+
+// find the controller
+
+matchingRoute = Rails.routes.find( request );
+
+if ( ! matchingRoute )
+    return print( "no route for : " + request.getURI() );
+
+myController = null;
+for ( var i=0; i<Rails.controllers.length; i++ ){
+    if ( Rails.controllers[i].shortName == matchingRoute.controller ){
+        myController = Rails.controllers[i];
+        break;
+    }
+}
+
+if ( ! myController )
+    return print( "can't find controller [" + matchingRoute.controller + "]" );
+
+
+myController.dispatch( request , response , matchingRoute );
+%>
+

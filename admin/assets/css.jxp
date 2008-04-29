@@ -24,12 +24,6 @@ color: #fff;
 text-decoration: none;
 }
 
-table {
-        padding: 0;
-        margin: 0 auto;
-        border-collapse: collapse;
-}
-
 th {
         background: #444;
         color: #fff;
@@ -49,13 +43,6 @@ th.nobg {
         border-left: 0;
         border-right: 1px solid #C1DAD7;
         background: none;
-}
-
-td {
-        padding: 5px;
-    border: 1px solid #aaa;
-        color: #000;
-        padding: 5px;
 }
 
 th.spec {
@@ -150,13 +137,6 @@ div#customer_body {
     background: <%= header_dark_red %>;
 }
 
-.transcript {
-    margin-left: auto;
-    margin-right: auto;
-    width: 75% !important;
-    float: left;
-}
-
 #treeview {
     float: right;
     width: 20%;
@@ -175,74 +155,16 @@ div#customer_body {
     clear: both;
 }
 
-.prompt {
-    color: #f0f;
-    margin-right: .75em;
-}
-
-.pastprompt {
-    color: #888;
-}
-
-.usercmd {
-    color: #000;
-}
-
-.response {
-    color: #00f;
-}
-
-.historyLink {
-    cursor: pointer;
-}
-
-.historyLink[class~="highlight"] {
-    border: 1px #0bb solid;
-}
-
-.faded {
-    opacity: 0.5;
-}
-
-#console {
-    font-size: 100%;
-}
-
-#console .yui-log-bd {
-    height: 80%;
-}
-
-/* Taken from the YUI docs */
-#commandautocomplete {
-    text-align: left;
-    padding-bottom: 2em;
-    width: 70% !important;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* For the single-terminal-window look */
-#console textarea {
-    width: 90% !important;
-    border: none;
-}
-
 #login_status {
    position: absolute;
    top: 0px;
    right: 0px;
 }
 
-/*
 div.obj {
     display: none;
-    position: absolute;
-    background: white;
-    padding: 10px;
-    border: 1px black solid;
+    padding-left: 20px;
 }
-*/
-
 div.parent {
     cursor: pointer;
 }
@@ -252,6 +174,18 @@ label.obj {
     margin-right: 5px;
     text-align: left;
 }
+div.bd div.elem {
+    padding-bottom: 10px;
+}
+div.fullText {
+    display: none;
+    position: absolute;
+    max-width: 400px;
+    padding: 5px;
+    border: 1px solid black;
+    background: white;
+}
+
 
 /* xgenAdminTopNav start */
 #filemenu.visible .yuimenuitemlabel, #editmenu.visible .yuimenuitemlabel { *zoom: 1; }
@@ -272,3 +206,4 @@ em#gitLabel { background: url('/~~/admin/assets/plugin.png') 0% 40% no-repeat; p
 em#editorLabel { background: url('/~~/admin/assets/application_edit.png') 0% 40% no-repeat; padding-left: 20px; }
 em#logoutLabel { background: url('/~~/admin/assets/cancel.png') 0% 40% no-repeat; padding-left: 20px; }
 /* xgenAdminTopNav end */
+

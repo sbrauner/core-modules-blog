@@ -6,7 +6,7 @@ admin.data.ShellSession = function(user){
     // Array of commands.
     this.commands = [];
     this.inputs = [];
-    this._dbCons = admin.data.ShellSession.Commmand;
+    this.commands._dbCons = admin.data.ShellSession.Commmand;
 
     // DBRef to db.users
     this.user = user || null;
