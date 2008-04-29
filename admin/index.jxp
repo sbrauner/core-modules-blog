@@ -50,6 +50,8 @@ var sectionMap = {
     'logScroll': ['system', 'logs', 'logScroll'],
     'logMemory': ['system', 'logs', 'logMemory'],
 
+    'shell': ['system', 'shell'],
+
     'editor': ['editor', 'editor'],
     'gitLocal': ['git', 'git'],
 
