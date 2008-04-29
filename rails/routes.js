@@ -1,4 +1,6 @@
 
+Rails.idRegex = /[0-9a-fA-F]{24}/;
+
 ActionController = {};
 
 ActionController.Routing = {};
@@ -117,7 +119,7 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
     this.connect( "/" + r + "/:id" , { controller : r , 
                                        method : "GET" , 
                                        action : "show" ,
-                                       id : /\d+/
+                                       id : Rails.idRegex
                                      } );
     
 };
@@ -145,4 +147,16 @@ ActionController.Routing.Routes.prototype.find = function( request ){
         return theRoute;
     }
     return null;
+};
+
+
+ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
+
+    if ( ! thing )
+        //throw "can't link to null";
+        return "/BROKEN";
+    
+    if ( thing.collectionName ){
+        return "/" + thing.collectionName + "s/" + thing._id;
+    }
 };

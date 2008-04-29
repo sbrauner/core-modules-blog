@@ -1,8 +1,10 @@
 
 ActiveRecord = {};
 
-ActiveRecord.Base = function(){
+ActiveRecord.Base = function( obj ){
     this.collectionName = null;
+    if ( obj )
+        Object.extend( this , obj );
 };
 
 ActiveRecord.Base.prototype._isModel = true;
@@ -17,14 +19,27 @@ ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
     
     var jsFilter = {};
-    if ( filter == "all" ){
+    if ( filter == null || filter == "all" ){
+    }
+    else if ( isString( filter ) && filter.length == 24 ){
+        return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
     
     return db[ this.collectionName ].find();
 };
 
+// ---------
+// save/update/etc... stuff
+// ---------
 
+ActiveRecord.Base.prototype.save = function(){
+    db[this.collectionName].save( this );
+    return true;
+};
+
+// ---------
 // form stuff
+// ---------
 
 ActiveRecord.Base.prototype.text_area = function( name ){
     return "<textarea " + 

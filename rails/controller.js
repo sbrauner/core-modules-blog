@@ -42,10 +42,10 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
     };
     
     funcScope.respond_to = function( b ){
-        b( appResponse );
+        b.call( appResponse.requestThis , appResponse );
     };
     
-    funcScope.params = request;
+    funcScope.params = new Rails.Params( request , matchingRoute );
 
     // --- invoke action
 
@@ -90,6 +90,14 @@ function ApplicationResponse( controller , method ){
 };
 
 ApplicationResponse.prototype.html = function(){
+
+    var blah = this.requestThis;
+
+    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
+        arguments[0].call( blah );
+        return;
+    }
+
     if ( ! local.app.views )
         throw "no views directory";
     
@@ -97,13 +105,14 @@ ApplicationResponse.prototype.html = function(){
         throw "no view directory for : " + this.controller.shortName;
    
     var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
+    if ( ! template )
+        throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );
     
     var layout = null;
     if ( local.app.views.layouts )
         layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
     
-    var blah = this.requestThis;
 
     if ( layout ){
         // TODO: fix this...

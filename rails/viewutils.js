@@ -1,9 +1,5 @@
 
 
-link_to = function( pretty ){
-    return "<a href='#'>" + pretty + "(broken)</a>";
-};
-
 error_messages_for = function( what ){
     return "(this should be error messages for: " + what + ")<br>";
 };
@@ -13,7 +9,7 @@ form_for = function( what , frm ){
     if ( ! what )
         throw "form_for passed null";
 
-    print( "<form action='broken' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>" );
+    print( "\n<form action='/" + myController.shortName + "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
 
     var newThing = what;
     if ( isFunction( what ) ){
@@ -21,12 +17,29 @@ form_for = function( what , frm ){
     }
 
     frm( newThing );
-    print( "</form>" );
+    print( "\n</form>\n" );
 };
+
+// -----
+// -- ui 
+// -----
+
 
 stylesheet_link_tag = function( name ){
     return "<link href='/stylesheets/" + name + ".css' media='screen' rel='stylesheet' type='text/css' />";
 }
+
+// TODO: ???
+
+h = function( thing ){
+    return thing; 
+}
+
+link_to = function( pretty , thing ){
+    return "<a href='" + Rails.routes.getLinkFor( thing ) + "'>" + pretty + "(broken)</a>";
+};
+
+
 
 // crap
 
@@ -34,3 +47,6 @@ edit_person_path = function(){
   return "broken";
 };
 
+edit_todo_path = function(){
+    return "broken";
+};

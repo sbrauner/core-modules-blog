@@ -17,7 +17,7 @@ matchingRoute = Rails.routes.find( request );
 if ( ! matchingRoute )
     return print( "no route for : " + request.getURI() );
 
-var myController = null;
+myController = null;
 for ( var i=0; i<Rails.controllers.length; i++ ){
     if ( Rails.controllers[i].shortName == matchingRoute.controller ){
         myController = Rails.controllers[i];
