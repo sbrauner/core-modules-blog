@@ -4,6 +4,7 @@
 // amount of code that _shell has to run (i.e. improves latency of response.
 // Also, we need it here. (oops)
 core.admin.data.shellsession();
+core.admin.data.bash();
 core.ext.pluck();
 core.ext.buffer();
 
@@ -187,7 +188,7 @@ loader.insert({
                         var p = obj.$printed[i];
 
                         if(typeof(p) == "string")
-                            s += "<span class=\"output\">" + p + "</span><br/>";
+                            s += "<span class=\"output\">" + p.replace(/\n/g, '<br/>') + "</span><br/>";
                         else if(p.$command == "clear"){
                             s = "";
                             clearTranscript();
