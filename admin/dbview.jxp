@@ -167,7 +167,11 @@ function sortBy(col) {
     oldSort = YAHOO.util.Dom.getElementsByClassName("sort-down");
     if(oldSort.length > 0) oldSort[0].className = "";
 
-    document.getElementById("col"+col).className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
+    var column = document.getElementById("col"+col);
+    if(!column)
+        column = document.getElementById("col"+col.toUpperCase());
+
+    column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
 }
 
 function showObj(i) {
