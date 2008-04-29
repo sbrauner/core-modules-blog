@@ -1,5 +1,5 @@
+<form action="/~~/admin/user.jxp"> &nbsp; <input type="submit" value="New User"></form>
 <p>
-<div> &nbsp; <a href="/~~/admin/user.jxp">New User</a></div>
 <%
 
  var tab = new htmltable( 
