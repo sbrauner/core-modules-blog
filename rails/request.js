@@ -1,26 +1,9 @@
 
 Rails.Params = function( request ){
 
-    for ( var foo in request ){
+    for ( var foo in request )
         this.__add( this , foo , request[foo] );
-        /*
-        var r = /^(\w+)\[(.*)\]$/.exec( foo );
-        if ( ! r ){
-            this[foo] = request[foo];        
-            continue;
-        }
-        
-        var o = this[r[1]];
-        if ( ! o ){
-            o = {};
-            this[r[1]] = o;
-        }
-        
-        o[r[2]] = request[foo];
-*/
-    }
     
-    SYSOUT( "*** " + tojson( this ) );
 };
 
 Rails.Params.prototype.__add = function( obj , name , value ){
