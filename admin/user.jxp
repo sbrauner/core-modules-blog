@@ -32,8 +32,16 @@ if ( u && request.action == "save"){
 	else 
 	   print( "passwords don't match" );
    }
+    
+    var newUser;
+    if ( ! u._id ) {
+        newUser = true;
+    }
 
    db.users.save( u );
+    if(newUser){
+        response.sendRedirectTemporary("/~~/admin/users");
+    }
 }
 	
 print.setFormObject( u );
