@@ -1,8 +1,10 @@
 
 ActiveRecord = {};
 
-ActiveRecord.Base = function(){
+ActiveRecord.Base = function( obj ){
     this.collectionName = null;
+    if ( obj )
+        Object.extend( this , obj );
 };
 
 ActiveRecord.Base.prototype._isModel = true;
@@ -28,7 +30,8 @@ ActiveRecord.Base.prototype.find = function( filter ){
 // ---------
 
 ActiveRecord.Base.prototype.save = function(){
-    throw "save called on [" + this.collectionName + "]" + tojson( this );
+    db[this.collectionName].save( this );
+    return true;
 };
 
 // ---------

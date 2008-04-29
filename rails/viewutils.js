@@ -24,9 +24,20 @@ form_for = function( what , frm ){
     print( "\n</form>\n" );
 };
 
+// -----
+// -- ui 
+// -----
+
+
 stylesheet_link_tag = function( name ){
     return "<link href='/stylesheets/" + name + ".css' media='screen' rel='stylesheet' type='text/css' />";
 }
+
+// TODO: ???
+h = function( thing ){
+    return thing; 
+}
+
 
 // crap
 
@@ -34,3 +45,6 @@ edit_person_path = function(){
   return "broken";
 };
 
+edit_todo_path = function(){
+    return "broken";
+};
