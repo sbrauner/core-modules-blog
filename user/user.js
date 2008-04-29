@@ -98,8 +98,12 @@ User.prototype.presave = function( ){
 
     log.user.presave.debug("using duplicate-checking function " + isDuplicate);
 
-    if(isDuplicate({name: this.name}) || isDuplicate({email: this.email}) )
-        throw "trying to save duplicate user: " + tojson(this);
+    if(isDuplicate({name: this.name})){
+        throw "user has duplicate name: " + this.name;
+    }
+    if( isDuplicate({email: this.email}) ){
+        throw "user has duplicate email: " + this.email;
+    }
 
     this.uniqueness_hash = md5(this.name + ":" + this.email + ":" + this.nickname);
 };
