@@ -1,4 +1,8 @@
 <% 
+if(request.action == "cancel"){
+    return response.sendRedirectTemporary("/~~/admin/users");
+}
+
 var u = null;
 if ( request._id )
 	u = db.users.findOne( { _id : CrID( request._id ) } );
@@ -48,6 +52,7 @@ print.setFormObject( u );
 
   <input type="hidden" name="_id">
   <input type="submit" name="action" value="save">
+  <input type="submit" name="action" value="cancel">
 </form>
 
 <form method="post" action="user_delete">
