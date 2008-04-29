@@ -129,7 +129,8 @@ img {
 
 #navcontainer ul li {
 	float: left;
-	padding: 0 20px 0 13px;
+	margin: 0 1.5em;
+	padding: 0 0 0 0;
 	height: 24px;
 }
 
@@ -191,6 +192,7 @@ img {
 
 td.maincontent td {
 	padding: 0 0 1em 0;
+	vertical-align: top;
 }
 
 td.maincontent div.links-table {
@@ -227,7 +229,7 @@ td.maincontent div.links-table a:hover.external {
 }
 
 td.maincontent p.abstract {
-	margin: 1em 0 0 0;
+	margin: 1em 5px 0 0;
 	padding: 0;
 }
 
@@ -238,6 +240,22 @@ td.maincontent .msg {
 
 td.maincontent p.abstract a {
 	font-size: 12px;
+}
+
+td.maincontent ul {
+	margin-left: 0;
+}
+
+td.maincontent ul.small-text {
+	font-size: 11px;
+}
+
+td.maincontent .shell {
+	width: 100%;
+	height: 8em;
+	border: 1px solid #cccccc;
+	padding: .2em;
+	line-height: 1.3em;
 }
 
 /* Search Table */
@@ -268,6 +286,7 @@ select {
 
 input.text {
 	padding: 1px;
+	height: 15px;
 }
 
 td.maincontent tr.search-table td.right {
@@ -687,12 +706,18 @@ td.maincontent div.links-table a:hover.external {
 /* Footer */
 
 p.footer {
-	margin-top: 5em;
-	text-align: center;
+	margin: 1em 15px 4em 15px;
+	padding: 0;
+	text-align: right;
 	font-size: 11px;
+	color: #aaaaaa;
 }
 
 /* Layout */
+
+div.float-left {
+	float: left;
+}
 
 div.float-right {
 	float: right;
@@ -746,4 +771,19 @@ td div.nofield {
 td div.nullfield {
     color: #CCCCCC;
     font-style: italic;
+}
+
+div.twocolumns {
+	overflow: auto;
+	width: 100%
+}
+
+div.twocolumns div.left {
+	width: 45%;
+	float: left;
+}
+
+div.twocolumns div.right {
+	width: 45%;
+	float: right;
 }
