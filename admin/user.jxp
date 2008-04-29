@@ -48,7 +48,7 @@ print.setFormObject( u );
 %>
 <br>
 <form method="post">
-  <b>Edit User Object</b><p>
+  <b><%= request._id ? "Edit User Object" : "New User" %></b><p>
   Name: <input name="name"><br>
   Email: <input name="email"><br>
   NickName: <input name="nickname"><br>
