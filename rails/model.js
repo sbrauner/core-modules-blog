@@ -42,7 +42,16 @@ ActiveRecord.Base.prototype.save = function(){
 ActiveRecord.Base.prototype.update_attributes = function( other ){
     Object.extend( this , other );
     return this.save();
-}
+};
+
+ActiveRecord.Base.prototype.destroy = function(){
+
+    if ( ! this._id )
+        return true;
+    
+    db[this.collectionName].remove( { _id : this._id } );
+    return true;
+};
 
 // ---------
 // form stuff
