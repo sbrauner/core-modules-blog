@@ -20,9 +20,10 @@ var g = new git.Repo();
 
 
 var output = "";
+var revid;
 
 var showHeader = function(){
-    var revid = g.getCurrentRev().parsed.rev;
+    revid = g.getCurrentRev().parsed.rev;
     var revmsg = g.getCommit(revid).parsed.message;
     revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
     core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
@@ -35,9 +36,13 @@ var showHeader = function(){
 var output_command = function(foo){
     log(tojson(foo));
     output += (content.HTML.escape(foo.cmd) + "<br>");
-    output += ("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
-               content.HTML.escape(foo.err) + "</pre>");
-    output += ("<hr>");
+    if(foo.out || foo.err){
+        output += "<pre>";
+        output += content.HTML.escape(foo.out);
+        if(foo.out && foo.err) output += "\n---\n";
+        output += content.HTML.escape(foo.err);
+        output += "</pre>";
+    }
 };
 
 var unmerged = {};
@@ -222,6 +227,11 @@ else if ( request.action && request.action.match(/^unadd_/)){
     var foo = g.rm([fname], {cached: true});
     output_command(foo);
 }
+else if ( request.action && request.action.match(/^add_/)){
+    var fname = request.action.replace(/^add_/, '');
+    var foo = g.add([fname]);
+    output_command(foo);
+}
 
 var parsed = parseStatus();
 
@@ -233,7 +243,7 @@ var buttons = {"changed": changedbuttons,
     'untracked': ['add']};
 
 var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
-    'untracked': [{name: 'add', onclick: "return submitGit('add', '$1')"}]};
+    'untracked': [{name: 'add', onclick: "return submitGit('add_$1')"}]};
 
 var checked = {};
 if(request.changed_file)
