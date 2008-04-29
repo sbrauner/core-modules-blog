@@ -44,6 +44,12 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
     funcScope.respond_to = function( b ){
         b.call( appResponse.requestThis , appResponse );
     };
+
+    funcScope.redirect_to = function( thing ){
+        appResponse.anythingRendered = true;
+        print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
+        return true;
+    };
     
     funcScope.params = new Rails.Params( request , matchingRoute );
 
@@ -59,11 +65,13 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
         if ( ! local.app.views[ this.shortName ] )
             throw "no views directory for " + this.shortName;
         
-        var view = local.app.views[ this.shortName ][method];
+        var view = local.app.views[ this.shortName ][matchingRoute.action];
         if ( ! view )
-            throw "no view for " + this.shortName + "." + method;
+            view = local.app.views[ this.shortName ][matchingRoute.action + ".html" ];
+        if ( ! view )
+            throw "no view for " + this.shortName + "." + matchingRoute.action;
         
-        view();
+        view.call( appResponse.requestThis );
     }
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
@@ -120,6 +128,7 @@ ApplicationResponse.prototype.html = function(){
         
         layout( function(){
             template.apply( blah , arguments );
+            return "";
         } );
     }
     else {

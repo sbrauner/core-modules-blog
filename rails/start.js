@@ -38,6 +38,7 @@ if ( modelsDir.exists() ){
                     continue;
                 
                 model.prototype.setFile( z.filename );
+                model.prototype.setConstructor( model );
 
                 Rails.models.add( model );
                 globals.getParent().putExplicit( name , model );

@@ -17,10 +17,10 @@ core.admin.pieces.logFooter({colspan : colspan});
 
 <div id="debug"></div>
 
-<script>
+<script type="text/javascript">
 
-var pause = false;
 var mostRecent = null;
+var pause = false;
 var all = [];
 
 function togglePause() {
@@ -50,8 +50,14 @@ function updateLog(){
 
 function updateLogHandler( raw ){
     document.getElementById("temp").innerHTML = raw;
-    // For some reason, the jxp is returning 100 text nodes and 100 trs, so we filter out the text nodes
-    var trs = YAHOO.util.Dom.getChildrenBy(document.getElementById("temp").childNodes[1], function(n) {
+    // the jxp is returning 100 text nodes and 100 trs, so we filter out the text nodes
+    var rawlines = document.getElementById("temp").childNodes[1];
+    if(!rawlines || !rawlines.childNodes) {
+        setTimeout( updateLog , 1000 );
+        return;
+    }
+
+    var trs = YAHOO.util.Dom.getChildrenBy(rawlines, function(n) {
         if(n.className == "white-main")
             return true;
         return false;
@@ -76,6 +82,19 @@ function updateLogHandler( raw ){
 
     setTimeout( updateLog , 1000 );
 }
+
+function totalLogRefresh(raw) {
+    var toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+    var parent = toBeRemoved.parentNode;
+    while(rows > 0) {
+        toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+        parent.removeChild(toBeRemoved);
+        rows--;
+    }
+
+    updateLogHandler(raw);
+}
+
 var myDiv = document.createElement("table");
 myDiv.setAttribute("id", "temp");
 myDiv.setAttribute("style", "display:none;");
@@ -104,9 +123,10 @@ function filterResults(id) {
     if(id == "logger") {
         ns = val;
     }
-    ajax("action=filter"+getPassOpts(), "_logScroll", function(res) {
+
+    ajax(getPassOpts(), "_logScroll", function(res) {
        all = [];
-       updateLogHandler(res);
+       totalLogRefresh(res);
     });
 }
 
@@ -118,6 +138,7 @@ function getPassOpts() {
         passData += "&log_level="+log_level;
     if(filterStr != "")
         passData += "&filter="+filterStr;
+    if(passData.length > 0) passData += "&action=filter";
     return passData;
 }
 
@@ -128,6 +149,8 @@ function refreshFilter() {
 
     pause = false;
     mostRecent = null;
+    document.getElementById("filter").value = "";
+    document.getElementById("log_level").options[0].selected = true;
     updateLog();
 }
 

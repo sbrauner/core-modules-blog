@@ -167,7 +167,11 @@ function sortBy(col) {
     oldSort = YAHOO.util.Dom.getElementsByClassName("sort-down");
     if(oldSort.length > 0) oldSort[0].className = "";
 
-    document.getElementById("col"+col).className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
+    var column = document.getElementById("col"+col);
+    if(!column)
+        column = document.getElementById("col"+col.toUpperCase());
+
+    column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
 }
 
 function showObj(i) {
@@ -547,50 +551,13 @@ function editField(id, type, dbid, path) {
 <% } // end of if(!top)
 %>
 
-var createRecordPanel;
-var createTablePanel;
 var viewOptionsPanel;
 var searchFilterPanel;
-
-function addRecord() {
-    createRecordPanel.show()
-}
-
-function createTable() {
-    createTablePanel.show();
-}
-
-function addTable() {
-    var tbl = document.getElementById("createTableForm");
-
-    var passData = "";
-    var children = YAHOO.util.Dom.getChildren(tbl);
-    for(var i=0; i<children.length; i++) {
-        var c = YAHOO.util.Dom.getLastChild(children[i]);
-        if(c.getAttribute("type") == "text")
-             if(c.value != "") passData += "&"+c.name+"="+c.value;
-        if(c.getAttribute("type") == "checkbox")
-             if(c.checked) passData += "&"+c.name+"=true";
-    }
-    ajax("action=create"+passData, "editDb", function(response) {
-        refreshTable();
-    });
-    createTablePanel.hide();
-}
-
-function closeCreateTableDlg() {
-    createTablePanel.hide();
-}
 
 </script>
 
 <%
 core.db.db();
-if(top) {
-    %>
-    <input type="button" value="Create Collection" onclick="createTable()" />
-    <%
-}
 %>
 
 
@@ -598,30 +565,7 @@ if(top) {
 </div>
 
 <%
-if( rows.length >= max )
-    print("<br>Only first " + max + " displayed");
-
-if(top) {
-    %>
-<div id="createTable" style="display:none">
-<div class="hd">Create Collection</div>
-<div class="bd">
-<form id="createTableForm">
-    <div class="elem"><label class="obj">Collection name: </label><input type="text"  name="tablename"></div>
-    <div class="elem"><label class="obj">Fixed: </label><input type="checkbox"  name="fixed"></div>
-    <div class="elem"><label class="obj">Size: </label><input type="text" name="size"></div>
-<div class="elem"><label class="obj">Max: </label><input type="text" name="max"></div>
-</form>
-</div>
-<div class="ft"><input type="button" value="Save" onclick="addTable()"/>
-<input type="button" value="Cancel" onclick="closeCreateTableDlg()" />
-</div>
-</div>
-
-</div>
-<%
-} else {
-   %>
+if(!top) {   %>
 <div id="createRecord" style="display:none">
 <div class="hd">Add Record</div>
 <div class="bd" id="createRecordBd">
@@ -863,15 +807,8 @@ function toggleCollapse(key) {
 
 
 <%
-if(top) {
+if(!top) {
     %>
-    createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
-    createTablePanel.render("myMarkedUpContainer");
-    document.getElementById("createTable").style.display = "block";
-    <%
-}
-else {
-       %>
     createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
     createRecordPanel.render("myMarkedUpContainer");
     document.getElementById("createRecord").style.display = "block";

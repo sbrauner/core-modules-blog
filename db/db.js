@@ -84,6 +84,12 @@ function validate( collection ) {
     return _dbCommand( { validate: collection } );
 }
 
+/* returns null if an error contacting db */
+function getDbProfilingLevel() { 
+    var res = _dbCommand( { profile: -1 } );
+    return res ? res.was : null;
+}
+
 /* Set profiling level for your db.  Profiling gathers stats on query performance.
    Default is off, and resets to off on a database restart -- so if you want it on,
    turn it on periodically.

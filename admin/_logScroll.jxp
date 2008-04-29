@@ -27,7 +27,7 @@ if ( request.since ) {
 
 if ( since ){
     n = n.filter( function( z ){
-	return z.date > since;
+        return z.date.setMilliseconds(0) > since.getTime();
     } );
 }
 
@@ -48,6 +48,6 @@ var fields = ["date", "level", "logger", "msg"];
 var table = {rows: n, colspan: fields.length};
 
 response.setHeader( "Content-Type" , "text/json" );
-core.admin.pieces.log({fields: fields, table: table});
+core.admin.pieces.logBody({fields: fields, table: table});
 
 %>
