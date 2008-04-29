@@ -39,6 +39,11 @@ ActiveRecord.Base.prototype.save = function(){
     return true;
 };
 
+ActiveRecord.Base.prototype.update_attributes = function( other ){
+    Object.extend( this , other );
+    return this.save();
+}
+
 // ---------
 // form stuff
 // ---------

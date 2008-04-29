@@ -9,7 +9,10 @@ form_for = function( what , frm ){
     if ( ! what )
         throw "form_for passed null";
 
-    print( "\n<form action='/" + myController.shortName + "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
+    print( "\n<form action='/" + myController.shortName );
+    if ( what._id )
+        print( "/" + what._id );
+    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
 
     var newThing = what;
     if ( isFunction( what ) ){
@@ -36,7 +39,7 @@ h = function( thing ){
 }
 
 link_to = function( pretty , thing ){
-    return "<a href='" + Rails.routes.getLinkFor( thing ) + "'>" + pretty + "(broken)</a>";
+    return "<a href='" + Rails.routes.getLinkFor( thing ) + "'>" + pretty + "</a>";
 };
 
 

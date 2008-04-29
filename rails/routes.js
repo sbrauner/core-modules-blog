@@ -104,16 +104,23 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
     var singularName = r.substring( 0 , r.length - 1 );
 
     this.il.info( "resources : " + r + " [" + singularName + "]" );
-
-
-    // new
     
+
+    globals.putExplicit( r + "_path" , "/" + r );
+    // new
     globals.putExplicit( "new_" + singularName + "_path" , "/" + r + "/new2" );
 
     // create
     this.connect( "/" + r , { controller : r , 
                               method : "POST" , 
                               action: "create" } );
+
+    // update
+    this.connect( "/" + r + "/:id" , { controller : r , 
+                                       method : "POST" , 
+                                       action: "update" } );
+
+
     // edit
     this.connect( "/" + r + "/:id/edit" , { controller : r , 
                                             action : "edit" ,
