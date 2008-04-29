@@ -9,7 +9,10 @@ if ( allowModule ){
 
 return {
     'system': {
-        'usage' : {},
+        'statistics' : {
+            'usage': true,
+            'analytics': true,
+        },
         'users': {},
         'database': {
             'dbview': true,

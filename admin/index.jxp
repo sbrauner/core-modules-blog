@@ -29,7 +29,9 @@ if ( sectionName == "" || sectionName.match( /^index/ ) )
 var sectionMap = {
     'system': ['system'],
 
-    'usage' : ['system', 'usage'],
+    'statistics' : ['system', 'statistics', 'usage'],
+    'usage' : ['system', 'statistics', 'usage'],
+    'analytics' : ['system', 'statistics', 'analytics'],
 
     'users': ['system', 'users'],
     'user': ['system', 'users'],
