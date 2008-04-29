@@ -1,6 +1,7 @@
 <%
 var th = th;
 var pausible = pausible;
+var logs = obj.logs;
 %>
 
 <h1 style="margin:0;">
@@ -9,6 +10,14 @@ var pausible = pausible;
 </h1>
 
 <p>$tagline</p>
+
+<if (logs)>
+  <select onchange="switchLogs()" id="chooseLog">
+    <forin i logs>
+      <option value="$logs[i]">$logs[i]</option>
+    </forin>
+  </select>
+</if>
 
 <!-- Data Table Begins -->
 <table width="100%" border="0">
