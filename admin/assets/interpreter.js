@@ -1,8 +1,7 @@
 function checkRun(usr, mode){
-    mode = mode || "JS";
-    mode = mode.toUpperCase();
+    mode = mode || "js";
 
-    return eval("checkRun"+mode)(usr);
+    return {"js": checkRunJS, "bash": checkRunBash}[mode](usr);
 }
 
 function checkRunJS(usr){
