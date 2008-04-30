@@ -289,6 +289,11 @@ input.text {
 	height: 15px;
 }
 
+input.text, textarea {
+  	border: 1px solid;
+  	border-color: #777777 #cccccc #cccccc #777777;
+}
+
 td.maincontent tr.search-table td.right {
 	padding-right: 7px;
 	text-align: right;
@@ -714,10 +719,11 @@ form.edit textarea {
 }
 
 form.edit fieldset {
-  border: 1px solid #157491;
-  padding: 20px 10px;        /* padding in fieldset support spotty in IE */
-  margin: 0;
-  / * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
+	width: auto;
+  	border: 1px solid #dddddd;
+  	padding: 20px 10px;        /* padding in fieldset support spotty in IE */
+  	margin: 0;
+  	/ * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
 }
 
 form.edit input {
