@@ -24,7 +24,7 @@ while ( res.hasNext() ){
     if ( temp ){
 	myCat = temp;
     }
-    
+
     myCat.mt_id = res.category_id;
     myCat.allowPings = res.category_allow_pings;
     myCat.name = res.category_basename.replace( /-/g , "_" );
@@ -55,11 +55,11 @@ while ( res.hasNext() ){
     if( res.entry_class == "page" )
 	myPost.name = res.entry_basename;
     else
-        myPost.name = myPost.ts.getYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
+        myPost.name = myPost.ts.getFullYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
 
     myPost.ts = res.entry_authored_on;
     print( myPost.name + "\t" + myPost.ts );
-    
+
     myPost.title = res.entry_title;
     myPost.content = res.entry_text;
     if ( res.entry_text_more && res.entry_text_more.trim().length > 0 )
@@ -75,7 +75,7 @@ while ( res.hasNext() ){
     var commentCount = 0;
     myPost.comments = Object();
     while ( comments.hasNext() ){
-        
+
         var c = Object();
         c.author = comments.comment_author;
         c.email = comments.comment_email;
@@ -112,15 +112,15 @@ while ( res.hasNext() ){
     myPost.name = myPost.name.replace( /\-/g , "_" ).replace( /\/index$/ , "" );
     SYSOUT( "\t" + myPost.name );
 
-    myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g , 
-                                             function( wholeTag , url ){ 
+    myPost.content = myPost.content.replace( /<img.*?src=['"](.*?)["']/g ,
+                                             function( wholeTag , url ){
 
-                                                 
+
                                                  if ( url.match( "^/" ) )
                                                      url = baseUrl + url;
                                                  else
                                                      url = url.replace( /www.alleyinsider.com/ , "static.alleyinsider.com" ); // TODO: temp hack get rid of this else
-	                                                 
+
                                                  var id = null;
 
                                                  var name = url.replace( /^https?:..[^\/]*/ , "" );
@@ -137,12 +137,12 @@ while ( res.hasNext() ){
 							return wholeTag;
 						     }
                                                      db._files.save( f );
-                                                     
+
                                                      img.fileId = f._id;
                                                      db.blog.images.save( img );
-                                                     
+
                                                  }
-                                                 
+
                                                  wholeTag = wholeTag.replace( /src=["'](.*?)['"]/ , "src=\"/~f?id=" + img.fileId + "\"" );
                                                  return wholeTag;
                                              } );
