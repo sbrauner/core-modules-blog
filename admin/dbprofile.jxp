@@ -64,7 +64,11 @@ if(user.permissions["0"] == "admin") {
 request.action = "searchprofile";
 request.reverse = "true";
 request.rowsPerPage = rowsPerPage;
-var table = core.admin.table();
+var table = core.admin.table({th: [ 
+    {heading: "Timestamp", name: "ts"}, 
+    {heading: "Message", name: "info"}, 
+    {heading: "Milliseconds", name: "millis"} 
+   ], });
 %>
 </div>
 

@@ -832,6 +832,9 @@ else {
         searchopts.push({"name" : i, className: "" });
     }
 }
+
+request.action = 'dbview';
+
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
                            idxes : idxes,

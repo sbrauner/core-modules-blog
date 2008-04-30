@@ -11,6 +11,9 @@ var collection;
 // ignore internal transient variables
 var ignore= { _ns:1, _save:1, _update:1 };
 
+var opts = arguments[0] || {};
+var ns = request.ns || opts.ns;
+
 // Table display options
 var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
 var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
@@ -406,13 +409,25 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
-if(request.action == "searchprofile") {
-    th = [ {heading: "Timestamp", name: "ts"}, 
-           {heading: "Message", name: "info"}, 
-           {heading: "Milliseconds", name: "millis"} ];
-    
+if(request.action == "dbview"){
     new admin.Jasontable(function(){
-        core.admin.pieces.dbprofileTable( { th: th,
+        core.admin.pieces.dbviewTable({ th: th,
+                                        table: dbTable,
+                                        top: top
+                                      });
+    }, {
+        header: {cols: th, search: true, showHeaders: false}, 
+        footer: {cols: th,
+                 paging: {
+                     page: page, prevPage: prevPage, nextPage: nextPage,
+                     totalNumPages: dbTable.totalNumPages
+        }}}).render();
+}
+else {
+    th = opts.th || th;
+
+    new admin.Jasontable(function(){
+        core.admin.pieces.dataTable( { th: th,
                                             table: dbTable });
     }, {
         header: {cols: th, search: false}, 
@@ -422,20 +437,5 @@ if(request.action == "searchprofile") {
                      totalNumPages: dbTable.totalNumPages
         }}}).render();
 }
-else {
-    new admin.Jasontable(function(){
-        core.admin.pieces.dbviewTable({ th: th,
-                                        table: dbTable,
-                                        top: top
-                                      });
-    }, {
-        header: {cols: th, search: true}, 
-        footer: {cols: th,
-                 paging: {
-                     page: page, prevPage: prevPage, nextPage: nextPage,
-                     totalNumPages: dbTable.totalNumPages
-        }}}).render();
-}
-
 
 %>
