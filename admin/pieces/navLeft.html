@@ -31,15 +31,15 @@ var sectionNames = {
           <% for(var key in sectionTree[topSection]){
              if(key == "$") continue;
                  if(key != sectionList[1]){ %>
-                   <li><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
+                   <li><a href="/admin/<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
                    <%
                  } else {
                     %>
                     <li>
                       <ul>
-                        <li class="current-heading"><a href="<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
+                        <li class="current-heading"><a href="/admin/<%= sectionTree[topSection][key].$ || key %>"><%= key.toUpperCase() %></a></li>
                         <% for(var subkey in sectionTree[topSection][key]){ %>
-                        <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
+                        <li class="<%= subkey == sectionList[2] ? 'current-page' : "" %>"><a href="/admin/<%= subkey %>"><%= sectionNames[[topSection, key, subkey].join('/')] %></a></li>
                         <% } %>
                       </ul>
                     </li>
