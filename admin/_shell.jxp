@@ -50,7 +50,9 @@ var populate = function(theScope){
     };
 
     theScope.sh = new admin.data.Bash();
-    theScope.out = null;
+    theScope.shoutput = function(cmd){
+        print(cmd.out + (cmd.out && cmd.err? '\\n': '') + cmd.err);
+    };
 }
 
 if ( ! theScope ){
@@ -106,7 +108,9 @@ if(command.startsWith("/")){
             command = command.substring(0, i) + '(' + args + ')';
         }
     }
-    command = "out = sh."+command+"; print(out.out + (out.out && out.err? '\\n': '') + out.err);";
+
+    command = "shoutput(sh."+command+");";
+
     log.debug("processing command " + command);
 }
 
