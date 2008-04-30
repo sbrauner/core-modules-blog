@@ -7,14 +7,14 @@ var session = opts.session;
 // been different in the past
 var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
 var getUserPrompt = function(type){
-    return {'js': userPrompt, 'bash': '/'}[type];
+    type = type || shellMode;
+    return {'js': userPrompt, 'bash': '$'}[type];
 };
 var HTMLEscape = function(s){
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 };
 
 var getUserPromptHTML = function(type){
-    type = type || 'js';
     return HTMLEscape(getUserPrompt(type));
 };
 
@@ -58,7 +58,7 @@ loader.insert({
         var acdiv = document.createElement("div");
         prompt = document.createElement("span");
         prompt.className = "prompt";
-        prompt.appendChild(document.createTextNode(getUserPrompt('js')));
+        prompt.appendChild(document.createTextNode(getUserPrompt()));
         acdiv.appendChild(prompt);
         // access prompt outside
         promptNode = prompt;
