@@ -417,9 +417,13 @@ tr.white-main th.center, tr.white-main td.center {
 td.maincontent tr.white-main td {
 	padding: .4em 1em .1em 0;
 	vertical-align: top;
-	border-top:1px solid #cccccc;
+	border-top:1px solid #dddddd;
 	line-height: 1.5em;
 	font-size: 11px;
+}
+
+input {
+	vertical-align: top;
 }
 
 td.maincontent tr.white-main td.lmod {
