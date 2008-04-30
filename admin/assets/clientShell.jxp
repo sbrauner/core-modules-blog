@@ -153,7 +153,7 @@ loader.insert({
                 return msg.msg;
 
             if(msg.category == "user"){
-                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML(shellMode)+"</span><a class=\"usercmd\">" + HTMLEscape(msg.msg) + "</a><br/>";
+                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML(shellMode)+"</span><pre class=\"usercmd inline\">" + HTMLEscape(msg.msg) + "</pre><br/>";
             }
             if(msg.category == "response" || msg.category == 'response-noret'){
                 var string = function(msg){
@@ -170,7 +170,7 @@ loader.insert({
                         var p = obj.$printed[i];
 
                         if(typeof(p) == "string")
-                            s += "<span class=\"output\">" + HTMLEscape(p).replace(/\n/g, '<br/>') + "</span><br/>";
+                            s += "<span class=\"output\"><pre>" + HTMLEscape(p) + "</pre></span><br/>";
                         else if(p.$command == "clear"){
                             s = "";
                             clearTranscript();
