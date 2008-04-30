@@ -411,6 +411,8 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
+log(tojson(request.action));
+
 if(request.action == "dbview"){
     new admin.Jasontable(function(){
         core.admin.pieces.dbviewTable({ th: th,
@@ -418,7 +420,7 @@ if(request.action == "dbview"){
                                         top: top
                                       });
     }, {
-        header: {cols: th, search: true, showHeaders: false}, 
+        header: {cols: th, search: true, showHeader: false}, 
         footer: {cols: th,
                  paging: {
                      page: page, prevPage: prevPage, nextPage: nextPage,
