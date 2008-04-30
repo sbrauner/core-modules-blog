@@ -407,22 +407,27 @@ var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(
 dbTable.colspan = th.length;
 
 if(request.action == "searchprofile") {
-    if(dbTable.rows.length == 0) {
-        dbTable.colspan = 3;
-    }
-    core.admin.pieces.dbprofileTable( { th: th,
-                             table: dbTable,
-                             page: page,
-                             prevPage: prevPage,
-                             nextPage: nextPage  });
+    th = [ {heading: "Timestamp", name: "ts"}, 
+           {heading: "Message", name: "info"}, 
+           {heading: "Milliseconds", name: "millis"} ];
+    
+    new admin.Jasontable(function(){
+        core.admin.pieces.dbprofileTable( { th: th,
+                                            table: dbTable });
+    }, {
+        header: {cols: th, search: false}, 
+        footer: {cols: th,
+                 paging: {
+                     page: page, prevPage: prevPage, nextPage: nextPage,
+                     totalNumPages: dbTable.totalNumPages
+        }}}).render();
 }
 else {
     new admin.Jasontable(function(){
         core.admin.pieces.dbviewTable({ th: th,
                                         table: dbTable,
-                                        page: page,
-                                        prevPage: prevPage,
-                                        nextPage: nextPage });
+                                        top: top
+                                      });
     }, {
         header: {cols: th, search: true}, 
         footer: {cols: th,
