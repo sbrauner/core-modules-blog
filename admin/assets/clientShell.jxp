@@ -535,6 +535,7 @@ function doRun(el, value, save){
     // the transcript
     var command = el;
     var usr = value || command.value;
+    var orig = usr;
     // Should this command go into the history?
     save = save || "";
     command.value = "";
@@ -570,7 +571,7 @@ function doRun(el, value, save){
     setHistoryLocation(0);
     addHistoryLink(historyAry.length-1);
 
-    YAHOO.log(usr, "user", "shell");
+    YAHOO.log(orig, "user", "shell");
     var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
 
     var res = loadDocSync( url );
