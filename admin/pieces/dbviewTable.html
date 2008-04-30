@@ -7,48 +7,6 @@ var prevPage = obj.prevPage;
 var nextPage = obj.nextPage;
 
 %>
-
-
-<!-- Data Table Begins -->
-<table width="100%" border="0">
-  <col />
-  <forin i th>
-    <col id="col$th[i].name" />
-  </forin>
-  <col />
-
-  <tr class="search-top">
-    <td class="left">&nbsp;</td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td colspan="$table.colspan">
-
-      <!-- Search -->
-      <ul>
-        <li><select id="searchopt">
-          <forin i th>
-	    <option value="$th[i].name">$th[i].name</option>
-          </forin>
-	  </select>
-        </li>
-        <li><input class="text" id="searchtext" size="40" value="" type="text"></li>
-        <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
-        <li><img src="/~~/admin/assets/img/button_add_on_tan.gif" alt="Add to Search" onclick="addToSearch()"></li>
-        <li style="float:right;"><div><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()"></div></li>
-      </ul>
-    </td>
-    <td class="right">&nbsp;</td>
-  </tr>
-
-  <!-- White table -->
-  <tr class="white-top">
-    <!-- Top area -->
-    <td class="left"><img src="images/transparent.gif" width="14" height="1"></td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td class="middle" colspan="$table.colspan">&nbsp;</td>
-    <td class="right"><img src="images/transparent.gif" width="14" height="1"></td>
-  </tr>
-
-
   <!-- Main area -->
   <tr class="white-main">
     <td class="left">&nbsp;</td>
@@ -106,44 +64,3 @@ var nextPage = obj.nextPage;
       </tr>
     </forin>
   </if>
-
-  <tr class="white-bottom">
-
-    <!-- Bottom area -->
-    <td class="left">&nbsp;</td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td class="middle" colspan="$table.colspan">&nbsp;</td>
-    <td class="right">&nbsp;</td>
-  </tr>
-  <!-- Paging -->
-  <tr class="paging-bottom">
-    <td class="left">&nbsp;</td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td colspan="$table.colspan">
-      <div id="paging">
-        <if (1 < page.length)>
-	  <ul>
-            <if prevPage>
-	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>
-	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('$prevPage')">&#60;</a></li>
-            </if>
-            <forin p page>
-              <if (page[p].className == "active" || page[p].className == "modactive") >
-                <li class="$page[p].className">$page[p].name</li>
-              </if>
-              <if (page[p].className != "active" && page[p].className != "modactive") >
-                <li class="$page[p].className"><a onclick="loadPage('$page[p].name')">$page[p].name</a></li>
-              </if>
-            </forin>
-            <if nextPage>
-	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
-	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
-            </if>
-	  </ul>
-       </if>
-      </div>
-    </td>
-    <td class="right">&nbsp;</td>
-  </tr>
-</table>
-

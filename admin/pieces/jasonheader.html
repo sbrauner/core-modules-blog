@@ -1,0 +1,47 @@
+<%
+if(obj.cols == null) obj.cols = [];
+if(typeof obj.cols == "number"){
+    for(var i = 0; i < obj.cols; ++i){
+        cols.push(null);
+    }
+    obj.cols = cols;
+}
+var cols = obj.cols;
+%>
+<!-- Data Table Begins -->
+<table width="100%" border="0">
+  <col />
+  <forin i cols>
+    <col <%= cols[i] ? 'id="'+cols[i]+'"' : '' %>>
+  </forin>
+  <col />
+  <tr class="search-top">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="<%= cols.length %>">
+      <if obj.search>
+        <!-- Search -->
+        <ul>
+          <li><select id="searchopt">
+              <forin i cols>
+	        <option value="cols[i]">$cols[i]</option>
+              </forin>
+	    </select>
+          </li>
+          <li><input class="text" id="searchtext" size="40" value="" type="text"></li>
+          <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
+          <li><img src="/~~/admin/assets/img/button_add_on_tan.gif" alt="Add to Search" onclick="addToSearch()"></li>
+          <li style="float:right;"><div><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()"></div></li>
+        </ul>
+      </if>
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+  <!-- White table -->
+  <tr class="white-top">
+    <!-- Top area -->
+    <td class="left"><img src="images/transparent.gif" width="14" height="1"></td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$cols.length">&nbsp;</td>
+    <td class="right"><img src="images/transparent.gif" width="14" height="1"></td>
+  </tr>
