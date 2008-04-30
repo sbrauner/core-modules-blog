@@ -155,7 +155,7 @@ loader.insert({
             if(msg.category == "user"){
                 return "<span class=\"prompt pastprompt\">"+getUserPromptHTML(shellMode)+"</span><a class=\"usercmd\">" + HTMLEscape(msg.msg) + "</a><br/>";
             }
-            if(msg.category == "response"){
+            if(msg.category == "response" || msg.category == 'response-noret'){
                 var string = function(msg){
                     return "<span class=\"response\">" + msg + "</span><br/>";
                 }
@@ -194,10 +194,13 @@ loader.insert({
                     return s;
                 }
 
-                obj = obj["$"];
-                if(obj instanceof Function) obj = string(obj.toString());
-                else obj = string(dojo.toJson(obj));
-                return s += obj;
+                if(msg.category != 'response-noret'){
+                    obj = obj["$"];
+                    if(obj instanceof Function) obj = string(obj.toString());
+                    else obj = string(dojo.toJson(obj));
+                    s += obj;
+                }
+                return s;
             }
         };
 
@@ -576,7 +579,11 @@ function doRun(el, value, save){
 
     var res = loadDocSync( url );
     res = res.replace( /(^\s+|\s+$)/g , "" );
-    YAHOO.log(res, "response", "shell");
+    var responsetype = 'response';
+    if(usr[0] == '/'){
+        responsetype = responsetype + "-noret";
+    }
+    YAHOO.log(res, responsetype, "shell");
 
     return false;
 }
