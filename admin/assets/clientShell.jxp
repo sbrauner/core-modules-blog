@@ -1,4 +1,4 @@
-<% 
+<%
 var opts = arguments[0];
 var user = opts.user;
 var session = opts.session;
@@ -6,13 +6,25 @@ var session = opts.session;
 // FIXME: this screws up the prompts shown in the transcript; they could have
 // been different in the past
 var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
-var getUserPrompt = function(){ return userPrompt; };
-var getUserPromptHTML = function(){
-    return getUserPrompt().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
-    "\"";
-}
+var getUserPrompt = function(type){
+    return {'js': userPrompt, 'bash': '/'}[type];
+};
+var HTMLEscape = function(s){
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+};
+
+var getUserPromptHTML = function(type){
+    type = type || 'js';
+    return HTMLEscape(getUserPrompt(type));
+};
 
 var shellMode = "js"; // "js", "bash", "ruby"..???
+
+var promptNode;
+
+var updatePrompt = function(){
+    promptNode.innerHTML = getUserPromptHTML(shellMode);
+};
 
 var loader = new YAHOO.util.YUILoader();
 loader.insert({
@@ -46,8 +58,10 @@ loader.insert({
         var acdiv = document.createElement("div");
         prompt = document.createElement("span");
         prompt.className = "prompt";
-        prompt.appendChild(document.createTextNode(getUserPrompt()));
+        prompt.appendChild(document.createTextNode(getUserPrompt('js')));
         acdiv.appendChild(prompt);
+        // access prompt outside
+        promptNode = prompt;
         acdiv.appendChild(t);
         acdiv.className = "yui-ac";
         this.myLogReader = new YAHOO.widget.LogReader('console', {
@@ -139,7 +153,7 @@ loader.insert({
                 return msg.msg;
 
             if(msg.category == "user"){
-                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML()+"</span><a class=\"usercmd\">" + msg.msg + "</a><br/>";
+                return "<span class=\"prompt pastprompt\">"+getUserPromptHTML(shellMode)+"</span><a class=\"usercmd\">" + HTMLEscape(msg.msg) + "</a><br/>";
             }
             if(msg.category == "response"){
                 var string = function(msg){
@@ -156,7 +170,7 @@ loader.insert({
                         var p = obj.$printed[i];
 
                         if(typeof(p) == "string")
-                            s += "<span class=\"output\">" + p.replace(/\n/g, '<br/>') + "</span><br/>";
+                            s += "<span class=\"output\">" + HTMLEscape(p).replace(/\n/g, '<br/>') + "</span><br/>";
                         else if(p.$command == "clear"){
                             s = "";
                             clearTranscript();
@@ -166,7 +180,8 @@ loader.insert({
                         }
                         else if(p.$command == "setprompt"){
                             userPrompt = p.$prompt;
-                            prompt.innerHTML = getUserPromptHTML();
+                            if(shellMode == 'js')
+                                updatePrompt();
                         }
                     }
                 }
@@ -509,6 +524,11 @@ lastIndexOf = function(ary, v){
 };
 
 
+var switchMode = function(mode){
+    shellMode = mode;
+    updatePrompt(mode);
+};
+
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
     // Send a command to the server, retreive response, and dump both to
@@ -523,6 +543,17 @@ function doRun(el, value, save){
         YAHOO.log(usr, "user", "shell");
         return;
     }
+
+    if(usr == "/"){
+        // switch modes and return
+        var modeSwitchMap = {'js': 'bash', 'bash': 'js'};
+        switchMode(modeSwitchMap[shellMode]);
+        return;
+    }
+
+    if(shellMode == "bash")
+        usr = "/"+usr;
+
 
     if(indexOf(pastCommands, usr) == -1){
         pastCommands.push(usr);
