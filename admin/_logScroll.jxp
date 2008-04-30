@@ -30,7 +30,6 @@ if ( since ){
         return z.date.setMilliseconds(0) > since.getTime();
     } );
 }
-
 n.forEach( function(z){
     if ( z == null )
 	throw "why is z null";
@@ -39,17 +38,17 @@ n.forEach( function(z){
     z.level = z.level.toString();
     z.msg = z.msg.replace( /[\r\n]+/ , "<br />" );
     var now = new Date();
-    var now1 = now.setMinute(now.getMinutes()-1);
-    var now10 = now.setMinute(now.getMinutes()-10);
-    var now30 = now.setMinute(now.getMinutes()-30);
-    if(z.date >= now1)
-        z.color = "timestamp_circle_1.gif";
-    else if(z.date >= now10)
-        z.color = "timestamp_circle_2.gif";
-    else if(z.date >= now30)
-        z.color = "timestamp_circle_3.gif";
+    var now1 = now.setMinutes(now.getMinutes()-1);
+    var now10 = now.setMinutes(now.getMinutes()-10);
+    var now30 = now.setMinutes(now.getMinutes()-30);
+    if(z.date.getTime() >= now1)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_1.gif" />';
+    else if(z.date.getTime() >= now10)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_2.gif" />';
+    else if(z.date.getTime() >= now30)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_3.gif" />';
     else
-        z.color = "timestamp_circle_4.gif";
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_4.gif" />';
 
     z.date = z.date.format("E MMM dd, yyyy HH:mm:ss");
     if ( z.throwable )

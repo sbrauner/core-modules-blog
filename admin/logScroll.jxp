@@ -4,13 +4,14 @@ head.addScript("/@@/yui/current/yuiloader/yuiloader-beta-min.js");
 head.addScript("/@@/yui/current/dom/dom-min.js");
 head.addScript("/@@/yui/current/json/json-min.js");
 
-var colspan = 4;
-var th = ['<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
+var th = ['',
+    '<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
     '<a href="">LEVEL</a>',
     '<a href="">COMPONENT</a>',
     '<a href="">MESSAGE</a>'];
 var pausible = true;
-core.admin.pieces.logHeader({title: "Scrolling Logs", tagline: "The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression. Older log messages are visible on subsequent pages.", colspan : colspan, th: th, pausible: pausible});
+var colspan = th.length;
+core.admin.pieces.logHeader({title: "Scrolling Logs", tagline: "The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression.", colspan : colspan, th: th, pausible: pausible});
 core.admin.pieces.logFooter({colspan : colspan});
 
 %>
@@ -47,7 +48,7 @@ function updateLog(){
       loadDocAsync( url+getPassOpts() , updateLogHandler );
    }
 }
-
+var first3 =0;
 function updateLogHandler( raw ){
     document.getElementById("temp").innerHTML = raw;
     // the jxp is returning 100 text nodes and 100 trs, so we filter out the text nodes
@@ -63,7 +64,7 @@ function updateLogHandler( raw ){
         return false;
     });
     rows += trs.length;
-    var mr = new Date(trs[0].childNodes[3].innerHTML);
+    var mr = new Date(trs[0].childNodes[5].innerHTML+" GMT-0400");
 
     for(var i=trs.length-1; i>=0; i--) {
         YAHOO.util.Dom.insertAfter(trs[i], pushNode);
