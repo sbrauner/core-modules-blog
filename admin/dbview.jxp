@@ -43,39 +43,34 @@ for( var i in f) {
 /* find the indices */
 if(!top) {
     var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
-    var introMsg = x.result;
-
+    var introMsg = "Collection Detail provides the user with a means to edit collection detail records, view collection sizing and statistics information, add/drop collection indexes, and query/filter the collection data.";
+    var validation = x.result;
 
     %>
     <a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a>
-    <div> Indices:
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
 
     var i=0;
+    var idxes = [];
     while(i<metarows.length) {
         obj = metarows[i];
         if(metarows[i].name.indexOf("$") > 0) {
             var idx = obj.name.indexOf("$");
-            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
+            idxes.push(obj.name.substring(idx+1));
+//            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
         }
         i++;
     }
     %>
-    <input type="button" onclick="dropIndices('<%= request.ns %>')" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
-    </div>
 
     <div>
     <div><%= request.ns %> Search/Filter <input type="button" onclick="searchFilterPanel.show()" value="*" /></div>
-    <textarea id="searchbox"></textarea>
-    <input type="button" value="Validate" onclick="validateSearchbox()" />
-    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''; refreshTable()" />
-    <input type="button" onclick="doCommand()" value="Execute" /></div>
     </div>
 
 
-    <div>
+<!--    <div>
     <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
     </div>
     <div id="viewOptions" style="display: none">
@@ -90,6 +85,7 @@ if(!top) {
     <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
     </div>
     </div>
+-->
 
     <div id="searchFilter" style="display:none;">
     <div class="hd">Search/Filter Panel</div>
@@ -162,16 +158,6 @@ function sortBy(col) {
     currentSort.col = col;
 
     refreshTable();
-    var oldSort = YAHOO.util.Dom.getElementsByClassName("sort-up");
-    if(oldSort.length > 0) oldSort[0].className = "";
-    oldSort = YAHOO.util.Dom.getElementsByClassName("sort-down");
-    if(oldSort.length > 0) oldSort[0].className = "";
-
-    var column = document.getElementById("col"+col);
-    if(!column)
-        column = document.getElementById("col"+col.toUpperCase());
-
-    column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
 }
 
 function showObj(i) {
@@ -679,9 +665,7 @@ var handleNo = function() {
 var currentPage = 1;
 function loadPage(pagenum) {
     currentPage = pagenum;
-    ajax("currentPage="+pagenum+"&<%= (request.ns) ? 'ns='+request.ns : '' %>"+lastSearch, "table", function(response) {
-        document.getElementById("myCollection").innerHTML = response;
-    });
+    refreshTable();
 }
 
 <%
@@ -786,6 +770,9 @@ function refreshTable(passData){
         passData = "";
     ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
+
+        var column = document.getElementById("thlink"+currentSort.col);
+        column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
     });
 }
 
@@ -846,7 +833,9 @@ else {
     }
 }
 core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg });
+                           introMsg: introMsg,
+                           idxes : idxes,
+                           validation : validation });
 
 %>
 <div id="myCollection">
