@@ -57,8 +57,16 @@ if(!top) {
     while(i<metarows.length) {
         obj = metarows[i];
         if(metarows[i].name.indexOf("$") > 0) {
-            var idx = obj.name.indexOf("$");
-            idxes.push(obj.name.substring(idx+1));
+            var idx = obj.name.substring(obj.name.indexOf("$")+1);
+            var idxList = [];
+            while(idx.indexOf("_") >= 0) {
+                idxList.push(idx.substring(0, idx.indexOf("_")));
+                idx = idx.substring(idx.indexOf("_")+2);
+            }
+            if(idxList.length > 1)
+                idxes.push("Compound index on "+idxList.join(","));
+            else
+                idxes.push("Index on "+idxList[0]);
 //            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
         }
         i++;
@@ -732,8 +740,8 @@ function getSelectedIndices(separator) {
 }
 
 
-function dropIndices(tname) {
-    tablename = tname;
+function dropIndices() {
+    tablename = <%= request.ns %>;
     var handleIDrop = function() {
         var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
@@ -833,7 +841,10 @@ else {
     }
 }
 
+<<<<<<< HEAD:admin/dbview.jxp
 request.action = 'dbview';
+=======
+>>>>>>> 4fe3637a2457d1b1ef8cdec7424acd82c53ab879:admin/dbview.jxp
 
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
