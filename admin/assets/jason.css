@@ -291,7 +291,7 @@ input.text {
 
 input.text, textarea {
   	border: 1px solid;
-  	border-color: #777777 #cccccc #cccccc #777777;
+  	border-color: #999999 #cccccc #cccccc #999999;
 }
 
 td.maincontent tr.search-table td.right {
@@ -737,13 +737,13 @@ form.edit input {
 form.edit label { 
 	display: block;  /* block float the labels to left column, set a width */
 	float: left; 
-	width: 100px; 
+	width: 200px; 
 	padding: 0; 
 	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
 	text-align: right; 
 }
 
-form.edit input, form.edit textarea {
+form.edit input, form.edit textarea, form.edit select {
 	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
 	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
 	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
