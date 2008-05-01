@@ -286,7 +286,6 @@ select {
 
 input.text {
 	padding: 1px;
-	height: 15px;
 }
 
 input.text, textarea {
@@ -423,7 +422,6 @@ td.maincontent tr.white-main td {
 }
 
 input {
-	vertical-align: top;
 }
 
 td.maincontent tr.white-main td.lmod {
