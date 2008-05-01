@@ -12,7 +12,7 @@ var cols = obj.cols;
 <table width="100%" border="0">
   <col />
   <forin i cols>
-    <col <%= cols[i] ? 'id="'+cols[i].name+'"' : '' %>>
+    <col <%= cols[i] ? 'id="'+cols[i]+'"' : '' %>>
   </forin>
   <col />
   <tr class="search-top">
@@ -24,7 +24,7 @@ var cols = obj.cols;
         <ul>
           <li><select id="searchopt">
               <forin i cols>
-	        <option value="cols[i].name">$cols[i].name</option>
+	        <option value="cols[i]">$cols[i]</option>
               </forin>
 	    </select>
           </li>
