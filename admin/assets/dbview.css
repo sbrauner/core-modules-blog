@@ -378,23 +378,6 @@ td.maincontent tr.paging-table td.right {
 	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
 }
 
-/* Modified bottom for main table */
-
-td.maincontent tr.paging-bottom td {
-	background-color: #e7e4d6;
-	text-align: center;
-}
-
-td.maincontent tr.paging-bottom td.left {
-	padding-left: 7px;
-	background: #e7e4d6 url(img/mtbox_botleft.gif) no-repeat left bottom;
-}
-
-td.maincontent tr.paging-bottom td.right {
-	padding-right: 7px;
-	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
-}
-
 /* Footer */
 
 p.footer {

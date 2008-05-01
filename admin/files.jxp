@@ -1,4 +1,12 @@
 <%
+head.addCSS("/@@/yui/current/container/assets/skins/sam/container.css");
+head.addCSS("button/assets/skins/sam/button.css");
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
+
 log.file.info(tojson(request));
 var theFile = request.getFile( "theFile" );
 if ( theFile ){
@@ -7,47 +15,66 @@ if ( theFile ){
 
 %>
 
+<div id="dlgbox" class="yui-skin-sam"></div>
+
 <form method="POST" enctype="multipart/form-data" >
    <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
    Choose a file to upload: <input name="theFile" type="file" />
    <input type="submit" value="Upload File" />
 </form>
 
+<script type="text/javascript">
+function deleteFile(id, name) {
+    var handleNo = function() {
+        this.hide();
+    };
+    var handleYes = function() {
+        location = "files?action=Delete&_id="+id;
+    };
+
+    var simpledialog = new YAHOO.widget.SimpleDialog("deleteFileDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: "Are you sure you want to delete "+name+"?",
+        buttons: [ { text: "Yes", handler:handleYes },
+        { text:"No", handler:handleNo } ]
+        } );
+    simpledialog.setHeader("Delete File");
+    simpledialog.render("dlgbox");
+    simpledialog.show();
+}
+</script>
+
 
 <%
 
 if ( "Delete" == request.action ){
     var file = db._files.findOne({ _id: request._id});
-    var chunk = [];
-    var i=0;
-    var tbd = file;
-    while(tbd.next) {
-        chunk[i++] = db._chunks.findOne(tbd.next);
-        tbd = tbd.next;
-    }
-    for(var i=chunk.length-1; i>=0; i--)
-        db._chunks.remove(chunk[i]);
+    if(file) {
+        var chunk = [];
+        var i=0;
+        var tbd = file;
+        while(tbd.next) {
+            chunk[i++] = db._chunks.findOne(tbd.next);
+            tbd = tbd.next;
+        }
+        for(var i=chunk.length-1; i>=0; i--)
+            db._chunks.remove(chunk[i]);
 
-    db._files.remove(file);
+        db._files.remove(file);
+    }
 }
 
-db._files.ensureIndex( { uploadDate : 1 } );
- var tab = new htmltable( {
-	 ns : db._files ,
-	     cols : [
-		     { name : "filename", isLink: true, searchWidth: 50 },
-		     { name : "uploadDate" } ,
-		     { name : "contentType" } ,
-		     { name : "length" }
-		     ],
-	     detailUrl : "/~~/f?id=" ,
-	     searchable: true ,
-	     actions : [
-			{ name : "Delete" }
-			]
-	     }
-     );
 
-tab.dbview( tab.find().sort( { uploadDate : -1 } ).limit( 100 ) );
+var th = ["Filename", "Upload Date", "Content Type", "Size", "Delete"];
+var table = {};
+table.rows = db._files.find().sort( { uploadDate : 1 }).toArray();
+var fields = ["filename", "uploadDate", "contentType", "length"];
+
+core.admin.pieces.files({th : th, table: table, fields: fields, colspan: th.length});
+
 %>
 

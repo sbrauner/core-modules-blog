@@ -24,6 +24,7 @@ head.addCSS( "NOCDN/~~/admin/assets/jason.css" );
     <% core.admin.pieces.nav(obj); %>
     <% core.user.html.topCorner(); %>
 </div>
-<% core.admin.pieces.navLeft(obj); %>
+<%
+core.admin.pieces.navLeft(obj); %>
 <% } %>
 

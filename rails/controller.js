@@ -1,4 +1,20 @@
 
+Rails.mapURI = function( uri ){
+    
+    var mime = MimeTypes.get( uri );
+    
+    if ( (  mime && 
+            ( mime.startsWith( "image/" ) 
+              || mime.startsWith( "video/" )
+            ) )
+         ||
+         uri.match( /\.(css|js)$/ )
+       )
+        return "/public" + uri;
+         
+    return "/~~/rails/rails.jxp";
+};
+
 function ApplicationController(){
     this.shortName = null;
     this.className = null;
@@ -6,72 +22,56 @@ function ApplicationController(){
 
 ApplicationController.prototype.__magic = 17;
 
-ApplicationController.prototype.wants = function( uri ){
+ApplicationController.prototype.dispatch = function( request , response , matchingRoute ){
 
-    if ( ! uri.startsWith( "/" + this.shortName ) )
-        return false;
-    
-    var rest = uri.substring( this.shortName.length + 1 );
-
-    if ( rest.length == 0 )
-        return "/index";
-    
-    if ( rest.startsWith( "/" ) )
-        return rest;
-    
-    return false;
-};
-
-ApplicationController.prototype.dispatch = function( request , response ){
-    var rest = this.wants( request.getURI() );
-    assert( rest );
-    
-    if ( rest.startsWith( "/" ) )
-        rest = rest.substring(1);
-
-    if ( rest.length == 0 )
-        rest = "index";
-    
-    var method = null;
-
-    var idx = rest.indexOf( "/" );
-    if ( idx < 0 )
-        method = rest;
-    else
-        method = res.substring( 0 , idx );
-
-    var f = this[method];
+    var f = this[matchingRoute.action];
     if ( ! f ){
-        print( "can't find [" + method + "] in [" + this.className + "]" );
+        print( "can't find [" + matchingRoute.action + "] in [" + this.className + "]" );
         return;
     }
     
-    var appResponse = new ApplicationResponse( this , method );
+    var appResponse = new ApplicationResponse( this , matchingRoute.action );
 
-    f.getScope( true ).render_text = function(s){
+    // --- setup scope
+    
+    var funcScope = f.getScope( true );
+
+    funcScope.render_text = function(s){
         print( s );
         appResponse.anythingRendered = true;
     };
     
-    f.getScope( true ).respond_to = function( b ){
-        b( appResponse );
+    funcScope.respond_to = function( b ){
+        b.call( appResponse.requestThis , appResponse );
+    };
+
+    funcScope.redirect_to = function( thing ){
+        appResponse.anythingRendered = true;
+        print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
+        return true;
     };
     
-    f( request , response );
+    funcScope.params = new Rails.Params( request , matchingRoute );
 
+    // --- invoke action
+
+    f.call( appResponse.requestThis );
+    
     if ( ! appResponse.anythingRendered ){
-
+        
         if ( ! local.app.views )
             throw "no views directory";
         
         if ( ! local.app.views[ this.shortName ] )
             throw "no views directory for " + this.shortName;
         
-        var view = local.app.views[ this.shortName ][method];
+        var view = local.app.views[ this.shortName ][matchingRoute.action];
         if ( ! view )
-            throw "no view for " + this.shortName + "." + method;
+            view = local.app.views[ this.shortName ][matchingRoute.action + ".html" ];
+        if ( ! view )
+            throw "no view for " + this.shortName + "." + matchingRoute.action;
         
-        view();
+        view.call( appResponse.requestThis );
     }
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
@@ -84,23 +84,57 @@ ApplicationController.prototype.toString = function(){
 
 
 function ApplicationResponse( controller , method ){
+
     this.controller = controller;
+    assert( this.controller );
+
     this.method = method;
+    assert( this.method );
 
     this.anythingRendered = false;
+
+    this.requestThis = Rails.baseThis.child();
+
 };
 
 ApplicationResponse.prototype.html = function(){
+
+    var blah = this.requestThis;
+
+    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
+        arguments[0].call( blah );
+        return;
+    }
+
     if ( ! local.app.views )
         throw "no views directory";
     
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
-    
+   
     var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
-    print( template );
+    if ( ! template )
+        throw "no template for " + this.controller.shortName + ":" + this.method;
+    log.rails.response.debug( template + ".html" + called );
     
-    print( ".html called<br>" );
+    var layout = null;
+    if ( local.app.views.layouts )
+        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
+    
+
+    if ( layout ){
+        // TODO: fix this...
+        layout.getScope( true ).controller = { action_name : this.method };
+        
+        layout( function(){
+            template.apply( blah , arguments );
+            return "";
+        } );
+    }
+    else {
+        template.apply( blah );
+    }
+        
     this.anythingRendered = true;
 };
 

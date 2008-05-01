@@ -57,6 +57,18 @@ var unaddSubmit = function(btn){
     document.gitFiles.submit();
 };
 
+var submitGit = function(action, fname){
+    // FIXME: only support untracked files?
+    document.gitFiles.toBeDetermined.value = action;
+    document.gitFiles.toBeDetermined.name = "action";
+    if(fname){
+        document.gitFiles.toBeFilename.value = fname;
+        document.gitFiles.toBeFilename.name = "untracked_file";
+    }
+    document.gitFiles.submit();
+    return false;
+};
+
 var handleCheckAll = function(btn){
     var name = btn.name;
     var type = btn.name.replace(/^checkAll_/, "");

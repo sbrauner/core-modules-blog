@@ -1,6 +1,6 @@
 <p>
 <%
-head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
 
 core.db.db();
 core.content.table();
@@ -17,7 +17,6 @@ if(user.permissions["0"] == "admin") {
     %>
     <form>DB Profiling is...
     <select onchange="submit()" id="set" name="set">
-    <option value="">&nbsp</option>
     <option value="0">Off</option>
     <option value="1">On for slow operations</option>
     <option value="2">On for all operations</option>
@@ -65,7 +64,11 @@ if(user.permissions["0"] == "admin") {
 request.action = "searchprofile";
 request.reverse = "true";
 request.rowsPerPage = rowsPerPage;
-var table = core.admin.table();
+var table = core.admin.table({th: [ 
+    {heading: "Timestamp", name: "ts"}, 
+    {heading: "Message", name: "info"}, 
+    {heading: "Milliseconds", name: "millis"} 
+   ], });
 %>
 </div>
 
@@ -124,7 +127,8 @@ YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 <%
 if(user.permissions["0"] == "admin") {
     // Initial setup of page
-    print('document.getElementById("set").options['+ ((request.set ? parseInt(request.set) : -1)+1) +'].selected = true');
+    core.db.db();
+    print('document.getElementById("set").options['+ getDbProfilingLevel() +'].selected = true');
 }
 %>
 

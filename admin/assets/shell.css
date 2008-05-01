@@ -2,6 +2,10 @@
     display: inline;
 }
 
+pre.inline {
+    display: inline;
+}
+
 .prompt {
     color: #f0f;
     margin-right: .75em;

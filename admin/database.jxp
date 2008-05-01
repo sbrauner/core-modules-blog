@@ -1,6 +1,5 @@
-<p>
-<a href="dbview">View collections (dbview)</a>
-<p>
-<a href="dbprofile">Profiling</a>
-<p>
-<a href="http://www.10gen.com/wiki/db">Database Documentation</a>
+<%
+
+core.admin.dbview();
+
+%>

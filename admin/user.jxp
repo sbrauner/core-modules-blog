@@ -1,4 +1,8 @@
 <% 
+if(request.action == "cancel"){
+    return response.sendRedirectTemporary("/~~/admin/users");
+}
+
 var u = null;
 if ( request._id )
 	u = db.users.findOne( { _id : CrID( request._id ) } );
@@ -28,15 +32,23 @@ if ( u && request.action == "save"){
 	else 
 	   print( "passwords don't match" );
    }
+    
+    var newUser;
+    if ( ! u._id ) {
+        newUser = true;
+    }
 
    db.users.save( u );
+    if(newUser){
+        response.sendRedirectTemporary("/~~/admin/users");
+    }
 }
 	
 print.setFormObject( u );
 %>
 <br>
 <form method="post">
-  <b>Edit User Object</b><p>
+  <b><%= request._id ? "Edit User Object" : "New User" %></b><p>
   Name: <input name="name"><br>
   Email: <input name="email"><br>
   NickName: <input name="nickname"><br>
@@ -48,16 +60,53 @@ print.setFormObject( u );
 
   <input type="hidden" name="_id">
   <input type="submit" name="action" value="save">
+  <input type="submit" name="action" value="cancel">
 </form>
 
-<form method="post" action="user_delete">
-  <input type="hidden" name="id" value="<%= u._id %>">
-  Delete this user: (beware, there will not be a confirmation)
-  <input type="submit" name="action" value="delete">
-</form>
 <%
 print.setFormObject( null );
-
 %>
+
+<% if( ! request._id ) return; %>
+<form method="post" action="user_delete" name="delete_form">
+  <input type="hidden" name="id" value="<%= u._id %>">
+  Delete this user:
+  <input type="submit" name="action" value="delete" onclick="deletePanel.show(); return false">
+</form>
+
+<div class="yui-skin-sam">
+<div id="deletePanel" style="display: none;">
+<div class="hd">Delete this user?</div>
+<div class="bd">Are you sure you want to delete the user <%= u.name %>?</div>
+<div class="ft"></div>
+</div>
+</div>
+<script type="text/javascript">
+  var deleteOK = function(){
+      deletePanel.hide();
+      document.delete_form.submit();
+  };
+
+var deleteCancel = function(){
+    deletePanel.hide();
+};
+
+  var loader = new YAHOO.util.YUILoader();
+  loader.insert({
+      require: ['container'],
+      base: '/@@/yui/2.5.1/',
+      onSuccess: function(loader){
+          deletePanel = new YAHOO.widget.Dialog('deletePanel', {
+              fixedcenter: true,
+              draggable: true,
+              visible: false,
+              buttons: [{text: "Delete", handler: deleteOK},
+                        {text: "Cancel", handler: deleteCancel}]
+          });
+          document.getElementById("deletePanel").style.display = "block";
+          deletePanel.render();
+      }
+  });
+</script>
 
 

@@ -33,19 +33,17 @@ if ( ! user.isAdmin() ){
 }
 
 
-request.applyServletParams( /(.~~.webdav)(.*)/ , [ "root" , "file" ] );
+request.applyServletParams( /(.(?:_|~~.)webdav)(.*)/ , [ "root" , "file" ] );
+
 var root = request.root;
-if ( ! request.file ){
+if ( request.file == null){
     request.applyServletParams( /(.*)/ , [ "file" ] );
     root = "";
 }
 
-if ( ! request.file )
-    throw "no file:(";
-
 log.debug( "file:" + request.file );
 
-var theFile = openFile( request.file );
+var theFile = openFile( request.file || "/");
 
 
 
@@ -61,7 +59,13 @@ if ( method == "PROPFIND" ){
         
         propfind( ms , request.file , theFile, request.getIntHeader( "Depth" , 1 ) );
         
-        xml.to( print , null , ms );
+        var xmlToPrint = "";
+        function nonbreakingPrinter(str) {
+            xmlToPrint += str;
+        }
+        xml.to(nonbreakingPrinter, null, ms, 0, false);
+        print(xmlToPrint);
+        //xml.to( print , null , ms );
     }
     else {
         response.setResponseCode( 404 );

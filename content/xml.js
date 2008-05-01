@@ -19,7 +19,8 @@ xml = {
         return s;
     } ,
 
-    to : function( append , name , obj , indent ){
+    to : function( append , name , obj , indent , isPrettyPrint ){
+        isPrettyPrint = (typeof(isPrettyPrint) == "boolean")? isPrettyPrint : "true";
 
         if ( ! indent ) indent = 0;
 
@@ -29,7 +30,9 @@ xml = {
         var newLine = false;
 
         if ( name && name != "PCDATA" ){
-            xml._indent( append , indent );
+            if(isPrettyPrint)
+                xml._indent( append , indent );
+
             append( "<" + name  );
             if ( isObject( obj ) && isObject( obj._props ) ){
                 for ( var a in obj._props ){
@@ -53,7 +56,9 @@ xml = {
         else if ( isObject( obj ) ){
 
             newLine = true;
-            append( "\n" );
+            if(isPrettyPrint)
+                append( "\n" );
+
             for ( var prop in obj ){
                 if ( prop == "_props" || prop == "_name" || prop == "$" || prop == "children" )
                     continue;
@@ -61,9 +66,9 @@ xml = {
                 var child = obj[prop];
 
                 if ( isArray( obj ) && isObject( child ) && child._name && prop.match( /\d+/ ) )
-                    xml.to( append , null , child , indent + 1 );
+                    xml.to( append , null , child , indent + 1, isPrettyPrint );
                 else
-                    xml.to( append , prop , child , indent + 1 );
+                    xml.to( append , prop , child , indent + 1, isPrettyPrint );
             }
         }
         else {
@@ -71,16 +76,20 @@ xml = {
         }
 
         if ( isObject( obj ) && obj["$"] )
-            xml.to(append, null, obj["$"], indent+1);
+            xml.to(append, null, obj["$"], indent+1, isPrettyPrint);
 
         if ( isObject( obj ) && isArray(obj.children) )
-            xml.to(append, null, obj.children, indent+1);
+            xml.to(append, null, obj.children, indent+1, isPrettyPrint);
 
 
         if ( name && name != "PCDATA" ){
-            if ( newLine )
-                xml._indent( append , indent );
-            append( "</" + name + ">\n" );
+            if(isPrettyPrint) {
+                if ( newLine )
+                    xml._indent( append , indent );
+                append( "</" + name + ">\n" );
+            } else {
+                append( "</" + name + ">" );
+            }
         }
 
     } ,

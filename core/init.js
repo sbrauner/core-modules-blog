@@ -11,6 +11,7 @@ function mapUrlToJxpFileCore( uri , request , response ){
            || ua.match( /\bneon\b/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider DAV/ )
            || ua.match( /Microsoft Data Access Internet Publishing Provider Protocol Discovery/ )
+           || ua.match(/WebDrive/)
            )
          ){
         return "/~~/webdav.jxp";
@@ -23,17 +24,22 @@ function mapUrlToJxpFileCore( uri , request , response ){
         return "~~/bad";
 
     // admin
-    if ( (
-	  uri.match( /^(\/|\/~~\/)admin\// )
-	  || uri.match( /^\/admin/ )
-	  )
-	 && ! uri.match(/assets/))
-        return "~~/admin/index.jxp";
+    if ( ( uri.match( /^(\/|\/~~\/)admin\// )
+           || uri.match( /^\/admin/ )
+         ) ){
+        if ( uri.match(/assets/) ){
+            var idx = uri.indexOf( "/admin" );
+            return "/~~" + uri.substring( idx );
+        }
+        else {
+            return "~~/admin/index.jxp";
+        }
+    }
 
     // these are special things which you can't override.
     if ( uri.match( /^\/~~\// ) ||
-	 uri.match( /^\/@@\// ) )
-	return uri;
+         uri.match( /^\/@@\// ) )
+        return uri;
 
     if ( routes && routes.apply ){
         var res = routes.apply( uri , request , response );

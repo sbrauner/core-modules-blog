@@ -1,0 +1,70 @@
+<%
+
+var th = obj.th;
+var table = obj.table;
+var fields = obj.fields;
+
+%>
+
+<h1 style="margin:0;">
+  <nobr>Upload Files</nobr>
+</h1>
+
+<p>Upload local files to your 10gen account.</p>
+
+<!-- Data Table Begins -->
+<table width="100%" border="0">
+  <tr class="search-top">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$colspan"></td>
+    <td class="right">&nbsp;</td>
+  </tr>
+<!-- White table -->
+  <tr class="white-top">
+    <!-- Top area -->
+    <td class="left"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$colspan">&nbsp;</td>
+    <td class="right"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+  </tr>
+
+  <tr class="white-main" id="pushNode"> <!-- new log entries will be inserted after this node -->
+    <!-- Main area -->
+    <td class="left">&nbsp;</td>
+    <forin i th>
+      <th>$th[i]</th>
+    </forin>
+    <td class="right">&nbsp;</td>
+  </tr>
+
+  <forin i table.rows>
+    <tr class="white-main">
+      <td class="left"></td>
+      <forin j fields>
+        <td>$table.rows[i][fields[j]]</td>
+      </forin>
+      <td><img onclick="deleteFile('$table.rows[i]._id', '$table.rows[i].filename')" src="/~~/admin/assets/img/button_delete_on_white.gif" /></td>
+      <td class="right"></td>
+    </tr>
+  </forin>
+
+  <tr class="white-bottom" id="popNode">
+    <!-- Bottom area -->
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$colspan">&nbsp;</td>
+    <td class="right">&nbsp;</td>
+  </tr>
+  <!-- Tan/Beige Area -->
+  <!-- Paging -->
+  <tr class="paging-bottom">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$colspan">
+      <div id="paging"></div>
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+</table>
+
