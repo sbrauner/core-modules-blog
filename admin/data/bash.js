@@ -36,7 +36,7 @@ Object.extend(admin.data.Bash.prototype, {
 
             if(z == '..'){
                 if(t._pwd == "")
-                    throw "you must not escape";
+                    throw "you cannot escape";
                 else t._pwd = t._pwd.replace(/[^\/]*$/, '');
             }
             else {
