@@ -841,7 +841,7 @@ else {
     }
 }
 
-request.action = 'dbview';
+request.page = 'dbview';
 
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,

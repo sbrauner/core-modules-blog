@@ -257,7 +257,7 @@ else
 var fcount = 0;
 
 if(top) {
-   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
 }
 else if(! th){
     th = [];
@@ -413,7 +413,7 @@ dbTable.colspan = th.length;
 
 log(tojson(request.action));
 
-if(request.action == "dbview"){
+if(request.page == "dbview"){
     new admin.Jasontable(function(){
         core.admin.pieces.dbviewTable({ th: th,
                                         table: dbTable,
@@ -428,8 +428,6 @@ if(request.action == "dbview"){
         }}}).render();
 }
 else {
-    th = th;
-
     new admin.Jasontable(function(){
         core.admin.pieces.dataTable( { th: th,
                                             table: dbTable });
