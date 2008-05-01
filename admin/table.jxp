@@ -1,5 +1,4 @@
 <%
-core.admin.jasontable();
 core.ext.pluck();
 core.io.marshal();
 core.io.encode.json();
@@ -415,19 +414,11 @@ if(request.action == "searchprofile") {
                              nextPage: nextPage  });
 }
 else {
-    new admin.Jasontable(function(){
-        core.admin.pieces.dbviewTable({ th: th,
-                                        table: dbTable,
-                                        page: page,
-                                        prevPage: prevPage,
-                                        nextPage: nextPage });
-    }, {
-        header: {cols: th, search: true}, 
-        footer: {cols: th,
-                 paging: {
-                     page: page, prevPage: prevPage, nextPage: nextPage,
-                     totalNumPages: dbTable.totalNumPages
-        }}}).render();
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
 }
 
 
