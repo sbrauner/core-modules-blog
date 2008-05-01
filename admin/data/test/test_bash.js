@@ -121,3 +121,9 @@ silent(sh.cd(['testbash']));
 var foo = sh.ls();
 assert(foo.out == 'file3\nlongfile\n');
 assert(foo.err == "");
+
+silent(sh.cd(['//..////testbash//']));
+
+var foo = sh.ls();
+assert(foo.out == 'file3\nlongfile\n');
+assert(foo.err == "");
