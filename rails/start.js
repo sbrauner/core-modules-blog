@@ -2,6 +2,27 @@
 // this is what rails init starts
 
 // -------------------
+// ----- libs -----
+// -------------------
+
+var libDir = openFile( "lib" );
+if ( libDir.exists() ){
+    libDir.listFiles().forEach(
+        function(z){
+
+            if ( ! z.filename.endsWith( ".rb" ) )
+                return;
+            
+            var f = local.lib[ z.filename.replace( /\.rb$/ , "" ) ];
+            log.rails.init.lib.info( "loading : " + f );
+            f();
+            
+        }
+    );
+
+}
+
+// -------------------
 // ----- models -----
 // -------------------
 
