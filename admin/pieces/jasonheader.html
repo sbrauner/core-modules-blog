@@ -1,7 +1,6 @@
 <%
 if(obj.cols == null) obj.cols = [];
 if(typeof obj.cols == "number"){
-    var cols = [];
     for(var i = 0; i < obj.cols; ++i){
         cols.push(null);
     }
@@ -25,9 +24,9 @@ var cols = obj.cols;
         <ul>
           <li><select id="searchopt">
               <forin i cols>
-                <option value="cols[i].name"><%= cols[i].heading || cols[i].name %></option>
+	        <option value="cols[i].name">$cols[i].name</option>
               </forin>
-            </select>
+	    </select>
           </li>
           <li><input class="text" id="searchtext" size="40" value="" type="text"></li>
           <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
@@ -45,12 +44,4 @@ var cols = obj.cols;
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
     <td class="middle" colspan="$cols.length">&nbsp;</td>
     <td class="right"><img src="images/transparent.gif" width="14" height="1"></td>
-  </tr>
-  <tr class="white-main" id="pushNode">
-    <!-- Main area -->
-    <td class="left">&nbsp;</td>
-    <forin i cols>
-      <th><nobr><a href=""><%= cols[i].heading || cols[i].name %></a></nobr></th>
-    </forin>
-    <td class="right">&nbsp;</td>
   </tr>

@@ -2,6 +2,9 @@
 
 var th = obj.th;
 var table = obj.table;
+var page = obj.page;
+var prevPage = obj.prevPage;
+var nextPage = obj.nextPage;
 
 %>
 
@@ -15,5 +18,45 @@ var table = obj.table;
     </tr>
   </forin>
 
+
+  <tr class="white-bottom">
+    <!-- Bottom area -->
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$table.colspan">&nbsp;</td>
+    <td class="right">&nbsp;</td>
+  </tr>
+  <!-- Tan/Beige Area -->
+  <!-- Paging -->
+  <tr class="paging-bottom">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$table.colspan">
+      <div id="paging">
+        <if (1 < page.length)>
+	  <ul>
+            <if prevPage>
+	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('1')">&#60;&#60;</a></li>
+	      <li class="cycle" style="margin-right: 1em; "><a onclick="loadPage('$prevPage')">&#60;</a></li>
+            </if>
+            <forin p page>
+              <if (page[p].className == "active" || page[p].className == "modactive") >
+                <li class="$page[p].className">$page[p].name</li>
+              </if>
+              <if (page[p].className != "active" && page[p].className != "modactive") >
+                <li class="$page[p].className"><a onclick="loadPage('$page[p].name')">$page[p].name</a></li>
+              </if>
+            </forin>
+            <if nextPage>
+	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
+	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
+            </if>
+	  </ul>
+        </if>
+      </div>
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+</table>
 
 
