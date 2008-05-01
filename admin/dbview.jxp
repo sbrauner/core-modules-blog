@@ -841,10 +841,7 @@ else {
     }
 }
 
-<<<<<<< HEAD:admin/dbview.jxp
 request.action = 'dbview';
-=======
->>>>>>> 4fe3637a2457d1b1ef8cdec7424acd82c53ab879:admin/dbview.jxp
 
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
