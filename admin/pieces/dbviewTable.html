@@ -5,60 +5,60 @@ var table = obj.table;
 var top = obj.top;
 
 %>
-  <!-- Main area -->
-  <tr class="white-main">
-    <td class="left">&nbsp;</td>
-    <forin i th>
-      <th>
-        <if (top && th[i].name == "NAME")>
-          <a onclick="sortBy('name')" class="name" id="thlinkname">$th[i].name</a>
-          <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+<!-- Main area -->
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <forin i th>
+    <th class="$th[i].className">
+      <if (top && th[i].name == "NAME")>
+        <a onclick="sortBy('name')" class="name" id="thlinkname">$th[i].name</a>
+        <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+      </if>
+      <if (table.idxes[th[i].name])>
+        <a onclick="sortBy('$th[i].name')" id="thlink$th[i].name">$th[i].name</a>
+        <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+      </if>
+      <if (!(top && th[i].name == "NAME") && !table.idxes[th[i].name])>
+        $th[i].name
+      </if>
+    </th>
+  </forin>
+  <td class="right">&nbsp;</td>
+</tr>
+<if (table.top)>
+  <forin row table.rows>
+    <tr class="white-main">
+      <td class="left">&nbsp;</td>
+      <td><a href="$table.rows[row].url&refPage=$table.currentPage">$table.rows[row].name</a></td>
+      <td>$table.rows[row].index
+        <if (table.rows[row].index != "")>
+	  <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropIndices('$table.rows[row].name')">
         </if>
-        <if (table.idxes[th[i].name])>
-          <a onclick="sortBy('$th[i].name')" id="thlink$th[i].name" class="$th[i].className">$th[i].name</a>
-          <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+      </td>
+      <td class="center">$table.rows[row].fixed</td>
+      <td class="center">
+	<input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
+      </td>
+      <td class="center">
+	<input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropTable('$table.rows[row].name')">
+      </td>
+      <td class="right">&nbsp;</td>
+    </tr>
+  </forin>
+</if>
+<if (!table.top)>
+  <forin row table.rows>
+    <tr class="white-main">
+      <td class="left">&nbsp;</td>
+      <if (table.rows[row].id)>
+        <td>$table.rows[row].id</td>
+      </if>
+      <forin field th>
+        <if (th[field].name != "_id") >
+          <td >$table.rows[row][th[field].name]</td>
         </if>
-        <if (!(top && th[i].name == "NAME") && !table.idxes[th[i].name])>
-          $th[i].name
-        </if>
-      </th>
-    </forin>
-    <td class="right">&nbsp;</td>
-  </tr>
-  <if (table.top)>
-    <forin row table.rows>
-      <tr class="white-main">
-        <td class="left">&nbsp;</td>
-        <td><a href="$table.rows[row].url&refPage=$table.currentPage">$table.rows[row].name</a></td>
-        <td>$table.rows[row].index
-          <if (table.rows[row].index != "")>
-	    <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropIndices('$table.rows[row].name')">
-          </if>
-        </td>
-        <td class="center">$table.rows[row].fixed</td>
-        <td class="center">
-	  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
-        </td>
-        <td class="center">
-	  <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropTable('$table.rows[row].name')">
-        </td>
-        <td class="right">&nbsp;</td>
-      </tr>
-    </forin>
-  </if>
-  <if (!table.top)>
-    <forin row table.rows>
-      <tr class="white-main">
-        <td class="left">&nbsp;</td>
-        <if (table.rows[row].id)>
-          <td>$table.rows[row].id</td>
-        </if>
-        <forin field th>
-          <if (th[field].name != "_id") >
-            <td >$table.rows[row][th[field].name]</td>
-          </if>
-        </forin>
-        <td class="right">&nbsp;</td>
-      </tr>
-    </forin>
-  </if>
+      </forin>
+      <td class="right">&nbsp;</td>
+    </tr>
+  </forin>
+</if>
