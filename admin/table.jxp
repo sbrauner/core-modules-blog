@@ -215,7 +215,6 @@ for( var i in f) {
     fields.push(i);
 }
 fields.sort();
-//log("f: "+tojson(f));
 
 
 /* ------------------
@@ -241,7 +240,7 @@ if( top ) {
 	        dbTable.rows[k].index += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        dbTable.rows[k].fixed = (currentRow.capped) ? currentRow.capped : "";
+        dbTable.rows[k].capped = (currentRow.capped) ? currentRow.capped : "";
         k++;
     }
 }
@@ -250,14 +249,12 @@ else
 
 
 
-
-
 /* Formatting */
 
 var fcount = 0;
 
 if(top) {
-   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
 }
 else if(! th){
     th = [];
@@ -281,7 +278,7 @@ var objcount = 0;
 function printObj(cursor, field) {
     if(!cursor || !cursor[field]) return;
     var text = "";
-    
+
     if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
         text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
     }
@@ -331,7 +328,7 @@ strFormatter = function(obj, field) {
         var str = "";
         var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
         fcount++;
-        
+
         if (subobj instanceof Date) {
             fullText += subobj.toString();
             str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
@@ -411,8 +408,6 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
-log(tojson(request.action));
-
 if(request.action == "dbview"){
     new admin.Jasontable(function(){
         core.admin.pieces.dbviewTable({ th: th,
@@ -420,7 +415,7 @@ if(request.action == "dbview"){
                                         top: top
                                       });
     }, {
-        header: {cols: th, search: true, showHeader: false}, 
+        header: {cols: th, search: true, showHeader: false},
         footer: {cols: th,
                  paging: {
                      page: page, prevPage: prevPage, nextPage: nextPage,
@@ -434,7 +429,7 @@ else {
         core.admin.pieces.dataTable( { th: th,
                                             table: dbTable });
     }, {
-        header: {cols: th, search: false}, 
+        header: {cols: th, search: false},
         footer: {cols: th,
                  paging: {
                      page: page, prevPage: prevPage, nextPage: nextPage,
