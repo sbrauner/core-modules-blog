@@ -1,4 +1,10 @@
-function checkRun(usr){
+function checkRun(usr, mode){
+    mode = mode || "js";
+
+    return {"js": checkRunJS, "bash": checkRunBash}[mode](usr);
+}
+
+function checkRunJS(usr){
 
     // Eliot/Geir say this should be a call to client-side eval(), and
     // we should keep it as long as there's a syntax error.
@@ -86,5 +92,10 @@ function checkRun(usr){
     if(match)
         return match;
 
+    return true;
+}
+
+function checkRunBash(usr){
+    // no filtering here yet
     return true;
 }

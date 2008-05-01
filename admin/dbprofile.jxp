@@ -1,22 +1,30 @@
 <p>
 <%
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+
 core.db.db();
 core.content.table();
-if( request.set != null ) {
-    print("Setting profiling level to " + request.set);
-    print(" ");
-    print(tojson(setDbProfilingLevel(parseInt(request.set))));
-    print("<p>");
-}
-%>
-<form>DB Profiling is...
-  <select onchange="submit()" id="set" name="set">
-    <option value="">&nbsp</option>
+
+var rowsPerPage = 100;
+
+if(user.permissions["0"] == "admin") {
+    if( request.set != null ) {
+        print("Setting profiling level to " + request.set);
+        print(" ");
+        print(tojson(setDbProfilingLevel(parseInt(request.set))));
+        print("<p>");
+    }
+    %>
+    <form>DB Profiling is...
+    <select onchange="submit()" id="set" name="set">
     <option value="0">Off</option>
     <option value="1">On for slow operations</option>
     <option value="2">On for all operations</option>
-  </select>
-</form>
+    </select>
+    </form>
+    <%
+}
+%>
 
 <a href="http://www.10gen.com/wiki/db.profile">Help</a>
 <p>
@@ -32,28 +40,36 @@ if( request.set != null ) {
   </select>
 </div>
 
-<div class="field"><input type="checkbox" name="timefilter" id="timefilter">
+<div class="field"><input type="checkbox" name="timefilter" id="timefilter" onclick="toggleEnableText('time', 'YYYY-MM-DD HH:MM:SS')">
   <label for="timefilter">Timestamp filter between </label>
-  <input type="text" onclick="clearTextBox('time_from')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
-  <input type="text" name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
+<input type="text" disabled onclick="clearTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
+<input type="text" disabled name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
 </div>
-<div class="field"><input type="checkbox" name="msfilter" id="msfilter">
+<div class="field"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999999')">
   <label for="msfilter">Millisecond filter between </label>
-  <input type="text" name="ms_from" onclick="clearTextBox('ms_from')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
-  <input type="text" name="ms_to"  onclick="clearTextBox('ms_to')" onblur="resetTextBox('ms_to', '999')" id="ms_to" value="999" />
+<input type="text" disabled name="ms_from" onclick="clearTextBox('ms_from', '0')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
+<input type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999999')" onblur="resetTextBox('ms_to', '999999')" id="ms_to" value="999999" />
 </div>
-<div class="field"><input type="checkbox" name="refilter" id="refilter">
+<div class="field"><input type="checkbox" name="refilter" id="refilter" onclick="toggleEnableText('re', '')">
   <label for="refilter">Information RegExp filter </label>
-  <input type="text" name="re" id="re" />
+  <input type="text" name="re" id="re" disabled />
   <input type="button" onclick="doSearch()" value="Search" />
   <input type="button" onclick="refreshSearch()" value="Refresh" />
 </div>
 </div>
 
-<div id="myMarkedUpContainer" class="yui-skin-sam">
-
+<% core.admin.pieces.dbprofile({th:[{name: "Timestamp"}, {name: "Message"}, {name: "Milliseconds"}]}); %>
+<div id="myCollection">
+<%
+request.action = "searchprofile";
+request.reverse = "true";
+request.rowsPerPage = rowsPerPage;
+var table = core.admin.table();
+%>
 </div>
 
+<div id="myMarkedUpContainer" class="yui-skin-sam"></div>
+<table id="temp"></table>
 
 <!--CSS file (default YUI Sam Skin) -->
 <link type="text/css" rel="stylesheet" href="/@@/yui/current/datatable/assets/skins/sam/datatable.css">
@@ -81,85 +97,13 @@ if( request.set != null ) {
 
 <script type="text/javascript">
 
-myDataSource = new YAHOO.util.DataSource('showTable?ns=admin.system.profile&reverse=true');
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.connXhrMode = "queueRequests";
-
-var parseDateStr = function(str) {
-    var dateObj = {};
-    dateObj.yyyy = str.substring(0,4);
-    dateObj.MM = str.substring(5,7);
-    dateObj.dd = str.substring(8,10);
-    dateObj.hh = str.substring(11,13);
-    dateObj.mm = str.substring(14,16);
-    dateObj.ss = str.substring(17,19);
-    return dateObj;
+var currentPage = 1;
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    refreshTable("currentPage="+pagenum);
 }
 
-var sortMyDates = function(a, b, desc) {
-    // Check for invalid dates (I don't think this can happen, but just in case...)
-    if(!a || a.length != 19)
-        return (!b || !b.length != 19) ? 0 : 1;
-    else if(!b || b.length != 19)
-        return -1;
-
-    var lt = desc ? 1 : -1;
-    var gt = desc ? -1 : 1;
-
-    a = parseDateStr(a.getData("ts"));
-    b = parseDateStr(b.getData("ts"));
-    if(a.yyyy != b.yyyy) return a.yyyy > b.yyyy ? gt : lt;
-    if(a.MM != b.MM) return a.MM > b.MM ? gt : lt;
-    if(a.dd != b.dd) return a.dd > b.dd ? gt : lt;
-    if(a.hh != b.hh) return a.hh > b.hh ? gt : lt;
-    if(a.mm != b.mm) return a.mm > b.mm ? gt : lt;
-    if(a.ss != b.ss) return a.ss > b.ss ? gt : lt;
-    return 0;
-}
-
-var myPaginator = new YAHOO.widget.Paginator({ rowsPerPage: 50, alwaysVisible : false } );
-
-oConfigs = {
-    initialRequest: "",
-    paginator: myPaginator,
-    sortedBy: { key: "ts", dir:YAHOO.widget.DataTable.CLASS_DESC }
-};
-
-myDataSource.responseSchema = {
-    resultsList: "rows",
-    fields: [
-      {key: "ts"},
-      {key: "info"},
-      {key: "millis", parser:YAHOO.util.DataSource.parseNumber}
-    ]
-};
-
-var myColumnDefs = [ { label: "Timestamp", key: "ts", sortable: true, sortOptions: { sortFunction : sortMyDates }, formatter: "myDate" },
-                     { label: "Length (ms)", key: "millis", sortable: true },
-                     { label: "Information", key: "info", sortable: true }
-                   ];
-
-var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
-
-var currentSort = {key: "ts", dir: "yui-dt-asc"};
-myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = {};
-    currentSort.key = e.column.parent.children[0].key;
-    currentSort.dir = e.dir;
-}
-myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
-
-updateCaseTable = {
-    success : function(){
-        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
-        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
-    },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
-};
-
-
-myDataSource.liveData = "showTable?ns=admin.system.profile&reverse=true";
+/*
 
 myDateFormatter = function(elCell, oRecord, oColumn, oData) {
     var d = new Date(oData);
@@ -174,16 +118,21 @@ myDateFormatter = function(elCell, oRecord, oColumn, oData) {
 
 YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
 
-// End of table code
+*/
 
-
-
-// Initial setup of page
-document.getElementById("set").options[<%= parseInt(request.set ? request.set : "-1")+1 %>].selected = true;
+<%
+if(user.permissions["0"] == "admin") {
+    // Initial setup of page
+    core.db.db();
+    print('document.getElementById("set").options['+ getDbProfilingLevel() +'].selected = true');
+}
+%>
 
 // Form handling
-function clearTextBox(id) {
-    document.getElementById(id).value = "";
+function clearTextBox(id, defaultVal) {
+    var target = document.getElementById(id)
+    if(target.value == defaultVal)
+        target.value = "";
 }
 function resetTextBox(id, str) {
     var elem = document.getElementById(id);
@@ -191,23 +140,84 @@ function resetTextBox(id, str) {
         elem.value = str
     }
 }
+function toggleEnableText(id, defaultVal, defaultVal2) {
+    if(id == "re") {
+        var elem = document.getElementById(id);
+        if(elem.disabled) {
+            elem.disabled = false;
+            clearTextBox(elem.id, defaultVal);
+            elem.focus();
+        }
+        else {
+            resetTextBox(elem.id, defaultVal);
+            elem.disabled = true;
+        }
+    }
+    else {
+        var from = document.getElementById(id+"_from");
+        var to = document.getElementById(id+"_to");
+        if(from.disabled) {
+            to.disabled = false;
+            from.disabled = false;
+            clearTextBox(from.id, defaultVal);
+            from.focus();
+        }
+        else {
+            to.disabled = true;
+            from.disabled = true;
+            resetTextBox(from.id, defaultVal);
+            resetTextBox(from.id, (defaultVal2) ? defaultVal2 : defaultVal);
+        }
+    }
+}
 
 var passData, lastSearch;
+var pushNode = document.getElementById( "pushNode" );
+var parent = pushNode.parentNode;
+
 function refreshTable(passData){
     if(passData)
         passData = passData+"&";
     else
         passData = "";
-    myDataSource.sendRequest("&action=searchprofile&"+passData+lastSearch, updateCaseTable);
+
+    ajax("&action=searchprofile&rowsPerPage=<%= rowsPerPage %>&reverse=true&"+passData+lastSearch, "table", function(response) {
+        var tbd = YAHOO.util.Dom.getNextSibling(pushNode);
+        while(tbd) {
+            parent.removeChild(tbd);
+            tbd = YAHOO.util.Dom.getNextSibling(pushNode);
+        }
+
+        document.getElementById("temp").innerHTML = response;
+        var trs = document.getElementById("temp").childNodes[1].childNodes;
+        for(var i=trs.length-1; i>=0; i--) {
+            YAHOO.util.Dom.insertAfter(trs[i], pushNode);
+        }
+    });
 }
+
 function doSearch() {
     var passData = getSearchArgs();
     if(passData == -1) return;
     lastSearch = passData;
     refreshTable();
 }
+
 function refreshSearch() {
     lastSearch = "";
+    document.getElementById("time_from").value="YYYY-MM-DD HH:MM:SS";
+    document.getElementById("time_to").value="YYYY-MM-DD HH:MM:SS";
+    document.getElementById("ms_from").value = "0";
+    document.getElementById("ms_to").value="999999";
+    document.getElementById("refilter").checked = false;
+    document.getElementById("timefilter").checked = false;
+    document.getElementById("msfilter").checked = false;
+    document.getElementById("re").value = "";
+    document.getElementById("time_from").disabled = true;
+    document.getElementById("time_to").disabled = true;
+    document.getElementById("ms_from").disabled = true;
+    document.getElementById("ms_to").disabled = true;
+    document.getElementById("re").disabled = true;
     refreshTable();
 }
 
@@ -220,7 +230,7 @@ function getSearchArgs() {
             pairs.push("time_to="+document.getElementById("time_to").value);
         }
         else {
-            alert("Timestamp filters must have the format: \"YYYY-MM-DD HH:MM:SS\"");
+            alert("Bad TimeStamp","Please make sure the beginning timestamp value in your filter is before your ending timestamp value");
             return -1;
         }
     }
@@ -231,7 +241,7 @@ function getSearchArgs() {
             pairs.push("ms_to="+document.getElementById("ms_to").value);
         }
         else {
-            alert("Millisecond filters must be numbers between 0 and 999.");
+            simpleDlg("Bad Millisecond Range", "Please make sure the beginning millisecond value in your filter is before your ending millisecond value");
             return -1;
         }
     }
@@ -240,7 +250,7 @@ function getSearchArgs() {
         if(validateRe())
             pairs.push("re="+document.getElementById("re").value);
         else {
-            alert("Regular expressions must be of the form \"/regexp/opts\"");
+            simpleDlg("Bad Information RegExp", "Your Regular Expression is not valid; Please fix and resubmit");
             return -1;
         }
     }
@@ -248,16 +258,38 @@ function getSearchArgs() {
 
     return pairs.join('&');
 }
+
+function simpleDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("someDialog",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:function(){this.hide();}, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
+}
+
 function validateTime() {
     re = new RegExp(/^\d{4}-\d{2}-\d{2} [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/);
     return re.test(document.getElementById("time_from").value) && re.test(document.getElementById("time_to").value);
 }
 function validateMs() {
-    return /^\d{1,3}$/.test(document.getElementById("ms_to").value) && /^\d{1,3}$/.test(document.getElementById("ms_to").value);
+    return (/^\d{1,6}$/.test(document.getElementById("ms_to").value) && /^\d{1,6}$/.test(document.getElementById("ms_to").value)) &&
+    (parseInt(document.getElementById("ms_to").value) <= parseInt(document.getElementById("ms_to").value));
 }
 function validateRe() {
-    val = new RegExp(document.getElementById("re").value);
-    return val != null;
+    try {
+        val = new RegExp(document.getElementById("re").value);
+    }
+    catch(e) {
+        return false;
+    }
+    return true;
 }
 
 function changeRecordType() {
@@ -269,25 +301,8 @@ function changeRecordType() {
 
 
 <%
-/*    var tab = new htmltable(
-    {
-     searchable : true,
-     ns : db.system.profile,
-     cols : [
-     { name: "ts", searchWidth: 8,
-       view: function(x) { var z = new Date(x); return z.format("yyyy-MM-dd HH:mm:ss"); }
-     },
-    { name: "millis", searchWidth: 4,
-       view: function(x) { return x.toFixed(); }
-     },
-     { name: "info", searchWidth: 40 }
-     ]
-
-    }
-			    );
 
 
 
-tab.dbview( tab.find({},{$natural:-1}) );*/
 %>
 

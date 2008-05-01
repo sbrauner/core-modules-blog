@@ -11,6 +11,5 @@ a.forEach( function(z){ %>
 
 
 %>
-<span id="refreshing">Refresh in <span id="refreshtimer">5</span> seconds - <a href="#" onclick="pauseTimer()">pause</a></span>
-<span id="paused" style="display: none;">Refresh paused - <a href="#" onclick="resumeTimer()">resume</a></span>
+<% core.ui.elements.refreshTimer(); %>
 <hr>

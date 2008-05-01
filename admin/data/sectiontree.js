@@ -9,10 +9,14 @@ if ( allowModule ){
 
 return {
     'system': {
+        'statistics' : {
+            'usage': true,
+            'analytics': true,
+        },
         'users': {},
         'database': {
-            'dbprofile': true,
             'dbview': true,
+            'dbprofile': true,
         },
         'files': {
         },
@@ -22,14 +26,18 @@ return {
             'logMemory': true,
             'logScroll': true
         },
+        'shell': {
+        },
     },
     'editor': {
         $: '/admin/ed'
     },
     'git': {
-        $: '/admin/gitLocal'
+        $: '/admin/gitLocal',
+        'git': {}
     },
     'docs': {
+        'docs': {}
     },
     'applications': applications
 

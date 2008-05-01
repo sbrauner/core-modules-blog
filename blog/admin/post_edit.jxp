@@ -1,4 +1,4 @@
-<% 
+<%
 
 core.blog.ping();
 
@@ -27,41 +27,41 @@ if ( request.action == "save" ) {
 
     thePost.cls = request.cls || "entry";
 
-    if( !request.title || 
-        request.title.trim().length == 0 || 
+    if( !request.title ||
+        request.title.trim().length == 0 ||
         request.content.trim().length == 0 ) {
       	print("<p>Error saving: name/content is blank?<p>");
-    } 
+    }
     else {
-        
+
         if ( ! thePost.name || ( request.name && ! thePost.live ) ) {
 
 	    if ( thePost.cls == "entry" ){
 		if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
 		    thePost.name = request.name;
     		else
-		    thePost.name = thePost.ts.getYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+		    thePost.name = thePost.ts.getFullYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
 	    }
 	    else {
 		thePost.name = request.name;
 	    }
     	}
-    
+
         thePost.title = request.title;
         thePost.content = request.content;
         thePost.excerpt = request.excerpt;
         thePost.ts = new Date( request.ts );
         if ( request.author )
             thePost.author = request.author;
-	
+
         thePost.categories = request.getParameters('categories') || [];
-	
+
 	if (request.new_categories) {
 	    request.new_categories.split('[,]').forEach( function( newName ){
 		newName = newName.trim();
-		if ( newName.length == 0 ) 
+		if ( newName.length == 0 )
 		    return;
-		
+
 		var found = false;
 		thePost.categories.forEach( function( old ){
 		    if ( old.toLowerCase() == newName.toLowerCase() )
@@ -69,7 +69,7 @@ if ( request.action == "save" ) {
 		} );
 		if ( found )
 		    return;
-		
+
 		var cat = Category.find( newName );
 		if ( ! cat ){
 		    cat = new Category( newName , newName );
@@ -78,7 +78,7 @@ if ( request.action == "save" ) {
 		thePost.categories.push( cat.name );
 	    } );
 	}
-	
+
 	thePost.categories = thePost.categories.unique().sort();
 
         thePost.live = parseBool( request.live );
@@ -100,11 +100,11 @@ if ( request.action == "save" ) {
 
 
         db.blog.posts.save( thePost );
-        
+
         id = thePost._id;
-        justSaved=true;	
+        justSaved=true;
         print( "<i>Saved.</i>" );
-        
+
         if ( request.getHost().match( /www/ ) && thePost.live && ! thePost.haveIPinged ){
             // ping blogging services
             print( "Pinging Services<br>" );
@@ -114,12 +114,12 @@ if ( request.action == "save" ) {
             thePost.haveIPinged = true;
         }
     }
-} 
+}
 else if (request.action == 'delete') {
     if (db.blog.posts.remove(thePost)) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "posts" );
-    } 
+    }
     else {
         print("<strong>Error deleting post!</strong>");
     }
@@ -129,7 +129,7 @@ if ( request.content ) thePost.content = request.content;
 
 var categories = db.blog.categories.find().sort( { name : 1 } ).toArray( 100000 );
 categories.sort( function( a , b ){
-    
+
     var hasA = thePost.categories.contains( a.name );
     var hasB = thePost.categories.contains( b.name );
 
@@ -179,12 +179,12 @@ tinyMCE.init({
   var newPost = <%= id ? "false" : "true" %>;
   function titleChange(){
     if ( ! newPost ) return;
-    
+
     var t = document.getElementById( "title" ).value;
     t = t.replace( /[^a-zA-Z0-9]+/g , "_" ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
-  
+
   function confirmDelete() {
       var confirmed = window.confirm('Are you sure you want to delete this post? You cannot undelete!');
 
@@ -266,8 +266,8 @@ tinyMCE.init({
                 <%
                     categories.forEach( function(category) {
                 %>
-                    <input type="checkbox" name="categories" value="<%= category.name %>" 
-		        <%= thePost.categories.contains(category.name) ? 'checked' : '' %> > 
+                    <input type="checkbox" name="categories" value="<%= category.name %>"
+		        <%= thePost.categories.contains(category.name) ? 'checked' : '' %> >
 			<%= category.getLabel() %>
 		    <br/>
                 <% }); %>

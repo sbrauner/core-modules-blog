@@ -2,39 +2,62 @@
    // title
    // actions = ["checkout", "diff", "commit"]
    // filenames = ["file1", "file2"]
-   // filevar = "untracked_file" (the "name" field for a checkbox)
+   // filevar = "untracked_file", "changed_file" (the "name" field for a checkbox)
    var filenames = obj.filenames;
    var filetypes = obj.filetypes;
-   var actions = obj.actions;
+   var massActions = obj.massActions;
    var unmerged = obj.unmerged;
-   var fileDiff = obj.fileDiff;
+   var unadd = obj.unadd;
+   var fileActions = obj.fileActions;
 %>
-    <tr>
-      <td colspan="2">$title</td>
-    </tr>
-    <forin file filenames>
-      <% var classes = [];
-         if(filenames[file] in unmerged) classes.push("gitunmerged"); %>
-      <tr class="<%= classes.join(' ') %>">
-        <td><input type="checkbox" name="$filevar" value="$filenames[file]" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> ></td>
-        <td>$filenames[file]
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <th class="lmod"><div class="float-right">
+      <forin acti massActions>
+        <% core.admin.pieces.gitButton(massActions[acti]); %>
+      </forin>
+    </div>
+    <input type="checkbox" name="checkAll_$filevar" onclick="handleCheckAll(this)">
+    <nobr>$title</nobr>
+  </th>
+  <td class="right">&nbsp;</td>
+</tr>
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <td class="lmod">
+    <table cellpadding=0 cellspacing=0 border="0">
+      <forin file filenames>
+        <% var classes = [];
+           if(filenames[file] in unmerged) classes.push("conflict"); %>
+        <tr class="<%= classes.join(' ') %>">
+          <td>
+            <input type="checkbox" name="$filevar" value="$filenames[file]" class="check_$filevar" <%= ( obj.checked[obj.filenames[file]] ? 'checked' : '' ) %> >
+            <a href="gitShowFile?file=$filenames[file]" target="new" onclick="return popup(this.href)">$filenames[file]</a>
+          </td>
+          <td>
           <%
-             if(filetypes[file] == "CONFLICT"){
-                 print("<span class='conflicttype'>CONFLICT</span>");
-             }
-             else if(filetypes[file]){
+             if(filetypes[file] && filetypes[file] != "CONFLICT"){
                  print("(" + filetypes[file] + ")");
              }
 %>
-        <if fileDiff>
-          (<a href="gitDiffOne?file=$filenames[file]" target="new" onclick="return popup(this)">diff</a>)
-        </if></td>
-      </tr>
-    </forin>
-    <tr>
-      <td colspan="2">
-      <forin action actions>
-        <input type="submit" name="action" value="<%= actions[action].name || actions[action] %>" <%= actions[action].disabled? "disabled" : "" %>>
+          <forin acti fileActions>
+            <% var action = fileActions[acti], name = action.name || action,
+                   onclick = action.onclick? filenames[file].replace(/^(.+)$/, action.onclick) : "",
+                   href = action.href? filenames[file].replace(/^(.+)$/, action.href) : "#"; %>
+            <a href="<%= href %>" target="new" onclick="<%= onclick %>"><%= name %></a>
+          </forin>
+          <if (unadd[filenames[file]])>
+            <a href="#" id="unadd_$filenames[file]" onclick="unaddSubmit(this)">un-add</a>
+          </if>
+<%
+   if(filetypes[file] == "CONFLICT"){
+       print("<td><div>*conflict</div></td>");
+   }
+%>
+          </td>
+        </tr>
       </forin>
-      </td>
-    </tr>
+    </table>
+  </td>
+  <td class="right">&nbsp;</td>
+</tr>

@@ -48,6 +48,11 @@ var populate = function(theScope){
         user.shell.prompt = prompt;
         db.users.save(user);
     };
+
+    theScope.sh = new admin.data.Bash();
+    theScope.shoutput = function(cmd){
+        print(cmd.out + (cmd.out && cmd.err? '\\n': '') + cmd.err);
+    };
 }
 
 if ( ! theScope ){
@@ -84,10 +89,35 @@ var Buffer = function(){
     });
 };
 
+var command = request.command;
+if(command.startsWith("/")){
+    command = command.substring(1, command.length);
+    for(var i = 0; i < command.length; ++i){
+        if(command[i] == ' ' || command[i] == '(')
+            break;
+    }
+    if(i >= command.length){
+        command = command + "()";
+    }
+    else {
+        if(command[i] == '(') // OK, the user put parens in here, whee
+            ;
+        if(command[i] == ' ') {
+            var args = command.substring(i+1);
+            args = tojson(args.split(/\s+/));
+            command = command.substring(0, i) + '(' + args + ')';
+        }
+    }
+
+    command = "shoutput(sh."+command+");";
+
+    log.debug("processing command " + command);
+}
+
 var buffer = Buffer();
 print = buffer;
 try {
-    res = theScope.eval( request.command , "aaaa" + shellId , null );
+    res = theScope.eval( command , "aaaa" + shellId , null );
 }
 catch (e){
     var ary = [e.toString()].concat(e.getStackTrace());

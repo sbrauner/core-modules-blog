@@ -1,46 +1,65 @@
 <%
 var n;
 
-log(request.filter+" "+request.log_level+" "+request.ns);
+/* Filtering */
 var ll = request.log_level;
 if(request.action == "filter") {
     var searchObj = {};
     if(request.log_level && request.log_level != "ALL") searchObj.level = request.log_level;
     if(request.ns) searchObj.logger = request.ns;
     if(request.filter) searchObj.msg = new RegExp(request.filter);
-    n = db._logs.find( searchObj ).limit(100).toArray();
+    n = db._logs.find( searchObj ).toArray();
 }
 else
-    n = db._logs.find().limit(100).toArray();
+    n = db._logs.find().toArray();
 
 if ( !n )
     throw "no all";
+
+/* Sort desc */
 n.reverse();
+n.splice(100);
 
 var since = null;
-if ( request.since ){
+if ( request.since ) {
     since = new Date( parseFloat( request.since ) );
 }
 
 if ( since ){
     n = n.filter( function( z ){
-	return z.date > since;
+        return z.date.setMilliseconds(0) > since.getTime();
     } );
 }
-
-response.setHeader( "Content-Type" , "text/json" );
-
 n.forEach( function(z){
     if ( z == null )
 	throw "why is z null";
     z.thread = null;
     z._id = null;
     z.level = z.level.toString();
-    z.msg = z.msg.replace( /[\r\n]+/ , "<br>" );
+    z.msg = z.msg.replace( /[\r\n]+/ , "<br />" );
+    var now = new Date();
+    var now1 = now.setMinutes(now.getMinutes()-1);
+    var now10 = now.setMinutes(now.getMinutes()-10);
+    var now30 = now.setMinutes(now.getMinutes()-30);
+    if(z.date.getTime() >= now1)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_1.gif" />';
+    else if(z.date.getTime() >= now10)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_2.gif" />';
+    else if(z.date.getTime() >= now30)
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_3.gif" />';
+    else
+        z.color = '<img src="/~~/admin/assets/img/timestamp_circle_4.gif" />';
+
+    z.date = z.date.format("E MMM dd, yyyy HH:mm:ss");
     if ( z.throwable )
 	z.throwable = z.throwable.toString();
 } );
 
-print( tojson( n ) );
+
+var fields = ["color", "date", "level", "logger", "msg"];
+var table = {rows: n, colspan: fields.length};
+
+response.setHeader( "Content-Type" , "text/json" );
+core.admin.pieces.logBody({fields: fields, table: table});
 
 %>

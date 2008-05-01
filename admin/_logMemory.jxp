@@ -1,0 +1,28 @@
+
+<%
+var ma = MemoryAppender.find( log );
+
+var fields = ["date", "thread", "level", "msg", "throwable"];
+tempRows = ma.cache[request.l];
+var table = { rows: [], fields: fields};
+tempRows.reverse();
+var maxrows = tempRows.length;
+if(request.action == "filter") {
+    log(request.log_level);
+    for(var i=0; i<maxrows; i++) {
+        if(request.log_level && (request.log_level == "ALL" || request.log_level == tempRows[i].level))
+            table.rows.push(tempRows[i]);
+        else if(request.filter && tempRows[i].msg.search(new RegExp(request.filter)) > 0)
+            table.rows.push(tempRows[i]);
+        else if(!request.log_level && !request.filter)
+            table.rows.push(tempRows[i]);
+    }
+}
+for(var i in table.rows) {
+    if(table.rows[i].date instanceof Date)
+        table.rows[i].date = table.rows[i].date.format("E MMM dd, yyyy HH:mm:ss");
+}
+core.admin.pieces.log({table: table});
+
+%>
+

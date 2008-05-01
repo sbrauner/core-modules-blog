@@ -2,13 +2,13 @@
 
 core.user.data.reset();
 if(request.username){
-    user = User.find(request.username);
-    if(! user)
+    u = User.find(request.username);
+    if(! u)
         User.abort("Couldn't find username");
-    var reset = User.Reset.findOne({user: user});
+    var reset = User.Reset.findOne({user: u});
 
     if(! reset){
-        reset = new User.Reset(user);
+        reset = new User.Reset(u);
     }
 
     reset.send();

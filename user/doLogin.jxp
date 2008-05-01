@@ -1,10 +1,18 @@
 <%
-    core.user.auth();
-user = Auth.getUser( request , response );
+core.user.auth();
+var error = 'invalid username/password'; // default error
+try {
+    user = Auth.getUser( request , response );
+}
+catch (e){
+    error = e;
+}
 
 if ( ! user ){
-    print( "invalid username/password" );
-    Auth.cookie.reject( request , response );
+    htmlheader("Login");
+    print( "<div class='notice'>" + error + "</div>" );
+    core.user.html.login( { to: request.to } );
+    htmlfooter();
     return;
 }
 

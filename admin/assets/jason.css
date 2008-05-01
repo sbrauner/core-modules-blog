@@ -1,6 +1,6 @@
 /* From Jason */
 
-/* mass reset */	
+/* mass reset */
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym {border:0;font-variant:normal;}sup {vertical-align:text-top;}sub {vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}body {font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}table {font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}
 
 body {
@@ -9,6 +9,95 @@ body {
 	background-image:url(img/header_back.gif);
 	background-repeat: repeat-x;
 	background-color: #ffffff;
+}
+
+div, p, ul, ol {
+	font-size: 100%;
+}
+
+h2, h3, h4, p, ul, ol, dl, pre {
+	margin-bottom: 1em;
+}
+
+h1 {
+	margin:0;
+	padding:0;
+	font-size: 148%;
+	color: #333333;
+	font-weight: normal;
+}
+
+h2 {
+	font-size: 131%;
+	padding-top: 1em;
+}
+
+h3 {
+	font-size: 108%;
+	padding-top: 1em;
+}
+
+h4 {
+	font-size: 100%;
+	padding-top: 1em;
+}
+
+p, .help {
+	padding: 0em 0px 1em 0px;
+	line-height: 1.5em;
+	color: #333333;
+}
+
+hr {
+	margin: 2em 0 2em 0;
+	border: 0;
+	width: 100%;
+	color: #ded5b3;
+	background-color: #ded5b3;
+	height: 1px;
+}
+
+td {
+    padding:0;
+	color: #333333;
+}
+
+div.hr hr {
+	display: none;
+}
+
+ul, ol {position: relative; }
+
+ul, ol {
+	margin-left: 16px;
+	line-height: 1.5em;
+}
+
+li {
+  padding-left: 16px;
+  list-style-type: none;
+  background-image: url(list_bullet_orange.gif);
+  background-repeat: no-repeat;
+}
+
+li ul, li ol {
+	margin-left: 0px;
+	padding-bottom:0;
+}
+
+a, a:visited {
+	font-size: 11px;
+	color: #2c65af;
+	text-decoration: none;
+	font-weight:normal;
+}
+
+a:hover {
+	color: #0f2659;
+}
+
+a#active {
+	color: #2c65af;
 }
 
 img {
@@ -40,20 +129,21 @@ img {
 
 #navcontainer ul li {
 	float: left;
-	padding: 0 20px 0 13px;
+	margin: 0 1.5em;
+	padding: 0 0 0 0;
 	height: 24px;
 }
 
 #navcontainer ul li.active {
 	margin: 0 .5em;
 	padding: 0 0 0 .95em;
-	background:url(img/header_tab_active_left.gif) no-repeat left top;	
+	background:url(img/header_tab_active_left.gif) no-repeat left top;
 }
 
 #navcontainer ul li.active a {
 	margin:0;
 	padding: 0 1em 0 0;
-	background:url(img/header_tab_active_right.gif) no-repeat right top;	
+	background:url(img/header_tab_active_right.gif) no-repeat right top;
 }
 
 #navcontainer ul li a, #navcontainer ul li a:visited {
@@ -82,7 +172,7 @@ img {
 	margin: 0;
 	padding: .4em .5em .4em 1em;
 	line-height: 2em;
-	background:url(img/header_login_left.gif) no-repeat left bottom;	
+	background:url(img/header_login_left.gif) no-repeat left bottom;
 	background-color:#0f2659;
 	font-size: 11px;
 	color: #ffffff;
@@ -98,17 +188,598 @@ img {
 	color: #95ca17;
 }
 
-/* leftnav stuff in leftNav.css */
+/* Main area */
+
+td.maincontent td {
+	padding: 0 0 1em 0;
+	vertical-align: top;
+}
+
+td.maincontent div.links-table {
+	float: right;
+	padding-top: .5em;
+	text-align: right;
+	font-size: 12px;
+	color: #dddddd;
+}
+
+td.maincontent div.links-table a, td.maincontent div.links-table a:visited {
+	font-size: 12px;
+	color: #daa320;
+	text-decoration: none;
+	font-weight:normal;
+}
+
+td.maincontent div.links-table a:hover {
+	color: #b7840d;
+}
+
+td.maincontent div.links-table a#active {
+	color: #daa320;
+}
+
+td.maincontent div.links-table a.external, td.maincontent div.links-table a.external:visited {
+	margin: 0;
+	padding: 1em 1em 0 0;
+	background:url(../images/icon_external_link_gold.gif) no-repeat 100% bottom;
+}
+
+td.maincontent div.links-table a:hover.external {
+	background:url(../images/icon_external_link_gold_hover.gif) no-repeat 100% bottom;
+}
+
+td.maincontent p.abstract {
+	margin: 1em 5px 0 0;
+	padding: 0;
+}
+
+td.maincontent .msg {
+	margin: 0 0 1em 0;
+	color: #9c905f;
+}
+
+td.maincontent p.abstract a {
+	font-size: 12px;
+}
+
+td.maincontent ul {
+	margin-left: 0;
+}
+
+td.maincontent ul.small-text {
+	font-size: 11px;
+}
+
+td.maincontent .shell {
+	width: 100%;
+	height: 8em;
+	border: 1px solid #cccccc;
+	padding: .2em;
+	line-height: 1.3em;
+}
+
+/* Search Table */
+
+td.maincontent tr.search-table td {
+	padding: 10px 3px 3px 3px;
+	background-color: #e7e4d6;
+}
+
+td.maincontent tr.search-table td.info {
+	font-size: 11px;
+}
+
+td.maincontent tr.search-table td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_topleft.gif) no-repeat left top;
+}
+
+td.maincontent .search-table form {
+	font-size: 11px;
+}
+
+select {
+	height: 20px;
+	padding: 2px;
+	cursor: pointer;
+}
+
+input.text {
+	padding: 1px;
+}
+
+input.text, textarea {
+  	border: 1px solid;
+  	border-color: #999999 #cccccc #cccccc #999999;
+}
+
+td.maincontent tr.search-table td.right {
+	padding-right: 7px;
+	text-align: right;
+	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
+}
+
+td.maincontent tr.search-table td.right a{
+	font-size: 12px;
+}
+
+/* Modified top for main table */
+
+td.maincontent tr.search-top td {
+	background-color: #e7e4d6;
+	margin:0;
+	padding:0;
+}
+
+td.maincontent tr.empty td {
+	font-size: 4px;
+}
+
+td.maincontent tr.search-top ul {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+td.maincontent tr.search-top ul li {
+	float: left;
+	margin: 0 .5em 0 0;
+	padding: .7em 0 0 0;
+	height: 1.8em;
+}
+
+td.maincontent tr.search-top td.left {
+	background: #e7e4d6 url(img/mtbox_topleft.gif) no-repeat left top;
+}
+
+td.maincontent tr.search-top td.right {
+	text-align: right;
+	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
+}
+
+/* White top */
+
+td.maincontent tr.white-top td {
+	margin: 0;
+	padding: 0;
+	font-size:1px;
+	height: 14px;
+}
+
+td.maincontent tr.white-top td.middle {
+	padding: 0 14px;
+	background-image: url(img/mwbox_top.gif);
+}
+
+td.maincontent tr.white-top td.left {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_topleft.gif) no-repeat left top;
+}
+
+
+td.maincontent tr.white-top td.right {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_topright.gif) no-repeat right top;
+}
+
+td.maincontent tr.white-bottom th, td.maincontent tr.white-bottom td {
+	margin: 0;
+	padding: 0;
+	font-size:1px;
+	height: 14px;
+}
+
+td.maincontent tr.white-bottom td.middle {
+	padding: 0 14px;
+	background-image: url(img/mwbox_bot.gif);
+}
+
+td.maincontent tr.white-bottom th.left, td.maincontent tr.white-bottom td.left {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_botleft.gif) no-repeat left top;
+}
+
+
+td.maincontent tr.white-bottom th.right, td.maincontent tr.white-bottom td.right {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_botright.gif) no-repeat right top;
+}
+
+
+td.maincontent tr.white-main th, td.maincontent tr.white-main td {
+	margin: 0;
+	padding: 0 1.5em 0 0;
+	background-color: #ffffff;
+	font-size: 11px;
+	line-height: 2em;
+}
+
+td.maincontent tr.white-main th {
+        color: #333333;
+        font-weight: bold;
+}
+
+td.maincontent tr.white-main th.lmod {
+	padding-left: 1em; line-height:1em;
+}
+
+td.maincontent p {
+	margin: .5em 0 0 0;
+	font-size: 12px;
+}
+
+tr.white-main th.center, tr.white-main td.center {
+	padding: 0;
+	text-align: center;
+}
+
+td.maincontent tr.white-main td {
+	padding: .4em 1em .1em 0;
+	vertical-align: top;
+	border-top:1px solid #dddddd;
+	line-height: 1.5em;
+	font-size: 11px;
+}
+
+input {
+}
+
+td.maincontent tr.white-main td.lmod {
+	padding: .5em 0 1.5em 1em;
+}
+
+td.maincontent tr.white-main td.lmod td {
+	padding-top: 0px;
+	padding-bottom: 1px;
+	border:none;
+}
+
+td.maincontent tr.white-main td.lmod tr.conflict td div {
+	color: #d41f1f;
+	font-weight: bold;
+	font-style: italic;
+}
+
+tr.conflict a, tr.conflict a:visited {
+	color: #d41f1f;
+}
+
+tr.conflict a:hover {
+	color: #961212;
+}
+
+tr.white-main th a, tr.white-main th a:visited {
+	line-height: 2em;
+	font-size: 11px;
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+tr.white-main th a, tr.white-main th a:visited {
+	line-height: 2em;
+	font-size: 11px;
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+tr.white-main td.error {
+	color: #ff8c0b;
+}
+
+tr.white-main td.fatal {
+	font-weight: bold;
+	color: #d41f1f;
+}
+
+tr.white-main th a.sort-down, tr.white-main th a.sort-down:visited {
+	margin: 0;
+	padding: 1em 1.2em 0 0;
+	background:url(img/icon_active_arrow_down.gif) no-repeat 100% bottom;
+}
+
+tr.white-main th a.sort-up, tr.white-main th a.sort-up:visited {
+	margin: 0;
+	padding: 1em 1.2em 0 0;
+	background:url(img/icon_active_arrow_up.gif) no-repeat 100% bottom;
+}
+
+tr.white-main th a:hover {
+	color: #111111;
+}
+
+tr.white-main th a#active {
+	color: #333333;
+}
+tr.white-main th a {
+        cursor: pointer;
+}
+
+tr.white-main ul {
+	clear: both;
+	margin: 0;
+	padding: 0;
+	font-size: 118%;
+}
+
+tr.white-main ul li {
+	float: left;
+	margin: 0 1em 0 0;
+	padding: 0 0 0 0;
+	height: 1.8em;
+}
+
+tr.white-main ul li.glm-left {
+	float: left;
+	width: 13em;
+	text-align: right;
+	font-weight: bold;
+}
+
+td.maincontent tr.white-main td.glm {
+	border-top: 0;
+	font-size: 12px;
+}
+td.maincontent tr.white-main td.glm-info {
+	border-top: 0;
+	font-size: 11px;
+}
+
+td.maincontent tr.white-main td.glm-info li {
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.glm-info li.title {
+	width: 12.5em;
+	border-top: 0;
+	text-align: right;
+	font-weight: bold;
+}
+
+td.maincontent tr.white-main td.glm-top {
+	border-top: 0;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.sec {
+	padding-bottom: 2em;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.conflicts {
+	color: #d41f1f;
+}
+
+td.maincontent tr.white-main td.glm-heading {
+	padding-left: 1em;
+	text-align: right;
+	font-weight: bold;
+	border-top: 0;
+	font-size: 12px;
+}
+
+td.maincontent tr.white-main td.glm a {
+	font-size: 12px;
+}
+
+
+td.maincontent tr.white-main td.left {
+	padding: 0;
+	width: 14px;
+	background-image: url(img/mwbox_left.gif);
+	background-repeat: repeat-y;
+	border-top: 0px;
+}
+
+
+td.maincontent tr.white-main td.right {
+	padding: 0;
+	width: 14px;
+	background-image: url(img/mwbox_right.gif);
+	repeat: repeat-y;
+	border-top: 0px;
+}
+
+/* Modified bottom for main table */
+
+td.maincontent tr.paging-bottom td {
+	background-color: #e7e4d6;
+	text-align: center;
+}
+
+td.maincontent tr.paging-bottom td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_botleft.gif) no-repeat left bottom;
+}
+
+td.maincontent tr.paging-bottom td.right {
+	padding-right: 7px;
+	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
+}
+
+/* Main area */
+
+td.maincontent td {
+	padding: 0 0 1em 0;
+}
+
+td.maincontent div.links-table {
+	float: right;
+	padding-top: .5em;
+	text-align: right;
+	font-size: 12px;
+	color: #dddddd;
+}
+
+td.maincontent div.links-table a, td.maincontent div.links-table a:visited {
+	font-size: 12px;
+	color: #daa320;
+	text-decoration: none;
+	font-weight:normal;
+}
+
+td.maincontent div.links-table a:hover {
+	color: #b7840d;
+}
+
+td.maincontent div.links-table a#active {
+	color: #daa320;
+}
+
+td.maincontent div.links-table a.external, td.maincontent div.links-table a.external:visited {
+	margin: 0;
+	padding: 1em 1em 0 0;
+	background:url(img/icon_external_link_gold.gif) no-repeat 100% bottom;
+}
+
+td.maincontent div.links-table a:hover.external {
+	background:url(img/icon_external_link_gold_hover.gif) no-repeat 100% bottom;
+}
+
+
+/* Paging */
+
+#paging {
+	margin: 0 auto;
+	padding: 0;
+}
+
+#paging ul {
+	margin: 0;
+	padding: 0;
+}
+
+#paging ul li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+        cursor: pointer;
+}
+
+#paging ul li.active {
+	padding: 5px 6px 2px 6px;
+	font-size: 12px;
+	color: #ffffff;
+	background:url(img/paging_circle_active_on_tan.gif) no-repeat left bottom;
+        cursor: default;
+}
+
+#paging ul li.modactive {
+	padding: 5px 3px 2px 2px;
+	font-size: 12px;
+	color: #ffffff;
+	background:url(img/paging_circle_active_on_tan.gif) no-repeat left bottom;
+}
+
+#paging ul li a, #paging ul li a:visited {
+	padding: 5px 6px 2px 6px;
+	font-size: 12px;
+	text-align: center;
+	text-decoration: none;
+	color: #ffffff;
+	background:url(img/paging_circle_on_tan.gif) no-repeat left bottom;
+}
+
+#paging ul li.cycle a, #paging ul li.cycle a:visited {
+	padding: 5px 3px;
+	font-size: 12px;
+	text-align: center;
+	color: #999999;
+	background-image:none;
+}
+
+#paging ul li.mod a, #paging ul li.mod a:visited {
+	padding: 5px 3px 3px 2px;
+}
+
+#paging ul li a:hover, #paging ul li a:visited:hover {
+	color: #403f3a;
+}
+
+#paging ul li.active a:hover, #paging ul li.active a:visited:hover {
+	color: #e7e4d6;
+}
+
+#paging ul li a:hover, #paging ul li a:visited:hover {
+	color: #555656;
+}
+
+#paging ul li.cycle a:hover, #paging ul li.cycle a:visited:hover {
+	color: #555656;
+}
+
+/* Form Edit */
+
+form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
+  font:100% verdana,arial,sans-serif;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+form.edit textarea {
+  width: auto;
+}
+
+form.edit fieldset {
+	width: auto;
+  	border: 1px solid #dddddd;
+  	padding: 20px 10px;        /* padding in fieldset support spotty in IE */
+  	margin: 0;
+  	/ * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
+}
+
+form.edit input.text {
+  border: 1px solid #cccccc;
+}
+
+form.edit label {
+	display: block;  /* block float the labels to left column, set a width */
+	float: left;
+	width: 200px;
+	padding: 0;
+	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
+	text-align: right;
+}
+
+form.edit input, form.edit textarea, form.edit select {
+	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
+	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
+	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
+                              label aligns textarea better in IE */
+}
+
+form.edit textarea { overflow: auto; }
+
+form.edit .required{font-weight:bold;} /* uses class instead of div, more efficient */
+
+form.edit br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}
 
 /* Footer */
 
 p.footer {
-	margin-top: 5em;
-	text-align: center;
+	margin: 1em 15px 4em 15px;
+	padding: 1em 0;
+	text-align: right;
 	font-size: 11px;
+	color: #aaaaaa;
 }
 
 /* Layout */
+
+div.float-left {
+	float: left;
+}
+
+div.float-right {
+	float: right;
+}
 
 div.container {
 	min-width: 975px;
@@ -145,6 +816,33 @@ div.extra{
 
 div.onecolumn {
 	clear:left;
-	width:100%; 
+	width:100%;
 }
 
+tr.white-main td {
+    white-space: nowrap;
+}
+
+td div.nofield {
+    text-align: center;
+    background: #CCCCCC;
+}
+td div.nullfield {
+    color: #CCCCCC;
+    font-style: italic;
+}
+
+div.twocolumns {
+	overflow: auto;
+	width: 100%
+}
+
+div.twocolumns div.left {
+	width: 45%;
+	float: left;
+}
+
+div.twocolumns div.right {
+	width: 45%;
+	float: right;
+}

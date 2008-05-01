@@ -1,5 +1,6 @@
 <%
-  
+core.content.regexp();
+
 var u = request.username;
 var e = request.email;
 var n = request.nickname;
@@ -13,7 +14,7 @@ if ( ! ( n ) )
 if ( db.users.findOne( { name : u } ) )
     return print( "Username Taken" );
 
-if ( db.users.findOne( { email : e } ) )
+if ( db.users.findOne( { email : content.RegExp.literal(e, 'i') } ) )
     return print( "Email Address Already Registered" );
     
 if ( db.users.findOne( { nickname : n } ) )

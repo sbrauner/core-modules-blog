@@ -6,18 +6,29 @@ if ( ! Rails.ready ){
     //Rails.ready = true;
 }
 
-var myController = null;
-Rails.controllers.forEach( function(z){
-        if ( z.wants( request.getURI() ) )
-            myController = z;
-    } 
-    );
+// setup rails globals
+flash = {};
+flash.notice = "";
 
-if ( ! myController ){
-    print( "No Controller Found for : " + request.getURI() );
-    return;
+// find the controller
+
+matchingRoute = Rails.routes.find( request );
+
+if ( ! matchingRoute )
+    return print( "no route for : " + request.getURI() );
+
+myController = null;
+for ( var i=0; i<Rails.controllers.length; i++ ){
+    if ( Rails.controllers[i].shortName == matchingRoute.controller ){
+        myController = Rails.controllers[i];
+        break;
+    }
 }
 
-myController.dispatch( request , response );
+if ( ! myController )
+    return print( "can't find controller [" + matchingRoute.controller + "]" );
+
+
+myController.dispatch( request , response , matchingRoute );
 %>
 

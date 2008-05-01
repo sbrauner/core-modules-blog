@@ -20,11 +20,14 @@ if(request.newpw){
 <h1>Your password has been reset!</h1>
 
 <p>
-  Your password has been reset. Please log in with your new password.
+  Your password has been reset. 
+  <% if(! user){ %>
+  Please log in with your new password.
 </p>
 
 <%
      core.user.html.login();
+   }
      htmlfooter();
 }
 

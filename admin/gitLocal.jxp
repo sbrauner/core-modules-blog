@@ -3,50 +3,144 @@
 if ( request.getHost().equals( "corejs.10gen.com" ) )
     return print( "you can't do this" );
 
+log(tojson(request));
+
+head.addScript("NOCDN/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js");
+head.addScript("NOCDN/@@/yui/current/container/container-min.js");
+
 core.git.repo();
 core.ext.pluck();
 core.content.html();
+core.core.file();
 
-head.addScript("NOCDN/~~/admin/assets/gitPopup.js");
 head.addCSS("NOCDN/~~/admin/assets/gitLocal.css");
+head.addCSS("NOCDN/@@/yui/current/container/assets/container.css");
 
 var g = new git.Repo(); 
 
-var revid = g.getCurrentRev().parsed.rev;
-var revmsg = g.getCommit(revid).parsed.message;
-revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
 
-core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
-                            });
+var output = "";
+var revid;
+
+var showHeader = function(){
+    revid = g.getCurrentRev().parsed.rev;
+    var revmsg = g.getCommit(revid).parsed.message;
+    revmsg = revmsg.substring(0, revmsg.indexOf('\n'));
+    core.admin.pieces.gitHeader({revid: revid, revmsg: revmsg,
+                                 msg: output
+                                });
+    // disable future calls to showHeader
+    showHeader = function(){};
+};
 
 var output_command = function(foo){
     log(tojson(foo));
-    print(content.HTML.escape(foo.cmd) + "<br>");
-    print("<pre>" + content.HTML.escape(foo.out) + "\n---\n" +
-          content.HTML.escape(foo.err) + "</pre>");
-    print("<hr>");
+    output += (content.HTML.escape(foo.cmd) + "<br>");
+    if(foo.out || foo.err){
+        output += "<pre>";
+        output += content.HTML.escape(foo.out);
+        if(foo.out && foo.err) output += "\n---\n";
+        output += content.HTML.escape(foo.err);
+        output += "</pre>";
+    }
 };
+
+var unmerged = {};
+var newfiles;
+var parseStatus = function(){
+    // Get current status of working directory.
+    var parsed = g.status().parsed;
+
+    newfiles = {};
+    // Marge staged and changed so that files only appear once, changed first.
+    if(parsed.staged){
+        var files = {};
+        parsed.staged.forEach(function(z){
+            files[z.name] = z.type;
+        });
+        
+        // If a file is both in staged and changed, remove it from changed
+        if(parsed.changed){
+            parsed.changed = parsed.changed.filter(function(z){
+                return !(files[z.name]);
+            });
+        }
+        parsed.changed = (parsed.changed || []).concat(parsed.staged);
+        newfiles = {};
+        for(var key in files){
+            if(files[key] == "new file")
+                newfiles[key] = files[key];
+        }
+        delete parsed.staged;
+    }
+    
+    // Manipulate unmerged files.
+    // Marge parsed.unmerged with parsed.changed, unmerged files first.
+    var conflicts = false;
+    var resolved = {};
+    if(parsed.unmerged){
+
+        // Remove from unmerged those files which
+        // have actually been merged (as shown by lack of commit markers).
+        parsed.unmerged = parsed.unmerged.filter(function(z){
+            var s = File.open(z.name).asString();
+            if(s.match(/(^|\n)<<<<<<</, "m")) return true;
+            else resolved[z.name] = true;
+        });
+        
+        
+        // Save the unmerged files for later.
+        parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
+        delete parsed.unmerged;
+        conflicts = true;
+        
+        if(parsed.changed){
+            var conflictFiles = parsed.changed.filter(function(z){
+                if(unmerged[z.name]){
+                    z.type = "CONFLICT";
+                    return true;
+                }
+                if(resolved[z.name]){
+                    z.type = "resolved";
+                }
+
+                return false;
+            });
+            var otherFiles = parsed.changed.filter(function(z){
+                return !(unmerged[z.name]);
+            });
+            parsed.changed = conflictFiles.concat(otherFiles);
+        }
+    }
+    return parsed;
+};
+
+var parsed = parseStatus();
+// END status
 
 if ( request.action == "pull" ){
     // No files
-    print( "pulling...<br>" );
-    var foo = g.pull();
+    output += ( "pulling...<br>" );
+    var oldRev = g.getCurrentRev().parsed.rev;
+    var foo = g.pull(user);
+    var newRev = g.getCurrentRev().parsed.rev;
     if(foo.parsed.failed && foo.parsed.failed.conflicts){
-        print("Pull failed: conflicts<br/>");
+        output += ("Pull failed: conflicts<br/>");
         output_command(foo);
     }
     else if(foo.parsed.failed && foo.parsed.failed.notuptodate) {
-        print("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
+        output += ("Pull failed: uncommitted changes: "+foo.parsed.failed.notuptodate+"<br/>");
         output_command(foo);
     }
     else {
         log(tojson(foo));
         if(foo.parsed.upToDate){
-            print("Already up-to-date.");
+            output += ("Already up-to-date.");
         }
         else {
-            log("from: " + foo.parsed.from + " to: " + foo.parsed.to + " revs: " + tojson(g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs));
-            g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
+            log("from: " + oldRev + " to: " + newRev + " revs: " + tojson(g.listRevs(oldRev, newRev).parsed.revs));
+            showHeader();
+            g.listRevs(oldRev, newRev).parsed.revs.forEach(function(z){ 
                 core.admin.pieces.gitPulledRev(z);
             });
         }
@@ -54,20 +148,22 @@ if ( request.action == "pull" ){
 }
 else if ( request.action == "push" ){
     // No files
-    print( "pushing...<br>" );
+    output += ( "pushing...<br>" );
     var foo = g.push();
     if(foo.parsed.pullFirst){
         output_command(foo);
+        showHeader();
 %>
-Push failed. Try pulling first.
-        <form method="POST"><input type="submit" name="action" value="pull"></form>
+<p class="msg">Push failed. Try pulling first.</p>
+<form method="POST"><input type="image" src="/~~/admin/assets/img/button_pull_on_white.gif" name="action" value="pull" alt="Push"></form>
 <%
         return;
     }
     else if(foo.parsed.upToDate){
-        print("Everything up to date on this branch.");
+        output += ("Everything up to date on this branch.");
     }
     else {
+        showHeader();
         g.listRevs(foo.parsed.from, foo.parsed.to).parsed.revs.forEach(function(z){ 
             core.admin.pieces.gitPushedRev(z);
         });
@@ -76,91 +172,78 @@ Push failed. Try pulling first.
 }
 else if ( request.action == "add" && request.untracked_file ){
     // Untracked files
-    print( "Adding...<br>" );
+    output += ( "Adding...<br>" );
     var foo = g.add(request.getParameters('untracked_file'));
     output_command(foo);
 }
 else if ( request.action == "diff" && request.changed_file ){
     // Changed files
-    print( "Diffinf...<br>" );
+    output += ( "Diffinf...<br>" );
     var foo = g.diff(request.getParameters('changed_file'), {rev: "HEAD"});
     core.admin.pieces.gitDiff({output: foo.out});
 }
-else if ( request.action == "commit" && request.changed_file ){
+else if ( (request.action == "commit" && request.changed_file) || request.action == "commit_as_res" ){
+    if(request.action == 'commit_as_res' && ! g.mergeMessage()){
+        print("Holy crap, committing as resolved without merge??");
+        return;
+    }
+
     // Changed files
     var showDiff = false;
+    // If doing a merge, commits must be total.
+    var files = request.getParameters('changed_file') || [];
+
     if ( ! request.viewedDiff ) showDiff = true;
     else if ( ! request.msg.trim() ){
-        print( "need a message!" );
+        output += ( "need a message!" );
         showDiff = true;
     }
 
     if ( showDiff ) {
-        return core.admin.gitCommit(g);
+        showHeader();
+        return core.admin.gitCommit(g, files);
     }
     else {
-	print( "Commit...<br>" );
+	output += ( "Commit...<br>" );
         
-	var foo = g.commit( request.getParameters('changed_file') , request.msg , user );
+        if(request.action == 'commit_as_res'){
+            g.add(parsed.changed.map(function(z){ return z.name; }));
+        }
+    
+	var foo = g.commit( files , request.msg , user );
         output_command(foo);
     }
 }
 else if ( request.action == "checkout" && request.changed_file ){
-    print("Performing checkout...<br>");
+    output += ("Performing checkout...<br>");
     var foo = g.checkout(request.getParameters("changed_file"));
     output_command(foo);
 }
-
-if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
-    core.admin.pieces.gitNotPushed();
+else if ( request.action && request.action.match(/^unadd_/)){
+    // This is kind of clumsy, but it simplifies the form rewriting on the 
+    // client
+    var fname = request.action.replace(/^unadd_/, '');
+    if(!newfiles[fname]) output += ("This file isn't new!");
+    var foo = g.rm([fname], {cached: true});
+    output_command(foo);
+}
+else if ( request.action && request.action.match(/^add_/)){
+    var fname = request.action.replace(/^add_/, '');
+    var foo = g.add([fname]);
+    output_command(foo);
 }
 
-var parsed = g.status().parsed;
+var parsed = parseStatus();
 
-if(parsed.staged){
-    var files = {};
-    parsed.staged.forEach(function(z){
-        files[z.name] = z.type;
-    });
-
-    // If a file is both in staged and changed, remove it from changed
-    if(parsed.changed){
-        parsed.changed = parsed.changed.filter(function(z){
-            return !(files[z.name]);
-        });
-    }
-    parsed.changed = (parsed.changed || []).concat(parsed.staged);
-    delete parsed.staged;
-}
-
-var conflicts = false;
-var unmerged = {};
-if(parsed.unmerged){
-    parsed.unmerged.forEach(function(z){ unmerged[z.name] = true; });
-    delete parsed.unmerged;
-    conflicts = true;
-
-    if(parsed.changed){
-        var conflictFiles = parsed.changed.filter(function(z){
-            if(unmerged[z.name]){
-                z.type = "CONFLICT";
-                return true;
-            }
-            return false;
-        });
-        var otherFiles = parsed.changed.filter(function(z){
-            return !(unmerged[z.name]);
-        });
-        parsed.changed = conflictFiles.concat(otherFiles);
-    }
-}
-
-var changedbuttons = [{name: 'checkout', disabled: conflicts}, 'commit'];
+var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
+    {name: g.mergeMessage()?'commit_as_res':'commit', disabled: (Object.keys(unmerged).length != 0)}];
 if(parsed.changed && parsed.changed.length != 1) 
-    changedbuttons = ['diff'].concat(changedbuttons);
-var buttons = {"changed": changedbuttons, 'untracked': ['add']};
+    changedbuttons = [{name: 'diff', onclick: "popupDiffAll(); return false"}].concat(changedbuttons);
+var buttons = {"changed": changedbuttons, 
+    'untracked': ['add']};
 
-var diffLinks = {"changed": true, 'untracked': false};
+var fileActions = {"changed": [{name: 'diff', onclick: "return popup('gitDiff?file=$1')", href: "gitDiff?file=$1"}], 
+    'untracked': [{name: 'add', onclick: "return submitGit('add_$1')"}]};
 
 var checked = {};
 if(request.changed_file)
@@ -172,23 +255,71 @@ if(request.untracked_file)
         checked[z] = "checked";
     });
 
+var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED FILES"};
+
+showHeader();
+
+if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
+    core.admin.pieces.gitNotPushed();
+}
+
+
 %>
+  <table width="100%" border="0">
+    <tr class="search-top">
+      <td class="left">&nbsp;</td>
+      <td>
+        <ul>
+          <li><nobr><b>Revision ID:</b> <a href=""><%= revid %></a></nobr></li>
+          <% // fixme -- NOCDN needed? %>          
 <form method="POST">
-<input type="submit" name="action" value="pull" <%= conflicts ? "disabled" : "" %> >
-<input type="submit" name="action" value="push"  <%= conflicts ? "disabled" : "" %> >
+          <li style="float: right;"><div><input type="image" src="/~~/admin/assets/img/button_push_on_tan.gif" name="action" value="push" alt="Push">&nbsp;<input type="image" src="/~~/admin/assets/img/button_pull_on_tan.gif" name="action" value="pull" alt="Pull"></div></li>
 </form>
-<table>
-  <form method="POST">
+        </ul>
+      </td>
+      <td class="right">&nbsp;</td>
+    </tr>
+<form method="POST" name="gitFiles">
+  <input type="hidden" name="toBeDetermined" />
+  <input type="hidden" name="toBeFilename" />
+    <tr class="white-top">
+      <td class="left"><img src="NOCDN/~~/admin/assets/images/transparent.gif" width="14" height="1"></td>
+      <td class="middle">&nbsp;</td>
+      <td class="right"><img src="NOCDN/~~/admin/assets/images/transparent.gif" width="14" height="1"></td>
+    </tr>
 <%
-for ( type in parsed ){ 
-    core.admin.pieces.gitFileList({title: type, actions: buttons[type],
-                                   checked: checked,
+log(tojson(parsed));
+["changed", "untracked"].forEach(function(type){
+    if(! parsed[type]) return;
+    core.admin.pieces.gitFileList({title: filetitles[type], massActions: buttons[type],
+                                   checked: checked, unadd: newfiles,
                                    unmerged: unmerged, filevar: type+"_file",
                                    filenames: parsed[type].map(Ext.pluck('name')),
                                    filetypes: parsed[type].map(Ext.pluck('type')),
-                                   fileDiff: diffLinks[type] });
-}
+                                   fileActions: fileActions[type] });
+});
 %>
+		<tr class="white-bottom">
+		  <!-- Bottom area -->
+		  <td class="left">&nbsp;</td>	
+		  <td class="middle">&nbsp;<br /><br /></td>
+		  <td class="right">&nbsp;</td>
+		</tr>
+		<!-- Tan/Beige Area -->
+		<tr class="paging-bottom empty">
+		  <td class="left">&nbsp;</td>
+		  <td>&nbsp;</td>
+		  <td class="right">&nbsp;</td>
+		</tr>		
   </form>
 </table>
 
+<div class="yui-skin-sam">
+  <div style="display: none;" id="confirmCheckout">
+    <div class="hd">Checkout these files?</div>
+    <div class="bd">Are you sure you want to checkout the selected files? Checking out files will overwrite any changes that were made to the selected files.</div>
+    <div class="ft">
+    </div>
+  </div>
+</div>
+<script src="NOCDN/~~/admin/assets/gitPopup.js" type="text/javascript">

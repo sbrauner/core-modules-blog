@@ -1,8 +1,13 @@
 
-// this is what starts rails
+// this is what rails init starts
 
+// -------------------
+// ----- models -----
+// -------------------
 
 Rails.models = [];
+
+Rails.baseThis = scope.child( "Rails Scope" );
 
 var modelsDir = openFile("app/models" );
 if ( modelsDir.exists() ){
@@ -32,18 +37,33 @@ if ( modelsDir.exists() ){
                 if ( ! ( model && model._isModel ) )
                     continue;
                 
-                model.setFile( z.filename );
+                model.prototype.setFile( z.filename );
+                model.prototype.setConstructor( model );
 
                 Rails.models.add( model );
                 globals.getParent().putExplicit( name , model );
                 
-                log.rails.init.model.info( "added:" + name + " : " + model );
+                log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
+                
+                assert( model.find );
+                assert( model.collectionName );
+                
+                var thing = new model();
+                assert( thing.setFile );
+                
+                log.rails.init.model.info(  thing.collectionName );
+                assert( thing.collectionName == model.collectionName );
+                model.find();
             }
         }
     )
     
 };
 
+
+// -------------------
+// ----- controllers -----
+// -------------------
 
 var controllersDir = openFile("app/controllers" );
 if ( ! controllersDir.exists() )
@@ -82,3 +102,14 @@ controllersDir.listFiles().forEach(
     }
 
 );
+
+
+
+// -------------------
+// ----- routes -----
+// -------------------
+
+Rails.routes = new ActionController.Routing.Routes();
+
+if ( local.config && local.config.routes )
+    local.config.routes();

@@ -1,3 +1,5 @@
+core.core.file();
+
 git.Repo = function(){
 
 };
@@ -17,6 +19,17 @@ Object.extend(git.Repo.prototype, {
 
         return foo;
     },
+    _gitEnv: function(user){
+        // We pass this environment on commit and pull commands.
+        var env = {};
+
+        env.GIT_AUTHOR_NAME = user.name;
+        env.GIT_COMMITTER_NAME = user.name;
+        env.GIT_AUTHOR_EMAIL = user.email;
+        env.GIT_COMMITTER_EMAIL = user.email;
+        return env;
+    },
+
     _init: function(){
         print(scope.getRoot());
         return this._exec("init");
@@ -151,7 +164,7 @@ Object.extend(git.Repo.prototype, {
                         parsed.pullFirst = true;
                 }
                 else if(lines[i][1] == "!") {
-                    var m = lines[i].match(/(\w+) -> (\w+) \((.+)\)/);
+                    var m = lines[i].match(/([\w.]+) -> ([\w.]+) \((.+)\)/);
                     if(m[1] == this.getCurrentBranch().parsed.branch && m[3] == "non-fast forward"){
                         parsed.pullFirst = true;
                     }
@@ -164,8 +177,12 @@ Object.extend(git.Repo.prototype, {
         return parsed;
     },
 
-    pull: function(){
-        var ret = this._exec( "pull" );
+    pull: function(u){
+        // Pass gitEnv when we are doing a pull.
+        // The reason is that when we're doing a pull, we might make a merge
+        // commit. We need the right information in the environment when
+        // that happens.
+        var ret = sysexec( "git pull" , "" , this._gitEnv(u) );
         ret.parsed = this._parsePull(ret);
         return ret;
     },
@@ -183,13 +200,18 @@ Object.extend(git.Repo.prototype, {
         var upToDate;
         var success;
 
-        if(lines.length > 0 && exec.out.match(/\nFast forward\n/)) {
-            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
-                lines[0].indexOf('.'));
-            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
-            mergetype = "fastforward";
+        var m;
 
-            for(var i = 2; i < lines.length; i++){
+        var parseMerge = function(start){
+            if(start)
+                var i = start;
+            else {
+                for(var i = 0; i < lines.length; ++i){
+                    if(lines[i].match(/Merge made by/)) break;
+                }
+                ++i;
+            }
+            for(; i < lines.length; i++){
                 if(lines[i].indexOf('|') == -1) break;
                 var pipes = lines[i].split(/\|/);
                 var filename = pipes[0].trim();
@@ -210,11 +232,43 @@ Object.extend(git.Repo.prototype, {
                     var filename = line.substring(thirdFieldEnd);
                     created[filename] = line;
                 }
-                else if( false ){ // FIXME: deleted files
-
+                else if( line.match(/^ delete /) ){
+                    var firstFieldEnd = line.indexOf(/ /, 1);
+                    var secondFieldEnd = line.indexOf(/ /, firstFieldEnd);
+                    var thirdFieldEnd = line.indexOf(/ /, secondFieldEnd);
+                    var filename = line.substring(thirdFieldEnd);
+                    deleted[filename] = line;
                 }
             }
+
+        };
+
+        if(lines.length > 0 && exec.out.match(/\nFast forward\n/)) {
+            var fromrev = lines[0].substring(lines[0].lastIndexOf(" ")+1,
+                lines[0].indexOf('.'));
+            var torev = lines[0].substring(lines[0].lastIndexOf(".")+1);
+            mergetype = "fastforward";
+            parseMerge(2);
+
             success = true;
+        }
+        else if(lines.length > 0 && (m = exec.out.match(/Merge made by ([^\n]+)\./)) && m){
+            mergetype = m[1];
+            parseMerge();
+            var errlines = exec.err.trim().split(/\n/);
+
+            // Sometimes git doesn't have an output line saying which revisions were
+            // pulled and merged. Thanks for nothing.
+            for(var i = 0; i < errlines.length; ++i){
+                if(m = errlines[i].match(/ ([0-9a-f]+)\.\.([0-9a-f]+)\s+([\w.]+)\s*->\s*([\w.+])/) && m){
+                    if(m[3] != this.getCurrentBranch().parsed.branch) continue;
+                    fromrev = m[1];
+                    torev = m[2];
+                    success = true;
+                    break;
+                }
+            }
+
         }
         else if(lines.length == 1 && lines[0] == "Already up-to-date."){
             upToDate = true;
@@ -304,22 +358,16 @@ Object.extend(git.Repo.prototype, {
         }
         return this._exec( cmd );
     },
-    commit: function(files, msg, user){
+    commit: function(files, msg, u){
         if(!msg) throw "git commit needs a message";
         this._validate(files);
         var cmd = "git commit -F - ";
 
-        cmd += " --author \"" + user.name + " <" + user.email + ">\" ";
-        var env = {};
-
-        env.GIT_AUTHOR_NAME = user.name;
-        env.GIT_COMMITTER_NAME = user.name;
-        env.GIT_AUTHOR_EMAIL = user.email;
-        env.GIT_COMMITTER_EMAIL = user.email;
+        cmd += " --author \"" + u.name + " <" + u.email + ">\" ";
 
         files.forEach( function( z ){ cmd += " " + z; } );
         log.git.repo.debug("committing; git command: " + cmd);
-        var foo = sysexec( cmd , msg , env );
+        var foo = sysexec( cmd , msg , this._gitEnv(u) );
         foo.cmd = cmd;
         return foo;
     },
@@ -379,14 +427,22 @@ Object.extend(git.Repo.prototype, {
                 continue;
             }
 
-            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted):\s+(.+)$/);
+            var exec = statlines[i].match(/#\s+(modified|new file|unmerged|deleted|renamed):\s+(.+)$/);
             if(exec){
                 filetype = exec[1];
                 filename = exec[2];
+                if(filetype == "renamed"){
+                    parts = filename.split(/ -> /);
+                    filename = parts[1];
+                    oldfilename = parts[0];
+                }
                 file = {name: filename, type: filetype};
                 if(filetype == "unmerged"){
                     unmerged.push(file);
                     continue;
+                }
+                if(filetype == "renamed"){
+                    file.oldName = oldfilename;
                 }
             }
             else {
@@ -412,6 +468,15 @@ Object.extend(git.Repo.prototype, {
         var ret = this._exec( cmd );
         if(ret.out.trim() == "" && ret.err.trim() == "")
             ret.parsed = {success: true};
+        return ret;
+    },
+
+    mergeMessage: function(){
+        // .git/MERGE_MSG
+        // if it's not there, return null (not merging)
+        var f = File.open('.git/MERGE_MSG');
+        if(!f.exists()) return null;
+        return f.asString();
     },
 });
 

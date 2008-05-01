@@ -1,0 +1,42 @@
+<%
+
+var th = obj.th;
+
+%>
+
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/db">Logs Documentation</a></div>
+  <nobr>Database Profile</nobr>
+</h1>
+
+<p>The database profiler displays recent database commands, depending on the log level.</p>
+
+<!-- Data Table Begins -->
+<table width="100%" border="0">
+  <tr class="search-top">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$th.length">
+
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+  <!-- White table -->
+  <tr class="white-top">
+    <!-- Top area -->
+    <td class="left"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$th.length">&nbsp;</td>
+    <td class="right"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
+  </tr>
+
+  <tr class="white-main" id="pushNode">
+    <!-- Main area -->
+    <td class="left">&nbsp;</td>
+    <forin i th>
+      <th><nobr><a href="">$th[i].name</a></nobr></th>
+    </forin>
+    <td class="right">&nbsp;</td>
+  </tr>
+
+

@@ -1,38 +1,160 @@
 <%
-    
-var ma = MemoryAppender.find( log );
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+head.addScript("/@@/yui/current/yuiloader/yuiloader-beta-min.js");
+head.addScript("/@@/yui/current/dom/dom-min.js");
+head.addScript("/@@/yui/current/json/json-min.js");
 
-if ( request.l && request.l != 0 ){
-    
-    print( "<h2> Logger : " + request.l + "</h2>" );
-    cols = [
-            { name : "date" } ,
-            { name : "thread" , view : function(z) {
-                return z == null ? "null" : z.getName();
-                } } ,
-            { name : "level" } ,
-            { name : "msg" } ,
-            { name : "throwable" }
-            ];
-    
-    var tab = new htmltable( { cols : cols } );
-    if ( ma.cache[ request.l ] )
-        tab.arrview( ma.cache[ request.l ] );
+var ma = MemoryAppender.find( log );
+var table;
+
+var all = [];
+for ( var foo in ma.cache ){
+    all.push( foo );
+}
+
+all = all.sort();
+
+if(all.length == 0) {
+    print("No log messages in memory.");
 }
 else {
-    print( "<h2>Menu</h2>" );
-    var all = [];
-    for ( var foo in ma.cache ){
-        all.push( foo );
+    var th = ['<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
+        '<a href="">THREAD</a>',
+        '<a href="">LEVEL</a>',
+        '<a href="">MESSAGE</a>',
+        '<a href="">THROWABLE</a>'];
+
+    fields = ["date", "thread", "level", "msg", "throwable"];
+    table = { rows: ma.cache[all[0]], fields: fields};
+    table.rows.reverse();
+    for(var i in table.rows) {
+        if(table.rows[i].date instanceof Date)
+            table.rows[i].date = table.rows[i].date.format("E MMM dd, yyyy HH:mm:ss");
     }
-    
-    all = all.sort();
-    print( "<ul>" );
-    for ( var i=0; i != all.length; i++ ){
-        print( "<li><a href='/admin/logMemory?l=" + all[i] + "'>" + all[i] + "</a></li>" );
-    }
-    print( "</ul>" );
+    core.admin.pieces.logHeader({title: "Logs in Memory", tagline: "Most recent log messages in memory.", th: th, colspan: fields.length, logs: all});
+    core.admin.pieces.log({table: table});
+    core.admin.pieces.logFooter({colspan: fields.length});
 }
 
-
 %>
+
+<div id="debug"></div>
+
+
+<script type="text/javascript">
+
+var rows = <%= ((table && table.rows) ? table.rows.length : 0) %>;
+var currentLog = "<%= all[0] %>";
+var mostRecent = null;
+var updateLog = null;
+
+function switchLogs() {
+    currentLog = document.getElementById("chooseLog").value;
+    ajax("action=filter&l="+currentLog+getPassOpts(), "_logMemory", function(res) {
+        totalLogRefresh(res);
+    });
+}
+
+function updateLogHandler( raw ){
+    document.getElementById("temp").innerHTML = raw;
+    // the jxp is returning 100 text nodes and 100 trs, so we filter out the text nodes
+    var rawlines = document.getElementById("temp").childNodes[1];
+    if(!rawlines || !rawlines.childNodes) {
+        if(updateLog)
+            setTimeout( updateLog , 1000 );
+        return;
+    }
+
+    var trs = YAHOO.util.Dom.getChildrenBy(rawlines, function(n) {
+        if(n.className == "white-main")
+            return true;
+        return false;
+    });
+    rows += trs.length;
+    var mr = new Date(trs[0].childNodes[3].innerHTML);
+
+    for(var i=trs.length-1; i>=0; i--) {
+        YAHOO.util.Dom.insertAfter(trs[i], pushNode);
+    }
+
+    if ( !mostRecent || mostRecent < mr ) {
+       mostRecent = mr;
+    }
+
+    while(rows > 100) {
+        var toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+        var parent = toBeRemoved.parentNode;
+        parent.removeChild(toBeRemoved);
+        rows--;
+    }
+
+    if(updateLog) {
+        setTimeout( updateLog , 1000 );
+    }
+}
+
+function totalLogRefresh(raw) {
+    var toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+    var parent = toBeRemoved.parentNode;
+    while(rows > 0) {
+        toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+        parent.removeChild(toBeRemoved);
+        rows--;
+    }
+    updateLogHandler(raw);
+}
+
+var myDiv = document.createElement("table");
+myDiv.setAttribute("id", "temp");
+myDiv.setAttribute("style", "display:none;");
+document.getElementById("debug").appendChild(myDiv);
+
+var pushNode = document.getElementById( "pushNode" );
+var popNode = document.getElementById( "popNode" );
+
+var ns = 'all';
+var log_level = 'ALL';
+var filterStr = '';
+
+function filterResults(id) {
+    var val = document.getElementById(id).value;
+
+    if(id == "filter") {
+        filterStr = val;
+    }
+    if(id == "log_level") {
+        log_level = val;
+    }
+    if(id == "logger") {
+        ns = val;
+    }
+
+    ajax("action=filter&l="+currentLog+getPassOpts(), "_logMemory", function(res) {
+       totalLogRefresh(res);
+    });
+}
+
+function getPassOpts() {
+    passData = "";
+    if(ns != "all")
+        passData += "&ns="+ns;
+    if(log_level != "ALL")
+        passData += "&log_level="+log_level;
+    if(filterStr != "")
+        passData += "&filter="+filterStr;
+    return passData;
+}
+
+function refreshFilter() {
+    ns = "all";
+    log_level = "ALL";
+    filterStr = "";
+
+    pause = false;
+    mostRecent = null;
+    document.getElementById("filter").value = "";
+    document.getElementById("log_level").options[0].selected = true;
+    updateLog();
+}
+
+</script>

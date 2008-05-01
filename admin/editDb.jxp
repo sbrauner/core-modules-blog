@@ -7,7 +7,7 @@ if(request.action == "delete") {
     var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
     collection.remove({_id : request.id});
 }
-else if(request.action == "createidx") {
+/*else if(request.action == "createidx") {
     collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
    log(db[request.ns.substring( request.ns.indexOf('.')+1 )]);
     idxes = request.idx.split(",");
@@ -17,7 +17,7 @@ else if(request.action == "createidx") {
     }
     log(tojson(idxObj));
     collection.ensureIndex(idxObj);
-}
+}*/
 else if(request.action == "create") {
     var opts = {};
     if(request.fixed) opts.capped = true;

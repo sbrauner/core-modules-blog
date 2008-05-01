@@ -11,9 +11,15 @@ var collection;
 var ignore= { _ns:1, _save:1, _update:1 };
 
 // Table display options
-var rowsPerPage = (request.rowsPerPage) ? request.rowsPerPage : 10;
-var currentPage = (request.currentPage) ? request.currentPage : 1;
+var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
+var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
 var totalNumPages;
+
+/* get sort obj */
+var mySort = {};
+if(request.sortcol && request.sortcol != "_id") {
+    mySort[request.sortcol] = parseInt(request.sortdir);
+}
 
 // Print validation information
 if(request.action == "validation") {
@@ -22,7 +28,7 @@ if(request.action == "validation") {
         return;
     }
 
-    var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
+    var x = validate(request.ns);
     print(x.result ? x.result : x.errmsg);
     return;
 }
@@ -62,7 +68,7 @@ var top = request.ns == null;
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
-// dbprofiler
+// dbprofile
 if(request.action == "searchprofile") {
     var searchObj = {};
     var dateStart, dateEnd;
@@ -83,6 +89,7 @@ if(request.action == "searchprofile") {
     }
 
     rows = db.system.profile.find( searchObj ).toArray();
+    top = false;
 }
 // dbview
 else if(request.action == "search") {
@@ -99,7 +106,7 @@ else if(request.action == "search") {
         searchobj["name"] = query;
     }
     for(q in request) {
-        if(q == "action" || q == "ns")
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
             continue;
         if(top && (q == "index" || q == "name"))
             continue;
@@ -107,12 +114,19 @@ else if(request.action == "search") {
         var query = new RegExp(".*"+request[q]+".*", "i");
         searchobj[q] = query;
     }
-    rows = collection.find(searchobj).sort({number: 1}).toArray();
+    if(top)
+        rows = collection.find(searchobj).sort(mySort).toArray();
+    else
+        rows = collection.find(searchobj).sort(mySort).toArray();
+
 }
 else if(request.action == "eval") {
     try {
         var collection = scope.eval(request.cmd);
-        rows = collection.toArray();
+        rows = collection;
+        if(!rows)
+            rows = db[request.ns.substring( request.ns.indexOf('.')+1 )].find();
+        rows = rows.toArray();
         top = false;
     }
     catch(e) {
@@ -121,28 +135,24 @@ else if(request.action == "eval") {
     }
 }
 else {
-    collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
-    if(request.limit) {
-        rows = collection.find().limit(request.limit).toArray();
-    }
-    else rows = collection.find().toArray();
-
     var collection;
-    if( top ) collection = db["system.namespaces"];
-    else collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
-
     if( top ) {
-        // we'll sort by collection name
+        collection = db["system.namespaces"];
         collection.ensureIndex( {name:true} );
+        rows = collection.find().sort( { name : 1 } ).toArray();
     }
-
-    rows = collection.find().sort( { name : 1 } ).toArray();
-
+    else {
+        collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
+        rows = collection.find().toArray();
+    }
 }
+/* if this is a log, the rows should be in the opposite order */
 if(request.reverse)
     rows.reverse();
 
-/* get the paging info and only return the necessary rows */
+/* ------------------------------------------------------
+   get the paging info and only return the necessary rows
+   ------------------------------------------------------ */
 if(top) {
     var numrows = 0;
     for(var i=0; i<rows.length; i++) {
@@ -150,34 +160,34 @@ if(top) {
             numrows++;
         }
     }
-    totalNumPages = Math.floor(numrows / rowsPerPage ) + 1;
+    totalNumPages = Math.floor((numrows - 1) / rowsPerPage ) + 1;
 }
 else {
-    totalNumPages = Math.floor(rows.length / rowsPerPage) + 1;
+    totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
 }
 
-if(currentPage > totalNumPages)
+if(currentPage > totalNumPages && totalNumPages > 0)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
-var end = (currentPage)*rowsPerPage-1;
 
 /* if this is all collections, indices will be listed as rows. */
 if(top) {
     var urow = [];
-    tableCount = 0;
+    tableCount = -1;
     for(var i=0; i<rows.length; i++) {
-        if(start <= tableCount && tableCount <= end)
-            urow.push(rows[i]);
         if(rows[i].name.indexOf("$") == -1) {
             tableCount++;
         }
+        if(start <= tableCount && tableCount <= start+rowsPerPage)
+            urow.push(rows[i]);
     }
     rows = urow;
 }
 else {
-    rows = rows.splice(start, end);
+    rows = rows.splice(start, rowsPerPage);
 }
+
 
 var dbTable = { rows: [] };
 dbTable.totalNumPages = totalNumPages;
@@ -185,6 +195,9 @@ dbTable.currentPage = currentPage;
 dbTable.rowsPerPage = rowsPerPage;
 
 
+/* --------------
+   get the fields
+   -------------- */
 var fields = [];
 var f = {};
 for( var i=0; i < rows.length; i++ ) {
@@ -194,9 +207,14 @@ for( var i=0; i < rows.length; i++ ) {
 }
 if(top) { fields.push("name"); fields.push("index"); }
 for( var i in f) {
-    fields.push(f[i]);
+    fields.push(i);
 }
+fields.sort();
 
+
+/* ------------------
+   generate the table
+   ------------------ */
 if( top ) {
     var k = 0;
     for( var i=0; i < rows.length; i++ ) {
@@ -205,19 +223,19 @@ if( top ) {
 
         var obj=rows[i];
         var currentRow = obj;
-        dbTable.rows[k][fields[j++]] = obj.name;
-        dbTable.rows[k][fields[j]] = "";
+        dbTable.rows[k].name = obj.name;
+        dbTable.rows[k].index = "";
         while(i<rows.length-1 && rows[i+1].name.indexOf("$") > 0) {
             obj = rows[++i];
             var idx=top ? obj.name.indexOf("$") : -1;
             if( obj.name && idx>=0 ) {
 	        var idxname = obj.name.substring(idx+1);
-                dbTable.rows[k][fields[j]] += '<input type="checkbox" name="'+rows[i].name.substring(0, rows[i].name.lastIndexOf("."))+'" value="'+idxname+'" /> index '+idxname+" ";
+                dbTable.rows[k].index += '<input type="checkbox" name="'+dbTable.rows[k].name.substring(dbTable.rows[k].name.indexOf(".")+1)+'" value="'+idxname+'" /> index '+idxname+" ";
 	        var idxobj = db.system.indexes.findOne( { name: idxname, ns: obj.name.substring(0,idx-1) } );
-	        dbTable.rows[k][fields[j]] += (idxobj?tojson(idxobj.key):"null") + "<br />";
+	        dbTable.rows[k].index += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        dbTable.rows[k].fixed = currentRow.capped;
+        dbTable.rows[k].capped = (currentRow.capped) ? currentRow.capped : "";
         k++;
     }
 }
@@ -226,23 +244,22 @@ else
 
 
 
-
-
 /* Formatting */
 
 var fcount = 0;
 
 if(top) {
-   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
 }
 else {
     var th = [];
-    th.push({"name" : "_id", className: "sort-up" });
-    for(var i in f) {
-        if(ignore[i] || i == "_id") continue;
-        th.push({"name" : i, className: "" });
+    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
+    for(var i in fields) {
+        if(ignore[fields[i]] || fields[i] == "_id") continue;
+        th.push({"name" : fields[i], className: "" });
     }
-    th.push({"name": "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
@@ -296,7 +313,7 @@ else {
             return '<div class="nullfield">null</div>';
         }
         else if (!obj[field]) {
-            return '<div class="nofield"><img src="NOCDN/~~/admin/assets/nonexistent.png"></div>';
+            return '<div class="nullfield"><b>-</b></div>';
         }
         else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
             return obj[field];
@@ -309,16 +326,16 @@ else {
 
             if (subobj instanceof Date) {
                 fullText += subobj.toString();
-                str = '<span  style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
             }
             else if (typeof subobj == "object") {
                 for(var q in subobj)
                     fullText += printObj(subobj, q);
-                str = '<span style="cursor:default">(Object)</span>';
+                str = '<span class="partialText" style="cursor:default">(Object)</span>';
             }
             else {
                 fullText += subobj;
-                str = '<span  style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+                str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
             }
             fullText += '</div>';
             return str+fullText;
@@ -328,28 +345,46 @@ else {
     }
 }
 
-
+dbTable.top = top;
 if(top) {
-    dbTable.top = true;
+    dbTable.idxes = {};
     for(var i in dbTable.rows) {
         dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
     }
 }
-else {
-    dbTable.top = false;
+else if(request.action != "searchprofile") {
+    // get any indices for the collection
+    var idxObj = {};
+    idxObj.name = new RegExp(request.ns+"\\.\\$");
+    var idxes = db["system.namespaces"].find(idxObj).toArray();
+    dbTable.idxes = {};
+    // indices are of the form namespace.collection.specifier.$idxname_1, and we only want idxname
+    for(var i in idxes) {
+        idxes[i] = idxes[i].name.substring(idxes[i].name.indexOf("$")+1);
+        // some names might have underscores in them (e.g., _system) and indices can have multiple fields, so this is done seperately
+        dbTable.idxes[idxes[i].substring(0, idxes[i].indexOf("_"))] = 1;
+    }
     for(var i in dbTable.rows) {
-        dbTable.rows[i].id = "";
+        if("_id" in f) dbTable.rows[i].id = "";
         for(var field in th) {
             if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
-            if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
 }
+else { //format date for dbprofile
+    for(var i in dbTable.rows) {
+        dbTable.rows[i].ts = dbTable.rows[i].ts.format("E MMM dd, yyyy HH:mm:ss");
+    }
+}
 
 var page = [];
-for(var i=1; i<=dbTable.totalNumPages; i++) {
+var pageStart = Math.max(1, dbTable.currentPage-2);
+var pageEnd = Math.min(parseInt(dbTable.totalNumPages), parseInt(dbTable.currentPage)+2);
+
+for(var i=pageStart; i<=pageEnd; i++) {
     if(dbTable.currentPage == i) {
         if(i < 10)
             page.push({ name: i, className: "active" });
@@ -366,14 +401,25 @@ for(var i=1; i<=dbTable.totalNumPages; i++) {
 
 var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
+dbTable.colspan = th.length;
 
-
-core.admin.pieces.dbviewTable({ th: th,
-                                table: dbTable,
-                                page: page,
-                                prevPage: prevPage,
-                                nextPage: nextPage });
-
+if(request.action == "searchprofile") {
+    if(dbTable.rows.length == 0) {
+        dbTable.colspan = 3;
+    }
+    core.admin.pieces.dbprofileTable( { th: th,
+                             table: dbTable,
+                             page: page,
+                             prevPage: prevPage,
+                             nextPage: nextPage  });
+}
+else {
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
+}
 
 
 %>

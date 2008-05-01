@@ -17,7 +17,14 @@ var feature = null;
 if ( request.id ){
     feature = db.bugtracker.cases.findOne( { _id : request.id } );
 }
-else{
+else if(request.number){
+    // FIXME: Check if there are two?
+    feature = db.bugtracker.cases.findOne( { number: parseInt(request.number) } );
+    if(feature == null){
+        print("Bug not found");
+    }
+}
+else {
     feature = new app.bugtracker.data.Feature();
     feature.reporter = user;
 }
@@ -356,7 +363,7 @@ if(project.areas.length > 0){
           <td class="label">Estimated date of completion</td>
           <td class="value">
             <input id="showEstimatedCompletionDate" name="showEstimatedCompletionDate" size="12" disabled="true"
-                   value="<%= feature.estimatedCompletionDate ? (feature.estimatedCompletionDate.getMonth() + '/' + feature.estimatedCompletionDate.getDay() + '/' + feature.estimatedCompletionDate.getYear()) : ""%>"/>
+                   value="<%= feature.estimatedCompletionDate ? (feature.estimatedCompletionDate.getMonth() + '/' + feature.estimatedCompletionDate.getDate() + '/' + feature.estimatedCompletionDate.getFullYear()) : ""%>"/>
             <button id="show1up" type="button">Show calendar</button><div id="completeCal"></div>
           </td>
           <input id="festimatedCompletionDate" name="festimatedCompletionDate" type="hidden" value="<%= feature.estimatedCompletionDate ? feature.estimatedCompletionDate.getTime() : "" %>"/>
@@ -519,27 +526,27 @@ generateRow();
 </div>
 
 <script type="text/javascript">
-completeCal = new YAHOO.widget.Calendar("cal","completeCal", { title:"Choose a date:", close:true } ); 
-completeCal.render(); 
-  
-// Listener to show the single page Calendar when the button is clicked 
-YAHOO.util.Event.addListener("show1up", "click", completeCal.show, completeCal, true); 
+completeCal = new YAHOO.widget.Calendar("cal","completeCal", { title:"Choose a date:", close:true } );
+completeCal.render();
+
+// Listener to show the single page Calendar when the button is clicked
+YAHOO.util.Event.addListener("show1up", "click", completeCal.show, completeCal, true);
 
 function handleSelect(type,args,obj) {
     var dates = args[0];
     var date = dates[0];
     var year = date[0], month = date[1], day = date[2];
-    
+
     var txtDate1 = document.getElementById("showEstimatedCompletionDate");
     txtDate1.value = month + "/" + day + "/" + year;
-    
+
     var oDate = new Date();
     oDate.setFullYear(year);
     // Because month is [1, 12] but setMonth takes [0, 11]
     oDate.setMonth(month-1);
     oDate.setDate(day);
     document.getElementById("festimatedCompletionDate").value = oDate.valueOf();
-    
+
 }
 
 completeCal.selectEvent.subscribe(handleSelect, completeCal, true);

@@ -1,6 +1,6 @@
 <%
 /* dbview.jxp - database content viewer utility */
-head.addCSS("NOCDN/~~/admin/assets/dbview.css");
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
 head.addScript("NOCDN/~~/admin/assets/interpreter.js");
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
 core.content.html();
@@ -37,45 +37,44 @@ for( var i=0; i < rows.length; i++ ) {
     }
 }
 for( var i in f) {
-    fields.push(f[i]);
+    fields.push(i);
 }
 
 /* find the indices */
 if(!top) {
     var x = validate(request.ns.substring( request.ns.indexOf('.')+1 ));
-    var introMsg = x.result;
-
+    var introMsg = "Collection Detail provides the user with a means to edit collection detail records, view collection sizing and statistics information, add/drop collection indexes, and query/filter the collection data.";
+    var validation = x.result;
 
     %>
-    <a href="dbview" style="display: block;">Back to Collection View</a>
-    <div> Indices:
+    <a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a>
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
 
     var i=0;
+    var idxes = [];
     while(i<metarows.length) {
         obj = metarows[i];
         if(metarows[i].name.indexOf("$") > 0) {
-            var idx = obj.name.indexOf("$");
-            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
+            var idx = obj.name.substring(obj.name.indexOf("$")+1);
+            var idxList = [];
+            while(idx.indexOf("_") >= 0) {
+                idxList.push(idx.substring(0, idx.indexOf("_")));
+                idx = idx.substring(idx.indexOf("_")+2);
+            }
+            if(idxList.length > 1)
+                idxes.push("Compound index on "+idxList.join(","));
+            else
+                idxes.push("Index on "+idxList[0]);
         }
         i++;
     }
     %>
-    <input type="button" onclick="dropIndices('<%= request.ns %>')" value="Drop Index" /><input type="button" onclick="createIndex()" value="Create Index" />
-    </div>
 
     <div>
-    <div><%= request.ns %> Search/Filter <input type="button" onclick="searchFilterPanel.show()" value="*" /></div>
-    <textarea id="searchbox"></textarea>
-    <input type="button" value="Validate" onclick="validateSearchbox()" />
-    <input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''; refreshTable()" />
-    <input type="button" onclick="doCommand()" value="Execute" /></div>
-    </div>
 
-
-    <div>
+<!--    <div>
     <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
     </div>
     <div id="viewOptions" style="display: none">
@@ -83,13 +82,14 @@ if(!top) {
     <div class="bd">Select the columns that you wish to display.
     <% for(var i in f) {
         if(!ignore[i])
-            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked /></div>');
+            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked onclick="toggleCollapse(\''+i+'\')"/></div>');
     }%>
     </div>
     <div class="ft">
     <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
     </div>
     </div>
+-->
 
     <div id="searchFilter" style="display:none;">
     <div class="hd">Search/Filter Panel</div>
@@ -111,16 +111,35 @@ if(!top) {
 <script type="text/javascript">
 var lastSearch = "";
 
-
+<% if(!top) { %>
 function doCommand() {
-    myDataSource.sendRequest("action=eval&cmd="+document.getElementById("searchbox").value, updateCaseTable);
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+<% } %>
+
+function infoDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
 }
 
 function validateSearchbox() {
+    /* external function checkRun matches parens */
     if(checkRun(document.getElementById("searchbox").value))
-        alert("Syntax ok.");
+        infoDlg("Syntax Validation", "Syntax ok.");
     else
-        alert("Syntax Error.");
+        infoDlg("Syntax Validation", "Syntax Error.");
 }
 
 function changeView() {
@@ -134,13 +153,23 @@ function changeView() {
     viewOptionsPanel.hide();
 }
 
+var currentSort = { col : '<%= top ? 'name' : ((fields.indexOf('_id') != -1) ? '_id' : fields[0]) %>', dir: 1 };
+function sortBy(col) {
+    if(currentSort.col == col)
+        currentSort.dir = -1 * currentSort.dir;
+    else
+        currentSort.dir = 1;
+    currentSort.col = col;
+
+    refreshTable();
+}
 
 function showObj(i) {
-         document.getElementById(i).style.display = "block";
+    document.getElementById(i).style.display = "block";
 }
 
 function hideObj(i) {
-         document.getElementById(i).style.display = "none";
+    document.getElementById(i).style.display = "none";
 }
 
 function deleteRow(id) {
@@ -214,6 +243,27 @@ function printDiv(val, type, i, bd, id, path) {
     bd.appendChild(fieldDiv);
 }
 
+var currentSearch = {};
+
+/* should we support multiple searches on one key? */
+function addToSearch() {
+    var sel = document.getElementById("searchopt");
+    var key = sel.value;
+    var val = document.getElementById("searchtext").value;
+    currentSearch[key] = val;
+
+    // reset search fields
+    sel.options[0].selected = true;
+    document.getElementById("searchtext").value = "";
+
+    // update searchbox
+    var terms = [];
+    for(var i in currentSearch) {
+        terms.push( i+": "+currentSearch[i] );
+    }
+    document.getElementById("searchbox").value = "<%= (request.ns) ? 'db.'+request.ns.substring(request.ns.indexOf('.')+1) : 'db[system.namespaces]' %>.find({ " + terms.join(",") + " });";
+}
+
 <% if(!top) { %>
 // alright, so what really should be done is checkboxes, but this will work for now
 function deleteProp(num, path) {
@@ -274,15 +324,7 @@ function changeSearchbox() {
 }
 
 var _createIndex = function() {
-    var passData="action=createidx&ns=<%= request.ns %>&idx=";
-    var newidx = document.getElementsByName("createidx");
-    for(var i=0; i<newidx.length; i++) {
-        if(newidx[i].checked)
-            passData+=newidx[i].value+",";
-    }
-    ajax(passData.substring(0, passData.length-1), "editDb", function(response) {
-        refreshTable();
-    });
+    doCommand();
     this.hide();
 }
 
@@ -499,50 +541,13 @@ function editField(id, type, dbid, path) {
 <% } // end of if(!top)
 %>
 
-var createRecordPanel;
-var createTablePanel;
 var viewOptionsPanel;
 var searchFilterPanel;
-
-function addRecord() {
-    createRecordPanel.show()
-}
-
-function createTable() {
-    createTablePanel.show();
-}
-
-function addTable() {
-    var tbl = document.getElementById("createTableForm");
-
-    var passData = "";
-    var children = YAHOO.util.Dom.getChildren(tbl);
-    for(var i=0; i<children.length; i++) {
-        var c = YAHOO.util.Dom.getLastChild(children[i]);
-        if(c.getAttribute("type") == "text")
-             if(c.value != "") passData += "&"+c.name+"="+c.value;
-        if(c.getAttribute("type") == "checkbox")
-             if(c.checked) passData += "&"+c.name+"=true";
-    }
-    ajax("action=create"+passData, "editDb", function(response) {
-        refreshTable();
-    });
-    createTablePanel.hide();
-}
-
-function closeCreateTableDlg() {
-    createTablePanel.hide();
-}
 
 </script>
 
 <%
 core.db.db();
-if(top) {
-    %>
-    <input type="button" value="Create Collection" onclick="createTable()" />
-    <%
-}
 %>
 
 
@@ -550,30 +555,7 @@ if(top) {
 </div>
 
 <%
-if( rows.length >= max )
-    print("<br>Only first " + max + " displayed");
-
-if(top) {
-    %>
-<div id="createTable" style="display:none">
-<div class="hd">Create Collection</div>
-<div class="bd">
-<form id="createTableForm">
-    <div class="elem"><label class="obj">Collection name: </label><input type="text"  name="tablename"></div>
-    <div class="elem"><label class="obj">Fixed: </label><input type="checkbox"  name="fixed"></div>
-    <div class="elem"><label class="obj">Size: </label><input type="text" name="size"></div>
-<div class="elem"><label class="obj">Max: </label><input type="text" name="max"></div>
-</form>
-</div>
-<div class="ft"><input type="button" value="Save" onclick="addTable()"/>
-<input type="button" value="Cancel" onclick="closeCreateTableDlg()" />
-</div>
-</div>
-
-</div>
-<%
-} else {
-   %>
+if(!top) {   %>
 <div id="createRecord" style="display:none">
 <div class="hd">Add Record</div>
 <div class="bd" id="createRecordBd">
@@ -654,7 +636,7 @@ var fcount = <%= fcount+1 %>;
 
 <%
 if(top) {
-    var cols = [ "name", "index", "fixed" ];
+    var cols = [ "name", "index", "capped" ];
 }
 %>
 
@@ -672,10 +654,10 @@ function doSearch() {
     refreshTable();
 }
 function clearSearch() {
-    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    for(var i in myarr) {
-        myarr[i].value = "";
-    }
+    document.getElementById("searchtext").value = "";
+    document.getElementById("searchbox").value = "";
+    document.getElementById("searchopt").options[0].selected = true;
+    currentSearch = {};
     lastSearch = "";
     refreshTable();
 }
@@ -687,9 +669,7 @@ var handleNo = function() {
 var currentPage = 1;
 function loadPage(pagenum) {
     currentPage = pagenum;
-    ajax("currentPage="+pagenum+"&<%= (request.ns) ? 'ns='+request.ns : '' %>"+lastSearch, "table", function(response) {
-        document.getElementById("myCollection").innerHTML = response;
-    });
+    refreshTable();
 }
 
 <%
@@ -704,7 +684,7 @@ if(top) {
     }
 
     function getValidation(tablename) {
-        ajax("action=validation&ns="+tablename, "showTable", function(response) {
+        ajax("action=validation&ns="+tablename, "table", function(response) {
             var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
                 { width: "300px",
                 fixedcenter: true,
@@ -756,23 +736,18 @@ function getSelectedIndices(separator) {
 }
 
 
-function dropIndices(tname) {
-    tablename = tname;
+function dropIndices() {
+    tablename = <%= request.ns %>;
     var handleIDrop = function() {
         var list = getSelectedIndices(",");
         ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            var idxes = document.getElementsByName(tablename);
-            for(var i=0; i<idxes.length; i++) {
-                if (idxes[i].checked)
-                    YAHOO.util.Dom.getAncestorByTagName(idxes[i], "div").style.display = "none";
-            }
             refreshTable();
         });
         this.hide();
     }
     var prettyList = getSelectedIndices(", ");
     if(prettyList.length == 0) {
-        alert("You must check at least one index.");
+        infoDlg("Drop Indices", "You must check at least one index.");
         return;
     }
     var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
@@ -797,171 +772,34 @@ function refreshTable(passData){
         passData = passData+"&";
     else
         passData = "";
-    ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&"+passData+lastSearch, "table", function(response) {
+    ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
+
+        var column = document.getElementById("thlink"+currentSort.col);
+        column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
     });
 }
 
 
 function getSearchArgs() {
-    var passData = "";
-    var myarr = YAHOO.util.Dom.getElementsByClassName("minisearch");
-    var dict = {};
-    // FIXME:
-    // This looks convoluted, but YUI inserts bonus accessibility fields
-    // that get duplicate headers (i.e. input boxes) and so need to be
-    // stripped out. I'd love to use whichever field was changed most
-    // recently, but that's hard, and this hack is easy.
-    // Overwrite earlier input fields with the values from later ones.
-
-    for(var i=0; i<myarr.length; i++) {
-        if(myarr[i].value != "") {
-            dict[myarr[i].name] = myarr[i].value;
-        }
-    }
-    var pairs = [];
-    for(var key in dict){
-        pairs.push(key+"="+dict[key]);
-    }
-
-    passData = pairs.join('&');
-    return passData;
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
 }
 
-function collapseCol(key) {
-    var col = myDataTable.getColumn(key);
-    var x = col.parent.parent._elTh;
-    var curWidth = YAHOO.util.Dom.getStyle(x, "width");
-    var arrow = document.getElementById("arrow"+key);
-    var oldWidth = arrow.getAttribute("oldWidth");
-
-    if(oldWidth && parseInt(oldWidth) > parseInt(curWidth)) {
-        var arrow = document.getElementById("arrow"+key);
-        var oldWidth = arrow.getAttribute("oldWidth");
-        myDataTable.setColumnWidth(col, parseInt(oldWidth));
-        arrow.setAttribute("oldWidth", "0");
+function toggleCollapse(key) {
+    // build colspanElems the first time through
+    if(!document.getElementById("col"+key).style.visibility || !document.getElementById("col"+key).style.visibility == "visible") {
+        document.getElementById("col"+key).style.width = "1px";
+//        document.getElementById("col"+key).style.visibility = "collapse";
     }
     else {
-        myDataTable.setColumnWidth(col, 10);
-        arrow.setAttribute("oldWidth", curWidth.substring(0, curWidth.length-2));
+        document.getElementById("col"+key).style.visibility = "visible";
     }
 }
 
-/*myDataSource = new YAHOO.util.DataSource('showTable?<%= request.ns ? "ns="+request.ns : ""  %>');
-myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-myDataSource.connXhrMode = "queueRequests";
-
-var myPaginator = new YAHOO.widget.Paginator({
-    rowsPerPage: 50,
-    alwaysVisible : false
-});
-
-oConfigs = {
-    initialRequest: "",
-    paginator: myPaginator,
-    sortedBy: { <%= top ? 'key:"name"' : 'key:"_id"' %>, dir:YAHOO.widget.DataTable.CLASS_ASC }
-};
-
-myDataSource.responseSchema = {
-    resultsList: "rows",
-    fields: [ <% if(top) {
-        for(var i in cols) {
-            print('{ key: '+tojson(cols[i])+", parser:YAHOO.util.DataSource.parseString },");
-        }
-    } else {
-        %>
-
-        {key: "delete"}, <%
-        var f = {};
-        if(rows) {
-            for(var rownum in rows) {
-                for(var i in rows[rownum]) {
-                    if(!ignore[i] && !f[i]) {
-                        f[i] = 1;
-                    }
-                }
-            }
-            for(var i in f) {
-                print('{ key: "'+i+'"');
-                print(', parser:YAHOO.util.DataSource.parseString');
-                print('},');
-            }
-        }
-    }
-              %>
-
-            ]
-};
-
-var myColumnDefs = [ <% if(top) {
-    print('{ label: addSearchForm("'+cols[0]+'"), sortable: false, children: [ { label: "Name", sortable: true, key: '+ tojson(cols[0])+', formatter: "nameLink"} ] },');
-    print('{ label: addSearchForm("'+cols[1]+'"), sortable: false, children: [{ label: "Indices", sortable: true, formatter: "dropIdx", key: '+ tojson(cols[1]) + '}]},');
-    print('{ label: addSearchForm("'+cols[2]+'"), sortable: false, children: [{ label: "Fixed", sortable: true, key: '+ tojson(cols[2]) + '}]},');
-    print('{ label: "<input type=\'button\' onclick=\'doSearch()\' value=\'Search\' />", children: [{label: "Stats", formatter: "statsBtn", key: "stats" }]},');
-    print('{ label: "<input type=\'button\' onclick=\'clearSearch()\' value=\'Refresh\' />", children: [{key: "drop",  formatter: "dropBtn",label: "Drop Collection" }]},');
-} else {
-    if(rows) {
-        print('{ label: "_id", sortOptions:{sortFunction:sortHex}, key: "_id", formatter: "id", sortable: true, resizeable: true },');
-        for(var i in f) {
-            if(!ignore[i] && i != "_id") {
-                print('{ key: "'+i+'", label: "'+i+'", formatter: "str", sortable: true, resizeable: true },');
-            }
-       }
-    }
-    %>
-    { label: '', children: [{key: "delete", label:"Delete", formatter: "deleteBtn"}]}
-    <%
-}
-                     %>
-
-                   ];
-
-*/
-
-
-
-/*var myDataTable = new YAHOO.widget.DataTable("myMarkedUpContainer", myColumnDefs, myDataSource, oConfigs);
-var myDataTable;
-
-var currentSort = {key: <%= top ? '"name"' : '"_id"' %>, dir: "yui-dt-asc"};
-myDataTable.onEventSortColumn = function(e, target) {
-    currentSort = {};
-    currentSort.key = e.column.parent.children[0].key;
-    currentSort.dir = e.dir;
-}
-myDataTable.subscribe("columnSortEvent", myDataTable.onEventSortColumn);
-
-updateCaseTable = {
-    argument : {
-        sorting : {
-    key : currentSort.key,
-    dir : currentSort.dir
-        }
-    },
-    success : function(){
-        updateCaseTable.argument.sorting.key = currentSort.key;
-        updateCaseTable.argument.sorting.dir = currentSort.dir;
-        myDataTable.onDataReturnInitializeTable.apply(myDataTable, arguments);
-        myPaginator.setTotalRecords(myDataTable.getRecordSet().getLength());
-    },
-    failure : myDataTable.onDataReturnInitializeTable,
-    scope : myDataTable
-};
-
-
-myDataSource.liveData = "showTable?";
-*/
 
 <%
-if(top) {
+if(!top) {
     %>
-    createTablePanel = new YAHOO.widget.Panel("createTable", { visible:false, constraintoviewport: true, fixedcenter: true } );
-    createTablePanel.render("myMarkedUpContainer");
-    document.getElementById("createTable").style.display = "block";
-    <%
-}
-else {
-       %>
     createRecordPanel = new YAHOO.widget.Panel("createRecord", { visible:false, constraintoviewport: true, fixedcenter: true } );
     createRecordPanel.render("myMarkedUpContainer");
     document.getElementById("createRecord").style.display = "block";
@@ -987,8 +825,22 @@ else {
 if(top)
     var introMsg = "";
 
+if(top) {
+   var searchopts = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"} ];
+}
+else {
+    var searchopts = [];
+    searchopts.push({"name" : "_id", className: "sort-up" });
+    for(var i in f) {
+        if(ignore[i] || i == "_id") continue;
+        searchopts.push({"name" : i, className: "" });
+    }
+}
 core.admin.pieces.dbview({ hdr : hdr,
-                           introMsg: introMsg  });
+                           introMsg: introMsg,
+                           idxes : idxes,
+                           validation : validation });
+
 %>
 <div id="myCollection">
 <%
@@ -999,7 +851,7 @@ core.admin.table();
 <script>
 
 function fnCallback(e) {
-    if(e.target.className=="obj" || e.target.className == "button")
+    if(e.target.className != "partialText" )
         return;
 
     if(e.ctrlKey == false) {

@@ -1,54 +1,38 @@
 <%
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+head.addScript("/@@/yui/current/yuiloader/yuiloader-beta-min.js");
+head.addScript("/@@/yui/current/dom/dom-min.js");
+head.addScript("/@@/yui/current/json/json-min.js");
 
-var all = db._logs.find().toArray();
-if ( ! all )
-    throw "no all";
+var th = ['',
+    '<nobr><a href="">TIMESTAMP <span style="font-weight: normal; ">GMT-0400 (EDT)</span></a></nobr>',
+    '<a href="">LEVEL</a>',
+    '<a href="">COMPONENT</a>',
+    '<a href="">MESSAGE</a>'];
+var pausible = true;
+var colspan = th.length;
+core.admin.pieces.logHeader({title: "Scrolling Logs", tagline: "The log viewer displays a live view of all logs kept by this environment. The log messages can be filtered using a JavaScript grep expression.", colspan : colspan, th: th, pausible: pausible});
+core.admin.pieces.logFooter({colspan : colspan});
 
 %>
-<h1>Log Viewer</h1>
-<p>The log viewer displays a live view of all logs kept by this environment.  The log messages can be filtered using a JavaScript grep expression.  Older log messages are visible on subsequent pages.
 
-<div class="optbox">
-  Show only
-  <select onchange="filterResults('log_level')" name="log_level" id="log_level">
-    <option value="ALL">All</option>
-    <option value="DEBUG">Debug</option>
-    <option value="INFO">Info</option>
-    <option value="ERROR">Error</option>
-    <option value="FATAL">Fatal</option>
-  </select>
-  <select onchange="filterResults('logger)" name="logger" id="logger">
-    <% /* Generate logger opts */ %>
-  </select>
-</div>
-
-<div class="filter">
-  Filter by
-  <input type="text" name="filter" id="filter" />
-  <input type="button" onclick="filterResults('filter')" value="Filter" />
-  <input type="button" onclick="refreshFilter()" value="Refresh" />
-</div>
-
-<input type="checkbox" id="pause" onclick="togglePause()" /> Pause
-
-<div>
-  <b>Last Update</b> : <span id="last_update"></span>  <b>Last Message</b> : <span id="last_msg" ></span>
-</div>
-
-<div id="mylog"></div>
-<hr>
 <div id="debug"></div>
 
-<script>
+<script type="text/javascript">
 
-var pause = false;
 var mostRecent = null;
+var pause = false;
 var all = [];
 
 function togglePause() {
     pause = !pause;
-    if(!pause)
+    if(!pause) {
+        document.getElementById("pause_btn").innerHTML = "Pause";
         updateLog();
+    }
+    else {
+        document.getElementById("pause_btn").innerHTML = "Play";
+    }
 }
 
 function debug( s ){
@@ -64,45 +48,64 @@ function updateLog(){
       loadDocAsync( url+getPassOpts() , updateLogHandler );
    }
 }
-
+var first3 =0;
 function updateLogHandler( raw ){
-   var data = null;
-   eval( "data = " + raw );
+    document.getElementById("temp").innerHTML = raw;
+    // the jxp is returning 100 text nodes and 100 trs, so we filter out the text nodes
+    var rawlines = document.getElementById("temp").childNodes[1];
+    if(!rawlines || !rawlines.childNodes) {
+        setTimeout( updateLog , 1000 );
+        return;
+    }
 
-   all = data.concat( all );
-   while ( all.length > 100 ){
-     all.pop( 0 );
-   }
-   var html = "";
+    var trs = YAHOO.util.Dom.getChildrenBy(rawlines, function(n) {
+        if(n.className == "white-main")
+            return true;
+        return false;
+    });
+    rows += trs.length;
+    var mr = new Date(trs[0].childNodes[5].innerHTML+" GMT-0400");
 
-   all.forEach( function( z) {
-     if ( ! mostRecent || mostRecent < z.date )
-       mostRecent = z.date;
+    for(var i=trs.length-1; i>=0; i--) {
+        YAHOO.util.Dom.insertAfter(trs[i], pushNode);
+    }
 
-     if ( ! z.seen ) z.seen = 1;
-     else z.seen += 0.1;
-     var foo = (255-Math.floor(1/z.seen*255)).toString(16);
-     if( foo.length == 1 ) foo = "0" + foo;
-     var clr = "#ff" + foo + foo;
+    if ( !mostRecent || mostRecent < mr ) {
+       mostRecent = mr;
+    }
 
-     html += "<span style='background-color:" + clr +  ";'>&nbsp;&nbsp;</span>"
+    while(rows > 100) {
+        var toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+        var parent = toBeRemoved.parentNode;
+        parent.removeChild(toBeRemoved);
+        rows--;
+    }
 
-     html += "<span style='font-size:.6em;'>";
-     html += "[" + z.date + "] ";
-     html += "</span>";
-     html += z.logger + " &nbsp; <b>" + z.level + "</b> &nbsp; " + z.msg;
-     if ( z.throwable )
-	html += z.throwable;
-     html += "<br>";
-   } );
-
-   document.getElementById( "mylog" ).innerHTML = html;
-
-   document.getElementById( "last_update" ).innerHTML = Date();
-   document.getElementById( "last_msg" ).innerHTML = mostRecent;
-
-   setTimeout( updateLog , 1000 );
+    setTimeout( updateLog , 1000 );
 }
+
+function totalLogRefresh(raw) {
+    var toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+    var parent = toBeRemoved.parentNode;
+    while(rows > 0) {
+        toBeRemoved = YAHOO.util.Dom.getPreviousSibling(popNode);
+        parent.removeChild(toBeRemoved);
+        rows--;
+    }
+
+    updateLogHandler(raw);
+}
+
+var myDiv = document.createElement("table");
+myDiv.setAttribute("id", "temp");
+myDiv.setAttribute("style", "display:none;");
+document.getElementById("debug").appendChild(myDiv);
+
+var rows = 0;
+var pushNode = document.getElementById( "pushNode" );
+var popNode = document.getElementById( "popNode" );
+
+
 updateLog();
 
 var ns = 'all';
@@ -121,9 +124,10 @@ function filterResults(id) {
     if(id == "logger") {
         ns = val;
     }
-    ajax("action=filter"+getPassOpts(), "_logScroll", function(res) {
+
+    ajax(getPassOpts(), "_logScroll", function(res) {
        all = [];
-       updateLogHandler(res);
+       totalLogRefresh(res);
     });
 }
 
@@ -135,6 +139,7 @@ function getPassOpts() {
         passData += "&log_level="+log_level;
     if(filterStr != "")
         passData += "&filter="+filterStr;
+    if(passData.length > 0) passData += "&action=filter";
     return passData;
 }
 
@@ -145,6 +150,8 @@ function refreshFilter() {
 
     pause = false;
     mostRecent = null;
+    document.getElementById("filter").value = "";
+    document.getElementById("log_level").options[0].selected = true;
     updateLog();
 }
 
