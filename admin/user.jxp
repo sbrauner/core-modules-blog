@@ -70,8 +70,8 @@ print.setFormObject( u );
     <label>Re-enter Password</label>
     <input class="text" type="password" name="p2"><br />
     <label></label>
-    <input type="image" src="assets/img/button_send_on_white.gif" value="save">
-    <input type="image" src="assets/img/button_cancel_on_white.gif" value="cancel">
+    <input type="image" src="assets/img/button_send_on_white.gif" name="action" value="save">
+    <input type="image" src="assets/img/button_cancel_on_white.gif" name="action" value="cancel">
   </fieldset>
 </form>
 
