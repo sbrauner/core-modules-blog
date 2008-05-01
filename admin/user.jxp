@@ -46,32 +46,48 @@ if ( u && request.action == "save"){
 	
 print.setFormObject( u );
 %>
-<br>
-<form method="post">
-  <b><%= request._id ? "Edit User Object" : "New User" %></b><p>
-  Name: <input name="name"><br>
-  Email: <input name="email"><br>
-  NickName: <input name="nickname"><br>
-  <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> >Admin<br>
----<br>
-  New Password 1: <input type="password" name="p1"> (Leave blank to leave unchanged)<br>
-  New Password 2: <input type="password" name="p2"><br>
+<!-- Heading and links-table Links -->
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
+  <nobr><%= request._id ? "EDIT USER" : "NEW USER" %></nobr>
+</h1>
 
+<p>10gen provides built-in support for user management, authentication, and access control.</p>
 
+<form method="post" class="edit register">
   <input type="hidden" name="_id">
-  <input type="submit" name="action" value="save">
-  <input type="submit" name="action" value="cancel">
+  <fieldset>
+    <label>Username</label>
+    <input class="text" type="text" name="name"><br />
+    <label>Email</label>
+    <input class="text" type="text" name="email"><br />
+    <label>Nickname</label>
+    <input class="text" type="text" name="nickname"><br />
+    <label></label>
+    <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br /> 
+    <label>New Password</label>
+    <input class="text" type="password" name="p1"> (Leave blank to leave unchanged)<br />
+    <label>Re-enter Password</label>
+    <input class="text" type="password" name="p2"><br />
+    <label></label>
+    <input type="image" src="assets/img/button_send_on_white.gif" value="save">
+    <input type="image" src="assets/img/button_cancel_on_white.gif" value="cancel">
+  </fieldset>
 </form>
+
+<br/>
 
 <%
 print.setFormObject( null );
 %>
 
 <% if( ! request._id ) return; %>
-<form method="post" action="user_delete" name="delete_form">
+<form method="post" action="user_delete" name="delete_form" class="edit register">
   <input type="hidden" name="id" value="<%= u._id %>">
-  Delete this user:
-  <input type="submit" name="action" value="delete" onclick="deletePanel.show(); return false">
+  <fieldset>
+    <label>Delete User </label>
+    <input type="image" src="assets/img/button_delete_on_white.gif" name="action" value="delete" onclick="deletePanel.show(); return false"><br/>
+  </fieldset>
 </form>
 
 <div class="yui-skin-sam">

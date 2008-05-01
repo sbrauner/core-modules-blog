@@ -34,21 +34,16 @@ var validation = obj.validation;
 		      <p class="abstract"><b>Statistics:</b></p>
 		      <ul class="small-text" style="padding-bottom: 0;">
                         <li>$validation</li>
-<!--		  		<li>deleted: n: 1 size: 28532</li>
-		  		<li>Indexes:3</li>
-		  		<li>paul.users.$email_1 keys:1</li>
-		  		<li>paul.users.$name_1 keys:1</li>-->
-	 		  </ul
-			     </div>
+	 	      </ul>
+		    </div>
 		  </div>
 
 		  <div class="abstract" style="margin: 0 5px 1em 0; clear: both; ">
-		    <b>Database Shell:</b><br />
+		    <b>Database Shell:</b><a onclick="searchFilterPanel.show()" /><img src="/~~/admin/assets/img/button_star_on_white.gif" alt="Create Filter" /></a><br />
 		    <textarea class="shell" id="searchbox"></textarea>
 			<div style="margin: .5em 0 0 0; text-align: right; ">
 		          <img src="/~~/admin/assets/img/button_validate_on_white.gif" onclick="validateSearchbox()" alt="Validate">
                           <img src="/~~/admin/assets/img/button_execute_on_white.gif" onclick="doCommand()" alt="Execute">
-                          <!--<input type="button" value="Clear" onclick="document.getElementById('searchbox').value=''; refreshTable()" />-->
                         </div>
                   </div>
                 </if>
