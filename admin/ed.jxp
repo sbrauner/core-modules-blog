@@ -1,0 +1,6 @@
+<% 
+core.ext.asstring();
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+core.admin.editor.ed({baseURL: '/~~/admin/editor/'});
+
+%>

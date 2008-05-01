@@ -1,5 +1,5 @@
 admin.data.Bash = function(){
-
+    this._pwd = "";
 };
 
 Object.extend(admin.data.Bash.prototype, {
@@ -9,7 +9,7 @@ Object.extend(admin.data.Bash.prototype, {
         assert(commands.contains(cmd));
         files = files || [];
         this._validate(files);
-        var foo = sysexec(cmd + " " + files.join(' '));
+        var foo = sysexec(cmd + " " + files.join(' '), "", {}, this._pwd);
 
         return foo;
     },
@@ -22,6 +22,27 @@ Object.extend(admin.data.Bash.prototype, {
         }
 
     },
+    cd: function(dir){
+        assert(dir.length == 1);
+        dir = dir[0];
+        var t = this;
+        dir.split('/').forEach(function(z){
+            if(! z) return;
+
+            if(z == '..'){
+                if(t._pwd == "")
+                    throw "you must not escape";
+                else t._pwd = t._pwd.replace(/[^\/]*$/, '');
+            }
+            else {
+                if(t._pwd && t._pwd[t._pwd.length-1] != '/')
+                    t._pwd += '/';
+                t._pwd += z;
+            }
+        });
+        return {out: "", err: ""};
+    },
+
     ls: function(files){
         return this.handle('ls', files);
     },

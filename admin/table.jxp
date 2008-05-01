@@ -1,5 +1,4 @@
 <%
-core.admin.jasontable();
 core.ext.pluck();
 core.io.marshal();
 core.io.encode.json();
@@ -10,10 +9,6 @@ core.content.html();
 var collection;
 // ignore internal transient variables
 var ignore= { _ns:1, _save:1, _update:1 };
-
-var opts = arguments[0] || {};
-var ns = request.ns || opts.ns;
-var th = opts.th;
 
 // Table display options
 var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
@@ -215,7 +210,6 @@ for( var i in f) {
     fields.push(i);
 }
 fields.sort();
-//log("f: "+tojson(f));
 
 
 /* ------------------
@@ -241,7 +235,7 @@ if( top ) {
 	        dbTable.rows[k].index += (idxobj?tojson(idxobj.key):"null") + "<br />";
             }
         }
-        dbTable.rows[k].fixed = (currentRow.capped) ? currentRow.capped : "";
+        dbTable.rows[k].capped = (currentRow.capped) ? currentRow.capped : "";
         k++;
     }
 }
@@ -250,106 +244,105 @@ else
 
 
 
-
-
 /* Formatting */
 
 var fcount = 0;
 
 if(top) {
-   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
+   var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
 }
-else if(! th){
-    th = [];
+else {
+    var th = [];
     if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
     for(var i in fields) {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
         th.push({"name" : fields[i], className: "" });
     }
     if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
-}
 
-idFormatter = function(oData) {
-    return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
-}
+    idFormatter = function(oData) {
+        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+    }
 
-deleteBtnFormatter = function(id) {
-    return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
-}
+    deleteBtnFormatter = function(id) {
+        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
+    }
 
-var objcount = 0;
-function printObj(cursor, field) {
-    if(!cursor || !cursor[field]) return;
-    var text = "";
-    
-    if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
-        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+    var objcount = 0;
+    function printObj(cursor, field) {
+        if(!cursor || !cursor[field]) return;
+        var text = "";
+
+        if(cursor[field] == null || typeof cursor[field] == "native" || typeof cursor[field] == "function") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+"</span></div>";
+        }
+        else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
+            text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
+        } else if(typeof cursor[field] == "object") {
+            var name;
+            var desc;
+            if(cursor[field] instanceof Date) {
+                name = field;
+                desc = cursor[field].toString();
+            }
+            else if(cursor[field] instanceof Array) {
+                name = field;
+                desc = "["+cursor[field].length+"]";
+            }
+            else {
+                name = field;
+                desc = "{...}";
+            }
+            text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
+            var tempobj = objcount;
+            objcount++;
+            for(var q in cursor[field]) {
+                text += printObj(cursor[field], q);
+            }
+            text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
+        } else {
+            text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
+        }
+        return text;
     }
-    else if(typeof cursor[field] == "boolean" || typeof cursor[field] == "string" || typeof cursor[field] == "number") {
-        text += '<div><label class="obj">'+field+':</label><span class="obj">'+cursor[field]+'</span></div>';
-    } else if(typeof cursor[field] == "object") {
-        var name;
-        var desc;
-        if(cursor[field] instanceof Date) {
-            name = field;
-            desc = cursor[field].toString();
-        }
-        else if(cursor[field] instanceof Array) {
-            name = field;
-            desc = "["+cursor[field].length+"]";
-        }
-        else {
-            name = field;
-            desc = "{...}";
-        }
-        text += "<div class=\"parent\" onclick=\"showObj('o"+objcount+"')\"><label class=\"obj\">"+name+"</label><span class=\"obj\">"+desc+"</span></div><div class=\"obj\" id=\"o"+objcount+"\">";
-        var tempobj = objcount;
-        objcount++;
-        for(var q in cursor[field]) {
-            text += printObj(cursor[field], q);
-        }
-        text += "<div><input type='button' onclick='hideObj(\"o"+tempobj+"\")' class='button' value='close'></div></div>";
-    } else {
-        text += '<div><label class="obj">undef:</label><span class="obj">'+typeof cursor[field]+"</span></div>";
-    }
-    return text;
-}
 
 
-strFormatter = function(obj, field) {
-    if(field in obj && !obj[field]) {
-        return '<div class="nullfield">null</div>';
-    }
-    else if (!obj[field]) {
-        return '<div class="nullfield"><b>-</b></div>';
-    }
-    else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
-        return obj[field];
-    }
-    else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
-        var subobj = obj[field];
-        var str = "";
-        var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
-        fcount++;
-        
-        if (subobj instanceof Date) {
-            fullText += subobj.toString();
-            str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+    strFormatter = function(obj, field) {
+        if(field in obj && !obj[field]) {
+            return '<div class="nullfield">null</div>';
         }
-        else if (typeof subobj == "object") {
-            for(var q in subobj)
-                fullText += printObj(subobj, q);
-            str = '<span class="partialText" style="cursor:default">(Object)</span>';
+        else if (!obj[field]) {
+            return '<div class="nullfield"><b>-</b></div>';
         }
-        else {
-            fullText += subobj;
-            str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+        else if (typeof obj[field] == "native" || typeof obj[field] == "function") {
+            return obj[field];
         }
-        fullText += '</div>';
-        return str+fullText;
+        else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
+            var subobj = obj[field];
+            var str = "";
+            var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
+            fcount++;
+
+            if (subobj instanceof Date) {
+                fullText += subobj.toString();
+                str = '<span class="partialText" style="cursor:default">'+subobj.toString().substring(0, 18)+"...</span>";
+            }
+            else if (typeof subobj == "object") {
+                for(var q in subobj)
+                    fullText += printObj(subobj, q);
+                str = '<span class="partialText" style="cursor:default">(Object)</span>';
+            }
+            else {
+                fullText += subobj;
+                str = '<span class="partialText" style="cursor:default">'+subobj.substring(0, 18)+"...</span>";
+            }
+            fullText += '</div>';
+            return str+fullText;
+        }
+        else
+            return obj[field];
     }
-    else
-        return obj[field];
 }
 
 dbTable.top = top;
@@ -375,7 +368,6 @@ else if(request.action != "searchprofile") {
     for(var i in dbTable.rows) {
         if("_id" in f) dbTable.rows[i].id = "";
         for(var field in th) {
-            if(th[field].dispfunc) dbTable.rows[i][th[field].name] = th[field].dispfunc(dbTable.rows[i]);
             if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
             else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
@@ -411,35 +403,23 @@ var prevPage = (dbTable.currentPage == 1) ? null : dbTable.currentPage - 1;
 var nextPage = (dbTable.currentPage == dbTable.totalNumPages) ? null : parseInt(dbTable.currentPage) + 1;
 dbTable.colspan = th.length;
 
-log(tojson(request.action));
-
-if(request.action == "dbview"){
-    new admin.Jasontable(function(){
-        core.admin.pieces.dbviewTable({ th: th,
-                                        table: dbTable,
-                                        top: top
-                                      });
-    }, {
-        header: {cols: th, search: true, showHeader: false}, 
-        footer: {cols: th,
-                 paging: {
-                     page: page, prevPage: prevPage, nextPage: nextPage,
-                     totalNumPages: dbTable.totalNumPages
-        }}}).render();
+if(request.action == "searchprofile") {
+    if(dbTable.rows.length == 0) {
+        dbTable.colspan = 3;
+    }
+    core.admin.pieces.dbprofileTable( { th: th,
+                             table: dbTable,
+                             page: page,
+                             prevPage: prevPage,
+                             nextPage: nextPage  });
 }
 else {
-    th = th;
-
-    new admin.Jasontable(function(){
-        core.admin.pieces.dataTable( { th: th,
-                                            table: dbTable });
-    }, {
-        header: {cols: th, search: false}, 
-        footer: {cols: th,
-                 paging: {
-                     page: page, prevPage: prevPage, nextPage: nextPage,
-                     totalNumPages: dbTable.totalNumPages
-        }}}).render();
+    core.admin.pieces.dbviewTable({ th: th,
+                                    table: dbTable,
+                                    page: page,
+                                    prevPage: prevPage,
+                                    nextPage: nextPage });
 }
+
 
 %>

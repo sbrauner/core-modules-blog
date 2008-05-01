@@ -2,13 +2,21 @@
 <p>
 <%
 
-request.ns = 'users';
+ var tab = new htmltable( 
+  { 
+   ns : db.users ,
+   cols : [
+     { name: "name", isLink: true, searchWidth: 50 },
+     { name: "email" } ,
+     { name: "permissions" , heading : "admin" , 
+	     view : function(x,z){ return z.isAdmin() ? "<b>yes</b>" : ""; },
+	     queryForm: function(x) { return x=="yes" ? "admin" : null; }
+     }
+   ],
+   detailUrl : "/~~/admin/user.jxp?_id=" ,
+   searchable: true
+  }
+  );
 
-core.admin.table({ns: 'users', 
-                  th: [{name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"},
-                       {name: "admin", heading: "ADMIN", dispfunc: function(u){
-                           if(u.permissions == null) return "no";
-                           return u.permissions.contains("admin") ? "yes": "no";
-                       }}]
-   });
+ tab.dbview( tab.find().sort({ts:-1}) );
 %>
