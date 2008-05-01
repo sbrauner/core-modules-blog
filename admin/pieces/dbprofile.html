@@ -9,34 +9,40 @@ var th = obj.th;
   <nobr>Database Profile</nobr>
 </h1>
 
-<p>The database profiler displays recent database commands, depending on the log level.</p>
+<p class="abstract">The 10gen database includes a profiling tool to analyze the performance of database operations.</p>
 
-<!-- Data Table Begins -->
-<table width="100%" border="0">
-  <tr class="search-top">
-    <td class="left">&nbsp;</td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td colspan="$th.length">
+<p class="abstract underline"><b>Filter:</b></p>
+<form action="#" method="" name="" class="edit register">
+  <label>DB Profiling is </label>
+  <select onchange="submit()" id="set" name="set">
+    <option value="0">Off</option>
+    <option value="1">On for slow operations</option>
+    <option value="2">On for all operations</option>
+  </select> <br />
+  <label>Show </label>
+  <select id="record_type" name="record_type" onchange="changeRecordType()">
+    <option value="all">All</option>
+    <option value="query">Query</option>
+    <option value="insert">Insert</option>
+    <option value="update">Update</option>
+    <option value="getmore">Getmore</option>
+  </select>
+</form>
 
-    </td>
-    <td class="right">&nbsp;</td>
-  </tr>
-  <!-- White table -->
-  <tr class="white-top">
-    <!-- Top area -->
-    <td class="left"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
-    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td class="middle" colspan="$th.length">&nbsp;</td>
-    <td class="right"><img src="/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
-  </tr>
+<p class="abstract underline"><b>Search:</b></p>
+<form action="#" method="" name="" class="edit register">
+  <label for="timefilter"><nobr><input type="checkbox" name="timefilter" id="timefilter" onclick="toggleEnableText('time', 'YYYY-MM-DD HH:MM:SS')"> Timestamp filter between </nobr></label>
+  <input class="text" type="text" disabled onclick="clearTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and <input class="text" style="margin-left: 0; " type="text" disabled name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" /> <br \>
+  <label for="msfilter"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999999')"> Millisecond filter between </label>
+  <input class="text" type="text" disabled name="ms_from" onclick="clearTextBox('ms_from', '0')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and <input class="text" style="margin-left: 0;" type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999999')" onblur="resetTextBox('ms_to', '999999')" id="ms_to" value="999999" /> <br \>
+  <label for="refilter"><input type="checkbox" name="refilter" id="refilter" onclick="toggleEnableText('re', '')"> Information RegExp filter </label>
+  <input class="text" type="text" name="re" id="re" disabled /> <br \>
+  <label></label>
+  <img src="/~~/admin/assets/img/button_search_on_white.gif" onclick="doSearch()" alt="Search"><img src="/~~/admin/assets/img/button_refresh_on_white.gif" onclick="refreshSearch()" alt="Refresh"> <br \>
+</form>
 
-  <tr class="white-main" id="pushNode">
-    <!-- Main area -->
-    <td class="left">&nbsp;</td>
-    <forin i th>
-      <th><nobr><a href="">$th[i].name</a></nobr></th>
-    </forin>
-    <td class="right">&nbsp;</td>
-  </tr>
+<br />
+
+
 
 

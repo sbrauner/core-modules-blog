@@ -15,18 +15,18 @@ if(user.permissions["0"] == "admin") {
         print("<p>");
     }
     %>
-    <form>DB Profiling is...
+<!--    <form>DB Profiling is...
     <select onchange="submit()" id="set" name="set">
     <option value="0">Off</option>
     <option value="1">On for slow operations</option>
     <option value="2">On for all operations</option>
     </select>
-    </form>
+    </form> -->
     <%
 }
 %>
 
-<a href="http://www.10gen.com/wiki/db.profile">Help</a>
+<!--<a href="http://www.10gen.com/wiki/db.profile">Help</a>
 <p>
 <div class="filtering">
 
@@ -57,6 +57,8 @@ if(user.permissions["0"] == "admin") {
   <input type="button" onclick="refreshSearch()" value="Refresh" />
 </div>
 </div>
+-->
+
 
 <% core.admin.pieces.dbprofile({th:[{name: "Timestamp"}, {name: "Message"}, {name: "Milliseconds"}]}); %>
 <div id="myCollection">

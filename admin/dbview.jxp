@@ -72,9 +72,9 @@ if(!top) {
     }
     %>
 
-    <div>
-
 <!--    <div>
+
+    <div>
     <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
     </div>
     <div id="viewOptions" style="display: none">

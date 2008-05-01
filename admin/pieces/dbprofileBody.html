@@ -1,0 +1,24 @@
+<%
+
+var table = obj.table;
+var th = obj.th;
+
+%>
+
+<tr class="white-main">
+  <td class="left">&nbsp;</td>
+  <forin i th>
+    <th>$th[i].name</th>
+  </forin>
+  <td class="right">&nbsp;</td>
+</tr>
+
+<forin i table.rows>
+  <tr class="white-main">
+    <td class="left">&nbsp;</td>
+    <forin j th>
+      <td>$table.rows[i][th[j].name]</td>
+    </forin>
+    <td class="right">&nbsp;</td>
+  </tr>
+</forin>

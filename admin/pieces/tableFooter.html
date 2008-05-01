@@ -1,37 +1,27 @@
 <%
 
-var th = obj.th;
-var table = obj.table;
+var colspan = obj.colspan;
 var page = obj.page;
 var prevPage = obj.prevPage;
 var nextPage = obj.nextPage;
+var table = obj.table;
 
 %>
 
- <forin i table.rows>
-    <tr class="white-main">
-      <td class="left">&nbsp;</td>
-      <forin j th>
-        <td>$table.rows[i][th[j].name]</td>
-      </forin>
-      <td class="right">&nbsp;</td>
-    </tr>
-  </forin>
-
 
   <tr class="white-bottom">
+
     <!-- Bottom area -->
     <td class="left">&nbsp;</td>
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td class="middle" colspan="$table.colspan">&nbsp;</td>
+    <td class="middle" colspan="$colspan">&nbsp;</td>
     <td class="right">&nbsp;</td>
   </tr>
-  <!-- Tan/Beige Area -->
   <!-- Paging -->
   <tr class="paging-bottom">
     <td class="left">&nbsp;</td>
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
-    <td colspan="$table.colspan">
+    <td colspan="$colspan">
       <div id="paging">
         <if (1 < page.length)>
 	  <ul>
@@ -49,14 +39,13 @@ var nextPage = obj.nextPage;
             </forin>
             <if nextPage>
 	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$nextPage')">&#62;</a></li>
-	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$table.totalNumPages')">&#62;&#62</a></li>
+	      <li class="cycle" style="margin-left: 1em; "><a onclick="loadPage('$totalNumPages')">&#62;&#62</a></li>
             </if>
 	  </ul>
-        </if>
+       </if>
       </div>
     </td>
     <td class="right">&nbsp;</td>
   </tr>
 </table>
-
 
