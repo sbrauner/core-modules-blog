@@ -21,6 +21,9 @@ Object.extend(admin.data.Bash.prototype, {
             if(files[i].trim().startsWith('-')) continue;
             if(files[i].trim().startsWith('/'))
                 throw ("illegal absolute path: "+ files[i]);
+
+            if(files[i].trim().split('/').contains('..'))
+                throw ("paths with '..' are not allowed except in cd");
         }
 
     },

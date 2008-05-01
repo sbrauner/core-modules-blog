@@ -31,6 +31,17 @@ var silent = function(result){
     assert(result.out == "" && result.err == "");
 };
 
+var assertThrows = function(f){
+    var exc = null;
+    try{
+        f();
+    }
+    catch (e){
+        exc = e;
+    }
+    assert(exc);
+};
+
 dumpFile('testbash/file1', 'hi there\n');
 
 fileCorrect('testbash/file1');
@@ -103,27 +114,39 @@ assert(foo.err == "");
 
 fileCorrect('file3', 'testbash/file1');
 
-var exc = null;
-try{
-    sh.cd(['../..']);
-}
-catch(e){
-    exc = e;
-}
-
-assert(exc);
+assertThrows(function(){ sh.cd(['../..']); });
 
 // Prove that you can't cd out using an absolute path
 silent(sh.cd(['/']));
 
 silent(sh.cd(['testbash']));
 
-var foo = sh.ls();
-assert(foo.out == 'file3\nlongfile\n');
-assert(foo.err == "");
+var inTestbash = function(){
+    var foo = sh.ls();
+    assert(foo.out == 'file3\nlongfile\n');
+    assert(foo.err == "");
+};
+
+inTestbash();
 
 silent(sh.cd(['//..////testbash//']));
 
-var foo = sh.ls();
-assert(foo.out == 'file3\nlongfile\n');
-assert(foo.err == "");
+inTestbash();
+
+assertThrows(function(){ sh.rm(['../testbash/file3']); });
+
+inTestbash();
+
+assertThrows(function(){ sh.rm(['./../../testbash/file3']); });
+
+inTestbash();
+
+assertThrows(function(){ sh.rm(['./..']); });
+
+inTestbash();
+
+// valid filenames
+var foo = sh.ls(['..foo']);
+
+assert(foo.out == "");
+assert(foo.err != "");
