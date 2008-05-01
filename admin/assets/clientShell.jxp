@@ -625,11 +625,13 @@ var toggleTreeView = function(){
         newverb = "Show";
         tv.style.display = "none";
         document.getElementById("console").style.width = "95%";
+        scratchText.parentNode.style.width = "100%";
     }
     else {
         newverb = "Hide";
         tv.style.display = "block";
         document.getElementById("console").style.width = "";
+        scratchText.parentNode.style.width = "100%";
     }
     document.getElementById("treeViewShowVerb").innerHTML = newverb;
 };
