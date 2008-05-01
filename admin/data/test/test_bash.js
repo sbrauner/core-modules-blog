@@ -112,3 +112,12 @@ catch(e){
 }
 
 assert(exc);
+
+// Prove that you can't cd out using an absolute path
+silent(sh.cd(['/']));
+
+silent(sh.cd(['testbash']));
+
+var foo = sh.ls();
+assert(foo.out == 'file3\nlongfile\n');
+assert(foo.err == "");
