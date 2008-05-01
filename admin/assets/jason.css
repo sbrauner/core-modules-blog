@@ -494,6 +494,9 @@ tr.white-main th a:hover {
 tr.white-main th a#active {
 	color: #333333;
 }
+tr.white-main th a {
+        cursor: pointer;
+}
 
 tr.white-main ul {
 	clear: both;
@@ -656,6 +659,7 @@ td.maincontent div.links-table a:hover.external {
 	margin: 0;
 	padding: 0;
 	text-align: center;
+        cursor: pointer;
 }
 
 #paging ul li.active {
@@ -663,6 +667,7 @@ td.maincontent div.links-table a:hover.external {
 	font-size: 12px;
 	color: #ffffff;
 	background:url(img/paging_circle_active_on_tan.gif) no-repeat left bottom;
+        cursor: default;
 }
 
 #paging ul li.modactive {
@@ -719,7 +724,7 @@ form.edit {  /* set width in form, not fieldset (still takes up more room w/ fie
 }
 
 form.edit textarea {
-  width: auto;	
+  width: auto;
 }
 
 form.edit fieldset {
@@ -734,13 +739,13 @@ form.edit input {
   border: 1px solid #cccccc;
 }
 
-form.edit label { 
+form.edit label {
 	display: block;  /* block float the labels to left column, set a width */
-	float: left; 
-	width: 200px; 
-	padding: 0; 
+	float: left;
+	width: 200px;
+	padding: 0;
 	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
-	text-align: right; 
+	text-align: right;
 }
 
 form.edit input, form.edit textarea, form.edit select {

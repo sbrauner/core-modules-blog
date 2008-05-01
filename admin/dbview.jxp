@@ -67,16 +67,12 @@ if(!top) {
                 idxes.push("Compound index on "+idxList.join(","));
             else
                 idxes.push("Index on "+idxList[0]);
-//            print('<div><input type="checkbox" name="'+ request.ns+'" value="'+obj.name.substring(idx+1)+'" />'+obj.name.substring(idx+1)+"</div>");
         }
         i++;
     }
     %>
 
     <div>
-    <div><%= request.ns %> Search/Filter <input type="button" onclick="searchFilterPanel.show()" value="*" /></div>
-    </div>
-
 
 <!--    <div>
     <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
@@ -640,7 +636,7 @@ var fcount = <%= fcount+1 %>;
 
 <%
 if(top) {
-    var cols = [ "name", "index", "fixed" ];
+    var cols = [ "name", "index", "capped" ];
 }
 %>
 
@@ -830,7 +826,7 @@ if(top)
     var introMsg = "";
 
 if(top) {
-   var searchopts = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "FIXED", className: "center"} ];
+   var searchopts = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"} ];
 }
 else {
     var searchopts = [];
@@ -841,7 +837,7 @@ else {
     }
 }
 
-request.page = 'dbview';
+request.action = 'dbview';
 
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
