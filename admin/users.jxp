@@ -7,7 +7,7 @@ request.ns = 'users';
 core.admin.table({ns: 'users', 
                   th: [{name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"},
                        {name: "admin", heading: "ADMIN", dispfunc: function(u){
-                           log(tojson(u));
+                           if(u.permissions == null) return "no";
                            return u.permissions.contains("admin") ? "yes": "no";
                        }}]
    });
