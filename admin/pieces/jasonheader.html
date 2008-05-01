@@ -8,7 +8,6 @@ if(typeof obj.cols == "number"){
     obj.cols = cols;
 }
 var cols = obj.cols;
-if(! ("showHeader" in obj) ) obj.showHeader = true;
 %>
 <!-- Data Table Begins -->
 <table width="100%" border="0">
@@ -26,7 +25,7 @@ if(! ("showHeader" in obj) ) obj.showHeader = true;
         <ul>
           <li><select id="searchopt">
               <forin i cols>
-                <option value="$cols[i].name"><%= cols[i].heading || cols[i].name %></option>
+                <option value="cols[i].name"><%= cols[i].heading || cols[i].name %></option>
               </forin>
             </select>
           </li>
@@ -47,13 +46,11 @@ if(! ("showHeader" in obj) ) obj.showHeader = true;
     <td class="middle" colspan="$cols.length">&nbsp;</td>
     <td class="right"><img src="images/transparent.gif" width="14" height="1"></td>
   </tr>
-  <if obj.showHeader>
-    <tr class="white-main" id="pushNode">
-      <!-- Main area -->
-      <td class="left">&nbsp;</td>
-      <forin i cols>
-        <th><nobr><a href=""><%= cols[i].heading || cols[i].name %></a></nobr></th>
-      </forin>
-      <td class="right">&nbsp;</td>
-    </tr>
-  </if>
+  <tr class="white-main" id="pushNode">
+    <!-- Main area -->
+    <td class="left">&nbsp;</td>
+    <forin i cols>
+      <th><nobr><a href=""><%= cols[i].heading || cols[i].name %></a></nobr></th>
+    </forin>
+    <td class="right">&nbsp;</td>
+  </tr>
