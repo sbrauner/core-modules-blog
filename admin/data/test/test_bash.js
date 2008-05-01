@@ -66,4 +66,49 @@ var foo = sh.tail(['testbash/longfile']);
 assert(foo.out == [4, 5, 6, 7, 8, 9, 10, 11, 12, 13].join('\n') + "\n");
 assert(foo.err == "");
 
+var foo = sh.head(['testbash/longfile', '-n', '4']);
+assert(foo.out == [1, 2, 3, 4].join('\n') + '\n');
+assert(foo.err == "");
 
+silent(sh.diff(['testbash/file2', 'testbash/file3']));
+
+silent(sh.grep(['a', 'testbash/longfile']));
+var foo = sh.grep(['2', 'testbash/longfile']);
+assert(foo.out == '2\n12\n');
+assert(foo.err == "");
+
+silent(sh.rm(['testbash/file2']));
+
+var foo = sh.ls(['testbash']);
+assert(foo.out == 'file3\nlongfile\n');
+assert(foo.err == "");
+
+var foo = sh.date(['-d', '2008-04-20', '"+%Y %m %M"']);
+assert(foo.out == "2008 04 00\n");
+assert(foo.err == "");
+
+sh.cd(['testbash']);
+
+var foo = sh.ls();
+assert(foo.out == 'file3\nlongfile\n');
+assert(foo.err == "");
+
+fileCorrect('file3', 'testbash/file1');
+
+sh.cd(['../testbash']);
+
+var foo = sh.ls();
+assert(foo.out == 'file3\nlongfile\n');
+assert(foo.err == "");
+
+fileCorrect('file3', 'testbash/file1');
+
+var exc = null;
+try{
+    sh.cd(['../..']);
+}
+catch(e){
+    exc = e;
+}
+
+assert(exc);

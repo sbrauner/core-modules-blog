@@ -9,7 +9,9 @@ Object.extend(admin.data.Bash.prototype, {
         assert(commands.contains(cmd));
         files = files || [];
         this._validate(files);
-        var foo = sysexec(cmd + " " + files.join(' '), "", {}, this._pwd);
+        cmd = cmd + " " + files.join(' ');
+        log.admin.data.bash.debug(cmd);
+        var foo = sysexec(cmd, "", {}, this._pwd);
 
         return foo;
     },
@@ -75,10 +77,12 @@ Object.extend(admin.data.Bash.prototype, {
     tail: function(files){
         return this.handle('tail', files);
     },
-    date: function(){
+    date: function(files){
         return this.handle('date', files);
     },
     grep: function(files){
         return this.handle('grep', files);
     },
 });
+
+log.admin.data.bash.level = log.LEVEL.ERROR;
