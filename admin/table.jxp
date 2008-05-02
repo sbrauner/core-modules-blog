@@ -105,6 +105,7 @@ else if(request.action == "search" || request.action == "userssearch" || request
         var query = new RegExp(".*"+q+".*", "i");
         searchobj["name"] = query;
     }
+
     for(q in request) {
         if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
             continue;
@@ -114,6 +115,22 @@ else if(request.action == "search" || request.action == "userssearch" || request
         var query = new RegExp(".*"+request[q]+".*", "i");
         searchobj[q] = query;
     }
+
+    if(request.action == "userssearch" && searchobj['admin']){
+        if(request.admin == 'yes'){
+            searchobj['$where'] = function(){
+                return obj.permissions && obj.permissions.contains('admin');
+            };
+            delete searchobj['admin'];
+        }
+        if(request.admin == 'no'){
+            searchobj['$where'] = function(){
+                return (obj.permissions == null) || !(obj.permissions.contains('admin'));
+            };
+            delete searchobj['admin'];
+        }
+    }
+
     if(top)
         rows = collection.find(searchobj).sort(mySort).toArray();
     else
