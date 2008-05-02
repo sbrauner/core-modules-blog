@@ -66,11 +66,13 @@ print.setFormObject( u );
     <label></label>
     <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br />
     <label>New Password</label>
-    <input class="text" type="password" name="p1"> (Leave blank to leave unchanged)<br />
+    <input class="text" type="password" name="p1">
+    <% if (request._id) { %> (Leave blank to leave unchanged)<% } %>
+    <br />
     <label>Re-enter Password</label>
     <input class="text" type="password" name="p2"><br />
     <label></label>
-    <input type="image" src="assets/img/button_send_on_white.gif" name="action" value="save">
+    <input type="image" src="assets/img/button_save_on_white.gif" name="action" value="save">
     <input type="image" src="assets/img/button_cancel_on_white.gif" name="action" value="cancel">
   </fieldset>
 </form>
