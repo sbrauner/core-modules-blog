@@ -3,49 +3,49 @@
 var hdr = obj.hdr;
 var introMsg = obj.introMsg;
 var idxes = obj.idxes;
+var idxid = obj.idxid;
 var validation = obj.validation;
 %>
 
 
 
-	  <!-- Heading and links-table Links -->
-	  <h1 style="margin:0;">
-		<div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
-		<nobr>$hdr</nobr>
-	  </h1>
+<!-- Heading and links-table Links -->
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
+  <nobr>$hdr</nobr>
+</h1>
 
-		<p class="abstract">$introMsg</p>
+<p class="abstract">$introMsg</p>
 
-                <if idxes>
-		  <div class="twocolumns">
-		    <div class="left">
-		      <p class="abstract underline"><b>Collection Index Information:</b></p>
-		      <ul>
-                        <forin i idxes>
-                          <li><input type="checkbox" name="" value=""><a href="">$idxes[i]</a></li>
-                        </forin>
-                        <li style="margin-top: .2em; ">
-                          <img src="/~~/admin/assets/img/button_drop_on_white.gif" onclick="dropIndices()" alt="Drop">
-                          <img src="/~~/admin/assets/img/button_create_index_on_white.gif" onclick="createIndex()" alt="Create Index">
-                        </li>
-		      </ul>
-		    </div>
-		    <div class="right">
-		      <p class="abstract"><b>Statistics:</b></p>
-		      <ul class="small-text" style="padding-bottom: 0;">
-                        <li>$validation</li>
-	 	      </ul>
-		    </div>
-		  </div>
+<if idxes>
+  <div class="twocolumns">
+    <div class="left">
+      <p class="abstract underline"><b>Collection Index Information:</b></p>
+      <ul>
+        <forin i idxes>
+          <li id="li$idxid[i]">$idxes[i] <img src="/~~/admin/assets/img/button_drop_on_white.gif" onclick="dropIndex('$idxid[i]')" alt="Drop"> </li>
+        </forin>
+        <li style="margin-top: .2em; ">
+          <img src="/~~/admin/assets/img/button_create_index_on_white.gif" onclick="createIndex()" alt="Create Index">
+        </li>
+      </ul>
+    </div>
+    <div class="right">
+      <p class="abstract"><b>Statistics:</b></p>
+      <ul class="small-text" style="padding-bottom: 0;">
+        <li>$validation</li>
+      </ul>
+    </div>
+  </div>
 
-		  <div class="abstract" style="margin: 0 5px 1em 0; clear: both; ">
-		    <b>Database Shell:</b><a onclick="searchFilterPanel.show()" /><img src="/~~/admin/assets/img/button_star_on_white.gif" alt="Create Filter" /></a><br />
-		    <textarea class="shell" id="searchbox"></textarea>
-			<div style="margin: .5em 0 0 0; text-align: right; ">
-		          <img src="/~~/admin/assets/img/button_validate_on_white.gif" onclick="validateSearchbox()" alt="Validate">
-                          <img src="/~~/admin/assets/img/button_execute_on_white.gif" onclick="doCommand()" alt="Execute">
-                        </div>
-                  </div>
-                </if>
+  <div class="abstract" style="margin: 0 5px 1em 0; clear: both; ">
+    <b>Database Shell:</b><a onclick="searchFilterPanel.show()" /><img src="/~~/admin/assets/img/button_star_on_white.gif" alt="Create Filter" /></a><br />
+<textarea class="shell" id="searchbox"></textarea>
+<div style="margin: .5em 0 0 0; text-align: right; ">
+  <img src="/~~/admin/assets/img/button_validate_on_white.gif" onclick="validateSearchbox()" alt="Validate">
+  <img src="/~~/admin/assets/img/button_execute_on_white.gif" onclick="doCommand()" alt="Execute">
+</div>
+</div>
+</if>
 
 

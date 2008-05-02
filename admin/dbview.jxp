@@ -54,14 +54,16 @@ if(!top) {
 
     var i=0;
     var idxes = [];
+    var idxid = [];
     while(i<metarows.length) {
         obj = metarows[i];
         if(metarows[i].name.indexOf("$") > 0) {
             var idx = obj.name.substring(obj.name.indexOf("$")+1);
+            idxid.push(idx);
             var idxList = [];
             while(idx.indexOf("_") >= 0) {
                 idxList.push(idx.substring(0, idx.indexOf("_")));
-                idx = idx.substring(idx.indexOf("_")+2);
+                idx = idx.substring(idx.indexOf("_")+3);
             }
             if(idxList.length > 1)
                 idxes.push("Compound index on "+idxList.join(","));
@@ -71,7 +73,7 @@ if(!top) {
         i++;
     }
     %>
-
+    </script>
 <!--    <div>
 
     <div>
@@ -736,19 +738,11 @@ function getSelectedIndices(separator) {
 }
 
 
-function dropIndices() {
-    tablename = <%= request.ns %>;
+function dropIndex(id) {
     var handleIDrop = function() {
-        var list = getSelectedIndices(",");
-        ajax("action=dropI&ns="+tablename+"&idx="+list, "editDb", function(x) {
-            refreshTable();
-        });
+        ajax("action=dropI&ns=<%= request.ns %>&idx="+id, "editDb", refreshTable);
+        document.getElementById("li"+id).style.display = "none";
         this.hide();
-    }
-    var prettyList = getSelectedIndices(", ");
-    if(prettyList.length == 0) {
-        infoDlg("Drop Indices", "You must check at least one index.");
-        return;
     }
     var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
         { width: "300px",
@@ -757,11 +751,11 @@ function dropIndices() {
         visible: false,
         close: true,
         icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-        text: "Are you sure you want to drop "+prettyList+" from "+tablename+"?",
+        text: "Are you sure you want to drop the index "+id+" from <%= request.ns %>?",
         buttons: [ { text:"Yes", handler:handleIDrop },
         { text:"No", handler:handleNo, isDefault:true } ]
         } );
-    simpledialog1.setHeader("Drop Indices");
+    simpledialog1.setHeader("Drop Index");
     simpledialog1.render("myMarkedUpContainer");
     simpledialog1.show();
 }
@@ -839,6 +833,7 @@ else {
 core.admin.pieces.dbview({ hdr : hdr,
                            introMsg: introMsg,
                            idxes : idxes,
+                           idxid : idxid,
                            validation : validation });
 
 %>
