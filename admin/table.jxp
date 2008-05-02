@@ -255,7 +255,7 @@ else if(request.action == "userssearch"){
     var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
 }
 else if(request.action == "filessearch") {
-    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete"}];
+    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete", name: "Delete"}];
 }
 else {
     var th = [];
@@ -371,6 +371,9 @@ else if(request.action == "userssearch"){
     dbTable.idxes = {};
 }
 else if(request.action == "filessearch") {
+    for(var i=0; i<dbTable.rows.length; i++) {
+        dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteFile(\''+dbTable.rows[i]._id+'\', \''+dbTable.rows[i].filename+'\')" />';
+    }
     dbTable.idxes = {};
 }
 else if(request.action != "searchprofile") {
