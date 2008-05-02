@@ -2,7 +2,7 @@
 core.content.search();
 core.text.text();
 core.media.image();
-core.util.cache();
+core.util.timeoutcache();
 
 function Post(name, title) {
     this.name = name;
