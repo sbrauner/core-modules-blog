@@ -203,8 +203,8 @@ loader.insert({
                     s += obj;
                 }
 
+                pwd = obj.$pwd;
                 if(shellMode == "bash"){
-                    pwd = obj.$pwd;
                     updatePrompt();
                 }
 
