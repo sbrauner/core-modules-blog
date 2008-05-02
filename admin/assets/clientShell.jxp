@@ -30,6 +30,13 @@ var loader = new YAHOO.util.YUILoader();
 loader.insert({
     require: ['fonts', 'dragdrop', 'logger', 'container', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
     base: '/@@/yui/2.5.1/',
+	    skin: {
+	        defaultSkin: "assets/skins/sam",
+	        base: '',
+	        overrides: {
+	            logger: []
+	        }
+	    },
     onSuccess: function(loader) {
         objectList = [];
         loader.objectTreeView = new YAHOO.widget.TreeView("treeview");

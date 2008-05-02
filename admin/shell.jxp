@@ -15,14 +15,21 @@ if( ! session ){
 }
 
 head.addCSS("NOCDN/~~/admin/assets/shell.css");
+head.addCSS("NOCDN/~~/admin/assets/logger.css");
+head.addCSS("NOCDN/~~/admin/assets/logger-skin.css");
  %>
+
+ <!-- Heading and links-table Links -->
+ <h1 style="margin:0;">
+	<div class="links-table"><a href="#" onclick="showHistory()">Show history</a> | <a href="#" onclick="toggleTreeView()"><span id="treeViewShowVerb">Hide</span> object inspector</a></div>
+	<nobr>Shell</nobr>
+ </h1>
+
 <div style="text-align:center;" class="yui-skin-sam">
-     Shell (do not refresh page)<br>
+     <br>
      <div id="console"></div>
      <div id="treeview"></div>
      <div class="clear"></div>
-     <div class="button" onclick="showHistory()">Show history</div> |
-     <div class="button" onclick="toggleTreeView()"><span id="treeViewShowVerb">Hide</span> object inspector</div>
      <div id="history_popup" style="display: none;">
        <div class="hd">History</div>
        <div class="bd">
@@ -36,6 +43,8 @@ head.addCSS("NOCDN/~~/admin/assets/shell.css");
 <script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>
 <script type="text/javascript" src="/@@/dojo/current/dojo/dojo.js"></script>
 <script type="text/javascript" src="NOCDN/~~/admin/assets/interpreter.js"></script>
+	<div class="yui-skin-sam"> 
 <script type="text/javascript">
 <% core.admin.assets.clientShell({user: user, session: session}); %>
 </script>
+	</div>
