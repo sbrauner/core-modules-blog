@@ -54,7 +54,6 @@ Object.extend(admin.data.Bash.prototype, {
             }
         });
         // This sucks, but I apparently need to reload this every command?
-        core.core.file();
         var err;
         if(!File.open(this._pwd).exists()){
             err = "cd: The path " + dir + " does not exist.";
