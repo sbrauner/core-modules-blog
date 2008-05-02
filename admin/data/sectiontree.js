@@ -16,6 +16,7 @@ return {
         'database': {
             'dbview': true,
             'dbprofile': true,
+            'dbshell': true,
         },
         'files': {
         },

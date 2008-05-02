@@ -11,7 +11,7 @@ var collection;
 var ignore= { _ns:1, _save:1, _update:1 };
 
 // Table display options
-var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 10;
+var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 100;
 var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
 var totalNumPages;
 
@@ -92,7 +92,7 @@ if(request.action == "searchprofile") {
     top = false;
 }
 // dbview
-else if(request.action == "search" || request.action == "userssearch") {
+else if(request.action == "search" || request.action == "userssearch" || request.action == "filessearch") {
     collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
     var searchobj = {};
     var tempLive;
@@ -252,17 +252,19 @@ if(top) {
     var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
 }
 else if(request.action == "userssearch"){
-    var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"},
-        {name: "admin", heading: "ADMIN"} ];
+    var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
+}
+else if(request.action == "filessearch") {
+    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete", name: "Delete"}];
 }
 else {
     var th = [];
-    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
+    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", heading: "_id", className: "sort-up" });
     for(var i in fields) {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
-        th.push({"name" : fields[i], className: "" });
+        th.push({"name" : fields[i], heading: fields[i], className: "" });
     }
-    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({heading: "Delete", name: "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
@@ -362,6 +364,15 @@ else if(request.action == "userssearch"){
         if(u.permissions && u.permissions.contains('admin')) u.admin = "yes";
         else u.admin = "no";
         u.name = '<a href="user?_id='+u._id+'">'+u.name+'</a>';
+    }
+    if(dbTable.rows.length == 0) {
+        dbTable.rows = [{name: "No users found.", email: "", admin: ""}];
+    }
+    dbTable.idxes = {};
+}
+else if(request.action == "filessearch") {
+    for(var i=0; i<dbTable.rows.length; i++) {
+        dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteFile(\''+dbTable.rows[i]._id+'\', \''+dbTable.rows[i].filename+'\')" />';
     }
     dbTable.idxes = {};
 }

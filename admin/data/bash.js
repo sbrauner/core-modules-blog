@@ -1,3 +1,5 @@
+core.core.file();
+
 admin.data.Bash = function(){
     this._pwd = "/";
 };
@@ -35,6 +37,7 @@ Object.extend(admin.data.Bash.prototype, {
         assert(dir.length == 1);
         dir = dir[0];
         var t = this;
+        var oldpwd = this._pwd;
         dir.split('/').forEach(function(z){
             if(! z) return;
 
@@ -54,6 +57,20 @@ Object.extend(admin.data.Bash.prototype, {
                 t._pwd += z;
             }
         });
+        // This sucks, but I apparently need to reload this every command?
+        var err;
+        if(!File.open(this._pwd).exists()){
+            err = "cd: The path " + dir + " does not exist.";
+        }
+        else if(!File.open(this._pwd).isDirectory()){
+            err = "cd: The path " + dir + " is not a directory.";
+        }
+
+        if(err){
+            this._pwd = oldpwd;
+            return {out: "", err: err};
+        }
+
         return {out: "", err: ""};
     },
 

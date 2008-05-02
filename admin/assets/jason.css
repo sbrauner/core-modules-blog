@@ -468,11 +468,11 @@ tr.white-main th a, tr.white-main th a:visited {
 	font-weight: bold;
 }
 
-tr.white-main td.error {
+tr.white-main td.error, span.error {
 	color: #ff8c0b;
 }
 
-tr.white-main td.fatal {
+tr.white-main td.fatal, span.fatal {
 	font-weight: bold;
 	color: #d41f1f;
 }
@@ -729,7 +729,7 @@ form.edit textarea {
   width: auto;
 }
 
-form.edit fieldset {
+form.edit fieldset, div.fieldset {
 	width: auto;
   	border: 1px solid #dddddd;
   	padding: 20px 10px;        /* padding in fieldset support spotty in IE */
