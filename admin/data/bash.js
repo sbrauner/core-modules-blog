@@ -1,5 +1,5 @@
 admin.data.Bash = function(){
-    this._pwd = "";
+    this._pwd = "/";
 };
 
 Object.extend(admin.data.Bash.prototype, {
@@ -36,10 +36,12 @@ Object.extend(admin.data.Bash.prototype, {
 
             if(z == '..'){
                 log.admin.data.bash.debug("old pwd " + t._pwd);
-                if(t._pwd == "")
+                if(t._pwd == "/")
                     throw "you cannot escape";
-                else
+                else {
                     t._pwd = t._pwd.replace(/[^\/]*$/, '').replace(/\/$/, '');
+                    if(t._pwd == "") t._pwd = '/';
+                }
                 log.admin.data.bash.debug("new pwd " + t._pwd);
             }
             else {

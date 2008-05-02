@@ -121,7 +121,7 @@ sysexec("mkdir -p testbash/subdir");
 silent(sh.cd(['testbash']));
 
 var inTestbash = function(){
-    assert(sh.pwd().out == "testbash\n" || sh.pwd().out == "testbash/\n");
+    assert(sh.pwd().out == "/testbash\n" || sh.pwd().out == "/testbash/\n");
 };
 
 // Prove that you can't cd out using an absolute path
@@ -129,6 +129,7 @@ silent(sh.cd(['/']));
 
 inTestbash();
 
+// ignore bonus slashes
 silent(sh.cd(['//..////testbash//']));
 
 inTestbash();

@@ -6,10 +6,10 @@ var session = opts.session;
 // FIXME: this screws up the prompts shown in the transcript; they could have
 // been different in the past
 var userPrompt = <%= tojson((user.shell ? user.shell.prompt : "") || "js>") %>;
-var pwd = "";
+var pwd = "/";
 var getUserPrompt = function(type){
     type = type || shellMode;
-    return {'js': userPrompt, 'bash': pwd + '$'}[type];
+    return {'js': userPrompt, 'bash': pwd + ' $'}[type];
 };
 var HTMLEscape = function(s){
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
