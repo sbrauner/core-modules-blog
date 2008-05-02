@@ -44,7 +44,7 @@ Object.extend(admin.data.Bash.prototype, {
             if(z == '..'){
                 log.admin.data.bash.debug("old pwd " + t._pwd);
                 if(t._pwd == "/")
-                    throw "you cannot escape";
+                    return {out :"", err:""};
                 else {
                     t._pwd = t._pwd.replace(/[^\/]*$/, '').replace(/\/$/, '');
                     if(t._pwd == "") t._pwd = '/';
