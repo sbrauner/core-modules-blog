@@ -1,0 +1,16 @@
+10gen Shell Commands : 
+  
+ls [-al]       : show files in current directory
+rm file        : remove a file
+mv file1 file2 : move a file
+cp file1 file2 : copy a file
+git ...        : git command line (see http://<git URL>)
+diff f1 f2     : show diff between two files
+cat f          : show contents of file
+head f         : show top N lines of file <f>
+tail f         : show last N lines of file <f>
+date           : show current date and time
+grep p f       : find all instances of pattern <p> in <f>
+pwd            : print current directory
+help           : this help information
+/              : toggle between javascript and shell mode

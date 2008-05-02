@@ -4,8 +4,12 @@ admin.data.Bash = function(){
 
 Object.extend(admin.data.Bash.prototype, {
 
+	getCmdArray : function() { 
+        return ['ls', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep', 'pwd', 'help'];
+	},
+
     handle: function(cmd, files){
-        var commands = ['ls', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep', 'pwd'];
+        var commands = this.getCmdArray();
         assert(commands.contains(cmd));
         files = files || [];
         this._validate(files);
@@ -93,6 +97,9 @@ Object.extend(admin.data.Bash.prototype, {
     },
     pwd: function(files){
         return {out: this._pwd + '\n', err: ""};
+    },
+    help: function(files){
+        return {out: Ext.asString(core.admin.data.bash_help) + '\n', err: ""};
     },
 });
 
