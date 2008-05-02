@@ -7,8 +7,9 @@ pre.inline {
 }
 
 .prompt {
-    color: #184597;
+    color: #222222;
     margin-right: .75em;
+	font-family: monospace;
 }
 
 .pastprompt {
@@ -62,6 +63,7 @@ pre.inline {
 #console .scratchtext {
 	border:1px solid #aaa !important;
     margin-top: 6px;
+	padding: 5px;
     width: 100%;
     height: 0; /* resized dynamically */
     border: 0px;
