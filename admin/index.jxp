@@ -31,7 +31,6 @@ var sectionMap = {
 
     'statistics' : ['system', 'statistics', 'usage'],
     'usage' : ['system', 'statistics', 'usage'],
-    'analytics' : ['system', 'statistics', 'analytics'],
 
     'users': ['system', 'users'],
     'user': ['system', 'users'],

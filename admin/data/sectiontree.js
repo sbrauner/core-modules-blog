@@ -11,7 +11,6 @@ return {
     'system': {
         'statistics' : {
             'usage': true,
-            'analytics': true,
         },
         'users': {},
         'database': {
