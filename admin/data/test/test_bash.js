@@ -116,8 +116,7 @@ fileCorrect('file3', 'testbash/file1');
 
 assertThrows(function(){ sh.cd(['../..']); });
 
-// Prove that you can't cd out using an absolute path
-silent(sh.cd(['/']));
+sysexec("mkdir -p testbash/subdir");
 
 silent(sh.cd(['testbash']));
 
@@ -125,9 +124,19 @@ var inTestbash = function(){
     assert(sh.pwd().out == "testbash\n" || sh.pwd().out == "testbash/\n");
 };
 
+// Prove that you can't cd out using an absolute path
+silent(sh.cd(['/']));
+
 inTestbash();
 
 silent(sh.cd(['//..////testbash//']));
+
+inTestbash();
+
+silent(sh.cd(['..']));
+silent(sh.cd(['testbash/subdir']));
+
+silent(sh.cd(['../../testbash']));
 
 inTestbash();
 
@@ -142,6 +151,8 @@ inTestbash();
 assertThrows(function(){ sh.rm(['./..']); });
 
 inTestbash();
+
+
 
 // valid filenames
 var foo = sh.ls(['..foo']);
