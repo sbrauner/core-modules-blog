@@ -363,6 +363,9 @@ else if(request.action == "userssearch"){
         else u.admin = "no";
         u.name = '<a href="user?_id='+u._id+'">'+u.name+'</a>';
     }
+    if(dbTable.rows.length == 0) {
+        dbTable.rows = [{name: "No users found.", email: "", admin: ""}];
+    }
     dbTable.idxes = {};
 }
 else if(request.action != "searchprofile") {
