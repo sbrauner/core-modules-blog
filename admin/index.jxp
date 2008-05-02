@@ -38,6 +38,7 @@ var sectionMap = {
     'database': ['system', 'database', 'dbview'],
     'dbview': ['system', 'database', 'dbview'],
     'dbprofile': ['system', 'database', 'dbprofile'],
+    'dbshell' : ['system', 'database', 'dbshell'],
 
     'files': ['system', 'files'],
     'cron': ['system', 'cron'],
