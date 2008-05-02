@@ -28,7 +28,6 @@ if ( u && request.action == "save"){
    }
 
    if ( request.p1 && request.p1.length != 0 ){
-       log("Got a password " + request.p1 + " " + request.p2);
 	if ( request.p1 == request.p2 )
 	   u.setPassword( request.p1 )
        else {
