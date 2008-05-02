@@ -1,22 +1,61 @@
-<form action="/~~/admin/user.jxp"> &nbsp; <input type="submit" value="New User"></form>
-<p>
 <%
-
- var tab = new htmltable( 
-  { 
-   ns : db.users ,
-   cols : [
-     { name: "name", isLink: true, searchWidth: 50 },
-     { name: "email" } ,
-     { name: "permissions" , heading : "admin" , 
-	     view : function(x,z){ return z.isAdmin() ? "<b>yes</b>" : ""; },
-	     queryForm: function(x) { return x=="yes" ? "admin" : null; }
-     }
-   ],
-   detailUrl : "/~~/admin/user.jxp?_id=" ,
-   searchable: true
-  }
-  );
-
- tab.dbview( tab.find().sort({ts:-1}) );
+request.ns = "users";
+request.action = "userssearch";
+fields = [];
 %>
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
+  <nobr>USERS</nobr>
+</h1>
+
+<p>10gen provides built-in support for user management, authentication, and access control.</p> 
+<div id="myCollection">
+<%
+core.admin.table();
+%>
+</div>
+<script type="text/javascript">
+var lastSearch = "";
+
+var currentPage = 1;
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    refreshTable();
+}
+
+function refreshTable(passData){
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    ajax("ns=users&action=userssearch&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+
+        var column = document.getElementById("thlink"+currentSort.col);
+        column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
+    });
+}
+
+var currentSort = { col : '<%= top ? 'name' : ((fields.indexOf('_id') != -1) ? '_id' : fields[0]) %>', dir: 1 };
+function sortBy(col) {
+    if(currentSort.col == col)
+        currentSort.dir = -1 * currentSort.dir;
+    else
+        currentSort.dir = 1;
+    currentSort.col = col;
+
+    refreshTable();
+}
+
+
+function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    refreshTable();
+}
+
+function getSearchArgs() {
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
+}
+
+</script>

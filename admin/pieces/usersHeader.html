@@ -1,0 +1,47 @@
+<%
+
+var search = obj.search;
+var th = obj.th;
+var colspan = obj.colspan;
+
+%>
+
+<table width="100%" border="0">
+  <col />
+  <forin i th>
+    <col id="col$th[i].name" />
+  </forin>
+  <col />
+
+  <tr class="search-top">
+    <td class="left">&nbsp;</td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td colspan="$colspan">
+
+      <!-- Search -->
+      <if (search)>
+        <ul>
+          <li><select id="searchopt">
+              <forin i th>
+	        <option value="$th[i].name"><%= th[i].heading || th[i].name %></option>
+              </forin>
+	    </select>
+          </li>
+          <li><input class="text" id="searchtext" size="40" value="" type="text"></li>
+          <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
+          <li style="float:right;"><div><a href="user">New User</a></div></li>
+        </ul>
+      </if>
+
+    </td>
+    <td class="right">&nbsp;</td>
+  </tr>
+
+  <!-- White table -->
+  <tr class="white-top">
+    <!-- Top area -->
+    <td class="left"><img src="images/transparent.gif" width="14" height="1"></td>
+    <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
+    <td class="middle" colspan="$colspan">&nbsp;</td>
+    <td class="right"><img src="images/transparent.gif" width="14" height="1"></td>
+  </tr>

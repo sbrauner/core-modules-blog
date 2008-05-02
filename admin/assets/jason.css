@@ -311,6 +311,10 @@ td.maincontent tr.search-top td {
 	padding:0;
 }
 
+td.maincontent tr.search-top a {
+	font-size: 12px;
+}
+
 td.maincontent tr.empty td {
 	font-size: 4px;
 }
