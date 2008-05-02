@@ -344,7 +344,7 @@ function createIndex() {
           visible: false,
           close: true,
           text: "Select fields for the new index: "+idx,
-        buttons: [ { text:"Yes", handler: _createIndex }, { text:"No", handler:handleNo, isDefault:true } ]
+        buttons: [ { text:"Create", handler: _createIndex }, { text:"No", handler:handleNo, isDefault:true } ]
         } );
     simpledialog1.setHeader("Ensure Index");
     simpledialog1.render("myMarkedUpContainer");
@@ -425,6 +425,11 @@ function saveRow() {
         refreshTable();
     });
     editRowPanel.hide();
+}
+
+function refreshSearch() {
+    lastSearch = "";
+    refreshTable();
 }
 
 // Save a new value
