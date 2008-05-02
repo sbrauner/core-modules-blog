@@ -67,6 +67,7 @@ pre.inline {
     width: 100%;
     height: 0; /* resized dynamically */
     border: 0px;
+	font-size: 12px;
 }
 
 #history_popup .bd {

@@ -54,6 +54,7 @@ version: 2.5.1
 .yui-skin-sam .yui-log .window { background-color:#F2E886; } /* F2E886 tan */
 
 #consolebody {
+	font-size: 12px; 
 	width: 98%;
 	padding: .9%;
 }
