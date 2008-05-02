@@ -447,7 +447,7 @@ Object.extend(git.Repo.prototype, {
             }
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
-                if(! name) throw ("holy crap, failed to parse " + statlines[i]);
+                if(! exec) throw ("holy crap, failed to parse " + statlines[i]);
                 file = {name: exec[1]};
             }
 
