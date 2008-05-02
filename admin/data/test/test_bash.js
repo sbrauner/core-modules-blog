@@ -122,9 +122,7 @@ silent(sh.cd(['/']));
 silent(sh.cd(['testbash']));
 
 var inTestbash = function(){
-    var foo = sh.ls();
-    assert(foo.out == 'file3\nlongfile\n');
-    assert(foo.err == "");
+    assert(sh.pwd().out == "testbash\n" || sh.pwd().out == "testbash/\n");
 };
 
 inTestbash();
