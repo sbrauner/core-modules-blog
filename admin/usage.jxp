@@ -18,21 +18,21 @@ function doRound( date , t ){
 
 function getTotalByteArray(cursor, t,min) {
     cursor.sort( { ts : 1 } );
-    
+
     var lastTS = null;
     var a = [];
-    
+
     var last = null;
 
-    cursor.forEach( function( z ){ 
+    cursor.forEach( function( z ){
 	    //assert( lastTS == null || lastTS <= z.ts );
 	    lastTS = z.ts;
-	
+
             var n = doRound( z.ts , t );
-            
+
             if ( ! last || ( n.getTime() != last.getTime()  ) )
                 a.push( { time : n , num : 0 } );
-            
+
             a[a.length - 1 ].num += z.num;
             last = n;
         } );
@@ -45,21 +45,21 @@ function getTotalByteArray(cursor, t,min) {
 
     return a;
 };
-	    
-	    
+
+
 function getMinutes( t ){
     if ( t == "h" )
 	return 60;
-    
+
     if ( t == "d" )
 	return  60 * 24;
-    
+
     if ( t == "w" )
 	return  60 * 24 * 7;
-    
+
     if ( t == "m" )
-	return 60 * 24 * 30;    
-    
+	return 60 * 24 * 30;
+
     return 5;
 };
 
@@ -68,14 +68,14 @@ function getMinutes( t ){
 */
 function mungeData( cursor , t , startTime ){
     var a = getTotalByteArray(cursor, t);
-    
+
     var minutes = getMinutes( t );
 
     // convert sums to per second
     a = a.map( function( z ){
 		   return { time : z.time , num : z.num / ( minutes * 60 ) };
 	       } );
-    
+
     var msDiff = minutes * 60 * 1000;
 
     while ( a[0].time.getTime() > ( startTime.getTime() + 5000 ) ){
@@ -89,34 +89,37 @@ function mungeData( cursor , t , startTime ){
 	    n.push( a[i] );
 	    continue;
 	}
-	
+
 	var cur = a[i-1].time;
 	while ( ( cur.getTime() + msDiff + 5000  ) < a[i].time.getTime() ){
 	    cur = new Date( cur.getTime() + msDiff );
 	    a.push( { time : cur , num : 0 } );
 	}
-	
+
 	n.push( a[i] );
     }
     a = n;
     return a;
-    
+
 }
 
 /**
  * @param limit 5 minute chunks to go back
  */
 function go( type , limit , t , header ){
+    // we have to multiply by 1000 by adding "000" and parsing, or it will overflow
+    var lim = parseInt((limit*5*60)+"000");
     var dt = new ui.chart.DateTime();
-    
-    var start = new Date();
-    start = new Date( start.getTime() - ( limit * 5 * 60 * 1000 ) );
+
+    var now = new Date();
+    var start = new Date( now.getTime() - ( lim ) );
     start = doRound( start , t );
-    
+
     var coll = db._system.usage[type];
     coll.ensureIndex( { ts : 1 } );
 
     data = mungeData( coll.find( { ts : gte(start) } ) , t , start );
+
     data.forEach( function( z ){
 		      dt.add( z.time , z.num  );
 		  } );
@@ -131,7 +134,7 @@ function doAllTypes( limit , t ){
     types.forEach( function(z){
 		       go( z , limit , t );
 		   } );
-    
+
 }
 
 function formatBytes(bytes) {
@@ -142,7 +145,7 @@ function formatBytes(bytes) {
     suffix = [" bytes", " KB", " MB", "GB", " TB", " PB", " EB", " ZB", " YB"];
     var i = 0;
     while( bytes >= 10000 ) {
-	bytes = bytes / 1000;     
+	bytes = bytes / 1000;
 	i++;
     }
     return bytes.toFixed(2) + suffix[i];
@@ -160,10 +163,10 @@ function formatMillis(millis) {
 
 
 function threeMonthSummary(limit, t) {
-    
+
     data_i = getTotalByteArray( db._system.usage.bytes_in.find().limit( limit ) , t , 3 ).reverse();
     data_o = getTotalByteArray( db._system.usage.bytes_out.find().limit( limit ) , t , 3 ).reverse();
-    millis = getTotalByteArray( db._system.usage.cpu_millis.find().limit( limit ) , t , 3 ).reverse(); 
+    millis = getTotalByteArray( db._system.usage.cpu_millis.find().limit( limit ) , t , 3 ).reverse();
 
 
     var sum = [];
@@ -182,17 +185,17 @@ function threeMonthSummary(limit, t) {
     for(i = 0;  i<3; i++) {
 	m_index =  (month-1-i < 0) ? ( month + (12 - (i+1)) ) : (month - 1 - i);
 	print("<tr><td>"+m_names[m_index]+"</td>");
-	
+
 	// so... if there is data for the month, check that the month doesn't wrap around to the previous year (month-1-i >= 0)
 	// ("month" starts at 1:January and goes to 12:December)
 	// if it "crosses" the year, it is (month+(12-(i+1))), otherwise it is just month-1-i.
-	
+
 	if(i<sum.length) {
 	    print("<td>"+formatBytes(data_i[i].num)+"</td>");
 	    print("<td>"+formatBytes(data_o[i].num)+"</td>");
 	    print("<td>"+formatBytes(sum[i])+"</td>");
 	    print("<td>"+formatMillis(millis[i].num)+"</td>");
-	    
+
 	    total.b_in += data_i[i].num;
 	    total.b_out += data_o[i].num;
 	    total.io += sum[i];
@@ -204,10 +207,10 @@ function threeMonthSummary(limit, t) {
 	    print("<td>0 bytes</td>");
 	    print("<td>0 ms</td>");
 	}
-	
+
 	print("</tr>");
     }
-    
+
     print("<tr style=\"border-top:2px solid black;\"><td>Total</td><td>"+formatBytes(total.b_in)+"</td><td>"+formatBytes(total.b_out)+"</td><td>"+formatBytes(total.io)+"</td><td>"+formatMillis(total.millis)+"</td></tr></table>");
 
 }
@@ -215,7 +218,7 @@ function threeMonthSummary(limit, t) {
 %>
 <table>
   <tr>
-    
+
     <td>
       <h1>Last 36 hours</h1>
       <%  doAllTypes( 12 * 36 ); %>
