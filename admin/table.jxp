@@ -361,6 +361,7 @@ else if(request.action == "userssearch"){
         var u = dbTable.rows[i];
         if(u.permissions && u.permissions.contains('admin')) u.admin = "yes";
         else u.admin = "no";
+        u.name = '<a href="user?_id='+u._id+'">'+u.name+'</a>';
     }
     dbTable.idxes = {};
 }
