@@ -181,7 +181,49 @@ function threeMonthSummary(limit, t) {
     var start = new Date();
     var month = start.getMonth();
 
-    print("<table><tr><th>Month</th><th>Bytes In</th><th>Bytes Out</th><th>Total Bytes</th><th>CPU Milliseconds</th></tr>");
+    var th = [{name: "Month"}, {name: "Bytes In"}, {name:"Bytes Out"}, {name:"Total Bytes"}, {name: "CPU Milliseconds"}];
+
+    var table = {rows: []};
+    for(i = 0;  i<3; i++) {
+	m_index =  (month-1-i < 0) ? ( month + (12 - (i+1)) ) : (month - 1 - i);
+        table.rows[i] = [];
+	table.rows[i].push(m_names[m_index]);
+
+	// so... if there is data for the month, check that the month doesn't wrap around to the previous year (month-1-i >= 0)
+	// ("month" starts at 1:January and goes to 12:December)
+	// if it "crosses" the year, it is (month+(12-(i+1))), otherwise it is just month-1-i.
+
+	if(i<sum.length) {
+	    table.rows[i].push(formatBytes(data_i[i].num));
+	    table.rows[i].push(formatBytes(data_o[i].num));
+	    table.rows[i].push(formatBytes(sum[i]));
+	    table.rows[i].push(formatMillis(millis[i].num));
+
+	    total.b_in += data_i[i].num;
+	    total.b_out += data_o[i].num;
+	    total.io += sum[i];
+	    total.millis += millis[i].num;
+	}
+	else {
+	    table.rows[i].push("0 bytes");
+	    table.rows[i].push("0 bytes");
+	    table.rows[i].push("0 bytes");
+	    table.rows[i].push("0 ms");
+	}
+    }
+    table.rows[3] = [];
+    table.rows[3].push("Total");
+    table.rows[3].push(formatBytes(total.b_in));
+    table.rows[3].push(formatBytes(total.b_out));
+    table.rows[3].push(formatBytes(total.io));
+    table.rows[3].push(formatMillis(total.millis));
+
+    core.admin.pieces.tableHeader({th: th, search: false, colspan: th.length});
+    core.admin.pieces.usageBody({th: th, table: table});
+    core.admin.pieces.tableFooter({page: [], colspan: th.length});
+
+
+/*    print("<table><tr><th>Month</th><th>Bytes In</th><th>Bytes Out</th><th>Total Bytes</th><th>CPU Milliseconds</th></tr>");
     for(i = 0;  i<3; i++) {
 	m_index =  (month-1-i < 0) ? ( month + (12 - (i+1)) ) : (month - 1 - i);
 	print("<tr><td>"+m_names[m_index]+"</td>");
@@ -210,8 +252,8 @@ function threeMonthSummary(limit, t) {
 
 	print("</tr>");
     }
-
-    print("<tr style=\"border-top:2px solid black;\"><td>Total</td><td>"+formatBytes(total.b_in)+"</td><td>"+formatBytes(total.b_out)+"</td><td>"+formatBytes(total.io)+"</td><td>"+formatMillis(total.millis)+"</td></tr></table>");
+*/
+//    print("<tr style=\"border-top:2px solid black;\"><td>Total</td><td>"+formatBytes(total.b_in)+"</td><td>"+formatBytes(total.b_out)+"</td><td>"+formatBytes(total.io)+"</td><td>"+formatMillis(total.millis)+"</td></tr></table>");
 
 }
 
