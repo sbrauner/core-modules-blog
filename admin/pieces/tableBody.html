@@ -1,13 +1,15 @@
 <%
 
+var th = obj.th;
 var table = obj.table;
+var fields = obj.fields;
 
 %>
 
 <tr class="white-main">
   <td class="left">&nbsp;</td>
   <forin i th>
-    <th>$th[i].name</th>
+    <th>$th[i].heading</th>
   </forin>
   <td class="right">&nbsp;</td>
 </tr>
@@ -15,9 +17,16 @@ var table = obj.table;
 <forin i table.rows>
   <tr class="white-main">
     <td class="left">&nbsp;</td>
-    <forin j table.rows[i]>
-      <td>$table.rows[i][j]</td>
-    </forin>
+    <if (fields)>
+      <forin j fields>
+        <td>$table.rows[i][fields[j]]</td>
+      </forin>
+    </if>
+    <if (!fields)>
+      <forin j table.rows[i]>
+        <td>$table.rows[i][j]</td>
+      </forin>
+    </if>
     <td class="right">&nbsp;</td>
   </tr>
 </forin>

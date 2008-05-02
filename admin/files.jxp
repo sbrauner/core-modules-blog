@@ -1,3 +1,9 @@
+<h1 style="margin:0;">
+  <nobr>Upload Files</nobr>
+</h1>
+
+<p>Upload local files to your 10gen account.</p>
+
 <%
 head.addCSS("/@@/yui/current/container/assets/skins/sam/container.css");
 head.addCSS("button/assets/skins/sam/button.css");
@@ -7,7 +13,6 @@ head.push('<script type="text/javascript" src="/@@/yui/current/element/element-b
 head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js" ></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
 
-log.file.info(tojson(request));
 var theFile = request.getFile( "theFile" );
 if ( theFile ){
     db._files.save( theFile );
@@ -26,6 +31,40 @@ db._files.ensureIndex( { uploadDate : 1 } );
 </form>
 
 <script type="text/javascript">
+
+var lastSearch = "";
+
+var currentPage = 1;
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    refreshTable();
+}
+
+function refreshTable(passData){
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    ajax("ns=admin._files&action=filessearch&currentPage="+currentPage+"&"+passData+lastSearch, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+
+function clearSearch() {
+    lastSearch = "";
+    refreshTable();
+}
+
+function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    refreshTable();
+}
+
+function getSearchArgs() {
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
+}
+
 function deleteFile(id, name) {
     var handleNo = function() {
         this.hide();
@@ -51,6 +90,7 @@ function deleteFile(id, name) {
 </script>
 
 
+<div id="myCollection">
 <%
 
 if ( "Delete" == request.action ){
@@ -71,12 +111,14 @@ if ( "Delete" == request.action ){
 }
 
 
-var th = ["Filename", "Upload Date", "Content Type", "Size", "Delete"];
+var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete"}];
 var table = {};
 table.rows = db._files.find().sort( { uploadDate : 1 }).toArray();
 var fields = ["filename", "uploadDate", "contentType", "length"];
 
-core.admin.pieces.files({th : th, table: table, fields: fields, colspan: th.length});
+request.ns = "admin._files";
+request.action = "filessearch";
+core.admin.table({th: th});
 
 %>
-
+</div>

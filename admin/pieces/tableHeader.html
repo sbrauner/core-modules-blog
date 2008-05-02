@@ -23,13 +23,14 @@ var colspan = obj.colspan;
         <ul>
           <li><select id="searchopt">
               <forin i th>
-	        <option value="$th[i].name">$th[i].name</option>
+                <if (th[i].name)>
+	          <option value="$th[i].name">$th[i].heading</option>
+                </if>
               </forin>
 	    </select>
           </li>
           <li><input class="text" id="searchtext" size="40" value="" type="text"></li>
           <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
-          <li><img src="/~~/admin/assets/img/button_add_on_tan.gif" alt="Add to Search" onclick="addToSearch()"></li>
           <li style="float:right;"><div><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()"></div></li>
         </ul>
       </if>
