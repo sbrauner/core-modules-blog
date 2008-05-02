@@ -1,11 +1,11 @@
 admin.data.Bash = function(){
-    this._pwd = "";
+    this._pwd = "/";
 };
 
 Object.extend(admin.data.Bash.prototype, {
 
     handle: function(cmd, files){
-        var commands = ['ls', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep'];
+        var commands = ['ls', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep', 'pwd'];
         assert(commands.contains(cmd));
         files = files || [];
         this._validate(files);
@@ -35,9 +35,14 @@ Object.extend(admin.data.Bash.prototype, {
             if(! z) return;
 
             if(z == '..'){
-                if(t._pwd == "")
+                log.admin.data.bash.debug("old pwd " + t._pwd);
+                if(t._pwd == "/")
                     throw "you cannot escape";
-                else t._pwd = t._pwd.replace(/[^\/]*$/, '');
+                else {
+                    t._pwd = t._pwd.replace(/[^\/]*$/, '').replace(/\/$/, '');
+                    if(t._pwd == "") t._pwd = '/';
+                }
+                log.admin.data.bash.debug("new pwd " + t._pwd);
             }
             else {
                 if(t._pwd && t._pwd[t._pwd.length-1] != '/')
@@ -85,6 +90,9 @@ Object.extend(admin.data.Bash.prototype, {
     },
     grep: function(files){
         return this.handle('grep', files);
+    },
+    pwd: function(files){
+        return {out: this._pwd + '\n', err: ""};
     },
 });
 

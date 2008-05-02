@@ -128,7 +128,7 @@ finally{
 }
 
 res = { $ : res, $printed : buffer.getBuffer(), $exception : exc,
-        $scope: Object.extend({}, theScope)};
+        $scope: Object.extend({}, theScope), $pwd: theScope.sh.pwd().out.trim()};
 print( tojson( res ) );
 
 if(request.save == "true"){
