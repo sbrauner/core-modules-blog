@@ -422,6 +422,10 @@ if(request.action == "searchprofile") {
     core.admin.pieces.tableHeader({search: false, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbprofileBody({table: dbTable, th: th});
 }
+if(request.action == "userssearch"){
+    core.admin.pieces.usersHeader({search: true, th: th, colspan: dbTable.colspan});
+    core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});
+}
 else {
     core.admin.pieces.tableHeader({search: true, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});

@@ -3,8 +3,12 @@ request.ns = "users";
 request.action = "userssearch";
 fields = [];
 %>
-<form action="/~~/admin/user.jxp"> &nbsp; <input type="submit" value="New User"></form>
-<p>
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
+  <nobr>USERS</nobr>
+</h1>
+
+<p>10gen provides built-in support for user management, authentication, and access control.</p> 
 <div id="myCollection">
 <%
 core.admin.table();
