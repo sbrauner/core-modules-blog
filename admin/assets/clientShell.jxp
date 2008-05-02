@@ -197,10 +197,10 @@ loader.insert({
                 }
 
                 if(msg.category != 'response-noret'){
-                    obj = obj["$"];
-                    if(obj instanceof Function) obj = string(obj.toString());
-                    else obj = string(dojo.toJson(obj));
-                    s += obj;
+                    var ret = obj["$"];
+                    if(obj instanceof Function) ret = string(ret.toString());
+                    else ret = string(dojo.toJson(ret));
+                    s += ret;
                 }
 
                 pwd = obj.$pwd;
