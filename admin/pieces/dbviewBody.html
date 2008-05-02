@@ -16,7 +16,7 @@ var th = obj.th;
           <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
         </if>
         <if (table.idxes[th[i].name])>
-          <a onclick="sortBy('$th[i].name')" id="thlink$th[i].name"><%= th[i].heading || $th[i].name %></a>
+          <a onclick="sortBy('$th[i].name')" id="thlink$th[i].name"><%= th[i].heading || th[i].name %></a>
           <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
         </if>
         <if (!(top && th[i].name == "NAME") && !table.idxes[th[i].name])>
