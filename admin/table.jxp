@@ -259,12 +259,12 @@ else if(request.action == "filessearch") {
 }
 else {
     var th = [];
-    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
+    if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", heading: "_id", className: "sort-up" });
     for(var i in fields) {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
-        th.push({"name" : fields[i], className: "" });
+        th.push({"name" : fields[i], heading: fields[i], className: "" });
     }
-    if(request.action != "searchprofile") th.push({"name": "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({heading: "Delete", name: "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';

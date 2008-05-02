@@ -1,0 +1,98 @@
+<%
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+head.addCSS("/@@/yui/current/container/assets/skins/sam/container.css");
+head.addCSS("button/assets/skins/sam/button.css");
+head.addScript("NOCDN/~~/admin/assets/interpreter.js");
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
+core.content.html();
+%>
+
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
+  <nobr>Database Shell</nobr>
+</h1>
+
+<p class="abstract">Run a command and see the output in the table below.</p>
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+</div>
+
+<div class="abstract" style="margin: 0 5px 1em 0; clear: both; ">
+  <b>Database Shell:</b><br />
+<textarea class="shell" id="searchbox"></textarea>
+<div style="margin: .5em 0 0 0; text-align: right; ">
+  <img src="/~~/admin/assets/img/button_validate_on_white.gif" onclick="validateSearchbox()" alt="Validate">
+  <img src="/~~/admin/assets/img/button_execute_on_white.gif" onclick="doCommand()" alt="Execute">
+</div>
+</div>
+
+<script>
+
+function infoDlg(hd, msg) {
+    var simpledialog1 = new YAHOO.widget.SimpleDialog("dropTableDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: msg,
+        buttons: [ { text:"OK", handler:handleNo, isDefault:true } ]
+        } );
+    simpledialog1.setHeader(hd);
+    simpledialog1.render("myMarkedUpContainer");
+    simpledialog1.show();
+}
+
+function validateSearchbox() {
+    /* external function checkRun matches parens */
+    if(checkRun(document.getElementById("searchbox").value))
+        infoDlg("Syntax Validation", "Syntax ok.");
+    else
+        infoDlg("Syntax Validation", "Syntax Error.");
+}
+
+function doCommand() {
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+
+function refreshTable(passData){
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&"+passData+lastSearch, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+function clearSearch() {
+    document.getElementById("searchtext").value = "";
+    document.getElementById("searchbox").value = "";
+    document.getElementById("searchopt").options[0].selected = true;
+    currentSearch = {};
+    lastSearch = "";
+    refreshTable();
+}
+
+var handleNo = function() {
+    this.hide();
+}
+
+var currentPage = 1;
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    refreshTable();
+}
+
+
+</script>
+
+<div id="myCollection">
+<%
+core.admin.table();
+%>
+</div>
