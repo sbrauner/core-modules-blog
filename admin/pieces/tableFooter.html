@@ -17,7 +17,7 @@ var nextPage = obj.nextPage;
     <td class="right">&nbsp;</td>
   </tr>
   <!-- Paging -->
-  <tr class="paging-bottom">
+  <tr class="paging-bottom <%= page.length <= 1 ? "empty" : ""%>">
     <td class="left">&nbsp;</td>
     <!-- *COLSPAN MUST EQUAL NUMBER OF CENTER COLUMNS -->
     <td colspan="$colspan">
