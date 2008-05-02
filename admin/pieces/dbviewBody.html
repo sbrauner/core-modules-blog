@@ -32,11 +32,7 @@ var th = obj.th;
       <tr class="white-main">
         <td class="left">&nbsp;</td>
         <td><a href="$table.rows[row].url&refPage=$table.currentPage">$table.rows[row].name</a></td>
-        <td>$table.rows[row].index
-          <if (table.rows[row].index != "")>
-	    <br /><input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropIndices('$table.rows[row].name')">
-          </if>
-        </td>
+        <td>$table.rows[row].index</td>
         <td class="center">$table.rows[row].fixed</td>
         <td class="center">
 	  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">

@@ -1,4 +1,4 @@
-<% 
+<%
 if(request.action == "cancel"){
     return response.sendRedirectTemporary("/~~/admin/users");
 }
@@ -15,12 +15,12 @@ if ( u && request.action == "save"){
 
    var adm = u.permissions&&u.permissions.contains("admin");
 
-   if( adm && !(request.perm == 'admin') ) { 
+   if( adm && !(request.perm == 'admin') ) {
        print("<br>revoke admin<br>");
        if( u.permissions.length>1 ) print("can't revoke, mult permissions, not implemented<br>");
        else u.permissions = [];
    }
-   if( !adm && request.perm == 'admin' ) { 
+   if( !adm && request.perm == 'admin' ) {
        print("<br>make admin<br>");
        if( !u.permissions ) u.permissions = [];
        u.permissions.push("admin");
@@ -29,10 +29,10 @@ if ( u && request.action == "save"){
    if ( request.p1 && request.p1.length != 0 ){
 	if ( request.p1 == request.p2 )
 	   u.setPassword( request.p1 )
-	else 
+	else
 	   print( "passwords don't match" );
    }
-    
+
     var newUser;
     if ( ! u._id ) {
         newUser = true;
@@ -43,13 +43,13 @@ if ( u && request.action == "save"){
         response.sendRedirectTemporary("/~~/admin/users");
     }
 }
-	
+
 print.setFormObject( u );
 %>
 <!-- Heading and links-table Links -->
 <h1 style="margin:0;">
   <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
-  <nobr><%= request._id ? "EDIT USER" : "NEW USER" %></nobr>
+  <nobr><%= request._id ? "Edit User" : "New User" %></nobr>
 </h1>
 
 <p>10gen provides built-in support for user management, authentication, and access control.</p>
@@ -64,7 +64,7 @@ print.setFormObject( u );
     <label>Nickname</label>
     <input class="text" type="text" name="nickname"><br />
     <label></label>
-    <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br /> 
+    <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br />
     <label>New Password</label>
     <input class="text" type="password" name="p1"> (Leave blank to leave unchanged)<br />
     <label>Re-enter Password</label>
