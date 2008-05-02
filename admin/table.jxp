@@ -92,7 +92,7 @@ if(request.action == "searchprofile") {
     top = false;
 }
 // dbview
-else if(request.action == "search") {
+else if(request.action == "search" || request.action == "userssearch") {
     collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
     var searchobj = {};
     var tempLive;
@@ -252,6 +252,10 @@ if(top) {
     var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
    var th = [ {name : "NAME", className: "sort-down"}, {name : "INDICES" }, {name : "CAPPED", className: "center"}, {name:"STATS", className: "center"}, {name:"DROP COLLECTION", className: "center" } ];
 }
+else if(request.action == "userssearch"){
+    var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"},
+        {name: "admin", heading: "ADMIN"} ];
+}
 else {
     var th = [];
     if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", className: "sort-up" });
@@ -352,6 +356,14 @@ if(top) {
         dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
     }
+}
+else if(request.action == "userssearch"){
+    for(var i = 0; i < dbTable.rows.length; ++i){
+        var u = dbTable.rows[i];
+        if(u.permissions && u.permissions.contains('admin')) u.admin = "yes";
+        else u.admin = "no";
+    }
+    dbTable.idxes = {};
 }
 else if(request.action != "searchprofile") {
     // get any indices for the collection
