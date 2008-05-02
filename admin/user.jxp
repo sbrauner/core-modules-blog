@@ -9,6 +9,7 @@ if ( request._id )
 else
 	u = new User();
 if ( u && request.action == "save"){
+    var problem = false;
    u.name = request.name;
    u.email = request.email;
    u.nickname = request.nickname;
@@ -27,10 +28,12 @@ if ( u && request.action == "save"){
    }
 
    if ( request.p1 && request.p1.length != 0 ){
+       log("Got a password " + request.p1 + " " + request.p2);
 	if ( request.p1 == request.p2 )
 	   u.setPassword( request.p1 )
-	else
-	   print( "passwords don't match" );
+       else {
+           problem = "passwords don't match";
+       }
    }
 
     var newUser;
@@ -38,9 +41,14 @@ if ( u && request.action == "save"){
         newUser = true;
     }
 
-   db.users.save( u );
-    if(newUser){
-        response.sendRedirectTemporary("/~~/admin/users");
+    if(! problem){
+        try {
+            db.users.save( u );
+            response.sendRedirectTemporary("/~~/admin/users");
+        }
+        catch(e){
+            problem = e;
+        }
     }
 }
 
@@ -54,9 +62,11 @@ print.setFormObject( u );
 
 <p>10gen provides built-in support for user management, authentication, and access control.</p>
 
+<div class="fieldset">
 <form method="post" class="edit register">
-  <input type="hidden" name="_id">
-  <fieldset>
+    <% if(problem) { %>
+    <label>&nbsp;</label><span class="fatal" style="padding-left: 10px;"><%= problem %></span><br />
+    <% } %>
     <label>Username</label>
     <input class="text" type="text" name="name"><br />
     <label>Email</label>
@@ -74,7 +84,6 @@ print.setFormObject( u );
     <label></label>
     <input type="image" src="assets/img/button_save_on_white.gif" name="action" value="save">
     <input type="image" src="assets/img/button_cancel_on_white.gif" name="action" value="cancel">
-  </fieldset>
 </form>
 
 <br/>
@@ -83,14 +92,17 @@ print.setFormObject( u );
 print.setFormObject( null );
 %>
 
-<% if( ! request._id ) return; %>
+<% if( ! request._id ){ %>
+</div>
+<% return;
+   } 
+%>
 <form method="post" action="user_delete" name="delete_form" class="edit register">
   <input type="hidden" name="id" value="<%= u._id %>">
-  <fieldset>
     <label>Delete User </label>
     <input type="image" src="assets/img/button_delete_on_white.gif" name="action" value="delete" onclick="deletePanel.show(); return false"><br/>
-  </fieldset>
 </form>
+</div>
 
 <div class="yui-skin-sam">
 <div id="deletePanel" style="display: none;">
