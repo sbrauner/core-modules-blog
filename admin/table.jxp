@@ -95,7 +95,6 @@ if(request.action == "searchprofile") {
 else if(request.action == "search" || request.action == "userssearch" || request.action == "filessearch") {
     collection = request.ns ? db[request.ns.substring( request.ns.indexOf('.')+1 )] : db["system.namespaces"];
     var searchobj = {};
-    var tempLive;
     if(top) {
         q = "";
         if(request.name)
@@ -107,7 +106,7 @@ else if(request.action == "search" || request.action == "userssearch" || request
     }
 
     for(q in request) {
-        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" || q == "pagename")
             continue;
         if(top && (q == "index" || q == "name"))
             continue;
@@ -274,6 +273,9 @@ else if(request.action == "userssearch"){
 else if(request.action == "filessearch") {
     var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete", name: "Delete"}];
 }
+else if(request.pagename == "cron") {
+    var th = [{name: "name", heading: "Job Name"}, {name: "url", heading: "URL"}, {name: "xminutes", heading: "Interval"}, {name: "lastRun", heading: "Last Run"}, {name: "Delete", heading: "Delete"}];
+}
 else {
     var th = [];
     if(request.action != "searchprofile" && "_id" in f) th.push({"name" : "_id", heading: "_id", className: "sort-up" });
@@ -390,6 +392,13 @@ else if(request.action == "userssearch"){
 else if(request.action == "filessearch") {
     for(var i=0; i<dbTable.rows.length; i++) {
         dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteFile(\''+dbTable.rows[i]._id+'\', \''+dbTable.rows[i].filename+'\')" />';
+    }
+    dbTable.idxes = {};
+}
+else if(request.pagename == "cron") {
+    for(var i=0; i<dbTable.rows.length; i++) {
+        dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteJob(\''+dbTable.rows[i]._id+'\')" />';
+        dbTable.rows[i].name = '<a onclick="editCron(\''+dbTable.rows[i]._id+'\')">'+dbTable.rows[i].name+'</a>';
     }
     dbTable.idxes = {};
 }

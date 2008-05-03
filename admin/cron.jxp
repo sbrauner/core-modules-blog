@@ -1,24 +1,126 @@
-<h3>Cron</h3>
-<a href="/admin/editCron">Add Cron</a>
+<%
+head.addCSS("NOCDN/~~/admin/assets/jason.css");
+head.addCSS("/@@/yui/current/container/assets/skins/sam/container.css");
+head.addCSS("button/assets/skins/sam/button.css");
+head.addScript("NOCDN/~~/admin/assets/interpreter.js");
+head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
+%>
 
+
+<h1 style="margin:0;">
+  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
+  <nobr>Cron Jobs</nobr>
+</h1>
+
+<p class="abstract">Add and edit jobs that will be repeated at intervals.</p>
+
+<a onclick="newCron()">Add Cron</a>
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+</div>
+
+<div id="editCron">
+<div id="editCronPanelHd" class="hd">Add New Cron</div>
+<div class="bd">
+<form>
+  <input type="hidden" id="c__id" >
+      <div><label>Name</label><input id="c_name" ></div>
+      <div><label>url</label><input id="c_url"></div>
+      <div><label>Every X minutes</label><input id="c_xminutes"></div>
+</form>
+</div>
+<div class="ft"><input type="button" onclick="sendCron()" value="Save"><input type="button" onclick="editCronPanel.hide()" value="Cancel"></div>
+</div>
+
+<script type="text/javascript">
+
+var currentPage = 1;
+var lastSearch = "";
+
+function deleteJob(id) {
+    ajax("action=delete&ns=admin.cron&id="+id, "editDb", refreshTable);
+}
+
+function refreshTable(passData){
+    if(passData)
+        passData = passData+"&";
+    else
+        passData = "";
+    ajax("pagename=cron&ns=admin.cron&action=search&currentPage="+currentPage+"&"+passData+lastSearch, "table", function(response) {
+        document.getElementById("myCollection").innerHTML = response;
+    });
+}
+
+function getSearchArgs() {
+    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
+}
+
+function doSearch() {
+    var passData = getSearchArgs();
+    lastSearch = passData;
+    refreshTable();
+}
+function clearSearch() {
+    document.getElementById("searchtext").value = "";
+    document.getElementById("searchbox").value = "";
+    document.getElementById("searchopt").options[0].selected = true;
+    currentSearch = {};
+    lastSearch = "";
+    refreshTable();
+}
+
+var handleNo = function() {
+    this.hide();
+}
+
+function loadPage(pagenum) {
+    currentPage = pagenum;
+    refreshTable();
+}
+function sendCron() {
+    var passData = "name="+document.getElementById("c_name").value+
+    "&url="+document.getElementById("c_url").value+
+    "&xminutes="+document.getElementById("c_xminutes").value;
+    var id = document.getElementById("c__id").value;
+    if(id!="")
+        passData+="&_id="+id;
+
+    ajax(passData, "editCron", refreshTable);
+    editCronPanel.hide();
+    document.getElementById("editCronPanelHd").innerHTML = "Add New Cron";
+}
+function newCron() {
+    document.getElementById("c__id").value = "";
+    document.getElementById("c_name").value = "";
+    document.getElementById("c_url").value = "";
+    document.getElementById("c_xminutes").value = "";
+    editCronPanel.show();
+}
+
+function editCron(id) {
+    document.getElementById("c__id").value = id;
+    document.getElementById("editCronPanelHd").innerHTML = "Edit Existing Cron";
+    editCronPanel.show();
+}
+
+editCronPanel = new YAHOO.widget.Panel("editCron", { visible: false, constraintoviewport: true, fixedcenter: true });
+editCronPanel.render("myMarkedUpContainer");
+document.getElementById("editCron").style.display = "block";
+refreshTable();
+</script>
+
+
+<div id="myCollection">
 <%
 
- var tab = new htmltable(
-  {
-   ns : db.cron ,
-   cols : [
-    { name: "name", isLink: true, searchWidth: 50 },
-    { name: "url" } ,
-    { name : "xminutes" } ,
-    { name : "lastRun" }
-   ],
-   detailUrl : "/admin/editCron.jxp?_id=" ,
-   searchable: true
-  }
-  );
-
-tab.dbview( tab.find().sort( { name : 1 } ) );
-
+/*request.pageName = "cron";
+request.ns = "admin.cron";
+request.action = "search";
+core.admin.table();
+*/
 
 if ( request._run == "true" ){
     var debug = request._debug;
@@ -67,3 +169,4 @@ if ( request._run == "true" ){
 }
 
 %>
+</div>
