@@ -1,12 +1,12 @@
 10gen Shell Commands : 
   
 ls [-al]       : show files in current directory
-rm file        : remove a file
-mv file1 file2 : move a file
-cp file1 file2 : copy a file
+rm f           : remove a file f
+mv f1 f2       : move a file f1 to file f2
+cp f1 f2       : copy a file f1 to file f2
 git ...        : git command line (see http://www.kernel.org/pub/software/scm/git/docs/user-manual.html)
-diff f1 f2     : show diff between two files
-cat f          : show contents of file
+diff f1 f2     : show diff between  files f1 and f2
+cat f          : show contents of file f
 head f         : show top N lines of file f
 tail f         : show last N lines of file f
 date           : show current date and time
