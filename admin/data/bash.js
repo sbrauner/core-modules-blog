@@ -7,7 +7,7 @@ admin.data.Bash = function(){
 Object.extend(admin.data.Bash.prototype, {
 
     getCmdArray : function() {
-        return ['ls', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep', 'pwd', 'help', 'cd'];
+        return ['ls', 'dir', 'rm', 'mv', 'cp', 'git', 'diff', 'cat', 'head', 'tail', 'date', 'grep', 'pwd', 'help', 'cd'];
     },
 
     handle: function(cmd, files){
@@ -76,6 +76,9 @@ Object.extend(admin.data.Bash.prototype, {
 
     ls: function(files){
         return this.handle('ls', files);
+    },
+    dir: function(files){
+        return this.ls(files);
     },
     rm: function(files){
         return this.handle('rm', files);
