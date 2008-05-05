@@ -7,6 +7,22 @@ if(request.action == "delete") {
     var collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
     collection.remove({_id : request.id});
 }
+if ( request.action == "deletefile" ){
+    var file = db._files.findOne({ _id: request._id});
+    if(file) {
+        var chunk = [];
+        var i=0;
+        var tbd = file;
+        while(tbd.next) {
+            chunk[i++] = db._chunks.findOne(tbd.next);
+            tbd = tbd.next;
+        }
+        for(var i=chunk.length-1; i>=0; i--)
+            db._chunks.remove(chunk[i]);
+
+        db._files.remove(file);
+    }
+}
 /*else if(request.action == "createidx") {
     collection = db[request.ns.substring( request.ns.indexOf('.')+1 )];
    log(db[request.ns.substring( request.ns.indexOf('.')+1 )]);
