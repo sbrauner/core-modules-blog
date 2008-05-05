@@ -95,10 +95,7 @@ var Buffer = function(){
 };
 
 var command = request.command;
-if(command.match(/^\/\D/)){
-    
-    command = command.substring(1, command.length);
-    
+if(request.mode == "bash"){
     for(var i = 0; i < command.length; ++i){
         if(command[i] == ' ' || command[i] == '(')
             break;
@@ -160,7 +157,7 @@ if(request.save == "true"){
     if(session.user == null)
         // DBRef breakage; the user isn't really on this site?
         return;
-    session.push(request.command, tojson(res));
+    session.push(request.mode, request.command, tojson(res));
     db.shell.sessions.save(session);
 }
 %>
