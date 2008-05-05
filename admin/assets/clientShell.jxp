@@ -545,6 +545,8 @@ lastIndexOf = function(ary, v){
 
 var switchMode = function(mode){
     shellMode = mode;
+    pastCommands = pastCommandsMap[mode];
+    historyAry = historyAryMap[mode];
     updatePrompt(mode);
 };
 
@@ -572,10 +574,6 @@ function doRun(el, value, save){
         return;
     }
 
-    if(shellMode == "bash")
-        usr = "/"+usr;
-
-
     if(indexOf(pastCommands, usr) == -1){
         pastCommands.push(usr);
     }
@@ -596,11 +594,11 @@ function doRun(el, value, save){
     promptNode.style.visibility = "hidden";
     promptNodeInvisible += 1;
     var responsetype = 'response';
-    if(usr[0] == '/' && usr[1].match(/\D/)){
+    if(shellMode == "bash"){
         responsetype = responsetype + "-noret";
     }
 
-    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
+    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&mode=" + shellMode + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
 
     loadDocAsync( url , function(res){
         res = res.replace( /(^\s+|\s+$)/g , "" );
