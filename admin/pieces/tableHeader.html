@@ -24,7 +24,7 @@ var colspan = obj.colspan;
         <ul>
           <li><select id="searchopt">
               <forin i th>
-                <if (th[i].name)>
+                <if (th[i].name && th[i].name != "_id" && th[i].name != "Delete")>
 	          <option value="search$th[i].name">$th[i].heading</option>
                 </if>
               </forin>
