@@ -20,6 +20,7 @@ var colspan = obj.colspan;
 
       <!-- Search -->
       <if (search)>
+        <form onsubmit="doSearch(); return false;">
         <ul>
           <li><select id="searchopt">
               <forin i th>
@@ -33,6 +34,7 @@ var colspan = obj.colspan;
           <li><img src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" onclick="doSearch()"></li>
           <li style="float:right;"><div><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()"></div></li>
         </ul>
+        </form>
       </if>
 
     </td>
