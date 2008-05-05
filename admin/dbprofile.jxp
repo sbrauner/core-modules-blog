@@ -15,57 +15,15 @@ if(user.permissions["0"] == "admin") {
         print("<p>");
     }
     %>
-<!--    <form>DB Profiling is...
-    <select onchange="submit()" id="set" name="set">
-    <option value="0">Off</option>
-    <option value="1">On for slow operations</option>
-    <option value="2">On for all operations</option>
-    </select>
-    </form> -->
     <%
 }
 %>
 
-<!--<a href="http://www.10gen.com/wiki/db.profile">Help</a>
-<p>
-<div class="filtering">
-
-<div class="field">
-  Show <select id="record_type" name="record_type" onchange="changeRecordType()">
-    <option value="all">All</option>
-    <option value="query">Query</option>
-    <option value="insert">Insert</option>
-    <option value="update">Update</option>
-    <option value="getmore">Getmore</option>
-  </select>
-</div>
-
-<div class="field"><input type="checkbox" name="timefilter" id="timefilter" onclick="toggleEnableText('time', 'YYYY-MM-DD HH:MM:SS')">
-  <label for="timefilter">Timestamp filter between </label>
-<input type="text" disabled onclick="clearTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_from', 'YYYY-MM-DD HH:MM:SS')" id="time_from" name="time_from" value="YYYY-MM-DD HH:MM:SS" /> and
-<input type="text" disabled name="time_to" value="YYYY-MM-DD HH:MM:SS" onclick="clearTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" onblur="resetTextBox('time_to', 'YYYY-MM-DD HH:MM:SS')" id="time_to" />
-</div>
-<div class="field"><input type="checkbox" name="msfilter" id="msfilter" onclick="toggleEnableText('ms', '0', '999999')">
-  <label for="msfilter">Millisecond filter between </label>
-<input type="text" disabled name="ms_from" onclick="clearTextBox('ms_from', '0')" onblur="resetTextBox('ms_from', '0')" id="ms_from" value="0" /> and
-<input type="text" disabled name="ms_to"  onclick="clearTextBox('ms_to', '999999')" onblur="resetTextBox('ms_to', '999999')" id="ms_to" value="999999" />
-</div>
-<div class="field"><input type="checkbox" name="refilter" id="refilter" onclick="toggleEnableText('re', '')">
-  <label for="refilter">Information RegExp filter </label>
-  <input type="text" name="re" id="re" disabled />
-  <input type="button" onclick="doSearch()" value="Search" />
-  <input type="button" onclick="refreshSearch()" value="Refresh" />
-</div>
-</div>
--->
-
-
-<% core.admin.pieces.dbprofile({th:[{name: "Timestamp"}, {name: "Message"}, {name: "Milliseconds"}]}); %>
+<% core.admin.pieces.dbprofile(); %>
 <div id="myCollection">
 <%
 request.action = "searchprofile";
 request.reverse = "true";
-request.rowsPerPage = rowsPerPage;
 var table = core.admin.table();
 %>
 </div>
@@ -105,30 +63,17 @@ function loadPage(pagenum) {
     refreshTable("currentPage="+pagenum);
 }
 
-/*
-
-myDateFormatter = function(elCell, oRecord, oColumn, oData) {
-    var d = new Date(oData);
-    var yyyy = d.getFullYear();
-    var MM = d.getMonth() < 9 ? "0"+(d.getMonth()+1) : d.getMonth()+1;
-    var dd = d.getDate() < 10 ? "0"+d.getDate() : d.getDate();
-    var HH = d.getHours() < 10 ? "0"+d.getHours() : d.getHours();
-    var mm = d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes();
-    var ss = d.getSeconds() < 10 ? "0" + d.getSeconds() : d.getSeconds();
-    elCell.innerHTML = yyyy+"-"+MM+"-"+dd+" "+HH+":"+mm+":"+ss;
-}
-
-YAHOO.widget.DataTable.Formatter.myDate = myDateFormatter;
-
-*/
 
 <%
+// why would a non-admin user be on the admin page?
 if(user.permissions["0"] == "admin") {
-    // Initial setup of page
     core.db.db();
-    print('document.getElementById("set").options['+ getDbProfilingLevel() +'].selected = true');
+    var level = getDbProfilingLevel();
+    level = (level == -1) ? 0 : level;
+    print('document.getElementById("set").options['+ level +'].selected = true');
 }
 %>
+
 
 // Form handling
 function clearTextBox(id, defaultVal) {
@@ -300,11 +245,4 @@ function changeRecordType() {
 }
 
 </script>
-
-
-<%
-
-
-
-%>
 

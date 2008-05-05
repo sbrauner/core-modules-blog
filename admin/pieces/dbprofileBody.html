@@ -2,10 +2,10 @@
 
 var table = obj.table;
 var th = obj.th;
-
+var colspan = obj.colspan;
 %>
 
-<tr class="white-main">
+<tr id="pushNode" class="white-main">
   <td class="left">&nbsp;</td>
   <forin i th>
     <th>$th[i].name</th>
@@ -13,12 +13,17 @@ var th = obj.th;
   <td class="right">&nbsp;</td>
 </tr>
 
-<forin i table.rows>
-  <tr class="white-main">
-    <td class="left">&nbsp;</td>
-    <forin j th>
-      <td>$table.rows[i][th[j].name]</td>
-    </forin>
-    <td class="right">&nbsp;</td>
-  </tr>
-</forin>
+<if (table.rows.length == 0)>
+  <tr><td colspan="$colspan">No database profiling messages.</td></tr>
+</if>
+<if (table.rows.length != 0)>
+  <forin i table.rows>
+    <tr class="white-main">
+      <td class="left">&nbsp;</td>
+      <forin j th>
+        <td>$table.rows[i][th[j].name]</td>
+      </forin>
+      <td class="right">&nbsp;</td>
+    </tr>
+  </forin>
+</if>
