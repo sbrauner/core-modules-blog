@@ -22,7 +22,7 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
 if ( sectionName == "" || sectionName.match( /^index/ ) )
-    sectionName = "usage";
+    sectionName = "system";
 
 
 // Maps jxp names to sections
@@ -61,7 +61,7 @@ var sectionMap = {
 var sectionList = sectionMap[sectionName];
 
 // map main sections to default pages
-var defaultPage = { 'system' : 'usage',
+var defaultPage = { 'system' : 'welcome',
     'statistics' : 'usage',
     'database' : 'dbview',
     'logs' : 'logScroll'

@@ -33,51 +33,76 @@ Rails.baseThis = scope.child( "Rails Scope" );
 var modelsDir = openFile("app/models" );
 if ( modelsDir.exists() ){
     
-    modelsDir.listFiles().forEach( 
-        function(z){
+    var all = modelsDir.listFiles();
+    var numPasses = all.length;
+    for ( var pass=0; pass<numPasses; pass++ ){
+        all.forEach( 
+            function(z){
+                
+                if ( ! z.filename.endsWith( ".rb" ) ) 
+                    return;
+                
+                if ( z._loaded )
+                    return;
+                
+                var before = scope.keySet();
+                scope.setGlobal( true );
 
-            if ( ! z.filename.endsWith( ".rb" ) ) 
-                return;
-            
-            var f = local.app.models[ z.filename.replace( /\.rb$/ , "" ) ];
+                var f = null;
+                try {
+                    f = local.app.models[ z.filename.replace( /\.rb$/ , "" ) ];
+                    f();
+                    log.rails.init.model.info( "loaded : " + f );
+                }
+                catch ( e if ( pass + 1 < numPasses ) ){
+                    
+                    log.rails.init.model.info( z.filename + " failed, but ignoring" );
+                    e.printStackTrace();
 
-            var before = scope.keySet();
-            
-            scope.setGlobal( true );
-            f();
-            scope.setGlobal( false );
+                    return;
+                }
+                scope.setGlobal( false );
+                
+                var after = scope.keySet();
+                
+                for ( var i=0; i<after.length; i++){
+                    var name = after[i];
+                    if ( before.contains( name ) )
+                        continue;
+                    
+                    var model = scope[ name ];
+                    if ( ! model )
+                        continue;
+                    
+                    log.rails.init.model.info( "Added Thing : " + name );
+                    globals.getParent().putExplicit( name , model );
+                    
+                    if ( ! model._isModel )
+                        continue;
+                    
+                    model.prototype.setFile( z.filename );
+                    model.prototype.setConstructor( model );
+                    
+                    Rails.models.add( model );
+                    globals.getParent().putExplicit( name , model );
+                    
+                    log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
+                    
+                    assert( model.find );
+                    assert( model.collectionName );
+                    
+                    var thing = new model();
+                    assert( thing.setFile );
+                    
+                    log.rails.init.model.info(  thing.collectionName );
+                    assert( thing.collectionName == model.collectionName );
+                    model.find();
+                }
 
-            var after = scope.keySet();
-            
-            for ( var i=0; i<after.length; i++){
-                var name = after[i];
-                if ( before.contains( name ) )
-                    continue;
-                
-                var model = scope[ name ];
-                if ( ! ( model && model._isModel ) )
-                    continue;
-                
-                model.prototype.setFile( z.filename );
-                model.prototype.setConstructor( model );
-
-                Rails.models.add( model );
-                globals.getParent().putExplicit( name , model );
-                
-                log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
-                
-                assert( model.find );
-                assert( model.collectionName );
-                
-                var thing = new model();
-                assert( thing.setFile );
-                
-                log.rails.init.model.info(  thing.collectionName );
-                assert( thing.collectionName == model.collectionName );
-                model.find();
+                z._loaded = true;
             }
-        }
-    )
+        );
+    }
     
 };
 
