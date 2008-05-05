@@ -11,7 +11,10 @@ function clone(x) {
 
 // -------------------------------------------------------------------
 
+var __file__ = "";
+var inphp = 0; // in code block, or html mode?
 var indents = 0;
+var line = 1;
 
 function indent() { 
     var s = "";
@@ -24,21 +27,28 @@ function indent() {
 
 output = "";
 input = "";
-pos = 0;
+pos = 0; // input position
 
 function printContext() { 
-    var p = pos;
-    if( p > 20 ) 
-	p -= 20;
-    for( var i = 0; i < 120; i++ ) { 
+    print("line " + line + ":");
+    var p = pos-1;
+    var pad = "";
+    while( p > 0 && input[p] != '\n' ) { 
+	p--;
+	pad = (input[p] == '\t' ? '\t' : ' ') + pad;
+    }
+    p++;
+    print(pad + "*");
+    for( var i = 0; i < 200; i++ ) { 
 	if( p+i>=input.length )
 	    break;
-	if( i == 20 ) 
-	    printnoln(" ~~~ ");
 	var ch = input[p+i];
+	if( ch == '\n' && i > 120 ) {
+	    break;
+	}
 	printnoln(ch);
     }
-    print();
+    print('\n');
 }
 
 function say(x) { 
@@ -53,6 +63,22 @@ function peekStream() {
     return input.substring(pos);
 }
 
+function skipRequiredChar(x) { 
+    var ch = get();
+    if( ch != x ) 
+	throw { unexpected: ch, wanted: x };
+}
+
+// returns true if skipped
+function skipOptionalChar(x) { 
+    var ch = peek();
+    if( ch == x ) { 
+	pop();
+	return x;
+    }
+    return false;
+}
+
 function _skipTo(patt) { 
     var s = peekStream();
     var i = s.indexOf(patt);
@@ -60,7 +86,9 @@ function _skipTo(patt) {
 	throw("eof");
     }
     pos += i;
-    return s.substring(0, i);
+    var res = s.substring(0, i);
+    line += res.nOccurrences('\n');
+    return res;
 }
 
 function skipTo(patt) { 
@@ -71,12 +99,15 @@ function skipTo(patt) {
 	say(s);
 	throw("eof");
     }
-    say( s.substring(0, i) );
+    var res = s.substring(0, i);
+    say(res);
+    line += res.nOccurrences('\n');
     pos += i;
 }
 function skipToAndEat(patt) { 
     skipTo(patt);
     pos += patt.length;
+    line += patt.nOccurrences('\n');
 }
 
 /* sayskipped
@@ -100,11 +131,16 @@ function peek(sayskipped) {
 function get(sayskipped) { 
     var ch = peek(sayskipped);
     pos++;
+    if( ch == '\n' )
+	line++;
     return ch;
 }
 
-function pushback() { pos--; }
-function pop() { pos++; }
+function pushback() { 
+    pos--; 
+    if( input[pos] == '\n' ) line--;
+}
+function pop() { get(-1); }
 
 /* run some code which outputs characters via say(); then return what 
    was output.
@@ -114,6 +150,14 @@ function snoop(f) {
     f();
     return output.substring(len);
 }
+
+// -------------------------------------------------------------------
+
+varTranslations = { 
+    GLOBALS: "globals",
+    _REQUEST: "request",
+    _SERVER: "_server()"
+};
 
 // -------------------------------------------------------------------
 // Tokens
@@ -127,23 +171,18 @@ variable = { type: "variable", name: "" ,
 	     action: function(t) { say(t.name); },
 	     init: function() 
 	     { 
-		 if( this.name == "GLOBALS" )
-		     this.name = "globals";
+		 if( varTranslations[this.name] )
+		     this.name = varTranslations[this.name];
 	     }
 };
 
-// unclassified single char's
-other = { type: "other", str: "" } ; 
-
-define = { type: "define", action: doDefine };
-require_once = { type: "require_once", action: doRequireOnce };
-include = { type: "include", action: doInclude }; // include "foo";
-foreach = { type: "foreach", action: forEach };
-array = { type: "array", action: function() { say("Array"); } };
-echo = { type: "echo", action: doEcho };
-keywords = [ define, require_once, include, foreach, array, echo ];
+other = { type: "other", str: "" } ; /* unclassified single char's */
 
 phpend = { type: "phpend" } ; // "?>"
+
+arrow = { type: "arrow" } ; // =>
+
+linecomment = { type: "linecomment" }; // // or #
 
 blockcomment = { type: "blockcomment" }; // slash *
 
@@ -161,6 +200,22 @@ doublequotestr = { type: "doublequotestr", stringval: "",
 		       say('"'); say(t.stringval); say('"');
 		   } 
 };
+
+/* keywords */
+as = { type: "as" };
+file = { type: "__file__", action: function() { say("'"+__file__+"'"); } };
+define = { type: "define", action: doDefine };
+require_once = { type: "require_once", action: doRequireOnce };
+include_once = { type: "include_once", action: doRequireOnce };
+include = { type: "include", action: doInclude }; // include "foo";
+require = { type: "require", action: doInclude }; // include "foo";
+foreach = { type: "foreach", action: forEach };
+array = { type: "array", action: doArray };
+echo = { type: "echo", action: doEcho };
+keywords = [ define, require_once, include_once, require, include, foreach, array, echo,
+	     file, as
+];
+
 
 // -------------------------------------------------------------------
 // lexical
@@ -201,6 +256,7 @@ function tokmatch(str, tokobj) {
     if( !s.startsWithLC(str) ) return null;
     if( !delimChar(s[str.length]) ) return null;
     pos += str.length;
+    line += str.nOccurrences('\n');
     return clone(tokobj);
 }
 
@@ -228,11 +284,18 @@ function tok(sayskipped) {
     if( isDigit(ch) || (ch == '-' && isDigit(peek(-1))) ) { 
 	return makeNumberToken(ch);
     }
+    else if( ch == '=' && peek(-1) == '>' ) { 
+	get(-1); return clone(arrow);
+    }
     else if( ch == '?' ) { 
 	if( peek(-1) == '>' ) { get(); return clone(phpend); }
     }
+    else if( ch == '#' ) { 
+	return clone(linecomment);
+    }
     else if( ch == '/' ) { 
 	if( peek(-1) == '*' ) { get(); return clone(blockcomment); }
+	if( peek(-1) == '/' ) { get(); return clone(linecomment); }
     }
     else if( ch == '"' ) { return strToTok('"', doublequotestr); }
     else if( ch == "'" ) { return strToTok("'", singlequotestr); }
@@ -259,7 +322,7 @@ function tok(sayskipped) {
 
 function getString(sayskipped) {
     var t = tok(sayskipped);
-    if( !t.stringval ) throw "unexpected";
+    if( !t.stringval ) throw { unexpected: t, wanted: "string literal" };
     return t.stringval;
 }
 
@@ -269,9 +332,9 @@ function getString(sayskipped) {
 function expect(exptoken, str) { 
     var t = tok();
     if( t.type != exptoken.type || (str && t.str != str) ) {
-	print("expected: " + exptoken.type + ' ' + str + '\n');
+	print("expected: " + exptoken.type + ' ' + (str?str:""));
 	print("got: " + tojson(t));
-	throw "unexpected";
+	throw { unexpected: t, wanted: exptoken.type + ' ' + (str?str:"") };
     }
     return t;
 }
@@ -287,30 +350,54 @@ function doDefine() {
     expectStr("(");
     var l = getString(1);
     expectStr(",");
-    say(l + " = ");
+    say(l.toLowerCase() + " = ");
     doStatement(')', '(');
     expectStr(')');
 }
 
 function _includeParam() { 
+    var skipped = skipOptionalChar('(');
+
     var x = filePrefix + getString();
     x = x.lessSuffix(".inc");
     x = x.lessSuffix(".php");
     x = x.lessPrefix("./");
     x = x.replace(/\//g, '.');
+
+    if( skipped ) skipRequiredChar(')');
+
     return x;
 }
 
+function mark() { 
+    return { p: pos, ln: line };
+}
+function rewind(mk) { 
+    pos = mk.p;
+    line = mk.ln;
+}
+
 function doInclude() {
-    say("jxp." + _includeParam() + "()");
+    var mk = mark();
+    try { 
+	// try to do literal syntax which is more readable etc.
+	say("jxp." + _includeParam() + "()");
+    }
+    catch( e if isObject(e) && e.unexpected ) { 
+	// do nonliteral syntax
+	rewind(mk);
+	expectStr("(");
+	say("require(");
+	doStatement(")", "(");
+    }
 }
 
 function doRequireOnce() { 
     var p = _includeParam();
     var path = p.replace(/\./g, '_');
-    say("if( !_" + path + " ) {\n  _" + path + " = true;\n  ");
+    say("if( !_" + path + " ) { _" + path + " = true; ");
     say("jxp." + p + "()");
-    say(";\n}\n");
+    say("; }");
     if( get() != ';' )
 	pushback();
 }
@@ -332,12 +419,11 @@ function doEcho() {
      foo[3]
 */
 function sayComplexVariable(inner) { 
-    print("saycomplex " + inner);
     if( inner ) { 
 	var id = getidentifier();
 	print("ID:" + id);
 	if( id == "" )
-	    throw "unexpected";
+	    throw { unexpected: id, wanted: "identifier after ->" };
 	say(id);
     }
     else {
@@ -364,8 +450,53 @@ function sayComplexVariable(inner) {
     }
 }
 
+function markOutput() { 
+    var pos = output.length;
+    return function() { return pos; }
+}
+function injectInOutput(marker, str) {
+    output = output.insert(marker(), str);
+}
+
+// array(1,2,3)
+function doArray() {
+    expectStr("(");
+    say('[');
+    php(')', '(');
+    expectStr(")");
+    say(']');
+}
+
 // php foreach( $a as $b [=> $c]  ) { }
 function forEach() { 
+    expectStr("(");
+    var mko = markOutput();
+    doStatement(as);
+    expect(as);
+    print("past AS " + inphp);
+
+    var k = expect(variable); // $b
+    var tk = tok(0);
+    if( tk.type == "arrow" ) { 
+	var v = expect(variable); // $c
+	expectStr(")");
+	injectInOutput(mko, "foreachkv(");
+	say(", function("); 
+	say(k.name + "," + v.name + ") ");  // foreachkv(a, function(b,c)) ...
+    }
+    else { 
+	if( tk.str != ')' ) throw { unexpected: tk, wanted: ")" };
+	injectInOutput(mko, "foreach(");
+	say(", function(");
+	say(k.name);
+	say(") ");  // foreach(a, function(b)) ...
+    }
+
+    doBlock();
+    say(" );");
+}
+/*
+function forEachOld() { 
     expectStr("(");
     var coll = snoop( sayComplexVariable );
     expectStr("as");
@@ -380,7 +511,7 @@ function forEach() {
 	expectStr(")");
     }
     else if( tk.str != ")" )
-	throw "unexpected";
+	throw { unexpected: tk, wanted: ")" };
     expectStr("{");
 
     if( v ) { 
@@ -390,17 +521,26 @@ function forEach() {
     doBlock();
 
     say(");");
-}
+    }*/
 	
 // -------------------------------------------------------------------
 
+function skipToPhpTag() { 
+    skipToAndEat("<?");
+    if( peek(-1) == 'p' ) { 
+	get(-1); get(-1); get(-1);
+    }
+    inphp++;
+}
+
 function doHtml() { 
-    skipToAndEat("<?php");
+    skipToPhpTag();
     say("<%");
 }
 
 /* endOn - character to stop processing the block on, and return.  however, 
            we can nest in further if starter chars are encountered.
+           Can also be a token.
 
    eg you could call:
 
@@ -412,7 +552,15 @@ function php(endOn, starter) {
     while( 1 ) { 
 	try { 
 	    var t = tok(1);
+	    if( isObject(endOn) && t.type == endOn.type ) { 
+		assert( t.type == "as" );
+		pushback(); pushback();
+		return t;
+	    }
 	    if( t.type == "other" ) {
+		if( t.str == ':' && peek(-1) == ':' ) { 
+		    get(-1); say('.'); continue; // ::
+		}
 		if( t.str == '-' && peek(-1) == '>' ) { 
 		    get(-1); say('.'); continue; // ->
 		}
@@ -429,6 +577,7 @@ function php(endOn, starter) {
 		continue;
 	    }
 	    if( t.type == "phpend" ) {
+		inphp--; assert( inphp >= 0 );
 		if( endOn ) { 
 		    pushback(); pushback(); return;
 		}
@@ -439,12 +588,18 @@ function php(endOn, starter) {
 	    if( t.type == "blockcomment" ) { 
 		say("/*"); skipTo("*/"); continue;
 	    }
+	    if( t.type == "linecomment" ) { 
+		say("//"); skipTo("\n"); continue;
+	    }
 	    if( t.action ) { 
 		t.action(t); continue;
 	    }
-	    print("***unhandled token:" + tojson(t)+"\n");
-	} catch( e if e == "unexpected" ) { 
-	    print("***unexpected near:\n");
+	    printnoln("***unhandled token:");
+	    print(tojson(t)+"\n");
+	    printContext();
+	} catch( e if isObject(e) && e.unexpected ) { 
+	    print("unexpected exception");
+	    print(tojson(e));
 	    printContext();
 	    // TEMP: don't have to stop
 	    throw "stopping";
@@ -463,30 +618,37 @@ function doStatement(endchar, starter) {
    process, then return. 
 */
 function doBlock() { 
+    expectStr("{"); say("{");
     indents++;
     php('}', '{');
     indents--;
+    expectStr("}"); say("}"); 
 }
 
-//	    match("//", "\n");
-//	    match("#", "\n");
-
-// html...
+// html mode at first.
 function top() {
     try { 
 	while( 1 ) {
-	    skipToAndEat("<?php");
+	    skipToPhpTag();
 	    say("<%");
 	    php();
 	}
     }
-    catch( e if e == "eof" ) { }
+    catch( e if e == "eof" ) { 
+    }
+
+    if( inphp ) { 
+	print("eof in php mode. adding %>");
+	say("\n%>\n");
+    }
 }
 
 //-----------------------------------------------------
 
 function tojs(php, fname) { 
+    line = 1;
     assert(fname);
+    __file__ = fname;
     filePrefix = fname.replace(/^\/data\/sites\/[^\/]+\//, "");
     filePrefix = filePrefix.replace(/\/[^\/]+$/, "/");
 
@@ -494,6 +656,7 @@ function tojs(php, fname) {
     input = php;
     //    print(input); print("-----------------------------------");
     pos = 0;
+    inphp = 0;
     top();
     return output;
 }
@@ -506,7 +669,9 @@ function tojs(php, fname) {
 
 //var fname = "/data/sites/php/popslamui/lib/Config.php";
 //var fname = "/data/sites/php/popslamui/lib/Cache/Cache.php";
-var fname = "/data/sites/php/popslamui/lib/Cache/PEAR.php";
+//var fname = "/data/sites/php/popslamui/lib/Cache/PEAR.php";
+var fname = javaStatic( "java.lang.System" , "getenv", "fname" );
+//    "/data/sites/php/www/index.php";
 
 var f = openFile( fname );
 var code = f.getDataAsString();
