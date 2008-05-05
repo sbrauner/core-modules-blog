@@ -264,7 +264,7 @@ else
 var fcount = 0;
 
 if(top) {
-    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "capped", className: "center", heading: "CAPPED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "capped", className: "center", heading: "CAPPED"}, {className: "center", heading: "STATS"}, {className: "center", heading: "DROP COLLECTION" } ];
 }
 else if(request.action == "userssearch"){
     var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
@@ -282,7 +282,7 @@ else {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
         th.push({"name" : fields[i], heading: fields[i], className: "" });
     }
-    if(request.action != "searchprofile") th.push({heading: "Delete", name: "Delete", className: "center" });
+    if(request.action != "searchprofile") th.push({heading: "Delete", className: "center" });
 
     idFormatter = function(oData) {
         return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
@@ -416,8 +416,8 @@ else if(request.action != "searchprofile") {
     for(var i in dbTable.rows) {
         if("_id" in f) dbTable.rows[i].id = "";
         for(var field in th) {
-            if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
-            else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            if(th[field].heading == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+            else if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
             else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
