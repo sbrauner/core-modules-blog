@@ -32,13 +32,13 @@ var loader = new YAHOO.util.YUILoader();
 loader.insert({
     require: ['fonts', 'dragdrop', 'logger', 'container', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
     base: '/@@/yui/2.5.1/',
-	    skin: {
-	        defaultSkin: "assets/skins/sam",
-	        base: '',
-	        overrides: {
-	            logger: []
-	        }
-	    },
+            skin: {
+                defaultSkin: "assets/skins/sam",
+                base: '',
+                overrides: {
+                    logger: []
+                }
+            },
     onSuccess: function(loader) {
         objectList = [];
         loader.objectTreeView = new YAHOO.widget.TreeView("treeview");
@@ -548,6 +548,7 @@ var switchMode = function(mode){
     updatePrompt(mode);
 };
 
+promptNodeInvisible = 0;
 shellId = "shell-" + Math.random();
 function doRun(el, value, save){
     // Send a command to the server, retreive response, and dump both to
@@ -557,7 +558,6 @@ function doRun(el, value, save){
     var orig = usr;
     // Should this command go into the history?
     save = save || "";
-    command.value = "";
     // Don't actually send on empty lines
     if(usr == ''){
         YAHOO.log(usr, "user", "shell");
@@ -567,6 +567,7 @@ function doRun(el, value, save){
     if(usr == "/"){
         // switch modes and return
         var modeSwitchMap = {'js': 'bash', 'bash': 'js'};
+        command.value = "";
         switchMode(modeSwitchMap[shellMode]);
         return;
     }
@@ -591,16 +592,23 @@ function doRun(el, value, save){
     addHistoryLink(historyAry.length-1);
 
     YAHOO.log(orig, "user", "shell");
-    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
-
-    var res = loadDocSync( url );
-    res = res.replace( /(^\s+|\s+$)/g , "" );
+    command.value = "";
+    promptNode.style.visibility = "hidden";
+    promptNodeInvisible += 1;
     var responsetype = 'response';
-    if(usr[0] == '/'){
+    if(usr[0] == '/' && usr[1].match(/\D/)){
         responsetype = responsetype + "-noret";
     }
-    YAHOO.log(res, responsetype, "shell");
 
+    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
+
+    loadDocAsync( url , function(res){
+        res = res.replace( /(^\s+|\s+$)/g , "" );
+        YAHOO.log(res, responsetype, "shell");
+        loader.myLogReader._printBuffer();
+        promptNodeInvisible -= 1;
+        if(promptNodeInvisible == 0) promptNode.style.visibility = "visible";
+    });
     return false;
 }
 

@@ -95,7 +95,7 @@ var Buffer = function(){
 };
 
 var command = request.command;
-if(command.startsWith("/")){
+if(command.match(/^\/\D/)){
     
     command = command.substring(1, command.length);
     
@@ -135,7 +135,12 @@ try {
     res = theScope.eval( command , "aaaa" + shellId , null );
 }
 catch (e){
-    var ary = [e.toString()].concat(e.getStackTrace());
+    var ary = [e.toString()];
+    var st = e.getStackTrace();
+    for(var i = 0; i < st.length; i++){
+        ary.push(st[i]);
+        if(st[i].toString().match(/__shell/)) break;
+    }
     exc = ary.join("<br/>");
 }
 finally{
