@@ -3,7 +3,7 @@
 var th = obj.th;
 var table = obj.table;
 var fields = obj.fields;
-
+var colspan = obj.colspan;
 %>
 
 
@@ -16,14 +16,23 @@ var fields = obj.fields;
     <td class="right">&nbsp;</td>
   </tr>
 
-  <forin i table.rows>
+  <if (table.rows.length == 0)>
     <tr class="white-main">
       <td class="left"></td>
-      <forin j fields>
-        <td>$table.rows[i][fields[j]]</td>
-      </forin>
-      <td><img onclick="deleteFile('$table.rows[i]._id', '$table.rows[i].filename')" src="/~~/admin/assets/img/button_delete_on_white.gif" /></td>
+      <td colspan="$colspan">No files uploaded</td>
       <td class="right"></td>
     </tr>
-  </forin>
+  </if>
+  <if (table.rows.length != 0)>
+    <forin i table.rows>
+      <tr class="white-main">
+        <td class="left"></td>
+        <forin j fields>
+          <td>$table.rows[i][fields[j]]</td>
+        </forin>
+        <td><img onclick="deleteFile('$table.rows[i]._id', '$table.rows[i].filename')" src="/~~/admin/assets/img/button_delete_on_white.gif" /></td>
+        <td class="right"></td>
+      </tr>
+    </forin>
+  </if>
 
