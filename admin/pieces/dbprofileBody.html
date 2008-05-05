@@ -5,18 +5,23 @@ var th = obj.th;
 var colspan = obj.colspan;
 %>
 
-<tr id="pushNode" class="white-main">
-  <td class="left">&nbsp;</td>
-  <forin i th>
-    <th>$th[i].name</th>
-  </forin>
-  <td class="right">&nbsp;</td>
-</tr>
-
 <if (table.rows.length == 0)>
-  <tr><td colspan="$colspan">No database profiling messages.</td></tr>
+    <tr id="pushNode" class="white-main">
+      <td class="left">&nbsp;</td>
+      <td colspan="3">No database profiling messages.</td>
+      <td class="right">&nbsp;</td>
+    </tr>
 </if>
+
 <if (table.rows.length != 0)>
+  <tr id="pushNode" class="white-main">
+    <td class="left">&nbsp;</td>
+    <forin i th>
+      <th>$th[i].name</th>
+    </forin>
+    <td class="right">&nbsp;</td>
+  </tr>
+
   <forin i table.rows>
     <tr class="white-main">
       <td class="left">&nbsp;</td>
