@@ -183,6 +183,7 @@ Object.extend(git.Repo.prototype, {
         // commit. We need the right information in the environment when
         // that happens.
         var ret = sysexec( "git pull" , "" , this._gitEnv(u) );
+        ret.cmd = "git pull";
         ret.parsed = this._parsePull(ret);
         return ret;
     },
