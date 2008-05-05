@@ -3,8 +3,7 @@
 Categories - <a href="category_edit">new</a>
 <p>
 
-{
-
+<%
  var tab = new htmltable( 
   { 
    ns : db.blog.categories,
@@ -19,5 +18,4 @@ Categories - <a href="category_edit">new</a>
  );
 
  tab.dbview( tab.find().sort({ts:-1}) );
-
-}
+%>
