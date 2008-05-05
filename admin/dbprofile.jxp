@@ -129,17 +129,7 @@ function refreshTable(passData){
         passData = "";
 
     ajax("&action=searchprofile&rowsPerPage=<%= rowsPerPage %>&reverse=true&"+passData+lastSearch, "table", function(response) {
-        var tbd = YAHOO.util.Dom.getNextSibling(pushNode);
-        while(tbd) {
-            parent.removeChild(tbd);
-            tbd = YAHOO.util.Dom.getNextSibling(pushNode);
-        }
-
-        document.getElementById("temp").innerHTML = response;
-        var trs = document.getElementById("temp").childNodes[1].childNodes;
-        for(var i=trs.length-1; i>=0; i--) {
-            YAHOO.util.Dom.insertAfter(trs[i], pushNode);
-        }
+        document.getElementById("myCollection").innerHTML = response;
     });
 }
 
