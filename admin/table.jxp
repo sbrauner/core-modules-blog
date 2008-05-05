@@ -106,13 +106,10 @@ else if(request.action == "search" || request.action == "userssearch" || request
     }
 
     for(q in request) {
-        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" || q == "pagename")
-            continue;
-        if(top && (q == "index" || q == "name"))
-            continue;
-
-        var query = new RegExp(".*"+request[q]+".*", "i");
-        searchobj[q] = query;
+        if(q.indexOf("search") == 0 && q.length > 6) {
+            var query = new RegExp(".*"+request[q]+".*", "i");
+            searchobj[q.substring(6)] = query;
+        }
     }
 
     if(request.action == "userssearch" && searchobj['admin']){
@@ -270,7 +267,7 @@ else if(request.action == "userssearch"){
     var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
 }
 else if(request.action == "filessearch") {
-    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete", name: "Delete"}];
+    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete"}];
 }
 else if(request.pagename == "cron") {
     var th = [{name: "name", heading: "Job Name"}, {name: "url", heading: "URL"}, {name: "xminutes", heading: "Interval"}, {name: "lastRun", heading: "Last Run"}, {name: "Delete", heading: "Delete"}];
@@ -370,7 +367,7 @@ else {
 
 dbTable.top = top;
 if(top) {
-    dbTable.idxes = {};
+    dbTable.idxes = {name: "name"};
     for(var i in dbTable.rows) {
         dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
@@ -467,6 +464,5 @@ else {
     core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});
 }
 core.admin.pieces.tableFooter({page: page, prevPage: prevPage, nextPage: nextPage, colspan: dbTable.colspan, totalNumPages: dbTable.totalNumPages});
-
 
 %>
