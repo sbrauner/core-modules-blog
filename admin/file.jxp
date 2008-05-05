@@ -1,0 +1,6 @@
+<%
+
+myFile = db._files.findOne({_id: request.id});
+response.sendFile(myFile);
+
+%>

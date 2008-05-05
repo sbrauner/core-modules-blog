@@ -388,6 +388,7 @@ else if(request.action == "userssearch"){
 else if(request.action == "filessearch") {
     for(var i=0; i<dbTable.rows.length; i++) {
         dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteFile(\''+dbTable.rows[i]._id+'\', \''+dbTable.rows[i].filename+'\')" />';
+        dbTable.rows[i].filename = '<a onclick="getFile(\''+dbTable.rows[i]._id+'\')" style="cursor: pointer">'+dbTable.rows[i].filename+'</a>';
     }
     dbTable.idxes = {};
 }

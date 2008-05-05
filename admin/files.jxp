@@ -109,17 +109,16 @@ function deleteFile(id, name) {
     simpledialog.render("dlgbox");
     simpledialog.show();
 }
+
+function getFile(id) {
+    location = "file?id="+id;
+}
+
 </script>
 
 
 <div id="myCollection">
 <%
-
-/*var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete"}];
-var table = {};
-table.rows = db._files.find().sort( { uploadDate : 1 }).toArray();
-var fields = ["filename", "uploadDate", "contentType", "length"];
-*/
 
 request.ns = "admin._files";
 request.action = "filessearch";
