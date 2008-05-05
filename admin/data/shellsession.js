@@ -69,7 +69,7 @@ admin.data.ShellSession.History = function(){
     // Array of commands.
     this.commands = [];
     this.commands._dbCons = admin.data.ShellSession.Commmand;
-}
+};
 
 Object.extend(admin.data.ShellSession.History.prototype, {
     presave: function(){

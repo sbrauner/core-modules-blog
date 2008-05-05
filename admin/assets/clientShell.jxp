@@ -28,6 +28,9 @@ var updatePrompt = function(){
     promptNode.innerHTML = getUserPromptHTML(shellMode);
 };
 
+pastCommandsMap = {};
+historyAryMap = {};
+
 var loader = new YAHOO.util.YUILoader();
 loader.insert({
     require: ['fonts', 'dragdrop', 'logger', 'container', 'autocomplete', 'treeview', 'json', 'event', 'resize'],
@@ -269,10 +272,12 @@ loader.insert({
 
         var replay = false;
 
-        var inputs = <%= tojson(session.getCommands()) %>;
+        <% ['bash', 'js'].forEach(function(z){ %>
 
-        historyAry = []; // indexes of input used on each line
-        pastCommands = []; // commands themselves; unique for YUI AC
+        var inputs = <%= tojson(session.getCommands(z)) %>;
+
+        historyAryTemp = []; // indexes of input used on each line
+        pastCommandsTemp = []; // commands themselves; unique for YUI AC
 
         // translate non-unique strings into YUI-friendly format
         for(var i = 0; i < inputs.length; i++){
@@ -281,30 +286,20 @@ loader.insert({
                 // duplicate command!
             }
             else {
-                pastCommands.push(cmd);
+                pastCommandsTemp.push(cmd);
             }
-            historyAry.push(pastCommands.indexOf(cmd));
+            historyAryTemp.push(pastCommandsTemp.indexOf(cmd));
         }
 
-        var outputs = <%= tojson(session.getResults()) %>;
+        var outputs = <%= tojson(session.getResults(z)) %>;
+        pastCommandsMap.<%= z %> = pastCommandsTemp;
+        historyAryMap.<%= z %> = historyAryTemp;
 
-        // re-log all the old commands and responses
-        shouldReplay = false;
-        // Disabled for now; we may want this later
-        if(shouldReplay){
-            replay = true;
-            YAHOO.log("<span class='faded'>", "format", "shell");
-            for(var i = 0; i < inputs.length; i++){
-            YAHOO.log(inputs[i], 'user', 'shell');
-                YAHOO.log(outputs[i], 'response', 'shell');
-            }
-            YAHOO.log("</span>", "format", "shell");
-            YAHOO.log("<hr/>", "format", "shell");
+        <% }); %>
+        historyAry = historyAryMap.js;
+        pastCommands = pastCommandsMap.js;
 
-            this.myLogReader._printBuffer();
 
-            replay = false;
-        }
         // History popup
 
         historyPopup = new YAHOO.widget.Dialog('history_popup', {
