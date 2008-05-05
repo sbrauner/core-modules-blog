@@ -596,7 +596,7 @@ function doRun(el, value, save){
     promptNode.style.visibility = "hidden";
     promptNodeInvisible += 1;
     var responsetype = 'response';
-    if(usr[0] == '/'){
+    if(usr[0] == '/' && usr[1].match(/\D/)){
         responsetype = responsetype + "-noret";
     }
 

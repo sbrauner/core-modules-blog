@@ -95,7 +95,7 @@ var Buffer = function(){
 };
 
 var command = request.command;
-if(command.startsWith("/")){
+if(command.match(/^\/\D/)){
     
     command = command.substring(1, command.length);
     
