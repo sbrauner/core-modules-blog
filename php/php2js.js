@@ -168,7 +168,7 @@ number = { type: "number", str: "",
 
 // $SOMEVAR
 variable = { type: "variable", name: "" ,
-	     action: function(t) { say(t.name); },
+	     action: function() { say(this.name); },
 	     init: function() 
 	     { 
 		 if( varTranslations[this.name] )
@@ -187,17 +187,17 @@ linecomment = { type: "linecomment" }; // // or #
 blockcomment = { type: "blockcomment" }; // slash *
 
 singlequotestr = { type: "singlequotestr", stringval: "",
-		   action: function(t) 
+		   action: function() 
 		   { 
-		       say("'"); say(t.stringval); say("'");
+		       say("'"); say(this.stringval); say("'");
 		   }
 };
 
 doublequotestr = { type: "doublequotestr", stringval: "",
-		   action: function(t) 
+		   action: function() 
 		   { 
 		       // todo: expand vars
-		       say('"'); say(t.stringval); say('"');
+		       say('"'); say(this.stringval); say('"');
 		   } 
 };
 
@@ -248,6 +248,13 @@ function getidentifier() {
 	pop();
     }
     return id;
+}
+
+/* like getidentifier, but skips past white space to find an identifier */
+function nextidentifier() { 
+    var ch = get(0);
+    if( delimChar(ch) ) return "";
+    return ch + getidentifier();
 }
 
 /* helper: if str matches, return a token of type tokobj */
@@ -377,6 +384,36 @@ function rewind(mk) {
     line = mk.ln;
 }
 
+var casts = { 
+    "array": "array",
+    "int": "int", "integer": "int",
+    "bool": "bool", "boolean": "bool",
+    "float": "float", "double": "float", "real": "float",
+    "string": "string", "binary": "binary", "object": "object"
+}
+
+// (array)$z
+// (int) $z
+// http://us3.php.net/manual/en/language.types.type-juggling.php
+function tryCast() { 
+    var mk = mark();
+    var t = nextidentifier();
+    var castType = casts[t];
+    if( castType ) {
+	var p = tok();
+	if( p.str == ')' ) { 
+	    say("cast" + castType + "(");  // castArray(z);
+	    var v = tok();
+	    v.action();
+	    say(")");
+	    return true;
+	}
+    }
+    // not a cast
+    rewind(mk);
+    return false;
+}
+
 function doInclude() {
     var mk = mark();
     try { 
@@ -421,7 +458,6 @@ function doEcho() {
 function sayComplexVariable(inner) { 
     if( inner ) { 
 	var id = getidentifier();
-	print("ID:" + id);
 	if( id == "" )
 	    throw { unexpected: id, wanted: "identifier after ->" };
 	say(id);
@@ -473,7 +509,6 @@ function forEach() {
     var mko = markOutput();
     doStatement(as);
     expect(as);
-    print("past AS " + inphp);
 
     var k = expect(variable); // $b
     var tk = tok(0);
@@ -558,6 +593,8 @@ function php(endOn, starter) {
 		return t;
 	    }
 	    if( t.type == "other" ) {
+		if( t.str == '(' && tryCast() )
+		    continue;
 		if( t.str == ':' && peek(-1) == ':' ) { 
 		    get(-1); say('.'); continue; // ::
 		}
@@ -592,7 +629,7 @@ function php(endOn, starter) {
 		say("//"); skipTo("\n"); continue;
 	    }
 	    if( t.action ) { 
-		t.action(t); continue;
+		t.action(); continue;
 	    }
 	    printnoln("***unhandled token:");
 	    print(tojson(t)+"\n");

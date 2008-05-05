@@ -117,3 +117,20 @@ function dirname(path) {
     var i = path.lastIndexOf('/');
     return i < 0 ? path : path.substring(0, i);
 }
+
+function castarray(a) { return isArray(a) ? a : [a]; }
+// todo, other casts
+// castint()
+// castfloat()
+// ...
+
+/* php foreach equivalent */
+function foreach(coll, f) { 
+    coll.forEach(f); 
+}
+function foreachkv(coll, f) { 
+    coll.forEach(function(k) 
+		 { 
+		     f(k, coll[k]);
+		 });
+}
