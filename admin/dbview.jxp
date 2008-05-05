@@ -332,9 +332,21 @@ var _createIndex = function() {
 
 function createIndex() {
     var idx = '<%
+    var sysIdx = db.system.indexes.find({ns: request.ns}).toArray();
+    var existing = [];
+    for(var i in sysIdx) {
+        for(var j in sysIdx[i].key) {
+            existing.push(j);
+        }
+    }
+
     for(var i in f) {
-        if(!ignore[i])
-            print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
+        if(!ignore[i]) {
+            if(existing.indexOf(i) > 0)
+                print('<div class="existing_index">'+i+' <span>(index exists)</span></div>');
+            else
+                print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
+        }
     } %>';
 
     var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",

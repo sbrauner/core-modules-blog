@@ -850,3 +850,10 @@ div.twocolumns div.right {
 	width: 45%;
 	float: right;
 }
+div.existing_index {
+        margin-left: 18px;
+        font-style: italic;
+}
+div.existing_index span {
+        font-size: 10px;
+}
