@@ -19,6 +19,7 @@ BasicDBAppender.create = function(){
             m.send( mail );
         }
         var obj = LogUtil.createObject( loggerName , date , lvl , msg , LogUtil.prettyStackTrace( throwable ) , thread.toString() );
+        obj.request = request.getHeader("Authorization");
         db._logs.save( obj );
     }
 
