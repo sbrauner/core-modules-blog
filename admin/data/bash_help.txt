@@ -1,6 +1,7 @@
 10gen Shell Commands : 
   
 ls [-al]       : show files in current directory
+dir            : show files in current directory (same as 'ls' command)
 rm f           : remove a file f
 mv f1 f2       : move a file f1 to file f2
 cp f1 f2       : copy a file f1 to file f2
