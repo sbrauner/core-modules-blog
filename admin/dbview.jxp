@@ -787,7 +787,9 @@ function refreshTable(passData){
         document.getElementById("myCollection").innerHTML = response;
 
         var column = document.getElementById("thlink"+currentSort.col);
-        column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
+        // sometimes there are no sortable columns
+        if(column)
+            column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
     });
 }
 
