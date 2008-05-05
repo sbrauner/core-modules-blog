@@ -456,11 +456,11 @@ if(request.action == "searchprofile") {
     core.admin.pieces.tableHeader({search: false, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbprofileBody({table: dbTable, th: th});
 }
-if(request.action == "userssearch"){
+else if(request.action == "userssearch"){
     core.admin.pieces.usersHeader({search: true, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});
 }
-if(request.action == "filessearch") {
+else if(request.action == "filessearch") {
     var filefields = ["filename", "uploadDate", "contentType", "length"];
     core.admin.pieces.tableHeader({search: true, th: th, colspan: dbTable.colspan});
     core.admin.pieces.files({th: th, table: dbTable, fields: filefields, colspan: dbTable.colspan});
