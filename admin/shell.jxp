@@ -13,6 +13,7 @@ if( ! session ){
     session = new admin.data.ShellSession(user);
     session.save();
 }
+session.postload();
 
 head.addCSS("NOCDN/~~/admin/assets/shell.css");
 head.addCSS("NOCDN/~~/admin/assets/logger.css");
