@@ -259,13 +259,12 @@ else
     dbTable.rows = rows;
 
 
-
 /* Formatting */
 
 var fcount = 0;
 
 if(top) {
-    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "capped", className: "center", heading: "CAPPED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
 }
 else if(request.action == "userssearch"){
     var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
