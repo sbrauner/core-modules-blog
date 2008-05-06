@@ -132,9 +132,12 @@ function hideObj(i) {
     document.getElementById(i).style.display = "none";
 }
 
-function deleteRow(id) {
+function deleteRow(id, field) {
     var handleDeleteRow = function() {
-        var passData = "ns=<%= request.ns %>&action=delete&id="+id;
+        if(field)
+            var passData = "ns=<%= request.ns %>&action=delete&name="+field+"&val="+id;
+        else
+            var passData = "ns=<%= request.ns %>&action=delete&id="+id;
         ajax(passData, "editDb", function(response) {
             refreshTable();
         });
