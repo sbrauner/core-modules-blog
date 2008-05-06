@@ -733,7 +733,6 @@ function refreshTable(passData){
         passData = passData+"&";
     else
         passData = "";
-    console.log("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch);
     ajax("<%= request.ns ? 'ns='+request.ns+'&' : '' %>action=search&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
 

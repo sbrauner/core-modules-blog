@@ -1,6 +1,8 @@
 <%
 
 core.blog.ping();
+core.blog.post();
+core.blog.category();
 
 var id = request.id;
 
