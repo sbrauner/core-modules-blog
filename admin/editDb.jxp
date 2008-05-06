@@ -57,7 +57,7 @@ else if(request.action == "create") {
     createCollection(request.tablename, opts);
 }
 else if(request.action == "drop") {
-    drop(request.ns.substring( request.ns.indexOf('.')+1));
+    drop(request.ns);
 }
 else if(request.action == "dropI") {
     var idx = request.idx.split(",");
