@@ -279,6 +279,7 @@ td.maincontent .search-table form {
 }
 
 select {
+	font-size: 11px;
 	height: 20px;
 	padding: 2px;
 	cursor: pointer;
@@ -718,8 +719,7 @@ td.maincontent div.links-table a:hover.external {
 
 /* Form Edit */
 
-form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
-  font:100% verdana,arial,sans-serif;
+form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */s
   margin: 0;
   padding: 0;
   font-size: 12px;
@@ -739,6 +739,7 @@ form.edit fieldset, div.fieldset {
 
 form.edit input.text {
   border: 1px solid #cccccc;
+  width: 200px;
 }
 
 form.edit label {
@@ -746,7 +747,7 @@ form.edit label {
 	float: left;
 	width: 200px;
 	padding: 0;
-	margin: 5px 0 0; /* set top margin same as form input - textarea etc. elements */
+	margin: 8px 0 0; /* set top margin same as form input - textarea etc. elements */
 	text-align: right;
 }
 
