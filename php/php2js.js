@@ -15,7 +15,7 @@ function ourtojson(x) {
 tojson = ourtojson;
 
 function clone(x) { 
-    //    return Object.extend({}, x);
+    //return Object.extend({}, x);
     return x.clone();
 }
 
@@ -164,14 +164,17 @@ function snoop(f) {
 // -------------------------------------------------------------------
 
 identTranslations = { 
-    "interface": "$interface"
+    "interface": "$interface",
+    "var": "$var"
 };
 
 varTranslations = { 
     GLOBALS: "globals",
     _REQUEST: "request",
     _SERVER: "_server()",
-    "class": "$class"
+    "class": "$class",
+    "interface": "$interface",
+    "var": "$var"
 };
 
 // -------------------------------------------------------------------
@@ -217,6 +220,8 @@ singlequotestr = { type: "singlequotestr", stringval: "",
 doublequotestr = { type: "doublequotestr", stringval: "", action: doDoubleQuote };
 
 /* keywords */
+phpcontinue = { type: "continue", action: doContinue };
+phpbreak = { type: "break", action: doBreak };
 phpfunction = { type: "function", action: "function" };
 phppublic = { type: "public", action: "public!" };
 phpprivate = { type: "private", action: "private!" };
@@ -235,7 +240,8 @@ foreach = { type: "foreach", action: forEach };
 array = { type: "array", action: doArray };
 echo = { type: "echo", action: doEcho };
 keywords = [ define, require_once, include_once, require, include, foreach, array, echo,
-	     file, as, _final, phpclass, phpstatic, phpprivate, phppublic, phpfunction, phpextends
+	     file, as, _final, phpclass, phpstatic, phpprivate, phppublic, phpfunction, phpextends,
+	     phpbreak, phpcontinue
 ];
 
 
@@ -404,7 +410,6 @@ function expectStr(s) {
 // conversion of FOO to string type
 //
 function doDoubleQuote() {
-    // todo: expand vars
     var pc = this.stringval.split(/\$/);
     say( '"' + pc.car() + '"' );
     pc.cdr().forEach(function(x) 
@@ -441,10 +446,11 @@ function doClass() {
     print("class " + nm);
 
     say("/*class " + nm + (baseClass?" extends "+baseClass:"") + "*/\n" + nm + " = function() {");
-    if( baseClass ) say(" this.superclass(); }"); 
-    say("\n");
+    if( baseClass ) say(" this.superclass(); "); 
+    say("}\n");
     if( baseClass ) { 
-	say(nm + ".prototype = " + baseClass + ".prototype.clone();\n");
+	say(nm + ".prototype = Object.extend({}, "+baseClass+".prototype);\n");
+	//say(nm + ".prototype = " + baseClass + ".prototype.clone();\n");
 	say(nm + ".prototype.constructor = " + nm + ";\n");
     }
     inClass++;
@@ -625,6 +631,22 @@ function doArray() {
     say(']');
 }
 
+var inForEach = false;
+
+// break in for, foreach, while, do-while or switch structure.
+function doBreak() { 
+    if( inForEach ) 
+	say('breakForEach()');
+    else
+	say("break");
+}
+function doContinue() { 
+    if( inForEach ) 
+	say('return');
+    else
+	say("continue");
+}
+
 // php foreach( $a as $b [=> $c]  ) { }
 function forEach() { 
     expectStr("(");
@@ -649,7 +671,10 @@ function forEach() {
 	say(") ");  // foreach(a, function(b)) ...
     }
 
+    var feold = inForEach;
+    inForEach = true;
     doBlock();
+    inForEach = feold;
     say(" );");
 }
 /*
