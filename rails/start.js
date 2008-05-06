@@ -5,6 +5,11 @@
 // ----- libs -----
 // -------------------
 
+var inStart = true;
+
+if ( local.config && local.config.default_site )
+    local.config.default_site();
+
 var libDir = openFile( "lib" );
 if ( libDir.exists() ){
     libDir.listFiles().forEach(
