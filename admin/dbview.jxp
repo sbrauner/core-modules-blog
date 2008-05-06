@@ -72,50 +72,16 @@ if(!top) {
         }
         i++;
     }
-    %>
-    </script>
-<!--    <div>
-
-    <div>
-    <input type="button" value="View Options" onclick="viewOptionsPanel.show()" />
-    </div>
-    <div id="viewOptions" style="display: none">
-    <div class="hd">View Options</div>
-    <div class="bd">Select the columns that you wish to display.
-    <% for(var i in f) {
-        if(!ignore[i])
-            print('<div>'+i+' <input type="checkbox" name="viewopts" value="'+i+'" checked onclick="toggleCollapse(\''+i+'\')"/></div>');
-    }%>
-    </div>
-    <div class="ft">
-    <input type="button" value="Okay" onclick="changeView()" /><input type="button" value="Cancel" onclick="viewOptionsPanel.hide()" />
-    </div>
-    </div>
--->
-
-    <div id="searchFilter" style="display:none;">
-    <div class="hd">Search/Filter Panel</div>
-    <div class="bd"><table><tr><th>Column</th><!--<th>Yes</th><th>No</th><th>Whatever</th>--><th>Search Term</th></tr>
-    <%
-    for(var i in f) {
-        if(!ignore[i])
-            print('<tr><td>'+i+'</td><!--<td><input type="radio" name="'+i+'" value="0" /></td><td><input type="radio" name="'+i+'" value="1" /></td><td><input type="radio" name="'+i+'" value="2" /></td>--><td><input type="text" onblur="setSearchFilter()" name="search" id="'+i+'" /></td></tr>');
-    }
-    %>
-    </table>
-    </div>
-    <div class="ft"><input type="button" value="OK" onclick="doCommand(); searchFilterPanel.hide()" /><input type="button" value="Cancel" onclick="searchFilterPanel.hide()" /></div>
-    </div>
-    <%
-} %>
+}
+%>
 
 
 <script type="text/javascript">
 var lastSearch = "";
 
 <% if(!top) { %>
-function doCommand() {
-    ajax("ns=<%= request.ns %>&action=eval&cmd="+document.getElementById("searchbox").value, "table", function(response) {
+function doCommand(cmd) {
+    ajax("ns=<%= request.ns %>&action=eval&cmd="+cmd, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
     });
 }
@@ -134,14 +100,6 @@ function infoDlg(hd, msg) {
     simpledialog1.setHeader(hd);
     simpledialog1.render("myMarkedUpContainer");
     simpledialog1.show();
-}
-
-function validateSearchbox() {
-    /* external function checkRun matches parens */
-    if(checkRun(document.getElementById("searchbox").value))
-        infoDlg("Syntax Validation", "Syntax ok.");
-    else
-        infoDlg("Syntax Validation", "Syntax Error.");
 }
 
 function changeView() {
@@ -311,25 +269,19 @@ function setSearchFilter() {
 
 
 function changeSearchbox() {
-    newEI = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.ensureIndex({";
+    newIndex = "db.<%= request.ns.substring( request.ns.indexOf('.')+1 ) %>.ensureIndex({";
     eiAr = [];
 
     var newidx = document.getElementsByName("createidx");
     for(var i=0; i<newidx.length; i++) {
         if(newidx[i].checked)
-            newEI += newidx[i].value + ": 1, ";
+            newIndex += newidx[i].value + ": 1, ";
     }
-    newEI = newEI.substring(0, newEI.length-2) + " });";
-
-    var sb = document.getElementById("searchbox");
-    sb.value = newEI;
+    newIndex = newIndex.substring(0, newIndex.length-2) + " });";
 }
 
-var _createIndex = function() {
-    doCommand();
-    this.hide();
-}
 
+var newIndex = "";
 function createIndex() {
     var idx = '<%
     var sysIdx = db.system.indexes.find({ns: request.ns}).toArray();
@@ -348,6 +300,11 @@ function createIndex() {
                 print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
         }
     } %>';
+
+    var _createIndex = function() {
+        doCommand(newIndex);
+        this.hide();
+    }
 
     var simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1",
         { width: "300px",
@@ -659,14 +616,6 @@ if(top) {
 }
 %>
 
-addSearchForm = function(n) {
-    var str = '<form style="display:inline;" onsubmit="doSearch(); return false;"><input type="text" name="'+n+'" class="minisearch"';
-    if(n == "Name") {
-        return '<nobr><input type="button" name="action" onclick="doSearch()" value="Search" />'+str+"></nobr>";
-    }
-    return str+' style="width:100%;">';
-}
-
 function doSearch() {
     var passData = getSearchArgs();
     lastSearch = passData;
@@ -674,9 +623,10 @@ function doSearch() {
 }
 function clearSearch() {
     document.getElementById("searchtext").value = "";
-    document.getElementById("searchbox").value = "";
-    document.getElementById("searchopt").options[0].selected = true;
+    if (document.getElementById("searchopt").options[0])
+        document.getElementById("searchopt").options[0].selected = true;
     currentSearch = {};
+    currentSort = { col : '<%= top ? 'name' : ((fields.indexOf('_id') != -1) ? '_id' : fields[0]) %>', dir: 1 };
     lastSearch = "";
     refreshTable();
 }
