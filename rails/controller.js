@@ -141,3 +141,16 @@ ApplicationResponse.prototype.html = function(){
 ApplicationResponse.prototype.xml = function(){
     return false;
 };
+
+
+// ---------
+// data model
+// ---------
+
+function caches_page( name ){
+    SYSOUT( "ignore caches_page [" + name + "]" );
+};
+
+function before_filter( name ){
+    SYSOUT( "ignore before_filter [" + name + "]" );
+};

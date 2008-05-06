@@ -3,7 +3,7 @@ ActiveRecord = {};
 
 ActiveRecord.Base = function( obj ){
     this.collectionName = null;
-    if ( obj )
+    if ( obj && isObject( obj ) )
         Object.extend( this , obj );
 };
 
@@ -137,4 +137,59 @@ ActiveRecord.Base.prototype.submit = function( name ){
         " name=\"commit\" " +
         " value=\"" + name + "\" type=\"submit\" />";
 };
+
+
+// ---------
+// data model
+// ---------
+
+function belongs_to( name ){
+    SYSOUT( "ignoring belongs_to [" + name + "]" );
+}
+
+function has_many( name ){
+    SYSOUT( "ignoring has_many [" + name + "]" );
+}
+
+function has_and_belongs_to_many( name , option ){
+    SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
+}
+
+function composed_of( name , options ){
+    SYSOUT( "ignoring composed_of [" + name + "]" );
+}
+
+function acts_as_list( options ){
+    SYSOUT( "ignoring acts_as_list [" + options + "]" );
+}
+
+function acts_as_ferret( options ){
+    SYSOUT( "ignoring acts_as_ferret [" + options + "]" );
+}
+
+
+function validates_format_of( name , options ){
+    SYSOUT( "ignoring validates_format_of [" + name + "]" );
+}
+
+function validates_length_of( name , options ){
+    SYSOUT( "ignoring validates_length_of [" + name + "]" );
+}
+
+
+function validates_uniqueness_of( name , options ){
+    SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
+}
+
+
+function serialize( name ){
+    SYSOUT( "ignoring serialize [" + name + "]" );
+}
+
+function helper( name ){
+    SYSOUT( "ignoring helper [" + name + "]" );
+}
+
+
+
 
