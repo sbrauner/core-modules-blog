@@ -7,9 +7,16 @@
 
 var inStart = true;
 
-if ( local.config && local.config.default_site )
-    local.config.default_site();
-
+if ( local.config ){
+    
+    var files = [ "app" ];
+    files.forEach( function(z){
+        if ( local.config[z] )
+            local.config[z]();
+    }
+                 );
+}
+/*
 var libDir = openFile( "lib" );
 if ( libDir.exists() ){
     libDir.listFiles().forEach(
@@ -26,7 +33,7 @@ if ( libDir.exists() ){
     );
 
 }
-
+*/
 // -------------------
 // ----- models -----
 // -------------------
