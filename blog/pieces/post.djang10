@@ -1,0 +1,52 @@
+{% comment %}
+
+Render a post
+
+Required parameters:
+post - an object from the blog.posts collection
+
+Optional parameters:
+byline - Text appearing before the author's name.  Defaults to "".  Could also be "Written by", "Author: ", etc.
+dateline - Text appearing before the date field.  Defaults to "".
+entry_categories_header - The title for the categories section.  Defaults to "Categories".  Could also be "Tags", "Sections", "Topics", etc.
+{% endcomment %}
+
+
+<div id="entry-{{ post._id }}" class="newhp">
+  <div class="asset-header">
+    <h2 class="asset-name">
+      <a href="{{ post.name }}">{{ post.title }}</a>
+    </h2>
+
+    <div class="asset-meta">
+      <h3 class="timestamp" >
+        {% if post.author %}
+          <span class="byline">{{ byline|default:"" }}{{ post.author }}</span> |
+        {% endif %}
+        <span class="dateline">{{ dateline|default:"" }}{{ post.ts }}</span>
+      </h3>
+    </div>
+  </div>
+
+  <div class="asset-content">
+    <div class="asset-body">
+      {{ post.content }}
+    </div>
+  </div>
+
+  <div class="asset-footer">
+    {% if post.categories.length %}
+      <div class="entry-categories">
+        <h4 class="entry-categories-header">{{ entry_categories_header|default:"Categories" }}<span class="delimiter">:</span></h4>
+        <ul class="entry-categories-list">
+          {% for category in post.categories %}
+            <li class="entry-category">
+              <a href="/category?name={{ category|urlencode }}">{{ category }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
