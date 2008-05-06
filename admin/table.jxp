@@ -131,7 +131,6 @@ else if(request.action == "search" || request.action == "userssearch" || request
         rows = collection.find(searchobj).sort(mySort).toArray();
     else
         rows = collection.find(searchobj).sort(mySort).toArray();
-
 }
 else if(request.action == "eval") {
     try {
