@@ -9,3 +9,6 @@ Array.prototype.distinct = function() {
 					     }
     return true;
 }
+
+Array.prototype.car = function() { return this[0]; }
+Array.prototype.cdr = function() { return this.slice(1); }

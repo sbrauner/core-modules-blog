@@ -101,8 +101,19 @@ function _server() {
 /* require/include for php 
    must be fully qualified atm.
 */
-function require(path) { 
+function require(path, once, cd) { 
     path = path.lessSuffix(".php").lessSuffix(".inc");
+    if( cd && !path.startsWith('/') ) { 
+	assert( cd.endsWith('/') );
+	path = cd + path;
+    }
+
+    if( once ) { 
+	if( _included == null ) _included = { };
+	if( _included[path] ) return;
+	_included[path] = true;
+    }
+
     var x = jxp;
     var s = path.split('/');
     print( "\n" + tojson(s) + "\n");

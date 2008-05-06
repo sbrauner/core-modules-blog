@@ -2,11 +2,21 @@
 
  */
 
+core.util.object();
+core.util.array();
 core.util.string();
 core.core.file();
 
+tojsonfull = tojson;
+function ourtojson(x) { 
+    var s = "" + tojsonfull(x);
+    return s.replace(/\n.*/g, "...");
+}
+tojson = ourtojson;
+
 function clone(x) { 
-    return Object.extend({}, x);
+    //    return Object.extend({}, x);
+    return x.clone();
 }
 
 // -------------------------------------------------------------------
@@ -112,7 +122,7 @@ function skipToAndEat(patt) {
 
 /* sayskipped
      -1 return whitespace
-     0 skip; don't output it
+     0 skip; don't output it (default behavior)
      1 skip, but output
 */
 function peek(sayskipped) { 
@@ -120,7 +130,7 @@ function peek(sayskipped) {
     while( 1 ) {
 	if( pos >= il )
 	    throw "eof";
-	if( input[pos] == ' ' && sayskipped >= 0 ) { 
+	if( (input[pos] == ' ' || input[pos] == '\t' || input[pos] == '\n') && sayskipped >= 0 ) { 
 	    if( sayskipped ) say(input[pos]);
 	    pos++; continue; 
 	}
@@ -153,18 +163,25 @@ function snoop(f) {
 
 // -------------------------------------------------------------------
 
+identTranslations = { 
+    "interface": "$interface"
+};
+
 varTranslations = { 
     GLOBALS: "globals",
     _REQUEST: "request",
-    _SERVER: "_server()"
+    _SERVER: "_server()",
+    "class": "$class"
 };
 
 // -------------------------------------------------------------------
 // Tokens
 
-number = { type: "number", str: "",
-	   action: function() { say(this.str); }
-};
+function runAction(tok) { 
+    if( isString(tok.action) ) say(tok.action);
+    else
+	tok.action();
+}
 
 // $SOMEVAR
 variable = { type: "variable", name: "" ,
@@ -174,6 +191,10 @@ variable = { type: "variable", name: "" ,
 		 if( varTranslations[this.name] )
 		     this.name = varTranslations[this.name];
 	     }
+};
+
+number = { type: "number", str: "",
+	   action: function() { say(this.str); }
 };
 
 other = { type: "other", str: "" } ; /* unclassified single char's */
@@ -193,16 +214,17 @@ singlequotestr = { type: "singlequotestr", stringval: "",
 		   }
 };
 
-doublequotestr = { type: "doublequotestr", stringval: "",
-		   action: function() 
-		   { 
-		       // todo: expand vars
-		       say('"'); say(this.stringval); say('"');
-		   } 
-};
+doublequotestr = { type: "doublequotestr", stringval: "", action: doDoubleQuote };
 
 /* keywords */
+phpfunction = { type: "function", action: "function" };
+phppublic = { type: "public", action: "public!" };
+phpprivate = { type: "private", action: "private!" };
+phpstatic = { type: "static", action: doStatic };
+phpclass = { type: "class", action: doClass };
+phpextends = { type: "extends", action: "extends?" };
 as = { type: "as" };
+_final = { type: "final", action: "/*final*/" };
 file = { type: "__file__", action: function() { say("'"+__file__+"'"); } };
 define = { type: "define", action: doDefine };
 require_once = { type: "require_once", action: doRequireOnce };
@@ -213,12 +235,17 @@ foreach = { type: "foreach", action: forEach };
 array = { type: "array", action: doArray };
 echo = { type: "echo", action: doEcho };
 keywords = [ define, require_once, include_once, require, include, foreach, array, echo,
-	     file, as
+	     file, as, _final, phpclass, phpstatic, phpprivate, phppublic, phpfunction, phpextends
 ];
 
 
 // -------------------------------------------------------------------
 // lexical
+
+function isWhitespaceTok(t) { 
+    return t.type == "other" && 
+	(t.str == ' ' || t.str == '\t' || t.str == '\n' || t.str == '\r');
+}
 
 // set stringval to the string up to 'delimiter'
 // tokobj is an examplar of the obj type we want
@@ -235,6 +262,7 @@ function strToTok(delimiter, tokobj) {
     return tokobj;
 }
 
+// true if ' ' etc.
 function delimChar(ch) {
     return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_".indexOf(ch) < 0;
 }
@@ -247,14 +275,15 @@ function getidentifier() {
 	id += ch;
 	pop();
     }
-    return id;
+    return identTranslations[id] ? identTranslations[id] : id;
 }
 
 /* like getidentifier, but skips past white space to find an identifier */
 function nextidentifier() { 
     var ch = get(0);
     if( delimChar(ch) ) return "";
-    return ch + getidentifier();
+    var id = ch + getidentifier();
+    return identTranslations[id] ? identTranslations[id] : id;
 }
 
 /* helper: if str matches, return a token of type tokobj */
@@ -286,8 +315,14 @@ function makeNumberToken(ch) {
     return n;
 }
 
-function tok(sayskipped) {
+var onWordBreak = true;
+
+function _tok(sayskipped) {
+    var wasWordBreak = onWordBreak;
+    onWordBreak = true;
+    var pold = pos;
     var ch = get(sayskipped);
+    wasWordBreak |= pos-pold>1;
     if( isDigit(ch) || (ch == '-' && isDigit(peek(-1))) ) { 
 	return makeNumberToken(ch);
     }
@@ -312,7 +347,7 @@ function tok(sayskipped) {
 	tk.init();
 	return tk;
     }
-    else {
+    else if( wasWordBreak ) {
 	pushback();
 	for( var i = 0; i < keywords.length; i++ ) { 
 	    var examplar = keywords[i];
@@ -324,7 +359,13 @@ function tok(sayskipped) {
     }
     var res = clone(other);
     res.str = ch.toLowerCase();
+    onWordBreak = delimChar(res.str);
     return res;
+}
+function tok(sayskipped) {
+    var t = _tok(sayskipped);
+    //    print(tojson(t));
+    return t;
 }
 
 function getString(sayskipped) {
@@ -336,9 +377,15 @@ function getString(sayskipped) {
 /* todo: it is ok if a comment is in front of some other expected token. 
    when that is true, just write out the comment and skip over.
 */
-function expect(exptoken, str) { 
+function expect(exptoken, str, skipws) { 
     var t = tok();
     if( t.type != exptoken.type || (str && t.str != str) ) {
+	//	if( skipws && isWhitespaceTok(t) ) { 
+	//	    t = tok(); 
+	//	    continue;
+	//	}
+
+
 	print("expected: " + exptoken.type + ' ' + (str?str:""));
 	print("got: " + tojson(t));
 	throw { unexpected: t, wanted: exptoken.type + ' ' + (str?str:"") };
@@ -346,11 +393,79 @@ function expect(exptoken, str) {
     return t;
 }
 
-function expectStr(s) { 
-    s.forEach(function(x){expect(other,x);});
+function expectStr(s) {
+    var skipws = true;
+    s.forEach(function(x){expect(other,x,skipws); skipws=false;});
 }
 
 // -------------------------------------------------------------------
+
+// note for "$FOO z" we output ""+FOO+" z" and that is good because it forces
+// conversion of FOO to string type
+//
+function doDoubleQuote() {
+    // todo: expand vars
+    var pc = this.stringval.split(/\$/);
+    say( '"' + pc.car() + '"' );
+    pc.cdr().forEach(function(x) 
+		     {
+			 var rest = null;
+			 for( var i = 0; i < x.length; i++ ) {
+			     if( delimChar(x[i]) ) {
+				 rest = i;
+				 break;
+			     }
+			 }
+			 var v = rest ? x.substring(0,rest) : x;
+			 if( varTranslations[v] ) 
+			     v = varTranslations[v];
+			 say('+' + v);
+			 if( rest )
+			     say('+"' + x.substring(rest) + '"');
+		     });
+};
+
+var className = "?";
+var inClass = 0;
+
+// class foo {
+function doClass() { 
+    var baseClass = null;
+    var nm = nextidentifier();
+
+    if( peek() != '{' ) { 
+	var t = expect(phpextends);
+	var baseClass = nextidentifier();
+    }
+
+    print("class " + nm);
+
+    say("/*class " + nm + (baseClass?" extends "+baseClass:"") + "*/\n" + nm + " = function() {");
+    if( baseClass ) say(" this.superclass(); }"); 
+    say("\n");
+    if( baseClass ) { 
+	say(nm + ".prototype = " + baseClass + ".prototype.clone();\n");
+	say(nm + ".prototype.constructor = " + nm + ";\n");
+    }
+    inClass++;
+    className = nm;
+    doBlock("quiet");
+    className = "??";
+    inClass--;
+}
+
+//    static private $_registry = null;
+//    static public function loadClass($class, $dirs = null)
+function doStatic() { 
+    var t = tok();
+    if( t.type == "public" || t.type == "private" ) 
+	t = tok();
+    say(className + ".");
+    if( t.type == "function" )
+	say(nextidentifier() + " = function");
+    else
+	runAction(t);
+}
 
 // define('PEAR_ERROR_RETURN',     1);
 function doDefine() {
@@ -360,20 +475,6 @@ function doDefine() {
     say(l.toLowerCase() + " = ");
     doStatement(')', '(');
     expectStr(')');
-}
-
-function _includeParam() { 
-    var skipped = skipOptionalChar('(');
-
-    var x = filePrefix + getString();
-    x = x.lessSuffix(".inc");
-    x = x.lessSuffix(".php");
-    x = x.lessPrefix("./");
-    x = x.replace(/\//g, '.');
-
-    if( skipped ) skipRequiredChar(')');
-
-    return x;
 }
 
 function mark() { 
@@ -404,7 +505,7 @@ function tryCast() {
 	if( p.str == ')' ) { 
 	    say("cast" + castType + "(");  // castArray(z);
 	    var v = tok();
-	    v.action();
+	    runAction(v);
 	    say(")");
 	    return true;
 	}
@@ -414,29 +515,50 @@ function tryCast() {
     return false;
 }
 
-function doInclude() {
+function _includeParam() { 
+    var skipped = skipOptionalChar('(');
+
+    var x = filePrefix + getString();
+    print("X:" + x);
+    x = x.lessSuffix(".inc");
+    x = x.lessSuffix(".php");
+    x = x.lessPrefix("./");
+    x = x.replace(/\//g, '.');
+
+    if( skipped ) skipRequiredChar(')');
+
+    return x;
+}
+
+function doInclude(once) {
     var mk = mark();
     try { 
+	if( once ) throw { unexpected: "once" };
 	// try to do literal syntax which is more readable etc.
 	say("jxp." + _includeParam() + "()");
     }
     catch( e if isObject(e) && e.unexpected ) { 
 	// do nonliteral syntax
 	rewind(mk);
-	expectStr("(");
 	say("require(");
-	doStatement(")", "(");
+	if( peek() == '(' ) { 
+	    get();
+	    doStatement(")", "(");
+	    if( once ) say(once); else say(", null");
+	    say(", '" + filePrefix + "'");
+	}
+	else {
+	    doStatement();
+	    if( peek() == ';' ) get();
+	    if( once ) say(once); else say(", null");
+	    say(", '" + filePrefix + "'");
+	    say(");");
+	}
     }
 }
 
 function doRequireOnce() { 
-    var p = _includeParam();
-    var path = p.replace(/\./g, '_');
-    say("if( !_" + path + " ) { _" + path + " = true; ");
-    say("jxp." + p + "()");
-    say("; }");
-    if( get() != ';' )
-	pushback();
+    doInclude(", 'once'");
 }
 
 // php echo stmt
@@ -629,7 +751,7 @@ function php(endOn, starter) {
 		say("//"); skipTo("\n"); continue;
 	    }
 	    if( t.action ) { 
-		t.action(); continue;
+		runAction(t); continue;
 	    }
 	    printnoln("***unhandled token:");
 	    print(tojson(t)+"\n");
@@ -654,12 +776,14 @@ function doStatement(endchar, starter) {
 /* we just started a { block } of code. (past the '{').
    process, then return. 
 */
-function doBlock() { 
-    expectStr("{"); say("{");
+function doBlock(quiet) { 
+    expectStr("{"); 
+    if( !quiet ) say("{");
     indents++;
     php('}', '{');
     indents--;
-    expectStr("}"); say("}"); 
+    expectStr("}"); 
+    if( !quiet ) say("}"); 
 }
 
 // html mode at first.
@@ -687,7 +811,12 @@ function tojs(php, fname) {
     assert(fname);
     __file__ = fname;
     filePrefix = fname.replace(/^\/data\/sites\/[^\/]+\//, "");
-    filePrefix = filePrefix.replace(/\/[^\/]+$/, "/");
+    if( filePrefix.indexOf('/') >= 0 )
+	filePrefix = filePrefix.replace(/\/[^\/]+$/, "/");
+    else
+	filePrefix = "";
+    print("fname:" + fname);
+    print("fprefix:" + filePrefix);
 
     output = "";
     input = php;
@@ -722,7 +851,9 @@ if( outname != fname ) {
     print("wrote to " + outname);
 }
 else {
-    print("couldn't parse filename " + outname ); 
+    print("couldn't parse filename - not php/inc extension?");
+    print("fname:" + fname);
+    print("outname:" + outname);
 }
 
 print("done");
