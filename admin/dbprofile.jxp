@@ -128,7 +128,7 @@ function refreshTable(passData){
     else
         passData = "";
 
-    ajax("&action=searchprofile&rowsPerPage=<%= rowsPerPage %>&reverse=true&"+passData+lastSearch, "table", function(response) {
+    ajax("&action=searchprofile&reverse=true&"+passData+lastSearch, "table", function(response) {
         document.getElementById("myCollection").innerHTML = response;
     });
 }
