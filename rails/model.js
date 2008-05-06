@@ -155,11 +155,6 @@ function has_and_belongs_to_many( name , option ){
     SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
 }
 
-function serialize( name ){
-    SYSOUT( "ignoring serialize [" + name + "]" );
-}
-
-
 function composed_of( name , options ){
     SYSOUT( "ignoring composed_of [" + name + "]" );
 }
@@ -185,6 +180,16 @@ function validates_length_of( name , options ){
 function validates_uniqueness_of( name , options ){
     SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
 }
+
+
+function serialize( name ){
+    SYSOUT( "ignoring serialize [" + name + "]" );
+}
+
+function helper( name ){
+    SYSOUT( "ignoring helper [" + name + "]" );
+}
+
 
 
 

@@ -188,6 +188,8 @@ Search = {
                 if ( Search.DEBUG ) Search.log( "\t\t searching on word [" + z + "]" );
                 var s = {}; s[idx] = z;
                 var res = table.find( s );
+                if ( options.sort )
+                    res.sort( options.sort );
 
                 while ( res.hasNext() ){
                     var tempObject = res.next();

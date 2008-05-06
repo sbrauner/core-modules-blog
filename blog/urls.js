@@ -76,7 +76,7 @@ Blog.handleRequest = function( request , arg ){
         }
 
         if (request.q) {
-            posts = Search.search(db.blog.posts, request.q , { min : 100 } );
+            posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
             var now = new Date();
             posts = posts.filter( function( z ){ return z.live && z.ts <= now; } );
             posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
