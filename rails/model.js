@@ -143,6 +143,24 @@ ActiveRecord.Base.prototype.submit = function( name ){
 // data model
 // ---------
 
+function before_save(){
+    SYSOUT( "ignoring before_save" );
+}
+
+function before_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function after_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function after_destroy(){
+    SYSOUT( "ignoring before_create" );
+}
+
+// ----
+
 function belongs_to( name ){
     SYSOUT( "ignoring belongs_to [" + name + "]" );
 }
@@ -153,6 +171,10 @@ function has_many( name ){
 
 function has_and_belongs_to_many( name , option ){
     SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
+}
+
+function format_attribute( name ){
+    SYSOUT( "ignoring format_attribute [" + name + "]" );
 }
 
 function composed_of( name , options ){
@@ -170,6 +192,10 @@ function acts_as_ferret( options ){
 
 function validates_format_of( name , options ){
     SYSOUT( "ignoring validates_format_of [" + name + "]" );
+}
+
+function validates_presence_of( name , options ){
+    SYSOUT( "ignoring validates_presence_of [" + name + "]" );
 }
 
 function validates_length_of( name , options ){
