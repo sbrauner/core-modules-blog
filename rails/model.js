@@ -151,6 +151,10 @@ function before_create(){
     SYSOUT( "ignoring before_create" );
 }
 
+function before_validation(){
+    SYSOUT( "ignoring before_validation" );
+}
+
 function after_create(){
     SYSOUT( "ignoring before_create" );
 }
@@ -173,6 +177,8 @@ function has_and_belongs_to_many( name , option ){
     SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
 }
 
+// -----
+
 function format_attribute( name ){
     SYSOUT( "ignoring format_attribute [" + name + "]" );
 }
@@ -180,6 +186,8 @@ function format_attribute( name ){
 function composed_of( name , options ){
     SYSOUT( "ignoring composed_of [" + name + "]" );
 }
+
+// ---
 
 function acts_as_list( options ){
     SYSOUT( "ignoring acts_as_list [" + options + "]" );
@@ -189,6 +197,8 @@ function acts_as_ferret( options ){
     SYSOUT( "ignoring acts_as_ferret [" + options + "]" );
 }
 
+
+// --
 
 function validates_format_of( name , options ){
     SYSOUT( "ignoring validates_format_of [" + name + "]" );
@@ -207,6 +217,11 @@ function validates_uniqueness_of( name , options ){
     SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
 }
 
+// --
+
+function with_options( options ){
+    SYSOUT( "ignoring with_options [" + name + "]" );
+}
 
 function serialize( name ){
     SYSOUT( "ignoring serialize [" + name + "]" );
