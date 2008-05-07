@@ -1,0 +1,18 @@
+{% comment %}
+
+Render a series of posts with links to individual posts
+
+Required parameters:
+posts - an array of objects from the blog.posts collection
+
+Optional parameters:
+
+{% endcomment %}
+
+<div class="posts-block">
+  {% for post in posts %}
+    <div id="post-{{ post._id }}" class="post">
+      {% include '/core/blog/pieces/entry' %}
+    </div>
+  {% endfor %}
+</div>
