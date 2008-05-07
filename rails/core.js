@@ -10,4 +10,5 @@ __path__.routes();
 __path__.request();
 __path__.session();
 __path__.mailer();
+__path__.view();
 
