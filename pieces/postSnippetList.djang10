@@ -5,13 +5,11 @@ Render a series of posts with links to individual posts
 Required parameters:
 posts - an array of objects from the blog.posts collection
 
-Optional parameters:
-
 {% endcomment %}
 
 <div class="posts-snippets-block">
   {% for post in posts %}
-    <div id="post-{{ post._id }}" class="post-snippet">
+    <div id="post-snippet-{{ post._id }}" class="post-snippet">
       {% include '/core/blog/pieces/postSnippet' %}
     </div>
   {% endfor %}
