@@ -35,6 +35,9 @@ captcha_message
       {% endfor %}
     {% endif %}
   </div>
+  <div id="category-list-{{ post._id }}">
+    {% include '/core/blog/pieces/categories' %}
+  </div>
   <div id="comment-form-{{ post._id }}">
     {% include '/core/blog/pieces/postComment' %}
   </div>
