@@ -6,6 +6,7 @@ ActionController = {};
 ActionController.Routing = {};
 
 ActionController.Routing.Routes = function(){
+    this._inInit = false;
     this.il = log.rails.init.routes;
     this._routes = [];
 };
@@ -96,16 +97,20 @@ ActionController.Routing.Routes.prototype.connect = function( r , options ){
     this._routes.push( new RailsRoute( r , options ) );
 };
 
-/**
-* methods
-* - index -
-* - show *
-* - new - 
-* - edit
-* - create *
-* - update
-* - destroy
-*/
+ActionController.Routing.Routes.prototype.home = function( r , options ){
+    // TODO: not sure this is correct
+    this.il.error( "routes.home is probably broken" );
+    this.connect( r , options );
+};
+
+ActionController.Routing.Routes.prototype.open_id_complete = function( r , options ){
+    this.il.error( "routes.open_id_complete not implemented" );
+};
+
+ActionController.Routing.Routes.prototype.resource = function( r ){
+    this.il.error( "routes.resource not implemented" );
+};
+
 ActionController.Routing.Routes.prototype.resources = function( r ){
     var singularName = r.substring( 0 , r.length - 1 );
 
@@ -157,6 +162,15 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
     
 };
 
+ActionController.Routing.Routes.prototype.__notFoundHandler = function( r ){
+    if ( r == "_inInit" || ! this._inInit )
+        return null;
+    SYSOUT( r );
+    var place = this.il;
+    return function( name ){ 
+        place.error( "ignoring method [" + r + "] name [" + name + "]" );
+    }
+};
 
 // --------------------------
 // ---  main  callback  -----

@@ -29,6 +29,8 @@ if ( ! myController )
     return print( "can't find controller [" + matchingRoute.controller + "]" );
 
 
+session = new CGI.Session.ActiveRecordStore.Session();
+
 myController.dispatch( request , response , matchingRoute );
 %>
 

@@ -51,7 +51,9 @@ if ( modelsDir.exists() ){
         all.forEach( 
             function(z){
                 
-                if ( ! z.filename.endsWith( ".rb" ) ) 
+                if ( ! z.filename.endsWith( ".rb" ) 
+                     || z.filename.startsWith( "." ) 
+                   ) 
                     return;
                 
                 if ( z._loaded )
@@ -62,7 +64,10 @@ if ( modelsDir.exists() ){
 
                 var f = null;
                 try {
-                    f = local.app.models[ z.filename.replace( /\.rb$/ , "" ) ];
+                    var shortName = z.filename.replace( /\.rb$/ , "" );
+                    f = local.app.models[ shortName ];
+                    if ( ! f )
+                        throw "how could this not exist [" + shortName + "]";
                     f();
                     log.rails.init.model.info( "loaded : " + f );
                 }
@@ -172,5 +177,8 @@ controllersDir.listFiles().forEach(
 
 Rails.routes = new ActionController.Routing.Routes();
 
-if ( local.config && local.config.routes )
+if ( local.config && local.config.routes ){
+    Rails.routes._inInit = true;
     local.config.routes();
+    Rails.routes._inInit = false;
+}

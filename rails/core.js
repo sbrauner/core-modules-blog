@@ -8,4 +8,6 @@ __path__.model();
 __path__.viewutils();
 __path__.routes();
 __path__.request();
+__path__.session();
+__path__.mailer();
 
