@@ -62,7 +62,6 @@ captcha_message
 
 	 <div>
 	   <label></label>
-           <input type="hidden" name="addComment" value="yes" />
 	   <input name="action" type="submit" value="Submit" class="submit" /> <br />
          </div>
        </form>

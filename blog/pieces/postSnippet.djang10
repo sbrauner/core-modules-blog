@@ -7,7 +7,6 @@ post - an object from the blog.posts collection
 
 Optional parameters:
 style - hardcoded CSS styling for the div
-img - thumbnail to accompany the snippet
 read_link - text for link to full post
 
 {% endcomment %}
@@ -15,11 +14,11 @@ read_link - text for link to full post
 <div id="entry-{{ post._id }}" class="newhp" style="{{ style|default:"" }}" >
 
   <h2>
-  {% if img %}
-    <div class="postimage">
-      <a href="{{ img.url }}"><img border="0" src="{{ img.src }}"></a>
-    </div>
-  {% endif %}
+    {% if post.getFirstImageSrc %}
+      <div class="postimage">
+        <a href="{{ post.name }}"><img border="0" class="postimage" src="{{ post.getFirstImageSrc }}"></a>
+      </div>
+    {% endif %}
   <a href="{{ post.name }}">{{ post.title }}</a>
   </h2>
 

@@ -1,6 +1,6 @@
 {% comment %}
 
-Render a post
+Render the content of a post
 
 Required parameters:
 post - an object from the blog.posts collection
@@ -8,7 +8,7 @@ post - an object from the blog.posts collection
 Optional parameters:
 byline - Text appearing before the author's name.  Defaults to "".  Could also be "Written by", "Author: ", etc.
 dateline - Text appearing before the date field.  Defaults to "".
-entry_categories_header - The title for the categories section.  Defaults to "Categories".  Could also be "Tags", "Sections", "Topics", etc.
+
 {% endcomment %}
 
 
@@ -32,21 +32,6 @@ entry_categories_header - The title for the categories section.  Defaults to "Ca
     <div class="asset-body">
       {{ post.content }}
     </div>
-  </div>
-
-  <div class="asset-footer">
-    {% if post.categories.length %}
-      <div class="entry-categories">
-        <h4 class="entry-categories-header">{{ entry_categories_header|default:"Categories" }}<span class="delimiter">:</span></h4>
-        <ul class="entry-categories-list">
-          {% for category in post.categories %}
-            <li class="entry-category">
-              <a href="/category?name={{ category|urlencode }}">{{ category }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
   </div>
 </div>
 
