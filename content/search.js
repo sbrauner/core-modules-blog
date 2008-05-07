@@ -202,7 +202,7 @@ Search = {
 
                     max = Math.max( max , matchCounts[temp] );
 
-                    if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title );
+                    if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title  + "\t" + matchCounts[temp] );
 
                     fullObjects[temp] = tempObject;
                     if ( ! all.contains( temp ) )
@@ -214,11 +214,31 @@ Search = {
                 break;
         }
 
-        if ( Search.DEBUG ) Search.log( "matchCounts: " + tojson( matchCounts ) );
+        if ( Search.DEBUG ){
+            Search.log( "matchCounts: ");
+            all.forEach( 
+                function(z){
+                    SYSOUT( "\t" + z + "\t" + matchCounts[z] );
+                }
+            );
+        }
 
         all.sort( function( l , r ){
-            return matchCounts[r] - matchCounts[l];
+            var diff = matchCounts[r] - matchCounts[l];
+            if ( diff != 0 )
+                return diff;
+
+            return 0;
         } );
+        
+        if ( Search.DEBUG ){
+            Search.log( "matchCounts sorted: ");
+            all.forEach( 
+                function(z){
+                    SYSOUT( "\t" + z + "\t" + matchCounts[z] );
+                }
+            );
+        }
 
         var good = Array();
         all.forEach( function( z ){
