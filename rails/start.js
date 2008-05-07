@@ -69,7 +69,10 @@ if ( modelsDir.exists() ){
                 catch ( e if ( pass + 1 < numPasses ) ){
                     
                     log.rails.init.model.info( z.filename + " failed, but ignoring" );
-                    e.printStackTrace();
+                    try {
+                        e.printStackTrace();
+                    }
+                    catch (e){}
 
                     return;
                 }

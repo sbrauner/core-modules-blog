@@ -281,7 +281,7 @@ else {
     if(request.action != "searchprofile") th.push({heading: "Delete", className: "center", name: "Delete", searchable: false });
 
     idFormatter = function(oData) {
-        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+        return '<a><span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span></a>';
     }
 
     deleteBtnFormatter = function(id, field) {
