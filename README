@@ -1,0 +1,42 @@
+To include a blog on your site, add the following lines to your _init.js file:
+
+
+core.blog.urls();
+core.core.routes();
+
+allowModule = { blog: {} }; // adds the blog to your Applications section in Admin
+routes = new Routes();
+routes.setDefault( "index.jxp" );
+
+
+
+Then add the following to your main file (index.jxp, in this case):
+
+<%
+
+core.blog.urls();
+
+head.addCSS("/~~/blog/assets/blog_post.css");
+core.blog.urls();
+
+var result = Blog.handleRequest( request );
+
+if ( result.posts.length == 1 ){
+    if(request && request.addComment == "yes") {
+        Blog.handlePosts(request, result.posts[0], user);
+    }
+    core.blog.pieces.post({post: result.posts[0], user: user, comments_enabled: result.posts[0].commentsEnabled});
+}
+else if (result.posts.length > 1) {
+    core.blog.pieces.postSnippetList({posts: result.posts});
+}
+else {
+    %>
+    No posts!
+    <%
+}
+
+%>
+
+
+For customization options, look at the comments at the beginning of corejs/blog/pieces/post.djang10.  Each included template piece is in its own div so that parts of the page can easily be re-rendered asynchronously.
