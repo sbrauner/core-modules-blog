@@ -17,16 +17,25 @@ img.full {
     margin: 0 0 20px 0;
 }
 
+div.postimage {
+    float: left;
+}
+
+img.postimage {
+    max-width: 120px;
+    max-height: 80px;
+}
+
 body {margin: 0 auto; padding: .5em; background-color: #fff; font-family: helvetica, arial, sans-serif; text-align: left; font-size: 13px;}
 
 div {text-align:left; }
 
 div, p, ul, ol {
-	font-size: 13px;	
+	font-size: 13px;
 }
 
 p, .help {
-	padding: 0;   
+	padding: 0;
 	line-height: 1.5em;
 	color:#222222;
 }

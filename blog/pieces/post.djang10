@@ -24,11 +24,19 @@ captcha_message
 
 
 <div id="post-{{ post._id }}" class="post">
-  {% include '/core/blog/pieces/entry' %}
-  <a name="comments">Comments:</a>
-  {% for c in post.comments %}
-     {% include '/core/blog/pieces/comment' %}
-  {% endfor %}
-  {% include '/core/blog/pieces/postComment' %}
+  <div id="entry-{{ post._id }}">
+    {% include '/core/blog/pieces/entry' %}
+  </div>
+  <div id="comments-{{ post._id }}">
+    {% if post.comments.length %}
+      <a name="comments">Comments:</a>
+      {% for c in post.comments %}
+        {% include '/core/blog/pieces/comment' %}
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div id="comment-form-{{ post._id }}">
+    {% include '/core/blog/pieces/postComment' %}
+  </div>
 </div>
 
