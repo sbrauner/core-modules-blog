@@ -1,5 +1,6 @@
 <%
-if(request.action == "cancel"){
+log("Suck "+ tojson(request));
+if(request.action == "cancel" || request['cancel.x'] || request.cancel){
     return response.sendRedirectTemporary("/~~/admin/users");
 }
 
@@ -8,7 +9,7 @@ if ( request._id )
 	u = db.users.findOne( { _id : CrID( request._id ) } );
 else
 	u = new User();
-if ( u && request.action == "save"){
+if ( u && (request.action == "save" || request['save.x'] || request.save)){
     var problem = false;
    u.name = request.name;
    u.email = request.email;
@@ -81,8 +82,8 @@ print.setFormObject( u );
     <label>Re-enter Password</label>
     <input class="text" type="password" name="p2"><br />
     <label></label>
-    <input type="image" src="assets/img/button_save_on_white.gif" name="action" value="save">
-    <input type="image" src="assets/img/button_cancel_on_white.gif" name="action" value="cancel">
+    <input type="image" src="assets/img/button_save_on_white.gif" name="save" value="save"/>
+    <input type="image" src="assets/img/button_cancel_on_white.gif" name="cancel" value="cancel"/>
 </form>
 
 <br/>
@@ -99,12 +100,12 @@ print.setFormObject( null );
 <form method="post" action="user_delete" name="delete_form" class="edit register">
   <input type="hidden" name="id" value="<%= u._id %>">
     <label>Delete User </label>
-    <input type="image" src="assets/img/button_delete_on_white.gif" name="action" value="delete" onclick="deletePanel.show(); return false"><br/>
+    <input type="image" src="assets/img/button_delete_on_white.gif" name="delete" value="delete" onclick="deletePanel.show(); return false"><br/>
 </form>
 </div>
 
 <div class="yui-skin-sam">
-<div id="deletePanel" style="display: none;">
+<div id="deletePanelDiv" style="display: none;">
 <div class="hd">Delete this user?</div>
 <div class="bd">Are you sure you want to delete the user <%= u.name %>?</div>
 <div class="ft"></div>
@@ -125,14 +126,14 @@ var deleteCancel = function(){
       require: ['container'],
       base: '/@@/yui/2.5.1/',
       onSuccess: function(loader){
-          deletePanel = new YAHOO.widget.Dialog('deletePanel', {
+          deletePanel = new YAHOO.widget.Dialog('deletePanelDiv', {
               fixedcenter: true,
               draggable: true,
               visible: false,
               buttons: [{text: "Delete", handler: deleteOK},
                         {text: "Cancel", handler: deleteCancel}]
           });
-          document.getElementById("deletePanel").style.display = "block";
+          document.getElementById("deletePanelDiv").style.display = "block";
           deletePanel.render();
       }
   });
