@@ -27,13 +27,13 @@ read_link - text for link to full post
     <h3 class="timestamp" style="margin-bottom: .5em; ">
       <span class="byline">{{ post.author }}</span>
       <span class="dateline">{{ post.ts }}</span>
-      <span><a href="{{ comments.url }}">{{ comments.num }}</a> <a href="{{ comments.url }}"><img src="/images/comments-bubble.gif" alt="Comments" border="0" /></a></span>
+      <span><a href="{{ post.name }}#comments">{{ post.comments.length }}</a> <a href="{{ post.name }}#comments"><img src="/~~/blog/assets/images/comment.png" alt="Comments" border="0" /></a></span>
    </h3>
   </div>
 
-  {% if post.exerpt %}
+  {% if post.excerpt %}
     <div class="summary">
-      {{ post.exerpt }}
+      {{ post.excerpt }}
       <span class="read-link"><a href="{{ post.name }}">{{ read_link|default:"<strong>Read&nbsp;&gt;</strong>" }}</a></span>
     </div>
   {% endif %}
