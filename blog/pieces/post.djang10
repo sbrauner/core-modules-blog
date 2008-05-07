@@ -1,52 +1,34 @@
 {% comment %}
 
-Render a post
+Render a post with comments and a place to leave comments, if applicable
 
 Required parameters:
 post - an object from the blog.posts collection
+comments_enabled
+user - if logged in, the user object
 
 Optional parameters:
 byline - Text appearing before the author's name.  Defaults to "".  Could also be "Written by", "Author: ", etc.
 dateline - Text appearing before the date field.  Defaults to "".
 entry_categories_header - The title for the categories section.  Defaults to "Categories".  Could also be "Tags", "Sections", "Topics", etc.
+verb - text linking the author to the comment.  Defaults to "said:".  Could also be "ranted ", "twittered...", "espoused", etc.
+comments_open_header
+comment_form_name
+comment_author
+comment_email
+comment_url
+comment_text
+captcha_message
+
 {% endcomment %}
 
 
-<div id="entry-{{ post._id }}" class="newhp">
-  <div class="asset-header">
-    <h2 class="asset-name">
-      <a href="{{ post.name }}">{{ post.title }}</a>
-    </h2>
-
-    <div class="asset-meta">
-      <h3 class="timestamp" >
-        {% if post.author %}
-          <span class="byline">{{ byline|default:"" }}{{ post.author }}</span> |
-        {% endif %}
-        <span class="dateline">{{ dateline|default:"" }}{{ post.ts }}</span>
-      </h3>
-    </div>
-  </div>
-
-  <div class="asset-content">
-    <div class="asset-body">
-      {{ post.content }}
-    </div>
-  </div>
-
-  <div class="asset-footer">
-    {% if post.categories.length %}
-      <div class="entry-categories">
-        <h4 class="entry-categories-header">{{ entry_categories_header|default:"Categories" }}<span class="delimiter">:</span></h4>
-        <ul class="entry-categories-list">
-          {% for category in post.categories %}
-            <li class="entry-category">
-              <a href="/category?name={{ category|urlencode }}">{{ category }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-  </div>
+<div id="post-{{ post._id }}" class="post">
+  {% include '/core/blog/pieces/entry' %}
+  <a name="comments">Comments:</a>
+  {% for c in post.comments %}
+     {% include '/core/blog/pieces/comment' %}
+  {% endfor %}
+  {% include '/core/blog/pieces/postComment' %}
 </div>
 
