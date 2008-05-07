@@ -101,16 +101,31 @@ function _server() {
 /* require/include for php 
    must be fully qualified atm.
 */
-function require(path) { 
+function require(path, once, cd) { 
+    print("<p><pre>\nrequire " + path + "\n" + once + "\n" + cd + "\n");
     path = path.lessSuffix(".php").lessSuffix(".inc");
+    if( cd && !path.startsWith('/') ) { 
+	assert( cd.endsWith('/') );
+	path = cd + path;
+	print("newpath:" + path + "\n");
+    }
+
+    if( once ) { 
+	if( _included == null ) _included = { };
+	if( _included[path] ) return;
+	_included[path] = true;
+    }
+
     var x = jxp;
     var s = path.split('/');
-    print( "\n" + tojson(s) + "\n");
-    for( var i = 4; i < s.length; i++ ) {
-	print(s[i]);
+    print("split:" + tojson(s) + "\n");
+    var start = path.startsWith('/') ? 4 : 0; // skip /data/sites/<client>/ on fully qualified form
+    for( var i = start; i < s.length; i++ ) {
 	x = x[s[i]];
     }
+    print("including\n");
     x();
+    print("OK\n");
 }
 
 function dirname(path) { 
@@ -118,19 +133,27 @@ function dirname(path) {
     return i < 0 ? path : path.substring(0, i);
 }
 
-function castarray(a) { return isArray(a) ? a : [a]; }
 // todo, other casts
 // castint()
 // castfloat()
 // ...
+function castarray(a) { return isArray(a) ? a : [a]; }
 
-/* php foreach equivalent */
+/* php foreach equivalent 
+   foreachkv for $k => $v case
+*/
 function foreach(coll, f) { 
-    coll.forEach(f); 
+    try {
+	coll.forEach(f); 
+    }
+    catch( e if e == "break" ) { }
 }
 function foreachkv(coll, f) { 
-    coll.forEach(function(k) 
+    try { 
+	coll.forEach(function(k) 
 		 { 
 		     f(k, coll[k]);
 		 });
+    } catch( e if e == "break" ) { }
 }
+function breakForEach() { throw "break"; }

@@ -56,7 +56,7 @@ print.setFormObject( u );
 %>
 <!-- Heading and links-table Links -->
 <h1 style="margin:0;">
-  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
+  <div class="links-table"><a class="external" target="_blank" href="http://www.10gen.com/wiki/User%20Management">Users Documentation</a></div>
   <nobr><%= request._id ? "Edit User" : "New User" %></nobr>
 </h1>
 

@@ -47,7 +47,7 @@ if(!top) {
     var validation = x.result;
 
     %>
-    <a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a>
+    <p><a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a></p>
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
@@ -132,9 +132,12 @@ function hideObj(i) {
     document.getElementById(i).style.display = "none";
 }
 
-function deleteRow(id) {
+function deleteRow(id, field) {
     var handleDeleteRow = function() {
-        var passData = "ns=<%= request.ns %>&action=delete&id="+id;
+        if(field)
+            var passData = "ns=<%= request.ns %>&action=delete&name="+field+"&val="+id;
+        else
+            var passData = "ns=<%= request.ns %>&action=delete&id="+id;
         ajax(passData, "editDb", function(response) {
             refreshTable();
         });

@@ -281,11 +281,14 @@ else {
     if(request.action != "searchprofile") th.push({heading: "Delete", className: "center", name: "Delete", searchable: false });
 
     idFormatter = function(oData) {
-        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+        return '<a><span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span></a>';
     }
 
-    deleteBtnFormatter = function(id) {
-        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
+    deleteBtnFormatter = function(id, field) {
+        if(field)
+            return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id.getTime()+'\', \''+field+'\')" />';
+        else
+            return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
     }
 
     var objcount = 0;
@@ -410,12 +413,31 @@ else if(request.action != "searchprofile") {
         // some names might have underscores in them (e.g., _system) and indices can have multiple fields, so this is done seperately
         dbTable.idxes[idxes[i].substring(0, idxes[i].indexOf("_"))] = 1;
     }
+
+    if(!("_id" in f)) {
+        var uniqueKey = db.system.indexes.findOne({ns: request.ns});
+        // if there is no index on the collection, there is no way to uniquely identify elements
+        // so get rid of the delete button
+        if(!uniqueKey)
+            th.pop();
+        else {
+            var keyArr = uniqueKey.key;
+            keyArr = Object.keys(keyArr);
+            uniqueKey = keyArr[0];
+        }
+    }
     for(var i in dbTable.rows) {
-        if("_id" in f) dbTable.rows[i].id = "";
+        if("_id" in f) {
+            dbTable.rows[i].id = "";
+            dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+        }
+        else {
+            // if the collection doesn't have an _id field (like the _system stuff), we need to find an index and use that, instead
+            dbTable.rows[i].Delete = deleteBtnFormatter(new Date(rows[i][uniqueKey]), uniqueKey);
+        }
         for(var field in th) {
-            if(th[field].heading == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
-            else if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
-            else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
+            if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
+            else if(field < th.length-1) dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
 }
