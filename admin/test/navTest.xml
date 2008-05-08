@@ -13,10 +13,10 @@
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="USERS"/>
 
-<!-- Broken JS in WT
+      <enableJavaScript enable="false"/>
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="DATABASE"/>
--->
+
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="FILES"/>
 
