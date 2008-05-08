@@ -9,6 +9,11 @@ var th = obj.th;
   <!-- Main area -->
   <tr class="white-main">
     <td class="left">&nbsp;</td>
+
+    <if (table.rows.length == 0)>
+        <td>No entries.</td>
+    </if>
+
     <forin i th>
       <th class="$th[i].className">
         <if (top && th[i].name == "NAME")>

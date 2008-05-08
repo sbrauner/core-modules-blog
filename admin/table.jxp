@@ -134,16 +134,15 @@ else if(request.action == "search" || request.action == "userssearch" || request
 }
 else if(request.action == "eval") {
     try {
-        var collection = scope.eval(request.cmd);
-        rows = collection;
+        var rows = scope.eval(request.cmd);
         if(!rows)
-            rows = db[request.ns.substring( request.ns.indexOf('.')+1 )].find();
+            return "No results.";
         rows = rows.toArray();
         top = false;
     }
     catch(e) {
-        log("e: "+e);
-        return -1;
+        print( "Exception: "+e);
+        return;
     }
 }
 else {
