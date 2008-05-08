@@ -1,0 +1,24 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Try to create a user called Third User">
+      <invoke url="${site}/admin/users"  username="test@10gen.com" password="test"/>
+      <clickLink label="New User"/>
+      <setInputField name="name" value="Third User"/>
+      <setInputField name="email" value="third@10gen.com"/>
+      <setInputField description="Set password field p1: third" name="p1" value="third"/>
+      <setInputField description="Set password field p2: third" name="p2" value="third"/>
+      <clickButton name="save" username="test@10gen.com" password="test"/>
+      <verifyTitle text="admin Admin | 10 GEN"/>
+      <!-- I know all these xpath expessions are really ugly. Sadly, we don't have any kind of way of indicating "The element that shows the admin status for this user". I could just check that the user was added..? -->
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[4]/td[2]/a" text="Test User"/>
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[4]/td[4]" text="yes"/>
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[5]/td[2]/a" text="Not Admin"/>
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[5]/td[4]" text="no"/>
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[6]/td[2]/a" text="Third User"/>
+      <verifyXPath xpath="/html/body/table/tbody/tr/td[2]/div/table/tbody/tr[6]/td[4]" text="no"/>
+      <verifyXPath xpath="count(/html/body/table/tbody/tr/td[2]/div/table/tbody/*)-1" text="${numusers}"/>
+
+
+    </webtest>
+  </target>
+</project>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<project default="test">
+  <target name="test" description="runs all the tests">
+    <webtest name="Get number of users">
+      <invoke url="${site}/admin/users"  username="test@10gen.com" password="test"/>
+      <storeXPath xpath="count(/html/body/table/tbody/tr/td[2]/div/table/tbody/*)" property="numusers" propertyType="ant"/>
+    </webtest>
+    <ant antfile="loginTest.xml"/>
+    <ant antfile="createUser.xml"/>
+    <ant antfile="cannotCreateUser.xml"/>
+    <ant antfile="deleteUser.xml"/>
+  </target>
+</project>
