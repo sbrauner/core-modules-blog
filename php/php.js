@@ -6,6 +6,7 @@
 core.util.string();
 core.util.array();
 core.php.apc();
+core.php.memcache();
 
 /* todo: */
 function ini_set(a,b) { }
@@ -34,6 +35,8 @@ function isset() {
 function echo() { 
     arguments.forEach( print );
 }
+
+function error_reporting() { return 0; }
 
 function array_slice(a, ofs, len) { 
     return a.slice(ofs,len);
@@ -129,13 +132,14 @@ function _server() {
 */
 function require(path, once, cd) { 
     // TEMP LINE:
-    path = path.lessPrefix("null");
+        path = path.lessPrefix("null");
 
-    print("<pre>consttemp:" + constants.CLASSPATH + '\n');
+    print("<pre>");
 
     print("<hr><pre>require\n");
     print("   path:" + path + "\n");
-    print("   once:" + once + "\n");
+    if( once )
+	print("   once:" + once + "\n");
     print("     cd:" + cd + "\n");
     path = path.lessSuffix(".php").lessSuffix(".inc");
     if( cd && !path.startsWith('/') ) { 
@@ -152,9 +156,11 @@ function require(path, once, cd) {
 
     var x = jxp;
     var s = path.split('/');
-    print("  split:" + tojson(s) + "\n");
+    //print("  split:" + tojson(s) + "\n");
     var start = path.startsWith('/') ? 4 : 0; // skip /data/sites/<client>/ on fully qualified form
+    //print("  start:" + start + "\n");
     for( var i = start; i < s.length; i++ ) {
+	x = x[s[i]];
 	if( !x ) {
 	    print("<p>require(): can't find ");
 	    for( var j = start; j < s.length; j++ ) { 

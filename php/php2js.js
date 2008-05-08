@@ -369,7 +369,7 @@ function _tok(sayskipped) {
 	pop();
     }
     var res = clone(other);
-    res.str = ch.toLowerCase();
+    res.str = ch;//.toLowerCase();
     onWordBreak = delimChar(res.str);
     return res;
 }
@@ -482,7 +482,7 @@ function doDefine() {
     expectStr("(");
     var l = getString(1);
     expectStr(",");
-    say(l.toLowerCase() + " = ");
+    say(l/*.toLowerCase()*/ + " = ");
     doStatement(')', '(');
     expectStr(')');
 }

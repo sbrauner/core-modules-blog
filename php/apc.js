@@ -10,25 +10,19 @@ apc = {
 };
 
 function apc_define_constants(name, c) { 
-    print("<p><pre>apcdefineconstants " + name + "\n");
-    throw "zz";
-    print("<p><pre>apcdefineconstants " + name + "\n");
-    print(tojson(c) + '\n');
+    var n = 0;
+    for( var i in c ) n++;
+    print("<pre>apc_define_constants " + name + " defines " + n + " constants\n");
     apc.constants[name] = c;
     return true;
 }
 
 function apc_load_constants(name) { 
-    print("<p><pre>apcloadconstants " + name + "\n");
-    print(tojson(apc.constants) + '\n');
     var c = apc.constants[name];
     if( c ) {
-	c.forEach(function(x) 
-		  {
-		      print(x + "\n");
-		      globals[x] = c[x];
-		  });
-	print("loadconstants returns true\n");
+	for( i in c ) {
+	    globals[i] = c[i];
+	}
 	return true; 
     }
     print("loadconstants returns false\n");
