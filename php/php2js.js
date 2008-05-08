@@ -24,7 +24,6 @@ function clone(x) {
 var __file__ = "";
 var inphp = 0; // in code block, or html mode?
 var indents = 0;
-var line = 1;
 
 function indent() { 
     var s = "";
@@ -39,8 +38,12 @@ output = "";
 input = "";
 pos = 0; // input position
 
+function lineNumber() { 
+    return 1 + input.substring(0, pos).nOccurrences('\n');
+}
+
 function printContext() { 
-    print("line " + line + ":");
+    print("line " + lineNumber() + ":");
     var p = pos-1;
     var pad = "";
     while( p > 0 && input[p] != '\n' ) { 
@@ -48,15 +51,19 @@ function printContext() {
 	pad = (input[p] == '\t' ? '\t' : ' ') + pad;
     }
     p++;
-    print(pad + "*");
+    print("    " + pad + "*");
+    printnoln("    ");
     for( var i = 0; i < 200; i++ ) { 
 	if( p+i>=input.length )
 	    break;
 	var ch = input[p+i];
-	if( ch == '\n' && i > 120 ) {
-	    break;
+	if( ch == '\n' ) {
+	    if( i > 120 )
+		break;
+	    printnoln("\n    ");
 	}
-	printnoln(ch);
+	    else
+		printnoln(ch);
     }
     print('\n');
 }
@@ -97,7 +104,6 @@ function _skipTo(patt) {
     }
     pos += i;
     var res = s.substring(0, i);
-    line += res.nOccurrences('\n');
     return res;
 }
 
@@ -111,13 +117,11 @@ function skipTo(patt) {
     }
     var res = s.substring(0, i);
     say(res);
-    line += res.nOccurrences('\n');
     pos += i;
 }
 function skipToAndEat(patt) { 
     skipTo(patt);
     pos += patt.length;
-    line += patt.nOccurrences('\n');
 }
 
 /* sayskipped
@@ -141,14 +145,11 @@ function peek(sayskipped) {
 function get(sayskipped) { 
     var ch = peek(sayskipped);
     pos++;
-    if( ch == '\n' )
-	line++;
     return ch;
 }
 
 function pushback() { 
     pos--; 
-    if( input[pos] == '\n' ) line--;
 }
 function pop() { get(-1); }
 
@@ -170,11 +171,14 @@ identTranslations = {
 
 varTranslations = { 
     GLOBALS: "globals",
+    _GET: "_get()",
     _REQUEST: "request",
     _SERVER: "_server()",
     "class": "$class",
     "interface": "$interface",
-    "var": "$var"
+    "var": "$var",
+    "return": "$return",
+    "function": "$funtion"
 };
 
 // -------------------------------------------------------------------
@@ -204,7 +208,7 @@ other = { type: "other", str: "" } ; /* unclassified single char's */
 
 phpend = { type: "phpend" } ; // "?>"
 
-arrow = { type: "arrow" } ; // =>
+arrow = { type: "arrow", action: ":" } ; // =>
 
 linecomment = { type: "linecomment" }; // // or #
 
@@ -220,11 +224,13 @@ singlequotestr = { type: "singlequotestr", stringval: "",
 doublequotestr = { type: "doublequotestr", stringval: "", action: doDoubleQuote };
 
 /* keywords */
+phpor = { type: "or", action: "||" };
+phpand = { type: "and", action: "&&" };
 phpcontinue = { type: "continue", action: doContinue };
 phpbreak = { type: "break", action: doBreak };
 phpfunction = { type: "function", action: "function" };
-phppublic = { type: "public", action: "public!" };
-phpprivate = { type: "private", action: "private!" };
+phppublic = { type: "public", action: "/*public*/" };
+phpprivate = { type: "private", action: "/*private*/" };
 phpstatic = { type: "static", action: doStatic };
 phpclass = { type: "class", action: doClass };
 phpextends = { type: "extends", action: "extends?" };
@@ -241,7 +247,7 @@ array = { type: "array", action: doArray };
 echo = { type: "echo", action: doEcho };
 keywords = [ define, require_once, include_once, require, include, foreach, array, echo,
 	     file, as, _final, phpclass, phpstatic, phpprivate, phppublic, phpfunction, phpextends,
-	     phpbreak, phpcontinue
+	     phpbreak, phpcontinue, phpand, phpor
 ];
 
 
@@ -298,7 +304,6 @@ function tokmatch(str, tokobj) {
     if( !s.startsWithLC(str) ) return null;
     if( !delimChar(s[str.length]) ) return null;
     pos += str.length;
-    line += str.nOccurrences('\n');
     return clone(tokobj);
 }
 
@@ -391,7 +396,6 @@ function expect(exptoken, str, skipws) {
 	//	    continue;
 	//	}
 
-
 	print("expected: " + exptoken.type + ' ' + (str?str:""));
 	print("got: " + tojson(t));
 	throw { unexpected: t, wanted: exptoken.type + ' ' + (str?str:"") };
@@ -424,7 +428,7 @@ function doDoubleQuote() {
 			 var v = rest ? x.substring(0,rest) : x;
 			 if( varTranslations[v] ) 
 			     v = varTranslations[v];
-			 say('+' + v);
+			 say('+' + (v.length?v:"$"));
 			 if( rest )
 			     say('+"' + x.substring(rest) + '"');
 		     });
@@ -484,11 +488,10 @@ function doDefine() {
 }
 
 function mark() { 
-    return { p: pos, ln: line };
+    return { p: pos };
 }
 function rewind(mk) { 
     pos = mk.p;
-    line = mk.ln;
 }
 
 var casts = { 
@@ -625,10 +628,24 @@ function injectInOutput(marker, str) {
 // array(1,2,3)
 function doArray() {
     expectStr("(");
-    say('[');
+
+    var border = [ '[', ']' ];
+    var mk = mark();
+    while( 1 ) { 
+	var t = tok();
+	if( t.str == ")" )
+	    break;
+	if( t.type == "arrow" ) { 
+	    border = [ '{', '}' ];
+	    break;
+	}
+    }
+    rewind(mk);
+
+    say(border[0]);
     php(')', '(');
     expectStr(")");
-    say(']');
+    say(border[1]);
 }
 
 var inForEach = false;
@@ -781,6 +798,7 @@ function php(endOn, starter) {
 	    printnoln("***unhandled token:");
 	    print(tojson(t)+"\n");
 	    printContext();
+	    throw "stopping";
 	} catch( e if isObject(e) && e.unexpected ) { 
 	    print("unexpected exception");
 	    print(tojson(e));
@@ -832,7 +850,6 @@ function top() {
 //-----------------------------------------------------
 
 function tojs(php, fname) { 
-    line = 1;
     assert(fname);
     __file__ = fname;
     filePrefix = fname.replace(/^\/data\/sites\/[^\/]+\//, "");
@@ -840,8 +857,8 @@ function tojs(php, fname) {
 	filePrefix = filePrefix.replace(/\/[^\/]+$/, "/");
     else
 	filePrefix = "";
-    print("fname:" + fname);
-    print("fprefix:" + filePrefix);
+    //    print("fname:" + fname);
+    //    print("fprefix:" + filePrefix);
 
     output = "";
     input = php;
@@ -864,8 +881,14 @@ function tojs(php, fname) {
 var fname = javaStatic( "java.lang.System" , "getenv", "fname" );
 //    "/data/sites/php/www/index.php";
 
-var f = openFile( fname );
-var code = f.getDataAsString();
+try { 
+    var f = openFile( fname );
+    var code = f.getDataAsString();
+}
+catch(e) { 
+    print("couldn't open/read " + fname);
+    exit();
+}
 var res = tojs(code, fname);
 
 // output

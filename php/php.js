@@ -4,6 +4,8 @@
 */
 
 core.util.string();
+core.util.array();
+core.php.apc();
 
 /* todo: */
 function ini_set(a,b) { }
@@ -21,6 +23,8 @@ function header(h, replace, rc) {
 	response.setResponseCode(rc);
 }
 
+function defined(x) { return x; }
+function function_exists(x) { return x; }
 function isset() { 
     for( var i = 0; i < arguments.length; i++ )
 	if( !arguments[i] ) return false;
@@ -30,6 +34,18 @@ function isset() {
 function echo() { 
     arguments.forEach( print );
 }
+
+function array_slice(a, ofs, len) { 
+    return a.slice(ofs,len);
+}
+
+function strpos(a,b) { 
+    return a.indexOf(b);
+}
+function sizeof(a) { return a.length; }
+function count(a) { return a.length; }
+
+function implode(sep, arr) { return arr.implode(sep); }
 
 function explode(sep, string, limit) { 
     if( !limit ) return string.split(sep);
@@ -53,6 +69,11 @@ function html_entity_decode(string, style, encoding) {
     print("not done 1");
     return string;
 }
+
+function setlocale() { return false; }
+
+function date() { return Date(); }
+function gmdate() { return Date(); }
 
 function time() { 
     return (new Date()).getTime() / 1000;
@@ -84,6 +105,9 @@ function str_ireplace(a,b,c) {
     return c.replace(a,b);
 }
 
+/* $_GET */
+function _get() { return request; }
+
 /* equiv of $_SERVER */
 function _server() { 
     if( !__server ) { 
@@ -92,7 +116,9 @@ function _server() {
 	    QUERY_STRING: request.getURI(),
 	    HTTP_REFERER: request.getHeader("Referer"),
 	    HTTP_USER_AGENT: request.getHeader("User-Agent"),
-	    REMOTE_ADDR: request.getRemoteIP()
+	    REMOTE_ADDR: request.getRemoteIP(),
+	    //temp:
+	    CONFIGPATH: "/data/sites/php/version2/configs/"
 	};
     }
     return __server;
@@ -102,7 +128,15 @@ function _server() {
    must be fully qualified atm.
 */
 function require(path, once, cd) { 
-    print("<p><pre>\nrequire " + path + "\n" + once + "\n" + cd + "\n");
+    // TEMP LINE:
+    path = path.lessPrefix("null");
+
+    print("<pre>consttemp:" + constants.CLASSPATH + '\n');
+
+    print("<hr><pre>require\n");
+    print("   path:" + path + "\n");
+    print("   once:" + once + "\n");
+    print("     cd:" + cd + "\n");
     path = path.lessSuffix(".php").lessSuffix(".inc");
     if( cd && !path.startsWith('/') ) { 
 	assert( cd.endsWith('/') );
@@ -118,14 +152,22 @@ function require(path, once, cd) {
 
     var x = jxp;
     var s = path.split('/');
-    print("split:" + tojson(s) + "\n");
+    print("  split:" + tojson(s) + "\n");
     var start = path.startsWith('/') ? 4 : 0; // skip /data/sites/<client>/ on fully qualified form
     for( var i = start; i < s.length; i++ ) {
-	x = x[s[i]];
+	if( !x ) {
+	    print("<p>require(): can't find ");
+	    for( var j = start; j < s.length; j++ ) { 
+		if( j > start ) print(".");
+		if( j == i ) print("<u>");
+		print(s[j]);
+		if( j == i ) print("</u>");
+	    }
+	    print(".jxp\n<p>");
+	}
     }
-    print("including\n");
     x();
-    print("OK\n");
+    print("OK");
 }
 
 function dirname(path) { 
