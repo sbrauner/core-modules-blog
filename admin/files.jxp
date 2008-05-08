@@ -14,9 +14,10 @@ head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min
 head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
 
 var theFile = request.getFile( "theFile" );
-if ( theFile ){
+if ( theFile && theFile.filename != "")
     db._files.save( theFile );
-}
+else if (theFile)
+    print("<p>Sorry, the file you selected could not be uploaded.</p>");
 
 db._files.ensureIndex( { uploadDate : 1 } );
 
