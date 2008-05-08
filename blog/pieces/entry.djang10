@@ -23,7 +23,13 @@ dateline - Text appearing before the date field.  Defaults to "".
         {% if post.author %}
           <span class="byline">{{ byline|default:"" }}{{ post.author }}</span> |
         {% endif %}
-        <span class="dateline">{{ dateline|default:"" }}{{ post.ts }}</span>
+        <span class="dateline">{{ dateline|default:"" }}
+          {% if date_format %}
+            <span class="dateline">{{ post.ts|date:date_format }}</span>
+          {% else %}
+            <span class="dateline">{{ post.ts|date:"F j, Y g:ia" }}</span>
+          {% endif %}
+        </span>
       </h3>
     </div>
   </div>

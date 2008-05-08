@@ -1,0 +1,21 @@
+
+<script type="text/javascript">
+
+var lastSearch = "";
+
+function changeSearch() {
+    var search = document.getElementById("searchopt").value;
+    document.getElementById("searchtext").setAttribute("name", search);
+}
+
+function clearSearch() {
+    document.getElementById("searchopt").value = "";
+    document.getElementById("searchform").submit();
+}
+
+function loadPage(pagenum) {
+    document.getElementById("currentPage").value = pagenum;
+    document.getElementById("pagingform").submit();
+}
+
+</script>

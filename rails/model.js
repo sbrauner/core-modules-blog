@@ -231,6 +231,10 @@ function helper( name ){
     SYSOUT( "ignoring helper [" + name + "]" );
 }
 
+function helper_method(){
+    SYSOUT( "ignoring helper_method [" + arguments + "]" );
+}
+
 
 
 

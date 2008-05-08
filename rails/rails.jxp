@@ -1,11 +1,6 @@
 <%
 // this is the main entry point into rails
 
-if ( ! Rails.ready ){
-    core.rails.start();
-    //Rails.ready = true;
-}
-
 // setup rails globals
 flash = {};
 flash.notice = "";
