@@ -1,8 +1,3 @@
-<%
-
-// Takes sortcol, sortdir, ns
-
-%>
 
 <script type="text/javascript">
 
@@ -22,55 +17,5 @@ function loadPage(pagenum) {
     document.getElementById("currentPage").value = pagenum;
     document.getElementById("pagingform").submit();
 }
-
-/*
-var currentSort = { col : "", dir: 1 };
-function sortBy(col) {
-    if(currentSort.col == col)
-        currentSort.dir = -1 * currentSort.dir;
-    else
-        currentSort.dir = 1;
-    currentSort.col = col;
-
-    refreshTable();
-}
-
-function doSearch() {
-    var passData = getSearchArgs();
-    lastSearch = passData;
-    refreshTable();
-}
-
-var handleNo = function() {
-    this.hide();
-}
-
-var currentPage = 1;
-function loadPage(pagenum) {
-    currentPage = pagenum;
-    refreshTable();
-}
-
-var tablename = "";
-
-function refreshTable(passData){
-    if(passData)
-        passData = passData+"&";
-    else
-        passData = "";
-    ajax("ns=&currentPage="+currentPage+"&sortcol="+currentSort.col+"&sortdir="+currentSort.dir+"&"+passData+lastSearch, "/~~/content/processRequest", function(response) {
-        document.getElementById("myCollection").innerHTML = response;
-
-        var column = document.getElementById("thlink"+currentSort.col);
-        // sometimes there are no sortable columns
-        if(column)
-            column.className = (currentSort.dir == 1) ? "sort-up" : "sort-down";
-    });
-}
-
-function getSearchArgs() {
-    return document.getElementById("searchopt").value + "=" + document.getElementById("searchtext").value;
-}
-*/
 
 </script>
