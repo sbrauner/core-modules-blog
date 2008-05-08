@@ -1,0 +1,150 @@
+<%
+core.ext.pluck();
+core.io.marshal();
+core.io.encode.json();
+core.db.db();
+core.content.html();
+core.content.html();
+
+var collection;
+// ignore internal transient variables
+var ignore= { _ns:1, _save:1, _update:1 };
+
+if(arguments[0]) {
+    var ns = (arguments[0].ns) ? arguments[0].ns : null;
+    var th = (arguments[0].th) ? arguments[0].th : null;
+    var rowsPerPage = (arguments[0].rowsPerPage) ? parseInt(arguments[0].rowsPerPage) : 100;
+    var currentPage = (arguments[0].currentPage) ? parseInt(arguments[0].currentPage) : 1;
+    var action = (arguments[0].action) ? arguments[0].action : "";
+    var formatter = (arguments[0].formatter) ? arguments[0].formatter : null;
+}
+else {
+    var ns = (request.ns) ? request.ns : null;
+    var th = (request.th) ? request.th : null;
+    var rowsPerPage = (request.rowsPerPage) ? parseInt(request.rowsPerPage) : 100;
+    var currentPage = (request.currentPage) ? parseInt(request.currentPage) : 1;
+    var action = (request.action) ? request.action : "";
+}
+
+var totalNumPages;
+
+// Table display options
+
+/* get sort obj */
+var mySort = {};
+if(request.sortcol && request.sortcol != "_id") {
+    mySort[request.sortcol] = parseInt(request.sortdir);
+}
+
+if(action == "search" || action == "userssearch") {
+    collection = ns ? db[ns.substring( ns.indexOf('.')+1 )] : db["system.namespaces"];
+    var searchobj = {};
+    var tempLive;
+    if(top) {
+        q = "";
+        if(request.name)
+            q = request.name;
+        if(request.index)
+            q = q+"\\$.*"+request.index;
+        var query = new RegExp(".*"+q+".*", "i");
+        searchobj["name"] = query;
+    }
+    for(q in request) {
+        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" )
+            continue;
+        if(top && (q == "index" || q == "name"))
+            continue;
+
+        var query = new RegExp(".*"+request[q]+".*", "i");
+        searchobj[q] = query;
+    }
+    if(top)
+        rows = collection.find(searchobj).sort(mySort).toArray();
+    else
+        rows = collection.find(searchobj).sort(mySort).toArray();
+
+}
+else {
+    var collection = db[ns.substring( ns.indexOf('.')+1 )]; // remove db name from the str
+    rows = collection.find().toArray();
+}
+
+
+/* ------------------------------------------------------
+   get the paging info and only return the necessary rows
+   ------------------------------------------------------ */
+
+totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
+
+if(currentPage > totalNumPages && totalNumPages > 0)
+    currentPage = totalNumPages;
+
+var start = (currentPage - 1)*rowsPerPage;
+
+rows = rows.splice(start, rowsPerPage);
+
+
+var table = { };
+table.totalNumPages = totalNumPages;
+table.currentPage = currentPage;
+table.rowsPerPage = rowsPerPage;
+
+/* ------------------
+   generate the table
+   ------------------ */
+table.rows = rows;
+
+
+if(th) {
+    th = core.admin.data.th(th);
+}
+else {
+    th = [];
+}
+
+table.idxes = {};
+
+var page = [];
+var pageStart = Math.max(1, table.currentPage-2);
+var pageEnd = Math.min(parseInt(table.totalNumPages), parseInt(table.currentPage)+2);
+
+for(var i=pageStart; i<=pageEnd; i++) {
+    if(table.currentPage == i) {
+        if(i < 10)
+            page.push({ name: i, className: "active" });
+        else
+            page.push({ name: i, className: "modactive" });
+    }
+    else {
+        if(i < 10)
+            page.push({ name: i, className: "" });
+        else
+            page.push({ name: i, className: "mod" });
+    }
+}
+
+
+var prevPage = (table.currentPage == 1) ? null : table.currentPage - 1;
+var nextPage = (table.currentPage == table.totalNumPages) ? null : parseInt(table.currentPage) + 1;
+table.colspan = th.length;
+
+fields = [];
+th.forEach(function(x) {
+    fields.push(x["name"]);
+});
+
+if(formatter) {
+    for(var f in fields) {
+        if(formatter[fields[f]]) {
+            for(var r in table.rows) {
+                table.rows[r][fields[f]] = (formatter[fields[f]])(table.rows[r][fields[f]], table.rows[r]);
+            }
+        }
+    }
+}
+
+core.admin.pieces.tableHeader({search: true, th: th, colspan: table.colspan});
+core.admin.pieces.tableBody({table: table, th: th, fields: fields});
+core.admin.pieces.tableFooter({page: page, prevPage: prevPage, nextPage: nextPage, colspan: table.colspan, totalNumPages: table.totalNumPages});
+
+%>
