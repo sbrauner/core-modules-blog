@@ -1,0 +1,22 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Test user search functionality">
+      <invoke url="${site}/admin/users"  username="test@10gen.com" password="test"/>
+      <setInputField htmlid="searchtext" value="Test"/>
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <verifyText text="Test User"/>
+      <not>
+        <verifyText text="Not Admin"/>
+      </not>
+      
+      <setInputField htmlid="searchtext" value="Not"/>
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <verifyText text="Not Admin"/>
+      <!-- Test User still shows up in topCorner -->
+
+      <setInputField htmlid="searchtext" value="obohoobobhonautha"/>
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <verifyText text="No users found"/>
+    </webtest>
+  </target>
+</project>

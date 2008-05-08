@@ -1,5 +1,4 @@
 <%
-log("Suck "+ tojson(request));
 if(request.action == "cancel" || request['cancel.x'] || request.cancel){
     return response.sendRedirectTemporary("/~~/admin/users");
 }
@@ -137,6 +136,7 @@ var deleteCancel = function(){
           deletePanel.render();
       }
   });
+loader.onSuccess();
 </script>
 
 

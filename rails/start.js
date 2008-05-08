@@ -1,6 +1,8 @@
 
 // this is what rails init starts
 
+var useGlobal = globals;
+
 // -------------------
 // ----- libs -----
 // -------------------
@@ -94,7 +96,7 @@ if ( modelsDir.exists() ){
                         continue;
                     
                     log.rails.init.model.info( "Added Thing : " + name );
-                    globals.getParent().putExplicit( name , model );
+                    useGlobal.putExplicit( name , model );
                     
                     if ( ! model._isModel )
                         continue;
@@ -103,7 +105,7 @@ if ( modelsDir.exists() ){
                     model.prototype.setConstructor( model );
                     
                     Rails.models.add( model );
-                    globals.getParent().putExplicit( name , model );
+                    useGlobal.putExplicit( name , model );
                     
                     log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
                     
