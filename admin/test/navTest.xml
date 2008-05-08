@@ -1,19 +1,25 @@
 <project default="test">
   <target name="test">
     <webtest name="Test links in nav-bar">
+      <config>
+        <header name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0"/>
+<!-- From the HTMLUnit source, but : doesn't work?? -->
+<!--<header name="User-Agent" value="Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; .NET CLR 1.1.4322)"/>-->
+      </config>
       <invoke url="${site}/admin"  username="test@10gen.com" password="test"/>
       <clickLink label="SHELL" description="make sure that the trailing slash is optional"/>
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="SHELL"/>
 
+      <enableJavaScript enable="false"/>
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="STATISTICS"/>
+      <enableJavaScript enable="true"/>
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="USERS"/>
 
-      <enableJavaScript enable="false"/>
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="DATABASE"/>
 
