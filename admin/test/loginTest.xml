@@ -1,0 +1,14 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Test admin access">
+      <invoke url="${site}/admin" username="test@10gen.com" password="test"/>
+      <verifyText text="Welcome"/>
+    </webtest>
+    <webtest name="Test nonadmin nonaccess">
+      <invoke url="${site}/admin" username="notadmin@10gen.com" password="notadmin"/>
+      <not>
+        <verifyText text="Welcome"/>
+      </not>
+    </webtest>
+  </target>
+</project>

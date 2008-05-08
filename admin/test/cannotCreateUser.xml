@@ -1,0 +1,22 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Try and fail to create Third User a second time">
+      <invoke url="${site}/admin/users" username="test@10gen.com" password="test"/>
+      <clickLink label="New User"/>
+      <setInputField name="name" value="Third Dup User"/>
+      <setInputField name="email" value="third@10gen.com"/>
+      <setInputField name="p1" value="third"/>
+      <setInputField name="p2" value="third"/>
+      <clickButton name="save"/>
+      <verifyText text="duplicate"/>      
+
+      <setInputField name="name" value="Third User"/>
+      <setInputField name="email" value="third.dup@10gen.com"/>
+      <setInputField name="p1" value="third"/>
+      <setInputField name="p2" value="third"/>
+      <clickButton name="save"/>
+      <verifyText text="duplicate"/>      
+
+    </webtest>
+  </target>
+</project>
