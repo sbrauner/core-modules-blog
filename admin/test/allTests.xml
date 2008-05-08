@@ -10,6 +10,8 @@
     <ant antfile="createUser.xml"/>
     <ant antfile="cannotCreateUser.xml"/>
     <ant antfile="deleteUser.xml"/>
+    <!-- innerHTML not supported by WT? 
+    <ant antfile="userSearchTest.xml"/> -->
     <ant antfile="navTest.xml"/>
   </target>
 </project>
