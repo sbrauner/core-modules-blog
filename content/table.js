@@ -30,6 +30,9 @@ detail:         function which takes object and returns detail url.  when specif
 filter:         a function, which if specified, returns true if the row from the db should be
                 displayed.  You are generally better off including the condition in the query
 		rather than using this client-side facility.
+rowsPerPage:    number of rows displayed (default: 100)
+currentPage:    current page being displayed (default: 1)
+style:          the url of a stylesheet to be used instead of the default
 
 Example:
 
@@ -126,8 +129,13 @@ function htmltable(specs) {
     this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
+        var th = displaycolnames.map(function(x) { return {name: x, heading: x}; });
+        var currentPage = request.currentPage || this.specs.currentPage || 1;
+        var rowsPerPage = request.rowsPerPage || this.specs.rowsPerPage || 100;
+
         if ( this.specs.actions && this.specs.actions.length > 0 )
             displaycolnames.push( "Actions" );
+
         var sort = this._sort();
         var u = new URL(request.getURL());
         for(var i in sort){
@@ -154,26 +162,44 @@ function htmltable(specs) {
             }
         }
 
-        print( tr(displaycolnames, {header:true}) );
+        core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable});
 
-        if( this.specs.searchable ) {
-            print("<form>");
-            var first = true;
-            print( tr(this.specs.cols.map( function(x){
-                            var s = "";
-                            if( first ) {
-                                first = false;
-                                s = '<input type="submit" value="search"> ';
-                            }
+        var dbResult = cursor.toArray();
 
-                            if( x.searchable == false ) return s;
+        totalNumPages = Math.floor((dbResult.length - 1) / rowsPerPage) + 1;
+        if(currentPage > totalNumPages && totalNumPages > 0)
+            currentPage = totalNumPages;
 
-                            return s+'<input ' +
-                                (request[x.name]?'value="'+request[x.name]+'" ':'') +
-                                (x.searchWidth?'size="'+x.searchWidth+'" ':'') +
-                                'name="'+x.name+'">';} )) );
-            print("</form>");
+        var start = (currentPage - 1)*rowsPerPage;
+        dbResult = dbResult.splice(start, rowsPerPage);
+
+
+        var table = { };
+        table.totalNumPages = totalNumPages;
+        table.currentPage = currentPage;
+        table.rowsPerPage = rowsPerPage;
+
+        var page = [];
+        var pageStart = Math.max(1, table.currentPage-2);
+        var pageEnd = Math.min(parseInt(table.totalNumPages), parseInt(table.currentPage)+2);
+
+        for(var i=pageStart; i<=pageEnd; i++) {
+            if(table.currentPage == i) {
+                if(i < 10)
+                    page.push({ name: i, className: "active" });
+                else
+                    page.push({ name: i, className: "modactive" });
+            }
+            else {
+                if(i < 10)
+                    page.push({ name: i, className: "" });
+                else
+                    page.push({ name: i, className: "mod" });
+            }
         }
+        var prevPage = (table.currentPage == 1) ? null : table.currentPage - 1;
+        var nextPage = (table.currentPage == table.totalNumPages) ? null : parseInt(table.currentPage) + 1;
+
 
         var hasIsLink = false;
         this.specs.cols.forEach( function( z ){
@@ -182,19 +208,22 @@ function htmltable(specs) {
             } );
 
 
-        //var arr = cursor.toArray();
-        while( cursor.hasNext() ) {
-            var obj = cursor.next();
+        var rows = [];
+        for(var i in dbResult) {
+            var obj = dbResult[i];
             if( this.filter && !this.filter(obj) ) continue;
 
-            print("<tr>");
+            rows[i] = {};
             for( var c in colnames ) {
+                rows[i][colnames[c]] = {value: ""};
                 var fieldValue = obj[colnames[c]];
                 var isLink = this.specs.cols[c].isLink;
                 var cssClassName = this.specs.cols[c].cssClassName;
 
-                print("<td" + (cssClassName ? ' class="' + cssClassName + '"' : '')+ ">");
-                print("<nobr>");
+                if(cssClassName) {
+                    rows[i][colnames[c]].className = cssClassName;
+                }
+
                 {
                     var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
                     if( linkToDetails ) {
@@ -204,44 +233,49 @@ function htmltable(specs) {
                         if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
                         else fieldUrl = this.specs.detail(obj);
 
-                        print('<a href="' + fieldUrl + '">');
+                        rows[i][colnames[c]].value += '<a href="' + fieldUrl + '">';
                     }
                     var viewMethod = this.specs.cols[c].view;
                     var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
-                    print( fieldDisplay || ( linkToDetails ? "go to" : "" ) );
-                    if( linkToDetails ) print("</a>");
+                    rows[i][colnames[c]].value += fieldDisplay || ( linkToDetails ? "go to" : "" );
+                    if( linkToDetails ) rows[i][colnames[c]].value += "</a>";
                 }
-                print("</nobr>");
-                print("</td>");
             }
 
             if ( this.specs.actions ){
-                print( "<td>" );
+                var acts = "";
+                colnames.push( "actions" );
                 for ( var i=0; i<this.specs.actions.length; i++ ){
                     var action = this.specs.actions[i];
-                    print( "<form method='post'>" );
-                    print( "<input type='hidden' name='_id' value='" + obj._id + "'>" );
-                    print( "<input type='submit' name='action' value='" + action.name + "'>" );
-                    print( "</form>" );
+                    acts += "<form method='post'>" ;
+                    acts += "<input type='hidden' name='_id' value='" + obj._id + "'>" ;
+                    acts += "<input type='submit' name='action' value='" + action.name + "'>" ;
+                    acts += "</form>" ;
                 }
-                print( "</td>" );
+                rows[i]["actions"] = ({value: acts});
             }
-            print("</tr>\n\n");
         }
+
+        table.rows = rows;
+
+        core.content.pieces.tableBody({table:table, th:th, fields: colnames});
+        core.content.pieces.tableFooter({page: page, prevPage: prevPage, nextPage: nextPage, totalNumPages: totalNumPages, colspan: th.length});
     };
 
     this.find = function(baseQuery, baseSort) {
 	assert(isObject(this.specs.ns));
-	return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort)).limit(300);
+	return this.specs.ns.find(this._query(baseQuery||{}), this._fieldsFilter()).sort(this._sort(baseSort));
     };
 
     this.dbview = function(cursor) {
+        if(request.style || this.specs.style)
+            print('<link type="text/css" rel="stylesheet" href="'+(request.style || this.specs.style)+'" />');
+        else
+            print('<link type="text/css" rel="stylesheet" href="/~~/content/assets/table.css" />');
+
         var idStr = (this.specs.id && this.specs.id !=null && this.specs.id != "null") ? "id='"+this.specs.id+"'" : "";
-        print("<table "+idStr+">\n");
         this._rows(cursor );
-        if( cursor.numSeen() == 300 )
-            print( tr(["Only first 300 results displayed."]) );
-        print("</table>\n");
+        core.content.pieces.tablejs();
     };
 
     this.arrview = function( arr ){
