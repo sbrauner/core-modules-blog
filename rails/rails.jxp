@@ -1,11 +1,6 @@
 <%
 // this is the main entry point into rails
 
-if ( ! Rails.ready ){
-    core.rails.start();
-    //Rails.ready = true;
-}
-
 // setup rails globals
 flash = {};
 flash.notice = "";
@@ -28,6 +23,8 @@ for ( var i=0; i<Rails.controllers.length; i++ ){
 if ( ! myController )
     return print( "can't find controller [" + matchingRoute.controller + "]" );
 
+
+session = new CGI.Session.ActiveRecordStore.Session();
 
 myController.dispatch( request , response , matchingRoute );
 %>

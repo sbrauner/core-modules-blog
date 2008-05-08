@@ -15,14 +15,14 @@ Rails.mapURI = function( uri ){
     return "/~~/rails/rails.jxp";
 };
 
-function ApplicationController(){
+ActionController.Base = function(){
     this.shortName = null;
     this.className = null;
 };
 
-ApplicationController.prototype.__magic = 17;
+ActionController.Base.prototype.__magic = 17;
 
-ApplicationController.prototype.dispatch = function( request , response , matchingRoute ){
+ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
     var f = this[matchingRoute.action];
     if ( ! f ){
@@ -77,7 +77,7 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
     print( "\n <!-- " + this.className + "." + method + " -->" );
 };
 
-ApplicationController.prototype.toString = function(){
+ActionController.Base.prototype.toString = function(){
     return "{ shortName : " + this.shortName + " , className : " + this.className + " }";
 };
 
@@ -93,13 +93,15 @@ function ApplicationResponse( controller , method ){
 
     this.anythingRendered = false;
 
-    this.requestThis = Rails.baseThis.child();
+    this.requestThis = {};
+    this.requestThis.prototype = controller;
 
 };
 
 ApplicationResponse.prototype.html = function(){
 
     var blah = this.requestThis;
+    blah.debug();
 
     if ( arguments.length > 0 && isFunction( arguments[0] ) ){
         arguments[0].call( blah );
@@ -112,7 +114,9 @@ ApplicationResponse.prototype.html = function(){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
-    var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
+    var template = 
+        local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
+        local.app.views[ this.controller.shortName ][ this.method  ];
     if ( ! template )
         throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );

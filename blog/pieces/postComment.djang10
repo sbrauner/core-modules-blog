@@ -34,15 +34,15 @@ captcha_message
            {% else %}
               <div id="comment-form-name">
                 <label for="comment-author">{{ comment_author|default:"Name" }}</label>
-                <input class="text" name="yourname" size="30" value="<%= request.yourname || "" %>" />
+                <input class="text" name="yourname" size="30" value="" />
               </div>
               <div id="comment-form-email">
                  <label for="comment-email">{{ comment_email|default:"Email Address"}}</label>
-                 <input class="text" name="email" size="30" value="<%= request.email || "" %>" />
+                 <input class="text" name="email" size="30" value="" />
               </div>
               <div id="comment-form-url">
                  <label for="comment-url">{{ comment_url|default:"URL" }}</label>
-                 <input class="text" name="url" size="30" value="<%=request.url || "" %>" />
+                 <input class="text" name="url" size="30" value="" />
               </div>
            {% endif %}
          </div>

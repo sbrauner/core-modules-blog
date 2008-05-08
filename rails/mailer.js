@@ -1,0 +1,5 @@
+
+ActionMailer = {}
+ActionMailer.Base = function(){
+
+};

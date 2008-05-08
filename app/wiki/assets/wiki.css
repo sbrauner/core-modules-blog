@@ -25,23 +25,6 @@ pre {
 .u { font-size:100%; }
 .uu { font-size:75%; }
 
-.wiki table {
-    border: solid 1px #ddd;
-	border-collapse: collapse;
-}
-
-.wiki table td {
-  border: solid 1px #ddd;
-  margin: 5px;
-}
-
-.wiki table th {
-    background: #333;
-    color: #fff;
-  border: solid 1px #ddd;
-  padding: 5px;
-}
-
 .wiki .help {
 	font-size: 70%;
 	background: #ddd;
@@ -111,6 +94,6 @@ pre {
 }
 
 #maincontent {
-	width: 825px; 
+	width: 825px;
 }
 

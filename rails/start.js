@@ -1,14 +1,23 @@
 
 // this is what rails init starts
 
+var useGlobal = globals;
+
 // -------------------
 // ----- libs -----
 // -------------------
 
 var inStart = true;
 
-if ( local.config && local.config.default_site )
-    local.config.default_site();
+if ( local.config ){
+    
+    var files = [ "app" ];
+    files.forEach( function(z){
+        if ( local.config[z] )
+            local.config[z]();
+    }
+                 );
+}
 
 var libDir = openFile( "lib" );
 if ( libDir.exists() ){
@@ -18,10 +27,9 @@ if ( libDir.exists() ){
             if ( ! z.filename.endsWith( ".rb" ) )
                 return;
             
-            var f = local.lib[ z.filename.replace( /\.rb$/ , "" ) ];
-            log.rails.init.lib.info( "loading : " + f );
-            f();
-            
+            var shortName = z.filename.replace( /\.rb$/ , "" );
+            log.rails.init.lib.info( "loading : " + shortName );
+            __rrequire( shortName  );
         }
     );
 
@@ -44,7 +52,9 @@ if ( modelsDir.exists() ){
         all.forEach( 
             function(z){
                 
-                if ( ! z.filename.endsWith( ".rb" ) ) 
+                if ( ! z.filename.endsWith( ".rb" ) 
+                     || z.filename.startsWith( "." ) 
+                   ) 
                     return;
                 
                 if ( z._loaded )
@@ -55,14 +65,20 @@ if ( modelsDir.exists() ){
 
                 var f = null;
                 try {
-                    f = local.app.models[ z.filename.replace( /\.rb$/ , "" ) ];
+                    var shortName = z.filename.replace( /\.rb$/ , "" );
+                    f = local.app.models[ shortName ];
+                    if ( ! f )
+                        throw "how could this not exist [" + shortName + "]";
                     f();
                     log.rails.init.model.info( "loaded : " + f );
                 }
                 catch ( e if ( pass + 1 < numPasses ) ){
                     
                     log.rails.init.model.info( z.filename + " failed, but ignoring" );
-                    e.printStackTrace();
+                    try {
+                        e.printStackTrace();
+                    }
+                    catch (e){}
 
                     return;
                 }
@@ -80,7 +96,7 @@ if ( modelsDir.exists() ){
                         continue;
                     
                     log.rails.init.model.info( "Added Thing : " + name );
-                    globals.getParent().putExplicit( name , model );
+                    useGlobal.putExplicit( name , model );
                     
                     if ( ! model._isModel )
                         continue;
@@ -89,7 +105,7 @@ if ( modelsDir.exists() ){
                     model.prototype.setConstructor( model );
                     
                     Rails.models.add( model );
-                    globals.getParent().putExplicit( name , model );
+                    useGlobal.putExplicit( name , model );
                     
                     log.rails.init.model.info( "added:" + name + " : " + model.collectionName );
                     
@@ -121,6 +137,9 @@ if ( ! controllersDir.exists() )
     throw "you need an app/controllers directory";
 
 Rails.controllers = [];
+
+if ( local.app.controllers.application )
+    local.app.controllers.application();
 
 controllersDir.listFiles().forEach( 
     function(z){
@@ -162,5 +181,8 @@ controllersDir.listFiles().forEach(
 
 Rails.routes = new ActionController.Routing.Routes();
 
-if ( local.config && local.config.routes )
+if ( local.config && local.config.routes ){
+    Rails.routes._inInit = true;
     local.config.routes();
+    Rails.routes._inInit = false;
+}

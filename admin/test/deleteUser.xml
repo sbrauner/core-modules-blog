@@ -1,0 +1,12 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Try to delete Third User">
+      <echo message="How many users? ${line.separator} #{numusers} ${numusers}"/>
+      <invoke url="${site}/admin/users"  username="test@10gen.com" password="test"/>
+      <clickLink label="Third User"/>
+      <clickButton name="delete"/>
+      <clickButton xpath="//div[@id=&quot;deletePanelDiv&quot;]//button[text()='Delete']"/>
+      <verifyXPath xpath="count(/html/body/table/tbody/tr/td[2]/div/table/tbody/*)" text="${numusers}"/>
+    </webtest>
+  </target>
+</project>

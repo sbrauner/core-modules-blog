@@ -7,10 +7,11 @@ c - an object from the blog.posts collection
 
 Optional parameters:
 verb - text linking the author to the comment.  Defaults to "said:".  Could also be "ranted ", "twittered...", "espoused", etc.
+date_format - format string for date
 
 {% endcomment %}
 
-<div id="comments-{{ c._id }}" class="comments">
+<div id="comments-{{ c.cid }}" class="comments">
     <div class="inner">
         <div class="comment-header">
             <div style="float: left;">
@@ -18,14 +19,21 @@ verb - text linking the author to the comment.  Defaults to "said:".  Could also
                   <strong>{{ c.author }}</strong>
                 </a>
                 {{ verb|default:"said:" }}</div>
-                <div style="float: right;"><a href="#comment-{{ c._id }}" title="Permalink to this comment">{{ c.ts }}</a></div>
+                <div style="float: right;"><a href="#comment-{{ c.cid }}" title="Permalink to this comment">
+                {% if date_format %}
+                   <span class="dateline">{{ c.ts|date:date_format }}</span>
+                {% else %}
+                   <span class="dateline">{{ c.ts|date:"F j, Y g:ia" }}</span>
+                {% endif %}
+                </a></div>
             </div>
             <div class="comment-content">
-              {{ c.content }}
+              {{ c.text }}
 
-            {% if admin %}
+              {% if admin %}
                 <form><input type="hidden" name="cid" value="{{ c._id }}" /><input type="submit" name="action" value="delete" /></form>
-            {% endif %}
+              {% endif %}
+            </div>
         </div>
     </div>
 </div>
