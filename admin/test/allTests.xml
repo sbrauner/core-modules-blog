@@ -10,5 +10,6 @@
     <ant antfile="createUser.xml"/>
     <ant antfile="cannotCreateUser.xml"/>
     <ant antfile="deleteUser.xml"/>
+    <ant antfile="navTest.xml"/>
   </target>
 </project>

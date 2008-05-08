@@ -1,0 +1,30 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Test links in nav-bar">
+      <invoke url="${site}/admin"  username="test@10gen.com" password="test"/>
+      <clickLink label="SHELL" description="make sure that the trailing slash is optional"/>
+
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="SHELL"/>
+
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="STATISTICS"/>
+
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="USERS"/>
+
+<!-- Broken JS in WT
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="DATABASE"/>
+-->
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="FILES"/>
+
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="CRON"/>
+
+      <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
+      <clickLink label="LOGS"/>
+    </webtest>
+  </target>
+</project>
