@@ -1,11 +1,16 @@
+Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
+
 <%
- core.content.table();
+
+core.admin.tableGen({th: "blog_pages", ns: "db.blog.posts", formatter: { "title": function(str, obj) {
+    return '<a href="post_edit?id='+obj._id+'">'+str+'</a>';
+}}});
+
 %>
 
-Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
 <p>
 <%
-    var tab = new htmltable({
+/*    var tab = new htmltable({
         ns: db.blog.posts,
         cols: [
             { name: "title", isLink: true, searchWidth: 50 },
@@ -17,4 +22,5 @@ Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
     });
 
     tab.dbview( tab.find({cls:"page"}).sort({ts:-1}) );
+*/
 %>
