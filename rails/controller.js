@@ -112,7 +112,9 @@ ApplicationResponse.prototype.html = function(){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
-    var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
+    var template = 
+        local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
+        local.app.views[ this.controller.shortName ][ this.method  ];
     if ( ! template )
         throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );

@@ -16,7 +16,7 @@ if ( local.config ){
     }
                  );
 }
-/*
+
 var libDir = openFile( "lib" );
 if ( libDir.exists() ){
     libDir.listFiles().forEach(
@@ -25,15 +25,14 @@ if ( libDir.exists() ){
             if ( ! z.filename.endsWith( ".rb" ) )
                 return;
             
-            var f = local.lib[ z.filename.replace( /\.rb$/ , "" ) ];
-            log.rails.init.lib.info( "loading : " + f );
-            f();
-            
+            var shortName = z.filename.replace( /\.rb$/ , "" );
+            log.rails.init.lib.info( "loading : " + shortName );
+            __rrequire( shortName  );
         }
     );
 
 }
-*/
+
 // -------------------
 // ----- models -----
 // -------------------
@@ -136,6 +135,9 @@ if ( ! controllersDir.exists() )
     throw "you need an app/controllers directory";
 
 Rails.controllers = [];
+
+if ( local.app.controllers.application )
+    local.app.controllers.application();
 
 controllersDir.listFiles().forEach( 
     function(z){
