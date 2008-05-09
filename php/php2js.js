@@ -107,7 +107,7 @@ function _skipTo(patt) {
     return res;
 }
 
-function skipTo(patt) { 
+function skipTo(patt, suppress) { 
     var s = peekStream();
     var i = s.indexOf(patt);
 
@@ -116,11 +116,12 @@ function skipTo(patt) {
 	throw("eof");
     }
     var res = s.substring(0, i);
-    say(res);
+    if( !suppress )
+	say(res);
     pos += i;
 }
-function skipToAndEat(patt) { 
-    skipTo(patt);
+function skipToAndEat(patt, suppress) { 
+    skipTo(patt, suppress);
     pos += patt.length;
 }
 
@@ -140,6 +141,22 @@ function peek(sayskipped) {
 	}
 	return input[pos];
     }
+}
+
+/* get prev char */
+function prev(nback, sayskipped=0) { 
+    var i = pos - (nback||1);
+    while( 1 ) { 
+	if( i < 0 ) return null;
+	if( (input[i] == ' ' || input[i] == '\t' || input[i] == '\n') && sayskipped >= 0 ) { 
+	    ;
+	}
+	else { 
+	    break;
+	}
+	i--;
+    }
+    return input[i];
 }
 
 function get(sayskipped) { 
@@ -178,7 +195,9 @@ varTranslations = {
     "interface": "$interface",
     "var": "$var",
     "return": "$return",
-    "function": "$funtion"
+    "function": "$function",
+    "false": "$false", 
+    "true": "$true"
 };
 
 // -------------------------------------------------------------------
@@ -192,7 +211,7 @@ function runAction(tok) {
 
 // $SOMEVAR
 variable = { type: "variable", name: "" ,
-	     action: function() { say(this.name); },
+	     action: doVariable,
 	     init: function() 
 	     { 
 		 if( varTranslations[this.name] )
@@ -224,11 +243,16 @@ singlequotestr = { type: "singlequotestr", stringval: "",
 doublequotestr = { type: "doublequotestr", stringval: "", action: doDoubleQuote };
 
 /* keywords */
+phplist = { type: "list", action: doList };
+phppush = { type: "[]", action: doPush };
+phpref = { type: "&", action: doRef } ;
+phpassign = { type: "=", action: doAssign };
+phpvar = { type: "var", action: doVar };
 phpor = { type: "or", action: "||" };
 phpand = { type: "and", action: "&&" };
 phpcontinue = { type: "continue", action: doContinue };
 phpbreak = { type: "break", action: doBreak };
-phpfunction = { type: "function", action: "function" };
+phpfunction = { type: "function", action: doFunction };
 phppublic = { type: "public", action: "/*public*/" };
 phpprivate = { type: "private", action: "/*private*/" };
 phpstatic = { type: "static", action: doStatic };
@@ -247,7 +271,7 @@ array = { type: "array", action: doArray };
 echo = { type: "echo", action: doEcho };
 keywords = [ define, require_once, include_once, require, include, foreach, array, echo,
 	     file, as, _final, phpclass, phpstatic, phpprivate, phppublic, phpfunction, phpextends,
-	     phpbreak, phpcontinue, phpand, phpor
+	     phpbreak, phpcontinue, phpand, phpor, phpvar, phpassign, phpref, phplist
 ];
 
 
@@ -293,7 +317,7 @@ function getidentifier() {
 /* like getidentifier, but skips past white space to find an identifier */
 function nextidentifier() { 
     var ch = get(0);
-    if( delimChar(ch) ) return "";
+    if( delimChar(ch) ) return ch;
     var id = ch + getidentifier();
     return identTranslations[id] ? identTranslations[id] : id;
 }
@@ -358,6 +382,13 @@ function _tok(sayskipped) {
 	tk.init();
 	return tk;
     }
+    else if( ch == '[' && peek() == ']' ) { 
+	get();
+	return clone(phppush);
+    }
+    else if( ch == '&' ) { 
+	return clone(phpref);
+    }
     else if( wasWordBreak ) {
 	pushback();
 	for( var i = 0; i < keywords.length; i++ ) { 
@@ -375,7 +406,7 @@ function _tok(sayskipped) {
 }
 function tok(sayskipped) {
     var t = _tok(sayskipped);
-    //    print(tojson(t));
+    //        print(tojson(t));
     return t;
 }
 
@@ -410,12 +441,16 @@ function expectStr(s) {
 
 // -------------------------------------------------------------------
 
+function escape(str) { 
+    return str.replace(/\n/g, "\\n");
+}
+
 // note for "$FOO z" we output ""+FOO+" z" and that is good because it forces
 // conversion of FOO to string type
 //
 function doDoubleQuote() {
     var pc = this.stringval.split(/\$/);
-    say( '"' + pc.car() + '"' );
+    say( '"' + escape(pc.car()) + '"' );
     pc.cdr().forEach(function(x) 
 		     {
 			 var rest = null;
@@ -430,16 +465,89 @@ function doDoubleQuote() {
 			     v = varTranslations[v];
 			 say('+' + (v.length?v:"$"));
 			 if( rest )
-			     say('+"' + x.substring(rest) + '"');
+			     say('+"' + escape(x.substring(rest)) + '"');
 		     });
 };
 
+function doVariable() { 
+    say( this.name);
+}
+
+// list($action, $to, $from, $from_relation) = $rel_data;
+// TODO finish
+function doList() { 
+    expectStr("(");
+    skipToAndEat(")", "suppress");
+    say("__list_not_done__");
+}
+
+// $VAR[] =
+function doPush() {
+    //    print("DOPUSH" + input.substring(pos, pos+20));
+    if( peek() == '=' ) {
+	get();
+
+	// $foo[] = 
+	say('.push(');
+	//	if( peek() == '&' ) get();
+	doStatement();
+	say(')');
+    }
+}
+
+function doRef() { 
+    var ch = prev(2);
+    //    print("DOREF " + ch);
+    if( ch == '=' || ch == '(' || ch ==',' )
+	return;
+    say("&");
+}
+
+function doAssign() { 
+    say("=");
+}
+
+var didConstructor = false;
 var className = "?";
+var baseClass = null;
 var inClass = 0;
+
+function doFunction() { 
+    if( inClass ) { 
+	var nm = nextidentifier();
+	if( nm == '&' ) {
+	    nm = nextidentifier();
+	}
+	if( nm == className ) { 
+	    didConstructor = true;
+	    say(nm + " = function");
+	    if( baseClass ) say(" this.superclass(); "); 
+	}
+	else { 
+	    say(className + ".prototype.");
+	    say(nm + " = function");
+	}
+    }
+    else
+	say("function");
+}
+
+function doVar() {
+    if( inClass ) {
+	say("/* var");
+	doStatement();
+	expectStr(';'); say(";");
+	say("*/");
+    }
+    else { 
+	say("var");
+    }
+}
 
 // class foo {
 function doClass() { 
-    var baseClass = null;
+    didConstructor = false;
+    baseClass = null;
     var nm = nextidentifier();
 
     if( peek() != '{' ) { 
@@ -449,19 +557,28 @@ function doClass() {
 
     print("class " + nm);
 
-    say("/*class " + nm + (baseClass?" extends "+baseClass:"") + "*/\n" + nm + " = function() {");
-    if( baseClass ) say(" this.superclass(); "); 
-    say("}\n");
-    if( baseClass ) { 
-	say(nm + ".prototype = Object.extend({}, "+baseClass+".prototype);\n");
-	//say(nm + ".prototype = " + baseClass + ".prototype.clone();\n");
-	say(nm + ".prototype.constructor = " + nm + ";\n");
-    }
+    say("/*class " + nm + (baseClass?" extends "+baseClass:"") + "*/\n");
+
     inClass++;
     className = nm;
     doBlock("quiet");
     className = "??";
     inClass--;
+
+    /* constructor */
+    if( !didConstructor ) { 
+	say(nm + " = function() {");
+	if( baseClass ) say(" this.superclass(); "); 
+	say("}\n");
+    }
+
+    /* inheritance */
+    if( baseClass ) { 
+	say("\n/*inheritance*/\n");
+	say(nm + ".prototype = Object.extend({}, "+baseClass+".prototype);\n");
+	//say(nm + ".prototype = " + baseClass + ".prototype.clone();\n");
+	say(nm + ".prototype.constructor = " + nm + ";\n");
+    }
 }
 
 //    static private $_registry = null;

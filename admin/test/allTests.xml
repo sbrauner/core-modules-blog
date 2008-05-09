@@ -12,5 +12,6 @@
     <ant antfile="deleteUser.xml"/>
     <ant antfile="userSearchTest.xml"/>
     <ant antfile="navTest.xml"/>
+    <ant antfile="dbView.xml"/>
   </target>
 </project>
