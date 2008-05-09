@@ -226,15 +226,15 @@ Auth = {
                 return null;
 
             log.user.auth.cookie.debug( "got user : " + request.username  );
-	    var temp1 = md5( prefix + ":" + u.pass_ha1_name );
-	    var temp2 = md5( prefix + ":" + u.pass_ha1_email );
-            if ( hash != temp1 && hash != temp2 ){ 
+            var temp1 = md5( prefix + ":" + u.pass_ha1_name );
+            var temp2 = md5( prefix + ":" + u.pass_ha1_email );
+            if ( hash != temp1 && hash != temp2 ){
                 log.user.auth.cookie.debug( " hashes don't match hash [" + hash + "] \n ha1n [" + u.pass_ha1_name + "] ha1e [" + u.pass_ha1_email + "] \n temp1[" + temp1 + "] temp2[" + temp2 + "]" );
                 return null;
             }
-	    
+
             log.user.auth.cookie.debug( "yay - got valid user : " + request.getURL() );
-	    
+
             Auth.cookie.login( request , response , u );
             return u;
         } ,

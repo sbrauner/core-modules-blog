@@ -69,17 +69,22 @@ Blog.handleRequest = function( request , arg ){
         if (page) {
             pageNumber = parseInt( page[1] );
 	    pageNumber = Math.max( 1, pageNumber ); // make sure we can't go below 1
-            //pageNumber = Math.min( pageNumber, 20 ); 
+            //pageNumber = Math.min( pageNumber, 20 );
 
             // don't forget to strip out the page from the processed uri
             uri = uri.replace( /\/page\/[0-9]*/ , '');
         }
 
-        if (request.q) {
-            posts = Search.search(db.blog.posts, request.q , { min : 100 } );
+        if (request.q)
+            posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
+        else if (request.category)
+            posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
+
+        if (request.q || request.category) {
             var now = new Date();
             posts = posts.filter( function( z ){ return z.live && z.ts <= now; } );
-            posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
+	    //sorting now done by Search
+            //posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 
             var postResults = 0;
             var pageStart = (pageNumber - 1) * pageSize;
@@ -106,6 +111,7 @@ Blog.handleRequest = function( request , arg ){
             hasNext = postResults > pageEnd;
             return result;
         }
+
 
         var searchCriteria = { live : true , ts : { $lt : new Date() } }; // add ts filter
         var entries;

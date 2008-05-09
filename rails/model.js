@@ -3,7 +3,7 @@ ActiveRecord = {};
 
 ActiveRecord.Base = function( obj ){
     this.collectionName = null;
-    if ( obj )
+    if ( obj && isObject( obj ) )
         Object.extend( this , obj );
 };
 
@@ -16,6 +16,10 @@ ActiveRecord.Base.prototype.setFile = function( filename ){
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
     db[ this.collectionName ].setConstructor( cons );
 };
+// ---------
+// save/update/etc... stuff
+// ---------
+
 
 ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
@@ -27,12 +31,8 @@ ActiveRecord.Base.prototype.find = function( filter ){
         return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
 
-    return db[ this.collectionName ].find();
+    return db[ this.collectionName ].find().toArray();
 };
-
-// ---------
-// save/update/etc... stuff
-// ---------
 
 ActiveRecord.Base.prototype.save = function(){
     db[this.collectionName].save( this );
@@ -51,6 +51,10 @@ ActiveRecord.Base.prototype.destroy = function(){
 
     db[this.collectionName].remove( { _id : this._id } );
     return true;
+};
+
+ActiveRecord.Base.prototype.count = function( options ){
+    return -2;
 };
 
 // ---------
@@ -138,3 +142,105 @@ ActiveRecord.Base.prototype.submit = function( name ){
         " value=\"" + name + "\" type=\"submit\" />";
 };
 
+
+// ---------
+// data model
+// ---------
+
+function before_save(){
+    SYSOUT( "ignoring before_save" );
+}
+
+function before_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function before_validation(){
+    SYSOUT( "ignoring before_validation" );
+}
+
+function after_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function after_destroy(){
+    SYSOUT( "ignoring before_create" );
+}
+
+// ----
+
+function belongs_to( name ){
+    SYSOUT( "ignoring belongs_to [" + name + "]" );
+}
+
+function has_many( name ){
+    SYSOUT( "ignoring has_many [" + name + "]" );
+}
+
+function has_and_belongs_to_many( name , option ){
+    SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
+}
+
+// -----
+
+function format_attribute( name ){
+    SYSOUT( "ignoring format_attribute [" + name + "]" );
+}
+
+function composed_of( name , options ){
+    SYSOUT( "ignoring composed_of [" + name + "]" );
+}
+
+// ---
+
+function acts_as_list( options ){
+    SYSOUT( "ignoring acts_as_list [" + options + "]" );
+}
+
+function acts_as_ferret( options ){
+    SYSOUT( "ignoring acts_as_ferret [" + options + "]" );
+}
+
+
+// --
+
+function validates_format_of( name , options ){
+    SYSOUT( "ignoring validates_format_of [" + name + "]" );
+}
+
+function validates_presence_of( name , options ){
+    SYSOUT( "ignoring validates_presence_of [" + name + "]" );
+}
+
+function validates_length_of( name , options ){
+    SYSOUT( "ignoring validates_length_of [" + name + "]" );
+}
+
+
+function validates_uniqueness_of( name , options ){
+    SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
+}
+
+// --
+
+function with_options( options ){
+    SYSOUT( "ignoring with_options [" + name + "]" );
+}
+
+function serialize( name ){
+    SYSOUT( "ignoring serialize [" + name + "]" );
+}
+
+function helper( name ){
+    SYSOUT( "ignoring helper [" + name + "]" );
+}
+
+function helper_method(){
+    SYSOUT( "ignoring helper_method [" + arguments + "]" );
+}
+
+
+// ---
+function paginate(){
+    return [ { current : {} }  , [] ];
+}

@@ -1,6 +1,8 @@
 <%
 
 core.blog.ping();
+core.blog.post();
+core.blog.category();
 
 var id = request.id;
 
@@ -197,12 +199,12 @@ tinyMCE.init({
 
 
 <h1>
-{
+<%
   if( newPost && !justSaved )
     print( thePost.cls == "page" ? "New Page" : "New Post" );
   else
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
-}
+%>
 </h1>
 <form method="post" action="post_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">

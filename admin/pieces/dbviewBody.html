@@ -9,6 +9,11 @@ var th = obj.th;
   <!-- Main area -->
   <tr class="white-main">
     <td class="left">&nbsp;</td>
+
+    <if (table.rows.length == 0)>
+        <td>No entries.</td>
+    </if>
+
     <forin i th>
       <th class="$th[i].className">
         <if (top && th[i].name == "NAME")>
@@ -17,7 +22,7 @@ var th = obj.th;
         </if>
         <if (table.idxes[th[i].name])>
           <a onclick="sortBy('$th[i].name')" id="thlink$th[i].name"><%= th[i].heading || th[i].name %></a>
-          <img src="/~~/admin/assets/img/timestamp_circle_1.gif" />
+          <img src="/~~/admin/assets/img/key.png" />
         </if>
         <if (!(top && th[i].name == "NAME") && !table.idxes[th[i].name])>
           <%= th[i].heading || th[i].name %>
@@ -33,7 +38,7 @@ var th = obj.th;
         <td class="left">&nbsp;</td>
         <td><a href="$table.rows[row].url&refPage=$table.currentPage">$table.rows[row].name</a></td>
         <td>$table.rows[row].index</td>
-        <td class="center">$table.rows[row].fixed</td>
+        <td class="center">$table.rows[row].capped</td>
         <td class="center">
 	  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
         </td>

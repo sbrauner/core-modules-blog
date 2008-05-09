@@ -4,7 +4,7 @@ core.io.marshal();
 core.io.encode.json();
 core.db.db();
 core.content.html();
-core.content.html();
+core.content.regexp();
 
 var collection;
 // ignore internal transient variables
@@ -82,7 +82,7 @@ if(request.action == "searchprofile") {
         searchObj.millis = { $gte : parseInt(request.ms_from), $lte : parseInt(request.ms_to) };
     }
     if(request.re) {
-        searchObj.info = new RegExp(request.re, "i");
+        searchObj.info = new RegExp(content.RegExp.escape(request.re), "i");
     }
     if(request.record_type && request.record_type != "all") {
         searchObj.info = new RegExp("^"+request.record_type+".*");
@@ -101,18 +101,15 @@ else if(request.action == "search" || request.action == "userssearch" || request
             q = request.name;
         if(request.index)
             q = q+"\\$.*"+request.index;
-        var query = new RegExp(".*"+q+".*", "i");
+        var query = new RegExp(".*"+content.RegExp.escape(q)+".*", "i");
         searchobj["name"] = query;
     }
 
     for(q in request) {
-        if(q == "action" || q == "ns" || q == "currentPage" || q == "sortcol" || q == "sortdir" || q == "pagename")
-            continue;
-        if(top && (q == "index" || q == "name"))
-            continue;
-
-        var query = new RegExp(".*"+request[q]+".*", "i");
-        searchobj[q] = query;
+        if(q.indexOf("search") == 0 && q.length > 6) {
+            var query = new RegExp(".*"+content.RegExp.escape(request[q])+".*", "i");
+            searchobj[q.substring(6)] = query;
+        }
     }
 
     if(request.action == "userssearch" && searchobj['admin']){
@@ -134,20 +131,18 @@ else if(request.action == "search" || request.action == "userssearch" || request
         rows = collection.find(searchobj).sort(mySort).toArray();
     else
         rows = collection.find(searchobj).sort(mySort).toArray();
-
 }
 else if(request.action == "eval") {
     try {
-        var collection = scope.eval(request.cmd);
-        rows = collection;
+        var rows = scope.eval(request.cmd);
         if(!rows)
-            rows = db[request.ns.substring( request.ns.indexOf('.')+1 )].find();
+            return "No results.";
         rows = rows.toArray();
         top = false;
     }
     catch(e) {
-        log("e: "+e);
-        return -1;
+        print( "Exception: "+e);
+        return;
     }
 }
 else {
@@ -259,19 +254,18 @@ else
     dbTable.rows = rows;
 
 
-
 /* Formatting */
 
 var fcount = 0;
 
 if(top) {
-    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {name : "index", heading: "INDICES" }, {name : "fixed", className: "center", heading: "FIXED"}, {name:"stats", className: "center", heading: "STATS"}, {name:"drop collection", className: "center", heading: "DROP COLLECTION" } ];
+    var th = [ {name : "name", className: "sort-down", heading: "NAME"}, {heading: "INDICES" }, {name : "capped", className: "center", heading: "CAPPED"}, {className: "center", heading: "STATS"}, {className: "center", heading: "DROP COLLECTION" } ];
 }
 else if(request.action == "userssearch"){
     var th = [ {name: "name", heading: "NAME"}, {name: "email", heading: "EMAIL"}, {name: "admin", heading: "ADMIN"} ];
 }
 else if(request.action == "filessearch") {
-    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete", name: "Delete"}];
+    var th = [{name: "filename", heading: "Filename"}, {name: "uploadDate", heading: "Upload Date"}, {name: "contentType", heading: "Content Type"}, {name: "length", heading: "Size"}, {heading: "Delete"}];
 }
 else if(request.pagename == "cron") {
     var th = [{name: "name", heading: "Job Name"}, {name: "url", heading: "URL"}, {name: "xminutes", heading: "Interval"}, {name: "lastRun", heading: "Last Run"}, {name: "Delete", heading: "Delete"}];
@@ -283,14 +277,17 @@ else {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
         th.push({"name" : fields[i], heading: fields[i], className: "" });
     }
-    if(request.action != "searchprofile") th.push({heading: "Delete", name: "Delete", className: "center" });
+    if(request.action != "searchprofile" && dbTable.rows.length > 0) th.push({heading: "Delete", className: "center", name: "Delete", searchable: false });
 
     idFormatter = function(oData) {
-        return '<span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span>';
+        return '<a><span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span></a>';
     }
 
-    deleteBtnFormatter = function(id) {
-        return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
+    deleteBtnFormatter = function(id, field) {
+        if(field)
+            return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id.getTime()+'\', \''+field+'\')" />';
+        else
+            return '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteRow(\''+id+'\')" />';
     }
 
     var objcount = 0;
@@ -371,7 +368,7 @@ else {
 
 dbTable.top = top;
 if(top) {
-    dbTable.idxes = {};
+    dbTable.idxes = {name: "name"};
     for(var i in dbTable.rows) {
         dbTable.rows[i].url = "dbview?ns="+dbTable.rows[i].name;
         dbTable.rows[i].name = dbTable.rows[i].name.substring( dbTable.rows[i].name.indexOf('.')+1 );
@@ -392,6 +389,7 @@ else if(request.action == "userssearch"){
 else if(request.action == "filessearch") {
     for(var i=0; i<dbTable.rows.length; i++) {
         dbTable.rows[i].Delete = '<img src="NOCDN/~~/admin/assets/img/button_delete_on_white.gif" onclick="deleteFile(\''+dbTable.rows[i]._id+'\', \''+dbTable.rows[i].filename+'\')" />';
+        dbTable.rows[i].filename = '<a onclick="getFile(\''+dbTable.rows[i]._id+'\')" style="cursor: pointer">'+dbTable.rows[i].filename+'</a>';
     }
     dbTable.idxes = {};
 }
@@ -414,12 +412,31 @@ else if(request.action != "searchprofile") {
         // some names might have underscores in them (e.g., _system) and indices can have multiple fields, so this is done seperately
         dbTable.idxes[idxes[i].substring(0, idxes[i].indexOf("_"))] = 1;
     }
+
+    if(!("_id" in f)) {
+        var uniqueKey = db.system.indexes.findOne({ns: request.ns});
+        // if there is no index on the collection, there is no way to uniquely identify elements
+        // so get rid of the delete button
+        if(!uniqueKey)
+            th.pop();
+        else {
+            var keyArr = uniqueKey.key;
+            keyArr = Object.keys(keyArr);
+            uniqueKey = keyArr[0];
+        }
+    }
     for(var i in dbTable.rows) {
-        if("_id" in f) dbTable.rows[i].id = "";
+        if("_id" in f) {
+            dbTable.rows[i].id = "";
+            dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
+        }
+        else {
+            // if the collection doesn't have an _id field (like the _system stuff), we need to find an index and use that, instead
+            dbTable.rows[i].Delete = deleteBtnFormatter(new Date(rows[i][uniqueKey]), uniqueKey);
+        }
         for(var field in th) {
             if(th[field].name == "_id") dbTable.rows[i].id = idFormatter(dbTable.rows[i]._id);
-            else if(th[field].name == "Delete")  dbTable.rows[i].Delete = deleteBtnFormatter(dbTable.rows[i]._id);
-            else dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
+            else if(field < th.length-1) dbTable.rows[i][th[field].name] = strFormatter(dbTable.rows[i], th[field].name);
         }
     }
 }
@@ -457,17 +474,21 @@ if(request.action == "searchprofile") {
         dbTable.colspan = 3;
     }
     core.admin.pieces.tableHeader({search: false, th: th, colspan: dbTable.colspan});
-    core.admin.pieces.dbprofileBody({table: dbTable, th: th});
+    core.admin.pieces.dbprofileBody({table: dbTable, th: th, colspan: colspan});
 }
-if(request.action == "userssearch"){
+else if(request.action == "userssearch"){
     core.admin.pieces.usersHeader({search: true, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});
+}
+else if(request.action == "filessearch") {
+    var filefields = ["filename", "uploadDate", "contentType", "length"];
+    core.admin.pieces.tableHeader({search: true, th: th, colspan: dbTable.colspan});
+    core.admin.pieces.files({th: th, table: dbTable, fields: filefields, colspan: dbTable.colspan});
 }
 else {
     core.admin.pieces.tableHeader({search: true, th: th, colspan: dbTable.colspan});
     core.admin.pieces.dbviewBody({table: dbTable, th: th, top: dbTable.top});
 }
 core.admin.pieces.tableFooter({page: page, prevPage: prevPage, nextPage: nextPage, colspan: dbTable.colspan, totalNumPages: dbTable.totalNumPages});
-
 
 %>

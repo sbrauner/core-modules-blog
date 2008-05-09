@@ -1,0 +1,43 @@
+{% comment %}
+
+Render the content of a post
+
+Required parameters:
+post - an object from the blog.posts collection
+
+Optional parameters:
+byline - Text appearing before the author's name.  Defaults to "".  Could also be "Written by", "Author: ", etc.
+dateline - Text appearing before the date field.  Defaults to "".
+
+{% endcomment %}
+
+
+<div id="entry-{{ post._id }}" class="newhp">
+  <div class="asset-header">
+    <h2 class="asset-name">
+      <a href="{{ post.name }}">{{ post.title }}</a>
+    </h2>
+
+    <div class="asset-meta">
+      <h3 class="timestamp" >
+        {% if post.author %}
+          <span class="byline">{{ byline|default:"" }}{{ post.author }}</span> |
+        {% endif %}
+        <span class="dateline">{{ dateline|default:"" }}
+          {% if date_format %}
+            <span class="dateline">{{ post.ts|date:date_format }}</span>
+          {% else %}
+            <span class="dateline">{{ post.ts|date:"F j, Y g:ia" }}</span>
+          {% endif %}
+        </span>
+      </h3>
+    </div>
+  </div>
+
+  <div class="asset-content">
+    <div class="asset-body">
+      {{ post.content }}
+    </div>
+  </div>
+</div>
+

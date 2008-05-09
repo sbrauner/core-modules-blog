@@ -2,7 +2,7 @@
 
 Posts - <a href="post_edit">new</a>
 <p>
-{
+<%
     var tab = new htmltable({
         ns: db.blog.posts,
         cols: [
@@ -18,4 +18,4 @@ Posts - <a href="post_edit">new</a>
     });
 
     tab.dbview( tab.find({ cls: "entry" }).sort({ ts: -1 }));
-}
+%>

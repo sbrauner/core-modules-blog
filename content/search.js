@@ -10,7 +10,7 @@ if ( Search && Search._doneInit )
 Search = {
 
     log : log.search ,
-    DEBUG : true ,
+    DEBUG : false ,
 
     _weights : {} ,
     _default : [ { idx : "_searchIndex" , w : 1 } ] ,
@@ -172,7 +172,6 @@ Search = {
             weights.push( { idx : "_searchIndex" , w : 1 } );
         if ( Search.DEBUG ) Search.log( "\t weights.length : " + weights.length );
 
-        var fullObjects = Object();
         var matchCounts = Object(); // _id -> num
         var all = Array();
         var max = 0;
@@ -187,7 +186,9 @@ Search = {
             words.forEach( function(z){
                 if ( Search.DEBUG ) Search.log( "\t\t searching on word [" + z + "]" );
                 var s = {}; s[idx] = z;
-                var res = table.find( s );
+                var res = table.find( s , { id : ObjectId() , title : true } );
+                if ( options.sort )
+                    res.sort( options.sort );
 
                 while ( res.hasNext() ){
                     var tempObject = res.next();
@@ -199,10 +200,9 @@ Search = {
                         matchCounts[temp] = w;
 
                     max = Math.max( max , matchCounts[temp] );
-
-                    if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title );
-
-                    fullObjects[temp] = tempObject;
+                    
+                    if ( Search.DEBUG ) Search.log( "\t\t " + temp + "\t" + tempObject.title  + "\t" + matchCounts[temp] );
+                    
                     if ( ! all.contains( temp ) )
                         all.add( temp );
                 }
@@ -212,16 +212,37 @@ Search = {
                 break;
         }
 
-        if ( Search.DEBUG ) Search.log( "matchCounts: " + tojson( matchCounts ) );
+        if ( Search.DEBUG ){
+            Search.log( "matchCounts: ");
+            all.forEach( 
+                function(z){
+                    SYSOUT( "\t" + z + "\t" + matchCounts[z] );
+                }
+            );
+        }
 
         all.sort( function( l , r ){
-            return matchCounts[r] - matchCounts[l];
+            var diff = matchCounts[r] - matchCounts[l];
+            if ( diff != 0 )
+                return diff;
+
+            return 0;
         } );
+        
+        if ( Search.DEBUG ){
+            Search.log( "matchCounts sorted: ");
+            all.forEach( 
+                function(z){
+                    SYSOUT( "\t" + z + "\t" + matchCounts[z] );
+                }
+            );
+        }
 
         var good = Array();
         all.forEach( function( z ){
             if ( matchCounts[z] == max || good.length < min ){
-                good.add( fullObjects[z] );
+                var id = ObjectId( z );
+                good.add( table.findOne( id ) );
                 return;
             }
         } );

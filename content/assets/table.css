@@ -1,0 +1,574 @@
+/* mass reset */
+th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}
+
+caption,th{text-align:left;}
+
+
+table.htmltable th, table.htmltable td {
+    border: 0px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+table.htmltable li {
+    list-style: none;
+    list-style-type: none;
+}
+
+table.htmltable tr.search-table td {
+	padding: 10px 3px 3px 3px;
+	background-color: #e7e4d6;
+}
+
+table.htmltable tr.search-table td.info {
+	font-size: 11px;
+}
+
+table.htmltable tr.search-table td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_topleft.gif) no-repeat left top;
+}
+
+table.htmltable .search-table form {
+	font-size: 11px;
+}
+
+select {
+	font-size: 11px;
+	height: 20px;
+	padding: 2px;
+	cursor: pointer;
+}
+
+input.text {
+	padding: 1px;
+}
+
+input.text, textarea {
+  	border: 1px solid;
+  	border-color: #999999 #cccccc #cccccc #999999;
+}
+
+table.htmltable tr.search-table td.right {
+	padding-right: 7px;
+	text-align: right;
+	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
+}
+
+table.htmltable tr.search-table td.right a{
+	font-size: 12px;
+}
+
+/* Modified top for main table */
+
+table.htmltable tr.search-top td {
+	background-color: #e7e4d6;
+	margin:0;
+	padding:0;
+}
+
+table.htmltable tr.search-top a {
+	font-size: 12px;
+}
+
+table.htmltable tr.empty td {
+	font-size: 4px;
+}
+
+table.htmltable tr.search-top ul {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+table.htmltable tr.search-top ul li {
+	float: left;
+	margin: 0 .5em 0 0;
+	padding: .7em 0 0 0;
+	height: 1.8em;
+}
+
+table.htmltable tr.search-top td.left {
+	background: #e7e4d6 url(img/mtbox_topleft.gif) no-repeat left top;
+}
+
+table.htmltable tr.search-top td.right {
+	text-align: right;
+	background: #e7e4d6 url(img/mtbox_topright.gif) no-repeat right top;
+}
+
+/* White top */
+
+table.htmltable tr.white-top td {
+	margin: 0;
+	padding: 0;
+	font-size:1px;
+	height: 14px;
+}
+
+table.htmltable tr.white-top td.middle {
+	padding: 0 14px;
+	background-image: url(img/mwbox_top.gif);
+}
+
+table.htmltable tr.white-top td.left {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_topleft.gif) no-repeat left top;
+}
+
+
+table.htmltable tr.white-top td.right {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_topright.gif) no-repeat right top;
+}
+
+table.htmltable tr.white-bottom th, table.htmltable tr.white-bottom td {
+	margin: 0;
+	padding: 0;
+	font-size:1px;
+	height: 14px;
+}
+
+table.htmltable tr.white-bottom td.middle {
+	padding: 0 14px;
+	background-image: url(img/mwbox_bot.gif);
+}
+
+table.htmltable tr.white-bottom th.left, table.htmltable tr.white-bottom td.left {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_botleft.gif) no-repeat left top;
+}
+
+
+table.htmltable tr.white-bottom th.right, table.htmltable tr.white-bottom td.right {
+	width: 14px;
+	background: #e7e4d6 url(img/mwbox_botright.gif) no-repeat right top;
+}
+
+
+table.htmltable tr.white-main th, table.htmltable tr.white-main td {
+	margin: 0;
+	padding: 0 1.5em 0 0;
+	background-color: #ffffff;
+	font-size: 11px;
+	line-height: 2em;
+}
+
+table.htmltable tr.white-main th {
+        color: #333333;
+        font-weight: bold;
+}
+
+table.htmltable tr.white-main th.lmod {
+	padding-left: 1em; line-height:1em;
+}
+
+table.htmltable p {
+	margin: .5em 0 0 0;
+	font-size: 12px;
+}
+
+tr.white-main th.center, tr.white-main td.center {
+	padding: 0;
+	text-align: center;
+}
+
+table.htmltable tr.white-main td {
+	padding: .4em 1em .1em 0;
+	vertical-align: top;
+	border-top:1px solid #dddddd;
+	line-height: 1.5em;
+	font-size: 11px;
+}
+
+input {
+}
+
+table.htmltable tr.white-main td.lmod {
+	padding: .5em 0 1.5em 1em;
+}
+
+table.htmltable tr.white-main td.lmod td {
+	padding-top: 0px;
+	padding-bottom: 1px;
+	border:none;
+}
+
+table.htmltable tr.white-main td.lmod tr.conflict td div {
+	color: #d41f1f;
+	font-weight: bold;
+	font-style: italic;
+}
+
+tr.conflict a, tr.conflict a:visited {
+	color: #d41f1f;
+}
+
+tr.conflict a:hover {
+	color: #961212;
+}
+
+tr.white-main th a, tr.white-main th a:visited {
+	line-height: 2em;
+	font-size: 11px;
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+tr.white-main th a, tr.white-main th a:visited {
+	line-height: 2em;
+	font-size: 11px;
+	color: #333333;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+tr.white-main td.error, span.error {
+	color: #ff8c0b;
+}
+
+tr.white-main td.fatal, span.fatal {
+	font-weight: bold;
+	color: #d41f1f;
+}
+
+tr.white-main th a.sort-down, tr.white-main th a.sort-down:visited {
+	margin: 0;
+	padding: 1em 1.2em 0 0;
+	background:url(img/icon_active_arrow_down.gif) no-repeat 100% bottom;
+}
+
+tr.white-main th a.sort-up, tr.white-main th a.sort-up:visited {
+	margin: 0;
+	padding: 1em 1.2em 0 0;
+	background:url(img/icon_active_arrow_up.gif) no-repeat 100% bottom;
+}
+
+tr.white-main th a:hover {
+	color: #111111;
+}
+
+tr.white-main th a#active {
+	color: #333333;
+}
+tr.white-main th a {
+        cursor: pointer;
+}
+
+tr.white-main ul {
+	clear: both;
+	margin: 0;
+	padding: 0;
+	font-size: 118%;
+}
+
+tr.white-main ul li {
+	float: left;
+	margin: 0 1em 0 0;
+	padding: 0 0 0 0;
+	height: 1.8em;
+}
+
+tr.white-main ul li.glm-left {
+	float: left;
+	width: 13em;
+	text-align: right;
+	font-weight: bold;
+}
+
+table.htmltable tr.white-main td.glm {
+	border-top: 0;
+	font-size: 12px;
+}
+table.htmltable tr.white-main td.glm-info {
+	border-top: 0;
+	font-size: 11px;
+}
+
+table.htmltable tr.white-main td.glm-info li {
+	font-size: 12px;
+}
+
+table.htmltable tr.white-main td.glm-info li.title {
+	width: 12.5em;
+	border-top: 0;
+	text-align: right;
+	font-weight: bold;
+}
+
+table.htmltable tr.white-main td.glm-top {
+	border-top: 0;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+table.htmltable tr.white-main td.sec {
+	padding-bottom: 2em;
+	border-bottom: 1px solid #cccccc;
+	font-size: 12px;
+}
+
+table.htmltable tr.white-main td.conflicts {
+	color: #d41f1f;
+}
+
+table.htmltable tr.white-main td.glm-heading {
+	padding-left: 1em;
+	text-align: right;
+	font-weight: bold;
+	border-top: 0;
+	font-size: 12px;
+}
+
+table.htmltable tr.white-main td.glm a {
+	font-size: 12px;
+}
+
+
+table.htmltable tr.white-main td.left {
+	padding: 0;
+	width: 14px;
+	background-image: url(img/mwbox_left.gif);
+	background-repeat: repeat-y;
+	border-top: 0px;
+}
+
+
+table.htmltable tr.white-main td.right {
+	padding: 0;
+	width: 14px;
+	background-image: url(img/mwbox_right.gif);
+	repeat: repeat-y;
+	border-top: 0px;
+}
+
+/* Modified bottom for main table */
+
+table.htmltable tr.paging-bottom td {
+	background-color: #e7e4d6;
+	text-align: center;
+}
+
+table.htmltable tr.paging-bottom td.left {
+	padding-left: 7px;
+	background: #e7e4d6 url(img/mtbox_botleft.gif) no-repeat left bottom;
+}
+
+table.htmltable tr.paging-bottom td.right {
+	padding-right: 7px;
+	background: #e7e4d6 url(img/mtbox_botright.gif) no-repeat right bottom;
+}
+
+/* Paging */
+
+#paging {
+	margin: 0 auto;
+	padding: 0;
+}
+
+#paging ul {
+	margin: 0;
+	padding: 0;
+}
+
+#paging ul li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+        cursor: pointer;
+}
+
+#paging ul li.active {
+	padding: 5px 6px 2px 6px;
+	font-size: 12px;
+	color: #ffffff;
+	background:url(img/paging_circle_active_on_tan.gif) no-repeat left bottom;
+        cursor: default;
+}
+
+#paging ul li.modactive {
+	padding: 5px 3px 2px 2px;
+	font-size: 12px;
+	color: #ffffff;
+	background:url(img/paging_circle_active_on_tan.gif) no-repeat left bottom;
+}
+
+#paging ul li a, #paging ul li a:visited {
+	padding: 5px 6px 2px 6px;
+	font-size: 12px;
+	text-align: center;
+	text-decoration: none;
+	color: #ffffff;
+	background:url(img/paging_circle_on_tan.gif) no-repeat left bottom;
+}
+
+#paging ul li.cycle a, #paging ul li.cycle a:visited {
+	padding: 5px 3px;
+	font-size: 12px;
+	text-align: center;
+	color: #999999;
+	background-image:none;
+}
+
+#paging ul li.mod a, #paging ul li.mod a:visited {
+	padding: 5px 3px 3px 2px;
+}
+
+#paging ul li a:hover, #paging ul li a:visited:hover {
+	color: #403f3a;
+}
+
+#paging ul li.active a:hover, #paging ul li.active a:visited:hover {
+	color: #e7e4d6;
+}
+
+#paging ul li a:hover, #paging ul li a:visited:hover {
+	color: #555656;
+}
+
+#paging ul li.cycle a:hover, #paging ul li.cycle a:visited:hover {
+	color: #555656;
+}
+
+/* Form Edit */
+
+form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */s
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+form.edit textarea {
+  width: auto;
+}
+
+form.edit fieldset, div.fieldset {
+	width: auto;
+  	border: 1px solid #dddddd;
+  	padding: 20px 10px;        /* padding in fieldset support spotty in IE */
+  	margin: 0;
+  	/ * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
+}
+
+form.edit input.text {
+  border: 1px solid #cccccc;
+  width: 200px;
+}
+
+form.edit label {
+	display: block;  /* block float the labels to left column, set a width */
+	float: left;
+	width: 200px;
+	padding: 0;
+	margin: 8px 0 0; /* set top margin same as form input - textarea etc. elements */
+	text-align: right;
+}
+
+form.edit input, form.edit textarea, form.edit select {
+	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
+	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
+	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
+                              label aligns textarea better in IE */
+}
+
+form.edit textarea { overflow: auto; }
+
+form.edit .required{font-weight:bold;} /* uses class instead of div, more efficient */
+
+form.edit br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}
+
+/* Footer */
+
+p.footer {
+	margin: 1em 15px 4em 15px;
+	padding: 1em 0;
+	text-align: right;
+	font-size: 11px;
+	color: #aaaaaa;
+}
+
+/* Layout */
+
+div.float-left {
+	float: left;
+}
+
+div.float-right {
+	float: right;
+}
+
+div.container {
+	min-width: 975px;
+}
+
+div.content {
+	margin: 0 10px 0 180px;
+}
+table.htmltable {
+	padding: 0 16px 0 18px;
+}
+div.topbar {
+	height: 80px;
+	line-height: 80px;
+}
+
+div.wrapper {
+	float:left;
+	width:100%;
+}
+
+div.leftcolumn {
+	float: left;
+	width: 170px;
+	margin-left: -100%;
+	text-align: right;
+}
+
+div.extra{
+	float: left;
+	width: 10px;
+	margin-left: -10px;
+}
+
+div.onecolumn {
+	clear:left;
+	width:100%;
+}
+
+tr.white-main td {
+    white-space: nowrap;
+}
+
+td div.nofield {
+    text-align: center;
+    background: #CCCCCC;
+}
+td div.nullfield {
+    color: #CCCCCC;
+    font-style: italic;
+}
+
+div.twocolumns {
+	overflow: auto;
+	width: 100%
+}
+
+div.twocolumns div.left {
+	width: 45%;
+	float: left;
+}
+
+div.twocolumns div.right {
+	width: 45%;
+	float: right;
+}
+div.existing_index {
+        margin-left: 18px;
+        font-style: italic;
+}
+div.existing_index span {
+        font-size: 10px;
+}

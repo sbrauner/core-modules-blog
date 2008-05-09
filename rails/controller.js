@@ -15,14 +15,14 @@ Rails.mapURI = function( uri ){
     return "/~~/rails/rails.jxp";
 };
 
-function ApplicationController(){
+ActionController.Base = function(){
     this.shortName = null;
     this.className = null;
 };
 
-ApplicationController.prototype.__magic = 17;
+ActionController.Base.prototype.__magic = 17;
 
-ApplicationController.prototype.dispatch = function( request , response , matchingRoute ){
+ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
     var f = this[matchingRoute.action];
     if ( ! f ){
@@ -77,7 +77,7 @@ ApplicationController.prototype.dispatch = function( request , response , matchi
     print( "\n <!-- " + this.className + "." + method + " -->" );
 };
 
-ApplicationController.prototype.toString = function(){
+ActionController.Base.prototype.toString = function(){
     return "{ shortName : " + this.shortName + " , className : " + this.className + " }";
 };
 
@@ -93,18 +93,23 @@ function ApplicationResponse( controller , method ){
 
     this.anythingRendered = false;
 
-    this.requestThis = Rails.baseThis.child();
+    this.requestThis = {};
+    this.requestThis.prototype = controller;
 
 };
 
 ApplicationResponse.prototype.html = function(){
-
     var blah = this.requestThis;
 
-    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
-        arguments[0].call( blah );
-        return;
+    blah.__notFoundHandler = function( thing ){
+        if ( thing.endsWith( "_path" ) ){
+            return function(z){
+                return "BROKEN : " + z;
+            }
+        }
+        return null;
     }
+
 
     if ( ! local.app.views )
         throw "no views directory";
@@ -112,17 +117,48 @@ ApplicationResponse.prototype.html = function(){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
-    var template = local.app.views[ this.controller.shortName ][ this.method + ".html" ];
+    var template = 
+        local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
+        local.app.views[ this.controller.shortName ][ this.method  ];
+    
     if ( ! template )
         throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );
     
-    var layout = null;
-    if ( local.app.views.layouts )
-        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
-    
 
-    if ( layout ){
+    if ( Rails.helpers.application ){
+        Object.extend( this.requestThis , Rails.helpers.application );
+        SYSOUT ( "HERE : " + this.requestThis.keySet() );
+    }
+    
+    if ( Rails.helpers[ this.controller.shortName ] ){
+        Object.extend( this.requestThis , Rails.helpers[ this.controller.shortName ] );
+    }
+
+    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
+        arguments[0].call( this.requestThis );
+    }
+
+    
+    // layour
+
+    var layout = null;
+    var appLayout = null;
+    if ( local.app.views.layouts ){
+        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
+        appLayout = 
+            local.app.views.layouts.application || 
+            local.app.views.layouts["application.html"];
+    }
+    
+    SYSOUT( "layout : " + layout );
+    SYSOUT( "appLayout : " + appLayout );
+    if ( appLayout ){
+        this.requestThis.content_for( "layout" , template );
+        assert( this.requestThis.content_for_layout != null );
+        appLayout.apply( this.requestThis );
+    }
+    else if ( layout ){
         // TODO: fix this...
         layout.getScope( true ).controller = { action_name : this.method };
         
@@ -140,4 +176,17 @@ ApplicationResponse.prototype.html = function(){
 
 ApplicationResponse.prototype.xml = function(){
     return false;
+};
+
+
+// ---------
+// data model
+// ---------
+
+function caches_page( name ){
+    SYSOUT( "ignore caches_page [" + name + "]" );
+};
+
+function before_filter( name ){
+    SYSOUT( "ignore before_filter [" + name + "]" );
 };

@@ -1,0 +1,45 @@
+{% comment %}
+
+Render a post with comments and a place to leave comments, if applicable
+
+Required parameters:
+post - an object from the blog.posts collection
+comments_enabled
+user - if logged in, the user object
+
+Optional parameters:
+byline - Text appearing before the author's name.  Defaults to "".  Could also be "Written by", "Author: ", etc.
+dateline - Text appearing before the date field.  Defaults to "".
+entry_categories_header - The title for the categories section.  Defaults to "Categories".  Could also be "Tags", "Sections", "Topics", etc.
+verb - text linking the author to the comment.  Defaults to "said:".  Could also be "ranted ", "twittered...", "espoused", etc.
+comments_open_header
+comment_form_name
+comment_author
+comment_email
+comment_url
+comment_text
+captcha_message
+
+{% endcomment %}
+
+
+<div id="post-{{ post._id }}" class="post">
+  <div id="entry-{{ post._id }}">
+    {% include '/core/blog/pieces/entry' %}
+  </div>
+  <div id="comments-{{ post._id }}">
+    {% if post.comments.length %}
+      <a name="comments">Comments:</a>
+      {% for c in post.comments %}
+        {% include '/core/blog/pieces/comment' %}
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div id="category-list-{{ post._id }}">
+    {% include '/core/blog/pieces/categories' %}
+  </div>
+  <div id="comment-form-{{ post._id }}">
+    {% include '/core/blog/pieces/postComment' %}
+  </div>
+</div>
+
