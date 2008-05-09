@@ -17,7 +17,14 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
-        id = null;
+        foundPost = db.blog.drafts.findOne( CrID( id ) );
+        if (foundPost) {
+            db.blog.drafts.remove({ _id: id });
+            thePost = foundPost;
+            newPost = false;
+        } else {
+            id = null;
+        }
     }
 }
 
@@ -205,7 +212,9 @@ tinyMCE.init({
   else
     print( "Edit " + (thePost.cls == "page" ? "Page" : "Post") );
 %>
+&nbsp;<span style="font-size: 14px; color: grey;" id="autosave_ts"></span>
 </h1>
+
 <form method="post" action="post_edit.jxp" name="editForm">
     <input type="hidden" name="action" value="save" id="form_action">
     <input type="hidden" name="cls" value="<%= thePost.cls %>">
@@ -226,7 +235,7 @@ tinyMCE.init({
         <div class="post_meta_field">
             <div class="post_meta_field_name">Status</div>
             <div class="post_meta_field_value">
-                <select name="live">
+                <select name="live" id="live">
                     <option value="false">Not Live</option>
                     <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
                 </select>
@@ -235,7 +244,7 @@ tinyMCE.init({
         <div class="post_meta_field">
             <div class="post_meta_field_name">Comments</div>
             <div class="post_meta_field_value">
-                <select name="commentsEnabled">
+                <select name="commentsEnabled" id="commentsEnabled">
                     <option value="false">Disabled</option>
                     <option value="true" <%= thePost.commentsEnabled ? "selected" : "" %> >Enabled</option>
                 </select>
@@ -295,7 +304,7 @@ tinyMCE.init({
 
         <div class="post_meta_field">
             <div class="post_meta_field_name">Suppress Image</div>
-            <div class="post_meta_field_value"><input type="checkbox" name="suppressImage" value="true" <%= thePost.suppressImage ? "checked" : ""  %> ></div>
+            <div class="post_meta_field_value"><input type="checkbox" id="suppressImage" name="suppressImage" value="true" <%= thePost.suppressImage ? "checked" : ""  %> ></div>
         </div>
 
         <div class="post_meta_field">
@@ -311,5 +320,38 @@ tinyMCE.init({
     </div>
 </form>
 
+<script type="text/javascript">
 
+var id<%= id ? ' = "'+id+'"' : '' %>;
+
+//'
+//autosave every 60 seconds
+function autosave() {
+    var cat = document.getElementsByName("categories");
+    var categories = [];
+    for(var i in cat) {
+        if(cat[i].checked)
+            categories.push("categories="+cat[i].value);
+    }
+
+    categories = categories.join("&");
+    ajax((id ? "id="+id+"&" : "") +
+         "title="+document.getElementById("title").value+
+         "&content="+tinyMCE.activeEditor.getContent()+
+         "&excerpt="+document.getElementById("excerpt").value+
+         "&live="+document.getElementById("live").value+
+         "&commentsEnabled="+document.getElementById("commentsEnabled").value+
+         "&suppressImage="+document.getElementById("suppressImage").value+
+         "&new_categories="+document.getElementById("new_categories").value+
+         "&"+categories, "autosave", function(response) {
+        id = response;
+        var now = new Date();
+        document.getElementById("autosave_ts").innerHTML = "Draft autosaved at "+now.toString();
+    });
+    setTimeout(autosave, 60000);
+}
+
+setTimeout(autosave, 60000);
+
+</script>
 

@@ -3,11 +3,12 @@
 <div id="module_header">
 <ul id="module_menu">
     <li><a href="/admin/blog/posts">Posts</a></li>
+    <li><a href="/admin/blog/drafts">Drafts</a></li>
     <li><a href="/admin/blog/pages">Pages</a></li>
     <li><a href="/admin/blog/categories">Categories</a></li>
     <li><a href="/admin/blog/missing">404s</a></li>
     <li><a href="/admin/blog/comments">Comments</a></li>
 </ul>
 </div>
-    
+
 <div id="module_body">
