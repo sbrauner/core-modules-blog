@@ -129,6 +129,40 @@ if ( modelsDir.exists() ){
 
 
 // -------------------
+// ----- helpers -----
+// -------------------
+
+Rails.helpers = {};
+
+var helpersDir = openFile( "app/helpers/" );
+if ( helpersDir.exists() ){
+    helpersDir.listFiles().forEach(
+        function(z){
+            if ( ! z.filename.endsWith( "_helper.rb" ) )
+                return;
+            if ( z.filename.startsWith( "." ) )
+                return;
+
+            var shortName = z.filename.replace( /\.rb$/ , "" );
+            var h = local.app.helpers[shortName];
+            if ( ! h )
+                throw "couldn't load helper : " + shortName;
+            
+            h();
+            var little = z.filename.replace( "_helper.rb$" , "" );
+            var className = little.substring(0,1).toUpperCase() + little.substring(1) + "Helper";
+            
+            var helper = scope[ className ];
+            if ( ! helper )
+                throw "couldn't find [" + className + "] in [" + shortName + "]";
+            
+            log.rails.init.helpers.info( "Added: [" + little + "] --> " + className );
+            Rails.helpers[little] = helper;
+        }
+    );
+}
+
+// -------------------
 // ----- controllers -----
 // -------------------
 

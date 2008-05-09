@@ -99,14 +99,17 @@ function ApplicationResponse( controller , method ){
 };
 
 ApplicationResponse.prototype.html = function(){
-
     var blah = this.requestThis;
-    blah.debug();
 
-    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
-        arguments[0].call( blah );
-        return;
+    blah.__notFoundHandler = function( thing ){
+        if ( thing.endsWith( "_path" ) ){
+            return function(z){
+                return "BROKEN : " + z;
+            }
+        }
+        return null;
     }
+
 
     if ( ! local.app.views )
         throw "no views directory";
@@ -117,16 +120,45 @@ ApplicationResponse.prototype.html = function(){
     var template = 
         local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
         local.app.views[ this.controller.shortName ][ this.method  ];
+    
     if ( ! template )
         throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );
     
-    var layout = null;
-    if ( local.app.views.layouts )
-        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
-    
 
-    if ( layout ){
+    if ( Rails.helpers.application ){
+        Object.extend( this.requestThis , Rails.helpers.application );
+        SYSOUT ( "HERE : " + this.requestThis.keySet() );
+    }
+    
+    if ( Rails.helpers[ this.controller.shortName ] ){
+        Object.extend( this.requestThis , Rails.helpers[ this.controller.shortName ] );
+    }
+
+    if ( arguments.length > 0 && isFunction( arguments[0] ) ){
+        arguments[0].call( this.requestThis );
+    }
+
+    
+    // layour
+
+    var layout = null;
+    var appLayout = null;
+    if ( local.app.views.layouts ){
+        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
+        appLayout = 
+            local.app.views.layouts.application || 
+            local.app.views.layouts["application.html"];
+    }
+    
+    SYSOUT( "layout : " + layout );
+    SYSOUT( "appLayout : " + appLayout );
+    if ( appLayout ){
+        this.requestThis.content_for( "layout" , template );
+        assert( this.requestThis.content_for_layout != null );
+        appLayout.apply( this.requestThis );
+    }
+    else if ( layout ){
         // TODO: fix this...
         layout.getScope( true ).controller = { action_name : this.method };
         

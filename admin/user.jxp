@@ -1,4 +1,11 @@
 <%
+// FIXME: Furious hack to make Webtest work with YUILoader
+head.addScript( "/@@/yui/current/get/get-min.js" );
+head.addScript( "/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js" );
+head.addScript( "/@@/yui/current/element/element-beta-min.js" );
+head.addScript( "/@@/yui/current/button/button-min.js" );
+head.addScript( "/@@/yui/current/container/container-min.js" );
+
 if(request.action == "cancel" || request['cancel.x'] || request.cancel){
     return response.sendRedirectTemporary("/~~/admin/users");
 }
@@ -136,6 +143,8 @@ var deleteCancel = function(){
           deletePanel.render();
       }
   });
+// FIXME: Webtest sucks
+loader.onSuccess();
 </script>
 
 
