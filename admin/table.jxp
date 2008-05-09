@@ -106,6 +106,7 @@ else if(request.action == "search" || request.action == "userssearch" || request
     }
 
     for(q in request) {
+        if(!request[q]) continue;
         if(q.indexOf("search") == 0 && q.length > 6) {
             var query = new RegExp(".*"+content.RegExp.escape(request[q])+".*", "i");
             searchobj[q.substring(6)] = query;

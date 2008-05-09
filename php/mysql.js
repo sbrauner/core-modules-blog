@@ -2,6 +2,7 @@
 
 */
 
+/*
 Mysql = function() {  };
 
 Mysql.prototype.registerDatabase(host, user, pass, database = '_default') {
@@ -461,5 +462,5 @@ Mysql.prototype.getConnection(database) {
     	}
 	}
 
-
+*/
 %>

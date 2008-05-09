@@ -19,10 +19,10 @@
                   xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='_id']/preceding-sibling::*)"/>
 
       <storeXPath property="id_1" propertytype="ant"
-                  xpath="(//div[@id='myCollection']//tr/td[${cellno_id}]/a)[1]"/>
+                  xpath="normalize-space((//div[@id='myCollection']//tr/td[${cellno_id}]/a)[1])"/>
 
       <storeXPath property="id_2" propertytype="ant"
-                  xpath="(//div[@id='myCollection']//tr/td[${cellno_id}]/a)[2]"/>
+                  xpath="normalize-space((//div[@id='myCollection']//tr/td[${cellno_id}]/a)[2])"/>
 
       <echo message="id_1 is ${id_1}"/>
       <echo message="id_2 is ${id_2}"/>
@@ -35,14 +35,31 @@
       <!-- pull up the whole list again before doing a search, else the field name won't be there -->
       <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
       <sleep seconds="1"/>
+
       <setInputField htmlid="searchtext" value="4"/>
       <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
       <sleep seconds="1"/>
-      <verifyXPath xpath="//div[@id='myCollection']//td//*[contains(text(),normalize-space('${id_1}'))]"/>
+      <verifyXPath xpath="//div[@id='myCollection']//td//*[contains(text(),'${id_1}')]"/>
       <not>
-        <verifyXPath xpath="//*[contains(text(), normalize-space('${id_2}'))]"/>
+        <verifyXPath xpath="//*[contains(text(), '${id_2}')]"/>
       </not>
+
+      <!-- try to delete a thing -->
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <sleep seconds="1"/>
+      <storeXPath xpath="count(//div[@id='myCollection']//a)"
+                  property="numOfLinks" propertytype="ant"/>
       
+      <clickElement xpath="//div[@id='myCollection']//*[contains(text(), '${id_1}')]/ancestor::tr//img[contains(@onclick, 'delete')]"/>
+      <clickElement xpath="//button[text()='Yes']" />
+
+      <sleep seconds="1"/>
+      <verifyXPath xpath="count(//div[@id='myCollection']//a)+1=${numOfLinks}"/>
+
+      <not>
+        <verifyXPath xpath="//div[@id='myCollection']//*[contains(text(), '${id_1}')]"/>
+      </not>
+
     </webtest>
   </target>
 </project>
