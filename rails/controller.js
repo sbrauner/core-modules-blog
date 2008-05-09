@@ -101,7 +101,15 @@ function ApplicationResponse( controller , method ){
 ApplicationResponse.prototype.html = function(){
 
     var blah = this.requestThis;
-    blah.debug();
+
+    blah.__notFoundHandler = function( thing ){
+        if ( thing.startsWith( "formatted_" ) ){
+            return function(z){
+                return "BROKEN : " + z;
+            }
+        }
+        return null;
+    }
 
     if ( arguments.length > 0 && isFunction( arguments[0] ) ){
         arguments[0].call( blah );
@@ -124,8 +132,14 @@ ApplicationResponse.prototype.html = function(){
     var layout = null;
     if ( local.app.views.layouts )
         layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
-    
 
+    if ( Rails.helpers[ "application" ] )
+        Object.extend( this.requestThis , Rails.helpers[ "application" ] );
+    
+    if ( Rails.helpers[ this.controller.shortName ] ){
+        Object.extend( this.requestThis , Rails.helpers[ this.controller.shortName ] );
+    }
+    
     if ( layout ){
         // TODO: fix this...
         layout.getScope( true ).controller = { action_name : this.method };

@@ -38,6 +38,22 @@ h = function( thing ){
     return thing; 
 }
 
+image_tag = function( url , options ){
+    var html = "<a href=\"" + escape( url ) + "\" ";
+    if ( options ){
+        for ( var n in options ){
+            html += " " + n + "=\"" + options[n] + "\" ";
+        }
+    }
+    html += ">";
+    return html;
+}
+
+number_with_delimiter = function( number ){
+    // TODO: finish
+    return number;
+}
+
 link_to = function( pretty , thing , options ){
     var url = Rails.routes.getLinkFor( thing );
     html = "<a href='" + url  + "' ";
