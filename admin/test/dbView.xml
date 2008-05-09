@@ -1,0 +1,20 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Explore the dbview mycollection">
+      <config>
+        <header name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0"/>
+      </config>
+      <invoke url="${site}/admin/dbview"  username="test@10gen.com" password="test"/>
+      <verifyXPath xpath="//div[@id='myCollection']//*[contains(text(),'mycollection')]"/>
+
+      <clickLink label="mycollection"/>
+      <verifyXPath xpath="//div[@id='myCollection']//th[normalize-space(text())='a']"/>
+      <storeXPath xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='a']/preceding-sibling::*)" property="a_cellno" propertytype="ant"/>
+      <echo message="to get a value is: ${a_cellno}"/>
+      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}][contains(text(),'4')]"/> <!-- could be 4 or 4.0 -->
+
+      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}]//*[contains(text(),'Object')]" /> <!-- there is no way I could find to find whether the div is hidden, though -->
+
+    </webtest>
+  </target>
+</project>
