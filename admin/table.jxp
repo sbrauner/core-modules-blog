@@ -4,7 +4,7 @@ core.io.marshal();
 core.io.encode.json();
 core.db.db();
 core.content.html();
-core.content.html();
+core.content.regexp();
 
 var collection;
 // ignore internal transient variables
@@ -82,7 +82,7 @@ if(request.action == "searchprofile") {
         searchObj.millis = { $gte : parseInt(request.ms_from), $lte : parseInt(request.ms_to) };
     }
     if(request.re) {
-        searchObj.info = new RegExp(request.re, "i");
+        searchObj.info = new RegExp(content.RegExp.escape(request.re), "i");
     }
     if(request.record_type && request.record_type != "all") {
         searchObj.info = new RegExp("^"+request.record_type+".*");
@@ -101,13 +101,13 @@ else if(request.action == "search" || request.action == "userssearch" || request
             q = request.name;
         if(request.index)
             q = q+"\\$.*"+request.index;
-        var query = new RegExp(".*"+q+".*", "i");
+        var query = new RegExp(".*"+content.RegExp.escape(q)+".*", "i");
         searchobj["name"] = query;
     }
 
     for(q in request) {
         if(q.indexOf("search") == 0 && q.length > 6) {
-            var query = new RegExp(".*"+request[q]+".*", "i");
+            var query = new RegExp(".*"+content.RegExp.escape(request[q])+".*", "i");
             searchobj[q.substring(6)] = query;
         }
     }
@@ -277,7 +277,7 @@ else {
         if(ignore[fields[i]] || fields[i] == "_id") continue;
         th.push({"name" : fields[i], heading: fields[i], className: "" });
     }
-    if(request.action != "searchprofile") th.push({heading: "Delete", className: "center", name: "Delete", searchable: false });
+    if(request.action != "searchprofile" && dbTable.rows.length > 0) th.push({heading: "Delete", className: "center", name: "Delete", searchable: false });
 
     idFormatter = function(oData) {
         return '<a><span style="cursor:pointer" onclick="editRow(\''+oData+'\')">'+oData+'</span></a>';
