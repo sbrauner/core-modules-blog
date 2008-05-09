@@ -3,6 +3,8 @@ STDERR = log.rails.error;
 
 ActionController = {};
 
+__path__.utils();
+
 __path__.lib.all();
 
 __path__.controller();

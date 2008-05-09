@@ -159,12 +159,26 @@ function before_validation(){
     SYSOUT( "ignoring before_validation" );
 }
 
+function around_filter(){
+    SYSOUT( "ignoring around_filter" );
+}
+
 function after_create(){
     SYSOUT( "ignoring before_create" );
 }
 
 function after_destroy(){
     SYSOUT( "ignoring before_create" );
+}
+
+// --
+
+function cache_sweeper(){
+    SYSOUT( "ignoring cache_sweeper" );
+}
+
+function caches_formatted_page(){
+    SYSOUT( "ignoring caches_formatted_page" );
 }
 
 // ----
@@ -243,4 +257,8 @@ function helper_method(){
 // ---
 function paginate(){
     return [ { current : {} }  , [] ];
+}
+
+function render( options ){
+    return "don't know what do do with render : " + tojson( options );
 }
