@@ -1,13 +1,14 @@
 /**
- * Triggermail API Library
- *
- * Specification: http://triggermail.net/docs/api/
- *
- * @author Dana Spiegel (dana@10gen.com)
- * @created Apr 17, 2008
- * @updated Apr 17, 2008
-**/
+    @fileOverview Triggermail API Library - http://triggermail.net/docs/api/
+    @author Dana Spiegel - dana@10gen.com
+    @version 1.0
+ */
 
+
+/**
+    Creates a new TriggermailClient object for using the Triggermail API.
+    @class Triggermail API client.
+ */
 ws.impl.triggermail.TriggermailClient = function(apiKey, secret) {
     // member variables
     this.apiUrl = 'http://api.triggermail.net';
@@ -19,10 +20,9 @@ ws.impl.triggermail.TriggermailClient = function(apiKey, secret) {
 };
 
 /**
- * params:  params
- * returns: Array, values of each item in the Hash (and nested hashes)
- *
- * Extracts the values of a set of parameters, recursing into nested assoc arrays.
+    Extracts the values of a set of parameters, recursing into nested assoc arrays.
+    @param      {Object|Map}    parameters  the collection of parameters whose values should be collected and returned
+    @returns    {Array}         An array of all values of the provided collection of parameters
  */
 ws.impl.triggermail.TriggermailClient.prototype.__extractValues = function(parameters) {
     values = new Array();
@@ -38,10 +38,9 @@ ws.impl.triggermail.TriggermailClient.prototype.__extractValues = function(param
 };
 
 /**
- * params:
- *   params, Hash
- * returns:
- *   String, an MD5 hash of the secret + sorted list of parameter values for an API call.
+    Generates the signature for an Triggermail API call, used for authenticating the client
+    @param      {Object|Map}    parameters  The collection of parameters that should be used to generate the method call signature
+    @returns    {String}        an MD5 hash of the secret + sorted list of parameter values for an API call
  */
 ws.impl.triggermail.TriggermailClient.prototype.__getSignature = function(parameters) {
     var string = this.secret + this.__extractValues(parameters).sort().join('');
@@ -49,7 +48,10 @@ ws.impl.triggermail.TriggermailClient.prototype.__getSignature = function(parame
 };
 
 /**
- * Flatten nested hash for GET / POST request.
+    Converts a nested Map/Object into a simple single level object for use by the API methods
+    @param      {Object|Map}    obj         The (nested) object whose properties should be flattened to a single level
+    @param      {boolean}       brackets    Whether bracket notation should be used for the current level
+    @returns    {Object}        The flattened (nested) object
  */
 ws.impl.triggermail.TriggermailClient.prototype.__flatten = function(obj, brackets) {
     var f = {};
@@ -69,6 +71,11 @@ ws.impl.triggermail.TriggermailClient.prototype.__flatten = function(obj, bracke
     return f;
 };
 
+/**
+    Coverts an object to a text format and stores each field and its value as an entry in the array
+    @param      {Object|Map}    obj     The object/map to be converted
+    @returns    {Array[String]} the converted object in string notation
+ */
 ws.impl.triggermail.TriggermailClient.prototype.__objectToArray = function(obj) {
     fieldArray = new Array();
     for (var key in obj) {
@@ -78,7 +85,11 @@ ws.impl.triggermail.TriggermailClient.prototype.__objectToArray = function(obj) 
 }
 
 /**
- * Makes an XML-RPC method call to the configured host:port/path
+    Makes a remote method call using either POST or GET for the provided method name
+    @param      {String}        type        GET or POST
+    @param      {String}        methodName  the remote method to be called
+    @param      {Object|Map}    parameters  the parameters for the method to be called
+    @returns    {Object}        the object returned by the remote method
  */
 ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(type, methodName, parameters) {
     if (!methodName) return; // this should really throw an exception
@@ -121,6 +132,11 @@ ws.impl.triggermail.TriggermailClient.prototype.__callRemoteMethod = function(ty
     }
 };
 
+/**
+    Gets the status of an email that was sent
+    @param      {String}    sendID  The sendID returned by the ws.impl.triggermail.TriggermailClient#send method
+    @returns    {Object}    the status of the email
+ */
 ws.impl.triggermail.TriggermailClient.prototype.getSend = function(sendID) {
     return this.__callRemoteMethod('GET', 'send', {send_id: sendID});
 }
