@@ -9,12 +9,40 @@
 
       <clickLink label="mycollection"/>
       <verifyXPath xpath="//div[@id='myCollection']//th[normalize-space(text())='a']"/>
-      <storeXPath xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='a']/preceding-sibling::*)" property="a_cellno" propertytype="ant"/>
-      <echo message="to get a value is: ${a_cellno}"/>
-      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}][number()=4]"/> <!-- could be 4 or 4.0 -->
+      <storeXPath xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='a']/preceding-sibling::*)" property="cellno_a" propertytype="ant"/>
+      <echo message="to get a value is: ${cellno_a}"/>
+      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${cellno_a}][number()=4]"/> <!-- could be 4 or 4.0 -->
 
-      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}]//*[contains(text(),'Object')]" /> <!-- there is no way I could find to find whether the div is hidden, though -->
+      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${cellno_a}]//*[contains(text(),'Object')]" /> <!-- there is no way I could find to find whether the div is hidden, though -->
 
+      <storeXPath property="cellno_id" propertytype="ant"
+                  xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='_id']/preceding-sibling::*)"/>
+
+      <storeXPath property="id_1" propertytype="ant"
+                  xpath="(//div[@id='myCollection']//tr/td[${cellno_id}]/a)[1]"/>
+
+      <storeXPath property="id_2" propertytype="ant"
+                  xpath="(//div[@id='myCollection']//tr/td[${cellno_id}]/a)[2]"/>
+
+      <echo message="id_1 is ${id_1}"/>
+      <echo message="id_2 is ${id_2}"/>
+
+      <setInputField htmlid="searchtext" value="5"/>
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <sleep seconds="1"/>
+      <verifyXPath xpath="//div[@id='myCollection']//*[contains(text(),'No entries')]"/>
+
+      <!-- pull up the whole list again before doing a search, else the field name won't be there -->
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <sleep seconds="1"/>
+      <setInputField htmlid="searchtext" value="4"/>
+      <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
+      <sleep seconds="1"/>
+      <verifyXPath xpath="//div[@id='myCollection']//td//*[contains(text(),normalize-space('${id_1}'))]"/>
+      <not>
+        <verifyXPath xpath="//*[contains(text(), normalize-space('${id_2}'))]"/>
+      </not>
+      
     </webtest>
   </target>
 </project>
