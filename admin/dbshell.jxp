@@ -97,3 +97,5 @@ core.admin.pieces.tableHeader({search: true, th: [], colspan: 1});
 core.admin.pieces.tableFooter({page: [], colspan: 1});
 %>
 </div>
+
+<script type="text/javascript" src="/~~/admin/assets/objPopup.js"></script>
