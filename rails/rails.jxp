@@ -8,7 +8,7 @@ flash.notice = "";
 // find the controller
 
 matchingRoute = Rails.routes.find( request );
-
+log.rails.info( "matchingRoute : " + matchingRoute );
 if ( ! matchingRoute )
     return print( "no route for : " + request.getURI() );
 

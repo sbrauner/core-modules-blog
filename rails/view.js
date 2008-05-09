@@ -10,5 +10,7 @@ ActionController.Base.prototype.content_for = function( name , func ){
         buf += foo;
     }
     func.apply( this );
-    this[ "content_for_" + name ] = buf;
+
+    var blah = "content_for_" + name;
+    this[ blah ] = buf;
 };
