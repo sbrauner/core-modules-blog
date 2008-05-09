@@ -11,7 +11,7 @@
       <verifyXPath xpath="//div[@id='myCollection']//th[normalize-space(text())='a']"/>
       <storeXPath xpath="1+count(//div[@id='myCollection']//th[normalize-space(text())='a']/preceding-sibling::*)" property="a_cellno" propertytype="ant"/>
       <echo message="to get a value is: ${a_cellno}"/>
-      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}][contains(text(),'4')]"/> <!-- could be 4 or 4.0 -->
+      <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}][number()=4]"/> <!-- could be 4 or 4.0 -->
 
       <verifyXPath xpath="//div[@id='myCollection']//tr/td[${a_cellno}]//*[contains(text(),'Object')]" /> <!-- there is no way I could find to find whether the div is hidden, though -->
 
