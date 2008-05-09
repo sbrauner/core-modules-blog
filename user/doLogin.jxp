@@ -1,6 +1,10 @@
 <%
 core.user.auth();
 var error = 'invalid username/password'; // default error
+if(core.user.handleDuplicates()) {
+    core.user.html.askDeleteOthers();
+    return;
+}
 try {
     user = Auth.getUser( request , response );
 }

@@ -6,14 +6,14 @@ Auth = {
 
     debug : false ,
 
-    getUser : function( req , res ){
+    getUser : function( req , res , uWanted ){
 
         if ( user )
             return user;
 
-        var u = Auth.digest.getUser( req || request , res || response , db.getName() );
+        var u = Auth.digest.getUser( req || request , res || response , db.getName() , uWanted );
         if ( ! u )
-            u = Auth.cookie.getUser( req || request , res || response , db.getName() );
+            u = Auth.cookie.getUser( req || request , res || response , db.getName() , uWanted );
 
         if ( ! u )
             return null;
@@ -66,7 +66,10 @@ Auth = {
 
     digest : {
 
-        getUser : function( req , res , name ){
+        /**
+         * @param user optional (default to finding based on name)
+         */
+        getUser : function( req , res , name , user ){
             var auth = req.getHeader("Authorization");
             if ( ! auth )
                 return null;
@@ -123,7 +126,8 @@ Auth = {
             if ( ! uri )
                 uri = req.getURI();
 
-            var user = User.find( things.username );
+            if( ! user )
+                user = User.find( things.username );
             if ( ! user ){
                 if ( Auth.debug ) SYSOUT( "no user:" + things.username );
                 return null;
