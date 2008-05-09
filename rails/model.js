@@ -240,5 +240,7 @@ function helper_method(){
 }
 
 
-
-
+// ---
+function paginate(){
+    return [ { current : {} }  , [] ];
+}
