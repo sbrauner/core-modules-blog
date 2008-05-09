@@ -103,7 +103,7 @@ ApplicationResponse.prototype.html = function(){
     var blah = this.requestThis;
 
     blah.__notFoundHandler = function( thing ){
-        if ( thing.startsWith( "formatted_" ) ){
+        if ( thing.endsWith( "_path" ) ){
             return function(z){
                 return "BROKEN : " + z;
             }
@@ -129,9 +129,6 @@ ApplicationResponse.prototype.html = function(){
         throw "no template for " + this.controller.shortName + ":" + this.method;
     log.rails.response.debug( template + ".html" + called );
     
-    var layout = null;
-    if ( local.app.views.layouts )
-        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
 
     if ( Rails.helpers[ "application" ] )
         Object.extend( this.requestThis , Rails.helpers[ "application" ] );
@@ -140,7 +137,24 @@ ApplicationResponse.prototype.html = function(){
         Object.extend( this.requestThis , Rails.helpers[ this.controller.shortName ] );
     }
     
-    if ( layout ){
+    // layour
+
+    var layout = null;
+    var appLayout = null;
+    if ( local.app.views.layouts ){
+        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
+        appLayout = 
+            local.app.views.layouts.application || 
+            local.app.views.layouts["application.html"];
+    }
+    
+    
+    if ( appLayout ){
+        this.requestThis.content_for( "layout" , template );
+        assert( this.requestThis.content_for_layout );
+        appLayout.apply( this.requestThis );
+    }
+    else if ( layout ){
         // TODO: fix this...
         layout.getScope( true ).controller = { action_name : this.method };
         

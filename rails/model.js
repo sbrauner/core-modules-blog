@@ -16,6 +16,10 @@ ActiveRecord.Base.prototype.setFile = function( filename ){
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
     db[ this.collectionName ].setConstructor( cons );
 };
+// ---------
+// save/update/etc... stuff
+// ---------
+
 
 ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
@@ -27,12 +31,8 @@ ActiveRecord.Base.prototype.find = function( filter ){
         return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
 
-    return db[ this.collectionName ].find();
+    return db[ this.collectionName ].find().toArray();
 };
-
-// ---------
-// save/update/etc... stuff
-// ---------
 
 ActiveRecord.Base.prototype.save = function(){
     db[this.collectionName].save( this );
@@ -51,6 +51,10 @@ ActiveRecord.Base.prototype.destroy = function(){
 
     db[this.collectionName].remove( { _id : this._id } );
     return true;
+};
+
+ActiveRecord.Base.prototype.count = function( options ){
+    return -2;
 };
 
 // ---------

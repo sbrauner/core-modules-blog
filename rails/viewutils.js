@@ -24,7 +24,7 @@ form_for = function( what , frm ){
 };
 
 // -----
-// -- ui 
+// -- basic html tags
 // -----
 
 
@@ -32,7 +32,20 @@ stylesheet_link_tag = function( name ){
     return "<link href='/stylesheets/" + name + ".css' media='screen' rel='stylesheet' type='text/css' />";
 }
 
-// TODO: ???
+javascript_include_tag = function(){
+    var html = "";
+    arguments.forEach( 
+        function(z){
+            html += "<script src=\"/javascripts/" + z + ".js\" ></script>" ;
+        }
+    );
+    return html;
+}
+
+auto_discovery_link_tag = function(){
+    // TODO
+    return "";
+}
 
 h = function( thing ){
     return thing; 
@@ -48,6 +61,12 @@ image_tag = function( url , options ){
     html += ">";
     return html;
 }
+
+form_tag = function( url , options , cont ){
+    print( "BROKEN FORM" );
+}
+
+// ----
 
 number_with_delimiter = function( number ){
     // TODO: finish
@@ -83,6 +102,9 @@ link_to = function( pretty , thing , options ){
     return html;
 };
 
+link_to_function = function( name ){
+    return "<a href='#'>" + name + " BROKEN</a>" ;
+}
 
 
 // crap

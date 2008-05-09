@@ -16,3 +16,5 @@ __path__.view();
 
 __path__.hacks();
 
+__path__.lib.math();
+
