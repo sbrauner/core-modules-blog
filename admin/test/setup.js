@@ -16,3 +16,6 @@ u2.setPassword("notadmin");
 
 db.users.save(u2);
 
+
+db.mycollection.save({a: 4});
+db.mycollection.save({a: {b: 5}});
