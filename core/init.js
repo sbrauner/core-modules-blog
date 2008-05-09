@@ -32,6 +32,8 @@ function mapUrlToJxpFileCore( uri , request , response ){
             return "/~~" + uri.substring( idx );
         }
         else {
+            if(core.user.handleDuplicates()) return "/~~/user/doLogin";
+
             return "~~/admin/index.jxp";
         }
     }
