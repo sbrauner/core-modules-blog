@@ -1,5 +1,6 @@
 
 CGI = {};
+CGI.escape = escape;
 CGI.Session = {};
 CGI.Session.ActiveRecordStore = {};
 CGI.Session.ActiveRecordStore.Session = function(){};

@@ -255,10 +255,7 @@ function helper_method(){
 
 
 // ---
+
 function paginate(){
     return [ { current : {} }  , [] ];
-}
-
-function render( options ){
-    return "don't know what do do with render : " + tojson( options );
 }

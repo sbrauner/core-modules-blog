@@ -95,7 +95,6 @@ function ApplicationResponse( controller , method ){
 
     this.requestThis = {};
     this.requestThis.prototype = controller;
-
 };
 
 ApplicationResponse.prototype.html = function(){
@@ -143,29 +142,28 @@ ApplicationResponse.prototype.html = function(){
     // layour
 
     var layout = null;
-    var appLayout = null;
     if ( local.app.views.layouts ){
-        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
-        appLayout = 
+        layout = 
+            local.app.views.layouts[ this.controller.shortName + ".html" ] || 
             local.app.views.layouts.application || 
             local.app.views.layouts["application.html"];
     }
     
     SYSOUT( "layout : " + layout );
-    SYSOUT( "appLayout : " + appLayout );
-    if ( appLayout ){
+    if ( layout ){
+        
+        layout.getScope( true ).controller = { action_name : this.method }; // ???
+        
         this.requestThis.content_for( "layout" , template );
         assert( this.requestThis.content_for_layout != null );
-        appLayout.apply( this.requestThis );
-    }
-    else if ( layout ){
-        // TODO: fix this...
-        layout.getScope( true ).controller = { action_name : this.method };
         
-        layout( function(){
-            template.apply( blah , arguments );
-            return "";
-        } );
+        layout.call( this.requestThis ,
+                     function(  name ){
+                         if ( name )
+                             return blah["content_for_" + name ]
+                         return blah.content_for_layout;
+                     }
+                   );
     }
     else {
         template.apply( blah );
