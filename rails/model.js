@@ -143,6 +143,16 @@ ActiveRecord.Base.prototype.submit = function( name ){
 };
 
 
+ActiveRecord.Base.prototype.paginate = function(){
+    return [];
+}
+
+ActiveRecord.Base.prototype.build_search_conditions = function( options ){
+    SYSOUT( "don't know how to build_search_conditions" );
+    return "";
+}
+
+
 // ---------
 // data model
 // ---------
@@ -188,6 +198,7 @@ function belongs_to( name ){
 }
 
 function has_many( name ){
+    this[name] = [];
     SYSOUT( "ignoring has_many [" + name + "]" );
 }
 
@@ -256,6 +267,3 @@ function helper_method(){
 
 // ---
 
-function paginate(){
-    return [ { current : {} }  , [] ];
-}

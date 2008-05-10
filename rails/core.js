@@ -3,6 +3,18 @@ STDERR = log.rails.error;
 
 ActionController = {};
 
+Rails.mangleName = function( name ){
+    if ( name == "new" )
+        return "__rnew";
+    return name;
+};
+
+Rails.unmangleName = function( name ){
+    if ( name == "__rnew" )
+        return "new";
+    return name;
+};
+
 __path__.utils();
 
 __path__.lib.all();

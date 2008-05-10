@@ -34,3 +34,28 @@ ActionController.Base.prototype.render = function( options ){
 
     return "don't know what do do with render : " + tojson( options );
 }
+
+
+ActionController.Base.prototype.form_for = function( what , options ){
+    
+    var frm = arguments[ arguments.length - 1 ];
+
+    if ( ! what )
+        throw "form_for passed null";
+
+    if ( ! isFunction( frm ) )
+        throw "form_for.frm is not a function";
+
+    print( "\n<form action='/" + myController.shortName );
+    if ( what._id )
+        print( "/" + what._id );
+    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
+
+    var newThing = what;
+    if ( isFunction( what ) ){
+        newThing = new what();
+    }
+    
+    frm.call( this , newThing );
+    print( "\n</form>\n" );
+};

@@ -65,11 +65,14 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
         if ( ! local.app.views[ this.shortName ] )
             throw "no views directory for " + this.shortName;
         
-        var view = local.app.views[ this.shortName ][matchingRoute.action];
+        var viewName = Rails.unmangleName( matchingRoute.action );
+        
+
+        var view = local.app.views[ this.shortName ][viewName];
         if ( ! view )
-            view = local.app.views[ this.shortName ][matchingRoute.action + ".html" ];
+            view = local.app.views[ this.shortName ][viewName + ".html" ];
         if ( ! view )
-            throw "no view for " + this.shortName + "." + matchingRoute.action;
+            throw "no view for " + this.shortName + "." + viewName;
         
         view.call( appResponse.requestThis );
     }
