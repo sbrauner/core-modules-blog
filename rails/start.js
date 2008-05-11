@@ -37,12 +37,6 @@ Rails.baseThis = scope.child( "Rails Scope" );
 
 var allModelFiles = Rails.getRubyFilesFromDir( "app/models" );
 
-allModelFiles.forEach( 
-    function(z){
-        
-    }
-);
-
 var numPasses = allModelFiles.length;
 for ( var pass=0; pass<numPasses; pass++ ){
 
@@ -110,6 +104,26 @@ for ( var pass=0; pass<numPasses; pass++ ){
     );
 }
 
+Rails.findModel = function( thing ){
+    if ( ! thing )
+        throw "can't find a null model";
+
+    if ( thing._isModel )
+        return thing;
+
+    if ( isString( thing ) ){
+        for ( var i=0; i<Rails.models.length; i++){
+
+            var m = Rails.models[i];
+
+            if ( m.shortName == thing ||
+                 m.collectionName == thing )
+                return m;
+        }
+    }
+    
+    throw "don't know how to find [" + thing + "] " + thing.getClass();
+};
 
 // -------------------
 // ----- helpers -----

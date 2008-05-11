@@ -51,14 +51,12 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
         return true;
     };
     
-    funcScope.params = new Rails.Params( request , matchingRoute );
-
     // --- invoke action
 
     f.call( appResponse.requestThis );
     
     if ( ! appResponse.anythingRendered ){
-        
+        /*
         if ( ! local.app.views )
             throw "no views directory";
         
@@ -75,6 +73,8 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
             throw "no view for " + this.shortName + "." + viewName;
         
         view.call( appResponse.requestThis );
+*/
+        appResponse.html();
     }
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
@@ -119,12 +119,14 @@ ApplicationResponse.prototype.html = function(){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
+    var viewName = Rails.unmangleName( this.method );
+    
     var template = 
-        local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
-        local.app.views[ this.controller.shortName ][ this.method  ];
+        local.app.views[ this.controller.shortName ][ viewName + ".html" ] || 
+        local.app.views[ this.controller.shortName ][ viewName  ];
     
     if ( ! template )
-        throw "no template for " + this.controller.shortName + ":" + this.method;
+        throw "no template for " + this.controller.shortName + ":" + viewName;
     log.rails.response.debug( template + ".html" + called );
     
 
@@ -142,7 +144,7 @@ ApplicationResponse.prototype.html = function(){
     }
 
     
-    // layour
+    // layout
 
     var layout = null;
     if ( local.app.views.layouts ){
