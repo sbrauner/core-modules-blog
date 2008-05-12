@@ -3,6 +3,7 @@
 var search = obj.search;
 var th = obj.th;
 var colspan = obj.colspan;
+var current_search = obj.current_search || "";
 
 %>
 
@@ -25,12 +26,19 @@ var colspan = obj.colspan;
           <li><select id="searchopt" onclick="changeSearch()">
               <forin i th>
                 <if (th[i].name && th[i].name != "_id" && th[i].name != "Delete")>
-	          <option value="$th[i].name">$th[i].heading</option>
+                  <if (th[i].search)>
+	            <option value="$th[i].name" selected>$th[i].heading</option>
+                  </if>
+                  <if (!th[i].search)>
+	            <option value="$th[i].name">$th[i].heading</option>
+                  </if>
                 </if>
               </forin>
 	    </select>
           </li>
-          <li><input class="text" id="searchtext" size="40" name="$th[0].name" type="text"></li>
+          <li>
+            <input class="text" id="searchtext" size="40" name="$th[0].name" type="text" value="$current_search" />
+          </li>
           <li><input type="image" src="/~~/admin/assets/img/button_search_on_tan.gif" alt="Search" /></li>
           <li style="float:right;"><div><img src="/~~/admin/assets/img/button_refresh_on_tan.gif" alt="Refresh" onclick="clearSearch()"></div></li>
         </ul>
