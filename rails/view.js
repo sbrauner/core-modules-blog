@@ -90,3 +90,8 @@ ActionController.Base.prototype.form_for = function( what , options ){
     frm.call( this , newThing );
     print( "\n</form>\n" );
 };
+
+
+ActionController.Base.prototype.submit_tag = function( name ){
+    return "<input type='submit' name='action' value='" + name + "'>";
+}
