@@ -138,6 +138,8 @@ function htmltable(specs) {
             else
                 th.push({name: colnames[i], heading: displaycolnames[i] });
         }
+        searchtxt = searchtxt ? searchtxt : "";
+
         var currentPage = request.currentPage || this.specs.currentPage || 1;
         var rowsPerPage = request.rowsPerPage || this.specs.rowsPerPage || 100;
 
