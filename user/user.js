@@ -62,7 +62,7 @@ User.prototype.removePermission = function( perm ){
 };
 
 User.prototype.getDisplayName = function( ){
-    return this.nickname;
+    return this.nickname || this.name;
 };
 
 User.prototype.presave = function( ){
