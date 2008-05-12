@@ -56,6 +56,9 @@ addToNotice = function(key, value){
 
 /**
  *   Function to mask how we add modules so we can change the underlying mechanism ASAP
+ * 
+ *   @param {String} name - name of module to install.  Currently this is the path from corejs root.  Horrors.
+ *   @param {Object} params - paramter object for the specified module
  */
 addModule = function(name, params) {
 	if (!allowedModules) {
