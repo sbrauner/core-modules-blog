@@ -184,9 +184,7 @@ function htmltable(specs) {
 
         var rows = [];
         count = 0;
-        log("cols: "+tojson(this.specs.cols));
         for(var i=0; i< dbResult.length; i++) {
-            log(i);
             var obj = dbResult[i];
             if( this.filter && !this.filter(obj) ) continue;
 
