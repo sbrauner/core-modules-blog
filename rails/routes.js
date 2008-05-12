@@ -17,6 +17,12 @@ var RailsURI = function( uri ){
     this.uri = uri;
     uri = uri.replace( /^\/+/ , "" );
     this.pieces = uri.split( "[/\.]+" );
+    for ( var i=0; i<this.pieces.length; i++)
+        this.pieces[i] = Rails.mangleName( this.pieces[i] );
+};
+
+RailsURI.prototype.toString = function(){
+    return "{RailsURI : " + this.pieces + "}";
 };
 
 Rails.Route = function(){
@@ -32,6 +38,7 @@ var RailsRoute = function( uri , options ){
     this.uri = uri;
     this.ruri = new RailsURI( uri );
     this.options = options;
+    this.options.action = Rails.mangleName( this.options.action );
 };
 
 RailsRoute.prototype.match = function( request , other ){
@@ -170,6 +177,20 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
     
 };
 
+ActionController.Routing.Routes.prototype.with_options = function( options , func ){
+    var thing = {};
+    var base = this;
+    thing.__notFoundHandler = function( name ){
+        return function( pieces , moreOptions ){
+            if ( ! moreOptions )
+                moreOptions = {};
+            Object.extend( moreOptions , options );
+            base.connect( pieces + "" , moreOptions );
+        }
+    }
+    func( thing );
+};
+
 ActionController.Routing.Routes.prototype.__notFoundHandler = function( r ){
     if ( r == "_inInit" || ! this._inInit )
         return null;
@@ -194,12 +215,13 @@ ActionController.Routing.Routes.draw = function( f ){
 
 ActionController.Routing.Routes.prototype.find = function( request ){
     var state = new RailsURI( request.getURI() );
+    log.rails.routes.info( "incoming : " + state );
     for ( var i=0; i<this._routes.length; i++){
         var route = this._routes[i];
         var theRoute = route.match( request , state );
         if ( ! theRoute )
             continue;
-        log.ails.routes.info( "match " + route + " : " + theRoute );
+        log.rails.routes.info( "match " + route + " : " + theRoute );
         return theRoute;
     }
     return null;

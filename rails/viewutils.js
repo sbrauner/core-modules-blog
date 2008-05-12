@@ -4,24 +4,7 @@ error_messages_for = function( what ){
     return "(this should be error messages for: " + what + ")<br>";
 };
 
-form_for = function( what , frm ){
 
-    if ( ! what )
-        throw "form_for passed null";
-
-    print( "\n<form action='/" + myController.shortName );
-    if ( what._id )
-        print( "/" + what._id );
-    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
-
-    var newThing = what;
-    if ( isFunction( what ) ){
-        newThing = new what();
-    }
-
-    frm( newThing );
-    print( "\n</form>\n" );
-};
 
 // -----
 // -- basic html tags
@@ -107,12 +90,3 @@ link_to_function = function( name ){
 }
 
 
-// crap
-
-edit_person_path = function(){
-  return "broken";
-};
-
-edit_todo_path = function(){
-    return "broken";
-};

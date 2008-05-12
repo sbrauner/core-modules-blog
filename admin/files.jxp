@@ -10,14 +10,9 @@ head.addCSS("button/assets/skins/sam/button.css");
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta-min.js" ></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js" ></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js" ></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js" ></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js" ></script>');
-
-var theFile = request.getFile( "theFile" );
-if ( theFile && theFile.filename != "")
-    db._files.save( theFile );
-else if (theFile)
-    print("<p>Sorry, the file you selected could not be uploaded.</p>");
 
 db._files.ensureIndex( { uploadDate : 1 } );
 
@@ -25,7 +20,7 @@ db._files.ensureIndex( { uploadDate : 1 } );
 
 <div id="dlgbox" class="yui-skin-sam"></div>
 
-<form method="POST" onsubmit="return checkFileUpload()" enctype="multipart/form-data" >
+<form method="POST" enctype="multipart/form-data" onsubmit="return checkFileUpload()">
    <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
    Choose a file to upload: <input name="theFile" id="theFile" type="file" />
    <input type="submit" value="Upload File" />
@@ -111,9 +106,35 @@ function deleteFile(id, name) {
     simpledialog.show();
 }
 
+function uploadFileError() {
+    var simpledialog = new YAHOO.widget.SimpleDialog("uploadFileDlg",
+        { width: "300px",
+        fixedcenter: true,
+        draggable: true,
+        visible: false,
+        close: true,
+        text: "The file you selected could not be uploaded.",
+        buttons: [ { text: "OK", handler:handleNo } ]
+        } );
+    simpledialog.setHeader("Invalid File");
+    simpledialog.render("dlgbox");
+    simpledialog.show();
+}
+
+
 function getFile(id) {
     location = "file?id="+id;
 }
+
+<%
+
+var theFile = request.getFile( "theFile" );
+if ( theFile && theFile.filename != "")
+    db._files.save( theFile );
+else if (theFile)
+    print("uploadFileError();");
+
+%>
 
 </script>
 

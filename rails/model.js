@@ -85,6 +85,18 @@ ActiveRecord.Base.prototype.text_field = function( name ){
     return html;
 };
 
+ActiveRecord.Base.prototype.password_field = function( name ){
+    var html =
+        "<input " +
+        " id=\"" + this.collectionName + "_" + name + "\" " +
+        " name=\"" + this.collectionName + "[" + name + "]\" " +
+        " size=\"30\" type=\"password\" ";
+    if ( this[name] )
+        html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
+    html += "/>";
+    return html;
+};
+
 ActiveRecord.Base.prototype.check_box = function( name ){
     var html =
         "<input " +
@@ -143,6 +155,16 @@ ActiveRecord.Base.prototype.submit = function( name ){
 };
 
 
+ActiveRecord.Base.prototype.paginate = function(){
+    return [];
+}
+
+ActiveRecord.Base.prototype.build_search_conditions = function( options ){
+    SYSOUT( "don't know how to build_search_conditions" );
+    return "";
+}
+
+
 // ---------
 // data model
 // ---------
@@ -159,12 +181,26 @@ function before_validation(){
     SYSOUT( "ignoring before_validation" );
 }
 
+function around_filter(){
+    SYSOUT( "ignoring around_filter" );
+}
+
 function after_create(){
     SYSOUT( "ignoring before_create" );
 }
 
 function after_destroy(){
     SYSOUT( "ignoring before_create" );
+}
+
+// --
+
+function cache_sweeper(){
+    SYSOUT( "ignoring cache_sweeper" );
+}
+
+function caches_formatted_page(){
+    SYSOUT( "ignoring caches_formatted_page" );
 }
 
 // ----
@@ -174,6 +210,7 @@ function belongs_to( name ){
 }
 
 function has_many( name ){
+    this[name] = [];
     SYSOUT( "ignoring has_many [" + name + "]" );
 }
 
@@ -241,6 +278,4 @@ function helper_method(){
 
 
 // ---
-function paginate(){
-    return [ { current : {} }  , [] ];
-}
+

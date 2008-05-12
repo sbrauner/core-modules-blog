@@ -13,7 +13,7 @@
       <setInputField htmlid="searchtext" value="Test"/>
       <clickElement xpath="//div[@id='myCollection']/table/tbody//ul//img"/>
       <sleep seconds="1"/>
-      <verifyXPath text="//div[@id='myCollection']//*[contains(text(),'Test User')]"/>
+      <verifyXPath xpath="//div[@id='myCollection']//*[contains(text(),'Test User')]"/>
       <not>
         <verifyXPath xpath="//*[contains(text(), 'Not Admin')]"/>
       </not>

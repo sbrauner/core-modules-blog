@@ -1,0 +1,7 @@
+<% if(! user.hasPermission('admin')) throw "can't happen"; %>
+<form>
+  Your user account is a duplicate. But you are an admin.
+  Delete other copies of this user?
+  <input type="hidden" name="action" value="deleteothers"/>
+  <input type="submit" name="delete" value="delete"/>
+</form>

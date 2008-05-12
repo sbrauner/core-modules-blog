@@ -1,4 +1,9 @@
 
+Rails.requestFix = function( request ){
+    request.request_uri = request.getURI();
+    request.host_with_port = request.getHeader( "Host" );
+};
+
 Rails.Params = function( request , matchingRoute ){
     
     Object.extend( this , matchingRoute );
