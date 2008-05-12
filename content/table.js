@@ -184,12 +184,15 @@ function htmltable(specs) {
 
         var rows = [];
         count = 0;
+        log("cols: "+tojson(this.specs.cols));
         for(var i=0; i< dbResult.length; i++) {
+            log(i);
             var obj = dbResult[i];
             if( this.filter && !this.filter(obj) ) continue;
 
             rows[count] = {};
             for( var c in colnames ) {
+
                 var fieldValue = obj[colnames[c]]
                 var isLink = this.specs.cols[c].isLink;
                 var cssClassName = this.specs.cols[c].cssClassName;
@@ -216,10 +219,13 @@ function htmltable(specs) {
                     if( linkToDetails ) rows[count][colnames[c]].value += "</a>";
                 }
             }
+            count++;
+        }
 
-            if ( this.specs.actions ){
-                var acts = "";
-                colnames.push( "actions" );
+        if ( this.specs.actions && this.specs.actions.length != 0){
+            var acts = "";
+            colnames.push( "actions" );
+            for(var count=0; count<rows.length; count++) {
                 for ( var i=0; i<this.specs.actions.length; i++ ){
                     var action = this.specs.actions[i];
                     acts += "<form method='post'>" ;
@@ -229,7 +235,6 @@ function htmltable(specs) {
                 }
                 rows[count]["actions"] = ({value: acts});
             }
-              count++;
         }
 
         var table = { rows: rows };
