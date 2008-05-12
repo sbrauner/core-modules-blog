@@ -1,0 +1,66 @@
+<% processArgs("opts", "u");
+   opts = opts || {};
+   var login = User.findMyLocation();
+   // FIXME: this form dynamically recomputes itself to do checks and stuff
+   // login_user -> username, etc. If JS is disabled, registration is impossible
+%>
+<div id="register">
+  <div class="notice"><%= opts.error %>
+
+  <form method="post" class="edit register" id="edit_form">
+
+    <fieldset class="edit register">
+    <legend>Edit My Information</legend>
+    <table>
+    <tr>
+        <td><label for="u_name">Username</label></td>
+        <td><%= u.name %>
+    </tr>
+
+    <tr>
+        <td><label for="u_email">Email</label></td>
+        <td><input name="u_email" class="text" value="<%= u.email || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_firstname">First name (optional)</label></td>
+        <td><input name="u_firstname" class="text" value="<%= u.firstname || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_lastname">Last name (optional)</label></td>
+        <td><input name="u_lastname" class="text" value="<%= u.lastname || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_user">Display name (optional)</label></td>
+        <td><input name="u_nickname" class="text" value="<%= u.nickname || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_url">URL (optional)</label></td>
+        <td><input name="u_url" class="text" value="<%= u.url || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_pass1">Change Password (optional)</label></td>
+        <td><input type="password" name="u_pass1" class="text"></td>
+    </tr>
+
+    <tr>
+        <td><label for="u_pass2">Password Again</label></td>
+        <td><input type="password" name="u_pass2" class="text"></td>
+    </tr>
+
+    <tr>
+        <td></td>
+        <td><input type="submit" value="Save" class="button" style="" name="save">
+            <% if (opts.to) { %><input type="hidden" name="u_to" value="<%= opts.to %>"/><% } %>
+        </td>
+    </tr>
+    </table>
+    </fieldset>
+  </form>
+
+</div>
+<% head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>

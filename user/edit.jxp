@@ -1,0 +1,35 @@
+<%
+var u = user;
+log(tojson(request));
+
+var to = request.to || '/';
+var error;
+if(request.save){
+    u.email = request.u_email;
+    u.url = request.u_url;
+    u.nickname = request.u_nickname;
+    if(request.u_firstname)
+        u.firstname = request.u_firstname;
+    if(request.u_firstname)
+        u.lastname = request.u_lastname;
+    if(request.u_pass1 && request.u_pass1 == request.u_pass2)
+        u.setPassword(request.u_pass1);
+
+    try {
+        db.users.save(u);
+        response.sendRedirectTemporary(to);
+    }
+    catch(e){
+        error = e;
+    }
+}
+if(request.cancel){
+    response.sendRedirectTemporary(request.to);
+}
+else {
+    htmlheader("Edit My Information");
+    core.user.html.editForm({to: request.to || request.getHeader('Referer'),
+                             error: error}, u);
+    htmlfooter();
+}
+%>
