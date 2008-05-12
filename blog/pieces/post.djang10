@@ -34,7 +34,7 @@ captcha_message
       <h2>Comments</h2>
 
       {% for c in post.comments %}
-        <div class="container {% cycle 'zerbra','' %}">
+        <div class="container {% cycle zebra "" %}">
         {% if c.author.permissions %}
           <div class="num-circle green-circle">{{ forloop.counter }}</div>
         {% else %}

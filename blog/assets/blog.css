@@ -9,7 +9,10 @@ h1 {
 	font-weight: normal;
 	line-height: 1.2em;
 }
-
+h1, h2, h3, h4, h5, h6 {
+    margin: 0px;
+    padding: 0px;
+}
 h1 a, h1 a:visited {
 	color: #333;
 	border-color: #333;
