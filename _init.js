@@ -54,6 +54,9 @@ addToNotice = function(key, value){
     notice[key] = value;
 };
 
+/**
+ *   Function to mask how we add modules so we can change the underlying mechanism ASAP
+ */
 addModule = function(name, params) {
 	if (!allowedModules) {
 		allowedModules = {};
