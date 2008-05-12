@@ -428,7 +428,7 @@ xml = {
         return javaStatic("ed.js.JSSaxParser", "getParser")(handler, xmlString);
     },
     
-    parseDomFromString: function(xml) {
+    parseDomFromString: function( content ) {
         var handler = {
             root: null,
             stack : [],
@@ -481,7 +481,7 @@ xml = {
         };
         
         
-        xml.parseSaxFromString(handler, xml);
+        xml.parseSaxFromString(handler, content);
         
         return handler.root;
     }
