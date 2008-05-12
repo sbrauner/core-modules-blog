@@ -1,15 +1,18 @@
 <%
 core.user.auth();
+core.net.url();
 var error = 'invalid username/password'; // default error
-if(core.user.handleDuplicates()) {
-    core.user.html.askDeleteOthers();
-    return;
-}
 try {
     user = Auth.getUser( request , response );
 }
-catch (e){
+catch (e if ! (e instanceof Exception.Redirect)){
     error = e;
+}
+catch(e if (e instanceof Exception.Redirect)){
+    var u = new URL(e.getTarget()).addArgs(request);
+    log("Redirecting to " + u.toString());
+    throw Exception.Redirect(u.toString());
+
 }
 
 if ( ! user ){
