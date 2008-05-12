@@ -3,7 +3,7 @@ app.wiki = Object();
 
 core.core.routes();
 
-core.content.wikiparser();
+core.app.wiki.wikiparser();
 core.content.htmlhelper();
 
 core.html.html();
