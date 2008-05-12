@@ -1,5 +1,15 @@
 <% core.app.wiki.pieces.header_wikipage(); %>
 
+
+<% if( app.wiki.navpane ) { %>
+
+<div>
+The TOC!
+</div>
+
+<% } %>
+
+
 <div id="wiki_content" class="content" >
   <% if (wikiPageHistoricalVersion) {
       if (wikiPageShowDiff) { %>

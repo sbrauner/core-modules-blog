@@ -21,8 +21,8 @@
         return;
     }
 
-if ( ! request.name )
-    request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
+    if ( ! request.name )
+	request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
 
     // Get the name of the page we are supposed to display. Assume we want the Main page if no page name is provided
     var displayName = request.name;
@@ -74,5 +74,5 @@ if ( ! request.name )
     else if ( request.compare )
         core.app.wiki.pieces.compare();
     else
-            core.app.wiki.pieces.view();
+        core.app.wiki.pieces.view();
 %>
