@@ -11,7 +11,7 @@
 */
 core.content.html();
 
-log = log.content.xml;
+var log = log.content.xml;
 
 xml = {
 
@@ -434,15 +434,7 @@ xml = {
             stack : [],
             startElement : function(uri, localName, name, attributes) {
                 
-                var node = {
-                    localName: localName,
-                    qName: name,
-                    uri: uri,
-                    text: [],
-                    textString: null,
-                    attributes : {},
-                    elements: []
-                };
+                var node = new xml.Node( localName , qName , uri );
                 
                 attributes.forEach(function(attr) {
                     node.attributes[attr.qName] = attr;
@@ -486,6 +478,34 @@ xml = {
         return handler.root;
     }
 };
+
+xml.Node = function( localName , qName , uri ){
+    this.localName = localName;
+    this.qName = qName;
+    this.uri = uri;
+    this.text = [];
+    this.textString = null;
+    this.attributes = {};
+    this.elements = [];
+};
+
+xml.Node.prototype.getAllByTagName = function( tag  , lst ){
+    if ( ! lst )
+        lst = [];
+
+    if ( this.localName == tag )
+        lst.add( this );
+
+    for ( var i=0; i<this.elements.length; i++){
+        this.elements[i].getAllByTagName( tag , lst );
+    }
+    
+    return lst;
+};
+
+xml.Node.prototype.toString = function(){
+    return "Node:" + this.localName;
+}
 
 function haskey(obj, prop){
     if ( ! isObject( obj ) )
