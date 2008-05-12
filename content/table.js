@@ -129,7 +129,15 @@ function htmltable(specs) {
     this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
-        var th = displaycolnames.map(function(x) { return {name: x, heading: x}; });
+        var th = [];
+        for(var i=0; i<colnames.length; i++) {
+            if(request && request[colnames[i]]) {
+                th.push({name: colnames[i], heading: displaycolnames[i], search: request[colnames[i]]});
+                var searchtxt = request[colnames[i]];
+            }
+            else
+                th.push({name: colnames[i], heading: displaycolnames[i] });
+        }
         var currentPage = request.currentPage || this.specs.currentPage || 1;
         var rowsPerPage = request.rowsPerPage || this.specs.rowsPerPage || 100;
 
@@ -161,8 +169,7 @@ function htmltable(specs) {
                     +(using?(asc?"^":"v"):"");
             }
         }
-
-        core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable});
+        core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable, current_search: searchtxt});
 
         var dbResult = cursor.toArray();
 
