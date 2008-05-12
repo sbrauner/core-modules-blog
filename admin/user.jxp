@@ -19,6 +19,7 @@ if ( u && (request.action == "save" || request['save.x'] || request.save)){
     var problem = false;
    u.name = request.name;
    u.email = request.email;
+   u.url = request.url;
    u.nickname = request.nickname;
 
    var adm = u.permissions&&u.permissions.contains("admin");
@@ -79,6 +80,8 @@ print.setFormObject( u );
     <input class="text" type="text" name="email"><br />
     <label>Nickname</label>
     <input class="text" type="text" name="nickname"><br />
+    <label>URL</label>
+    <input class="text" type="text" name="url"><br />
     <label></label>
     <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br />
     <label>New Password</label>

@@ -27,23 +27,28 @@
         <td><input type="password" name="login_pass2" class="text"></td>
     </tr>
     <tr>
-        <td><label for="login_user">First name (optional)</label></td>
+        <td><label for="login_firstname">First name (optional)</label></td>
         <td><input name="login_firstname" class="text" value="<%= opts.firstname || "" %>"></td>
     </tr>
 
     <tr>
-        <td><label for="login_user">Last name (optional)</label></td>
+        <td><label for="login_lastname">Last name (optional)</label></td>
         <td><input name="login_lastname" class="text" value="<%= opts.lastname || "" %>"></td>
     </tr>
 
     <tr>
-        <td><label for="login_user">Display name</label></td>
+        <td><label for="login_nickname">Display name</label></td>
         <td><input name="login_nickname" class="text" value="<%= opts.nickname || "" %>"></td>
     </tr>
 
     <tr>
         <td><label for="login_email">Email</label></td>
         <td><input name="login_email" class="text" value="<%= opts.email || "" %>"></td>
+    </tr>
+
+    <tr>
+        <td><label for="login_url">URL (optional)</label></td>
+        <td><input name="login_url" class="text" value="<%= opts.url || "" %>"></td>
     </tr>
 
     <% if(User.config.useCaptcha){ %>
@@ -97,6 +102,7 @@
     var n = frm.login_nickname.value;
     var fn = frm.login_firstname.value;
     var ln = frm.login_lastname.value;
+    var url = frm.login_url.value;
 
     if(frm.login_to)
       var to = frm.login_to.value;
@@ -142,7 +148,7 @@
       return false;
     }
 
-    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&nickname=" + n + "&firstname=" + fn + "&lastname=" + ln;
+    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&nickname=" + n + "&firstname=" + fn + "&lastname=" + ln + "&url="+ url;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;

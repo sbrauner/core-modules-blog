@@ -1,0 +1,67 @@
+<%
+/* Generate PDF from wiki markup
+*/
+
+core.core.file();
+
+var doc = wikiPage.getParsedText();
+
+var root = ("/tmp/"+Math.random()).replace(/\./, '_')
+var fn = root + ".tex";
+
+var s = wikiPage.getParsedText("tex");
+
+var texfile = File.create(s);
+
+texfile.writeToLocalFile(fn);
+
+
+var cmd = "latex -halt-on-error -no-shell-escape -output-format=pdf " + 
+    "-output-directory=tmp/ " +
+    " ." + fn;
+
+if( request.debug ) print(cmd+'\n------------\n');
+
+var res = sysexec(cmd);
+
+var pdf = openFile(root+".pdf"); 
+
+function cleanup() {
+    if( request.debug ) print("\ncleanup() called, root:" + root + "\n");
+    try { 
+	openFile(root + ".pdf").remove(false);
+	openFile(root + ".tex").remove(false);
+	openFile(root + ".log").remove(false);
+	openFile(root + ".aux").remove(false);
+    }
+    catch(e) { 
+	if( request.debug ) print("cleanup exception " + tojson(e) + "\n");
+    }
+}
+
+if ( !pdf.exists() ) {
+    response.setHeader("Content-Type", "text/plain");
+    print("Error rendering document. Latex output follows.\n\n");
+    print(res.err);
+    print(res.out);
+    if( !request.debug ) {
+	cleanup();
+	return;
+    }
+    print("---------------------\n");
+}
+
+if( request.debug ) { 
+    response.setHeader("Content-Type", "text/plain");
+    print(s);
+    cleanup();
+    return;
+}
+
+response.afterSendingCall( cleanup );
+
+response.setHeader("Content-Type", "application/pdf");
+response.sendFile(pdf);
+
+
+%>

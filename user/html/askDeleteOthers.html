@@ -1,0 +1,25 @@
+<% if(! user.hasPermission('admin')) throw "can't happen"; %>
+<form>
+  <% for(var key in request){ %>
+  <input type="hidden" name="<%= key %>" value="<%= request[key] %>"/>
+  <% } %>
+  Your user account is a duplicate. But you are an admin.
+  Delete other copies of this user?
+  <% var seen = {};
+     var showOtherUser = function(u){ 
+     log("WHoo!" + u);
+     if(u._id == user._id) return;
+     if(seen[u._id.toString()]) return;
+     seen[u._id.toString()] = true;
+     %>
+  <li><%= u.name %> &lt;<%= u.email %>&gt;</li>
+  <% }; %>
+  <ul>
+  <% log(tojson(db.users.find({email: user.email})));
+     db.users.find({email: user.email}).forEach(showOtherUser);
+     db.users.find({name: user.name}).forEach(showOtherUser); %>
+  </ul>
+  <hr/>
+  <input type="hidden" name="action" value="deleteothers"/>
+  <input type="submit" name="delete" value="delete"/>
+</form>

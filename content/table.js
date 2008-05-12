@@ -129,7 +129,17 @@ function htmltable(specs) {
     this._rows = function(cursor) {
         var colnames = this._colnames();
         var displaycolnames = this._displaycolnames();
-        var th = displaycolnames.map(function(x) { return {name: x, heading: x}; });
+        var th = [];
+        for(var i=0; i<colnames.length; i++) {
+            if(request && request[colnames[i]]) {
+                th.push({name: colnames[i], heading: displaycolnames[i], search: request[colnames[i]]});
+                var searchtxt = request[colnames[i]];
+            }
+            else
+                th.push({name: colnames[i], heading: displaycolnames[i] });
+        }
+        searchtxt = searchtxt ? searchtxt : "";
+
         var currentPage = request.currentPage || this.specs.currentPage || 1;
         var rowsPerPage = request.rowsPerPage || this.specs.rowsPerPage || 100;
 
@@ -161,20 +171,78 @@ function htmltable(specs) {
                     +(using?(asc?"^":"v"):"");
             }
         }
-
-        core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable});
+        core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable, current_search: searchtxt});
 
         var dbResult = cursor.toArray();
 
-        totalNumPages = Math.floor((dbResult.length - 1) / rowsPerPage) + 1;
+        var hasIsLink = false;
+        this.specs.cols.forEach( function( z ){
+                if ( z.isLink )
+                    hasIsLink = true;
+            } );
+
+
+        var rows = [];
+        count = 0;
+        for(var i=0; i< dbResult.length; i++) {
+            var obj = dbResult[i];
+            if( this.filter && !this.filter(obj) ) continue;
+
+            rows[count] = {};
+            for( var c in colnames ) {
+
+                var fieldValue = obj[colnames[c]]
+                var isLink = this.specs.cols[c].isLink;
+                var cssClassName = this.specs.cols[c].cssClassName;
+
+                if(cssClassName) {
+                    rows[count][colnames[c]].className = cssClassName;
+                }
+
+                rows[count][colnames[c]] = { value: "" };
+                {
+                    var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
+                    if( linkToDetails ) {
+                        var post = obj;
+                        var fieldUrl;
+
+                        if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
+                        else fieldUrl = this.specs.detail(obj);
+
+                        rows[count][colnames[c]].value += '<a href="' + fieldUrl + '">';
+                    }
+                    var viewMethod = this.specs.cols[c].view;
+                    var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
+                    rows[count][colnames[c]].value += fieldDisplay || ( linkToDetails ? "go to" : "" );
+                    if( linkToDetails ) rows[count][colnames[c]].value += "</a>";
+                }
+            }
+            count++;
+        }
+
+        if ( this.specs.actions && this.specs.actions.length != 0){
+            var acts = "";
+            colnames.push( "actions" );
+            for(var count=0; count<rows.length; count++) {
+                for ( var i=0; i<this.specs.actions.length; i++ ){
+                    var action = this.specs.actions[i];
+                    acts += "<form method='post'>" ;
+                    acts += "<input type='hidden' name='_id' value='" + obj._id + "'>" ;
+                    acts += "<input type='submit' name='action' value='" + action.name + "'>" ;
+                    acts += "</form>" ;
+                }
+                rows[count]["actions"] = ({value: acts});
+            }
+        }
+
+        var table = { rows: rows };
+        totalNumPages = Math.floor((table.rows.length - 1) / rowsPerPage) + 1;
         if(currentPage > totalNumPages && totalNumPages > 0)
             currentPage = totalNumPages;
 
         var start = (currentPage - 1)*rowsPerPage;
-        dbResult = dbResult.splice(start, rowsPerPage);
+        table.rows = table.rows.splice(start, rowsPerPage);
 
-
-        var table = { };
         table.totalNumPages = totalNumPages;
         table.currentPage = currentPage;
         table.rowsPerPage = rowsPerPage;
@@ -199,64 +267,6 @@ function htmltable(specs) {
         }
         var prevPage = (table.currentPage == 1) ? null : table.currentPage - 1;
         var nextPage = (table.currentPage == table.totalNumPages) ? null : parseInt(table.currentPage) + 1;
-
-
-        var hasIsLink = false;
-        this.specs.cols.forEach( function( z ){
-                if ( z.isLink )
-                    hasIsLink = true;
-            } );
-
-
-        var rows = [];
-        for(var i in dbResult) {
-            var obj = dbResult[i];
-            if( this.filter && !this.filter(obj) ) continue;
-
-            rows[i] = {};
-            for( var c in colnames ) {
-                rows[i][colnames[c]] = {value: ""};
-                var fieldValue = obj[colnames[c]];
-                var isLink = this.specs.cols[c].isLink;
-                var cssClassName = this.specs.cols[c].cssClassName;
-
-                if(cssClassName) {
-                    rows[i][colnames[c]].className = cssClassName;
-                }
-
-                {
-                    var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
-                    if( linkToDetails ) {
-                        var post = obj;
-                        var fieldUrl;
-
-                        if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
-                        else fieldUrl = this.specs.detail(obj);
-
-                        rows[i][colnames[c]].value += '<a href="' + fieldUrl + '">';
-                    }
-                    var viewMethod = this.specs.cols[c].view;
-                    var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
-                    rows[i][colnames[c]].value += fieldDisplay || ( linkToDetails ? "go to" : "" );
-                    if( linkToDetails ) rows[i][colnames[c]].value += "</a>";
-                }
-            }
-
-            if ( this.specs.actions ){
-                var acts = "";
-                colnames.push( "actions" );
-                for ( var i=0; i<this.specs.actions.length; i++ ){
-                    var action = this.specs.actions[i];
-                    acts += "<form method='post'>" ;
-                    acts += "<input type='hidden' name='_id' value='" + obj._id + "'>" ;
-                    acts += "<input type='submit' name='action' value='" + action.name + "'>" ;
-                    acts += "</form>" ;
-                }
-                rows[i]["actions"] = ({value: acts});
-            }
-        }
-
-        table.rows = rows;
 
         core.content.pieces.tableBody({table:table, th:th, fields: colnames});
         core.content.pieces.tableFooter({page: page, prevPage: prevPage, nextPage: nextPage, totalNumPages: totalNumPages, colspan: th.length});

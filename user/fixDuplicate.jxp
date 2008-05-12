@@ -1,0 +1,12 @@
+<% 
+if(core.user.handleDuplicates()){
+   core.user.html.askDeleteOthers();
+} 
+else {
+   // FIXME: or, not an admin?
+   print( "<div class='notice'>Your user account is a duplicate, and we couldn't log in as any of them. Check your username and password.</div>" );
+   htmlheader("Login");
+   core.user.html.login({to: request.to});
+   htmlfooter();
+}
+%>

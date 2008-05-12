@@ -10,8 +10,7 @@ table.htmltable th, table.htmltable td {
     border-spacing: 0;
 }
 table.htmltable li {
-    list-style: none;
-    list-style-type: none;
+    background-image: none;
 }
 
 table.htmltable tr.search-table td {
@@ -78,6 +77,7 @@ table.htmltable tr.search-top ul {
 	margin: 0;
 	padding: 0;
 	width: 100%;
+        list-style-type: none;
 }
 
 table.htmltable tr.search-top ul li {
@@ -85,6 +85,7 @@ table.htmltable tr.search-top ul li {
 	margin: 0 .5em 0 0;
 	padding: .7em 0 0 0;
 	height: 1.8em;
+        list-style-type: none;
 }
 
 table.htmltable tr.search-top td.left {
@@ -572,3 +573,4 @@ div.existing_index {
 div.existing_index span {
         font-size: 10px;
 }
+

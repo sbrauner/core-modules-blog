@@ -13,5 +13,6 @@
     <ant antfile="userSearchTest.xml"/>
     <ant antfile="navTest.xml"/>
     <ant antfile="dbView.xml"/>
+    <ant antfile="cronTest.xml"/>
   </target>
 </project>

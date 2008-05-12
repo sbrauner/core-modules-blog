@@ -12,37 +12,29 @@ date_format - format string for date
 
 {% endcomment %}
 
-<div id="entry-{{ post._id }}" class="newhp" style="{{ style|default:"" }}" >
+<div class="date-circle">{{ post.ts|date:"j" }}<br />{{ post.ts|date:"b"|upper }}</div>
+<h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
+<p class="byline">{{ post.author }}, <a href="{{ post.name }}#comments">{% if post.comments.length %}
+   {{ post.comments.length }}
+{% else %}
+   0
+{% endif %}
+comments
+</a></p>
 
-  <h2>
-    {% if post.getFirstImageSrc %}
-      <div class="postimage">
-        <a href="{{ post.name }}"><img border="0" class="postimage" src="{{ post.getFirstImageSrc }}"></a>
-      </div>
-    {% endif %}
-  <a href="{{ post.name }}">{{ post.title }}</a>
-  </h2>
-
-  <div class="asset-meta">
-    <h3 class="timestamp" style="margin-bottom: .5em; ">
-      <span class="byline">{{ post.author }}</span>
-      {% if date_format %}
-            <span class="dateline">{{ post.ts|date:date_format }}</span>
-      {% else %}
-            <span class="dateline">{{ post.ts|date:"F j, Y g:ia" }}</span>
-      {% endif %}
-      <span><a href="{{ post.name }}#comments">{{ post.comments.length }}</a> <a href="{{ post.name }}#comments"><img src="/~~/blog/assets/images/comment.png" alt="Comments" border="0" /></a></span>
-   </h3>
-  </div>
-
-  {% if post.excerpt %}
-    <div class="summary">
-      {{ post.excerpt }}
-      <span class="read-link"><a href="{{ post.name }}">{{ read_link|default:"<strong>Read&nbsp;&gt;</strong>" }}</a></span>
+<h2>
+  {% if post.getFirstImageSrc %}
+    <div class="postimage">
+      <a href="{{ post.name }}"><img border="0" class="postimage" src="{{ post.getFirstImageSrc }}"></a>
     </div>
   {% endif %}
+</h2>
 
+<div class="summary">
+  {{ post.excerpt }}
 </div>
 
-<div style="{{ style|default:"" }}"></div>
+<p><a href="{{ post.name }}">Continue Reading</a></p>
+
+<br /><br />
 

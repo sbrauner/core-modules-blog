@@ -51,27 +51,30 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
         return true;
     };
     
-    funcScope.params = new Rails.Params( request , matchingRoute );
-
     // --- invoke action
 
     f.call( appResponse.requestThis );
     
     if ( ! appResponse.anythingRendered ){
-        
+        /*
         if ( ! local.app.views )
             throw "no views directory";
         
         if ( ! local.app.views[ this.shortName ] )
             throw "no views directory for " + this.shortName;
         
-        var view = local.app.views[ this.shortName ][matchingRoute.action];
+        var viewName = Rails.unmangleName( matchingRoute.action );
+        
+
+        var view = local.app.views[ this.shortName ][viewName];
         if ( ! view )
-            view = local.app.views[ this.shortName ][matchingRoute.action + ".html" ];
+            view = local.app.views[ this.shortName ][viewName + ".html" ];
         if ( ! view )
-            throw "no view for " + this.shortName + "." + matchingRoute.action;
+            throw "no view for " + this.shortName + "." + viewName;
         
         view.call( appResponse.requestThis );
+*/
+        appResponse.html();
     }
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
@@ -95,10 +98,13 @@ function ApplicationResponse( controller , method ){
 
     this.requestThis = {};
     this.requestThis.prototype = controller;
-
 };
 
 ApplicationResponse.prototype.html = function(){
+    if ( arguments.length > 0 && 
+         isFunction( arguments[ arguments.length - 1 ] ) ){
+        return arguments[arguments.length-1].call( this );
+    }
     var blah = this.requestThis;
 
     blah.__notFoundHandler = function( thing ){
@@ -117,12 +123,14 @@ ApplicationResponse.prototype.html = function(){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
+    var viewName = Rails.unmangleName( this.method );
+    
     var template = 
-        local.app.views[ this.controller.shortName ][ this.method + ".html" ] || 
-        local.app.views[ this.controller.shortName ][ this.method  ];
+        local.app.views[ this.controller.shortName ][ viewName + ".html" ] || 
+        local.app.views[ this.controller.shortName ][ viewName  ];
     
     if ( ! template )
-        throw "no template for " + this.controller.shortName + ":" + this.method;
+        throw "no template for " + this.controller.shortName + ":" + viewName;
     log.rails.response.debug( template + ".html" + called );
     
 
@@ -140,32 +148,31 @@ ApplicationResponse.prototype.html = function(){
     }
 
     
-    // layour
+    // layout
 
     var layout = null;
-    var appLayout = null;
     if ( local.app.views.layouts ){
-        layout = local.app.views.layouts[ this.controller.shortName + ".html" ];
-        appLayout = 
+        layout = 
+            local.app.views.layouts[ this.controller.shortName + ".html" ] || 
             local.app.views.layouts.application || 
             local.app.views.layouts["application.html"];
     }
     
     SYSOUT( "layout : " + layout );
-    SYSOUT( "appLayout : " + appLayout );
-    if ( appLayout ){
+    if ( layout ){
+        
+        layout.getScope( true ).controller = { action_name : this.method }; // ???
+        
         this.requestThis.content_for( "layout" , template );
         assert( this.requestThis.content_for_layout != null );
-        appLayout.apply( this.requestThis );
-    }
-    else if ( layout ){
-        // TODO: fix this...
-        layout.getScope( true ).controller = { action_name : this.method };
         
-        layout( function(){
-            template.apply( blah , arguments );
-            return "";
-        } );
+        layout.call( this.requestThis ,
+                     function(  name ){
+                         if ( name )
+                             return blah["content_for_" + name ]
+                         return blah.content_for_layout;
+                     }
+                   );
     }
     else {
         template.apply( blah );

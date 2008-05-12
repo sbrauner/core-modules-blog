@@ -1,0 +1,47 @@
+<%
+/* If there is one post, show it.  If there is more than one post, display a page
+ * of post snippets.  If there are no posts, display a default empty blog page.
+ */
+
+core.blog.urls();
+var result = Blog.handleRequest( request );
+
+// find the most recent posts
+var recent = db.blog.posts.find({live: true}).sort({ts: -1}).limit(5).toArray();
+// find the categories
+var categories = db.blog.categories.find().sort({name: 1}).toArray();
+
+if ( result.posts.length == 1 && result.posts[0].name == "404") {
+    core.blog.pieces.post({post: {}, user: user, comments_enabled: false});
+    if(user.permissions[0] == "admin") {
+        print("<p>To add some posts, go to admin/blog/post_edit.</p>");
+    }
+    return;
+}
+
+if ( result.posts.length == 1 ){
+    var blogObj = {
+        post : result.posts[0],
+        user : user,
+        comments_enabled: result.posts[0].commentsEnabled,
+        recent : recent,
+        categories : categories
+    };
+
+    if(request && request.addComment == "yes") {
+        Blog.handlePosts(request, result.posts[0], user);
+    }
+    core.blog.pieces.post( blogObj );
+}
+else if (result.posts.length > 1) {
+    var blogObj = {
+        posts : result.posts,
+        date_format : "F",
+        user : user,
+        recent : recent,
+        categories : categories
+    };
+    core.blog.pieces.postSnippetList( blogObj );
+}
+
+%>

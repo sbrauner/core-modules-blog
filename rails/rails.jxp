@@ -20,9 +20,13 @@ for ( var i=0; i<Rails.controllers.length; i++ ){
     }
 }
 
-if ( ! myController )
+if ( ! myController ){
     return print( "can't find controller [" + matchingRoute.controller + "]" );
+}
 
+params = new Rails.Params( request , matchingRoute );
+
+Rails.requestFix( request );
 
 session = new CGI.Session.ActiveRecordStore.Session();
 

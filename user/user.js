@@ -62,7 +62,7 @@ User.prototype.removePermission = function( perm ){
 };
 
 User.prototype.getDisplayName = function( ){
-    return this.nickname;
+    return this.nickname || this.name;
 };
 
 User.prototype.presave = function( ){
@@ -129,7 +129,9 @@ User.find = function( thing , theTable ){
 
     if ( u.length() == 0 ) return null;
 
-    if ( u.length() != 1 ) throw "duplicate users for " + thing;
+    if ( u.length() != 1 ){
+        throw Exception.Redirect(User.findMyLocation() + "/fixDuplicate?thing="+thing);
+    }
 
     return u[0];
 };
