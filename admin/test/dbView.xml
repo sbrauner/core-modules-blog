@@ -60,6 +60,9 @@
         <verifyXPath xpath="//div[@id='myCollection']//*[contains(text(), '${id_1}')]"/>
       </not>
 
+      <!-- make sure we don't NPE on nonexistent collections -->
+      <invoke url="${site}/admin/dbview?ns=dontexist"  username="test@10gen.com" password="test"/>
+
     </webtest>
   </target>
 </project>

@@ -14,24 +14,33 @@ var fields = obj.fields;
   <td class="right">&nbsp;</td>
 </tr>
 
-<forin i table.rows>
+<if (table.rows.length == 0)>
   <tr class="white-main">
     <td class="left">&nbsp;</td>
-    <if (fields)>
-      <forin j fields>
-        <if table.rows[i][fields[j]].className>
-          <td class="$table.rows[i][fields[j]].className">$table.rows[i][fields[j]].value</td>
-        </if>
-        <if (!table.rows[i][fields[j]].className)>
-          <td>$table.rows[i][fields[j]].value</td>
-        </if>
-      </forin>
-    </if>
-    <if (!fields)>
-      <forin j table.rows[i]>
-        <td>$table.rows[i][j]</td>
-      </forin>
-    </if>
+    <td colspan="$th.length">No entries.</td>
     <td class="right">&nbsp;</td>
   </tr>
-</forin>
+</if>
+<if (table.rows.length != 0)>
+  <forin i table.rows>
+    <tr class="white-main">
+      <td class="left">&nbsp;</td>
+      <if (fields)>
+        <forin j fields>
+          <if table.rows[i][fields[j]].className>
+            <td class="$table.rows[i][fields[j]].className">$table.rows[i][fields[j]].value</td>
+          </if>
+          <if (!table.rows[i][fields[j]].className)>
+            <td>$table.rows[i][fields[j]].value</td>
+          </if>
+        </forin>
+      </if>
+      <if (!fields)>
+        <forin j table.rows[i]>
+          <td>$table.rows[i][j]</td>
+        </forin>
+      </if>
+      <td class="right">&nbsp;</td>
+    </tr>
+  </forin>
+</if>

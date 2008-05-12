@@ -11,6 +11,8 @@
 */
 core.content.html();
 
+log = log.content.xml;
+
 xml = {
 
     toString : function( name , obj ){
@@ -419,6 +421,69 @@ xml = {
         }
         if(results.length > 0)
             return results;
+    },
+    
+    
+    parseSaxFromString: function(handler, xmlString) {
+        return javaStatic("ed.js.JSSaxParser", "getParser")(handler, xmlString);
+    },
+    
+    parseDomFromString: function( content ) {
+        var handler = {
+            root: null,
+            stack : [],
+            startElement : function(uri, localName, name, attributes) {
+                
+                var node = {
+                    localName: localName,
+                    qName: name,
+                    uri: uri,
+                    text: [],
+                    textString: null,
+                    attributes : {},
+                    elements: []
+                };
+                
+                attributes.forEach(function(attr) {
+                    node.attributes[attr.qName] = attr;
+                });
+                
+                
+                if(this.stack.length > 0) {
+                    this.stack[this.stack.length - 1].elements.push(node);
+                } else {
+                    this.root = node;
+                }
+                this.stack.push(node);
+            },
+            endElement : function(uri, localName, name) {
+                this.stack.pop();
+            },
+            text : function(text) {
+                var textOwner = this.stack[this.stack.length - 1];
+                
+                if(textOwner.text.length > 0)
+                    textOwner.textString += " " + text;
+                else
+                    textOwner.textString = text;
+
+                textOwner.text.push(text);
+            },
+            warning: function(msg) {
+                log.warn(msg);
+            },
+            error: function(msg) {
+                log.error(msg)
+            },
+            fatalError: function(msg) {
+                log.error("FATAL: " + msg);
+            }
+        };
+        
+        
+        xml.parseSaxFromString(handler, content);
+        
+        return handler.root;
     }
 };
 

@@ -10,8 +10,7 @@ table.htmltable th, table.htmltable td {
     border-spacing: 0;
 }
 table.htmltable li {
-    list-style: none;
-    list-style-type: none;
+    background-image: none;
 }
 
 table.htmltable tr.search-table td {
@@ -572,3 +571,4 @@ div.existing_index {
 div.existing_index span {
         font-size: 10px;
 }
+

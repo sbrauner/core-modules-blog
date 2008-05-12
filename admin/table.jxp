@@ -418,8 +418,10 @@ else if(request.action != "searchprofile") {
         var uniqueKey = db.system.indexes.findOne({ns: request.ns});
         // if there is no index on the collection, there is no way to uniquely identify elements
         // so get rid of the delete button
-        if(!uniqueKey)
-            th.pop();
+        if(!uniqueKey){
+            if(th.length)
+                th.pop();
+        }
         else {
             var keyArr = uniqueKey.key;
             keyArr = Object.keys(keyArr);
