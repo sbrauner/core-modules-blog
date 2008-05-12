@@ -41,16 +41,39 @@ content.WikiParser = function(device) {
 
 	pre: "\\begin{verbatim}\n", _pre: "\\end{verbatim}\n",
 
+	colAligns: { c: "", done: false },
+	tr: "$1",
+	_tr: function() { this.colAligns.done = true; return "\\\\\n"; },
+	td: function() { if( !this.colAligns.done ) this.colAligns.c += "l "; return " & $1"; },
+	_table: function(wikiobj) { 
+	    print("\n\n_TABLE " + this.colAligns.c + "\n\n");
+	    wikiobj.outp = wikiobj.outp.replace(/~~~~~42/, this.colAligns.c);
+	},
+
 	footer: function() { return "\\end{document}\n"; },
 
 	escape: function(s) {
 	    // html tags:
-	    s = s.replace(/<[^>]+>/g, "HTML");
+	    var old = s;
+	    s = s.replace(/<table[^>]*>/g, "\n\n\\begin{tabular}{ ~~~~~42}\n");
+	    if( s != old ) {
+		this.colAligns.c = "l ";
+		this.colAligns.done = false;
+		// don't escape our backslashes just added. 
+		// if it turns out there might be other stuff that needs escaping on the 
+		// same line, you might want to put a special marker in now and replace them 
+		// at the end of this function.
+		return s;
+	    }
+	    s = s.replace(/<\/table[^>]*>/g, "\\end{tabular}\n");
+	    if( s != old ) return s;
+	    s = s.replace(/<[^>]+>/g, "");
 
 	    s = s.replace(/_/g, "\\_");
 	    s = s.replace(/&/g, "\\&");
 	    s = s.replace(/\\$/g, "\\$");
 	    s = s.replace(/%/g, "\\%");
+	    s = s.replace(/\[/g, "\\[");
 	    s = s.replace(/\{/g, "\\{");
 	    s = s.replace(/\}/g, "\\}");
 	    s = s.replace(/#/g, "\\#");
@@ -61,6 +84,9 @@ content.WikiParser = function(device) {
 
 	    return s;
 	},
+
+	lt: "\\textless ",
+	gt: "\\textgreater ",
 
 	programmer: []
 
@@ -76,6 +102,11 @@ content.WikiParser = function(device) {
 	    "<h3>$1</h3>",
 	    "<h4>$1</h4>",
 	    "<h5>$1</h5>"],
+
+	tr: "<tr><td>$1</td>",
+	_tr: function() { return "</tr>"; },
+	td: function() { return "<td>$1</td>"; },
+	_table: function(wikiobj) { },
 
 	p: "<p>\n",
 
@@ -93,6 +124,9 @@ content.WikiParser = function(device) {
 	pre: "<pre>", _pre: "</pre>",
 
 	footer: function() { return ""; },
+
+	lt: "&lt;",
+	gt: "&gt;",
 
 	escape: function(s) { return s; },
 
@@ -202,27 +236,29 @@ content.WikiParser.prototype._line = function(str) {
 	return; 
     }
 
-    str = this.d.escape(str);
-
     if( this.noHtml ) {
-        str = str.replace(/</g, "&lt;");
-        str = str.replace(/>/g, "&gt;");
+        str = str.replace(/</g, this.d.lt);
+        str = str.replace(/>/g, this.d.gt);
     }
+
+    var tableClose = str.match( /<\/table/ );
+    str = this.d.escape(str);
 
     // our simple table stuff
     if ( str.match(/^[|;] /) ) {
         if( str.match( /^[|] / ) ) {
-            str = str.replace( /^[|] (.*)/, "<tr><td>$1</td>" );
-            if( this.inRow ) str = "</tr>" + str;
+            str = str.replace( /^[|] (.*)/, this.d.tr );
+            if( this.inRow ) str = this.d._tr() + str;
             this.inRow = true;
         } else {
-            str = str.replace( /^; (.*)/, "<td>$1</td>" );
+            str = str.replace( /^; (.*)/, this.d.td() );
         }
-    } else if( str.match( /<\/table/ ) ) {
+    } else if( tableClose ) {
         if( this.inRow ) {
             this.inRow = false;
-            str = "</tr>" + str;
+            str = this.d._tr() + str;
         }
+	this.d._table(this);
     }
 
     if( this.noWiki>0 ) { this._reLevel(newLevel); this.outp += (str+"\n"); return; }
