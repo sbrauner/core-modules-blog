@@ -8,33 +8,137 @@
        programmer extensions auto-link "core.module();" statements in the wiki.
 */
 
-content.WikiParser = function() {
+content.WikiParser = function(device) {
+
+    this.texdevice = { 
+
+	header: function(title) { 
+	    return "\\documentclass[12pt]{article}\n\\title{" +
+	    (title || "no title") +
+	    "}\n\\date{}\n\\begin{document}\n\\maketitle\n"; 
+	},
+
+	h: [
+	    "\\part{$1}",
+	    "\\section{$1}",
+	    "\\subsection{$1}",
+	    "\\subsubsection{$1}",
+	    "\\subsubsection{$1}"
+	    ],
+
+	p: "\n\n",
+
+        a1:'$2',
+        a2:'$1',
+        a3:'$2',
+        a4:'$1',
+
+        bold: "\\textbf{$1}",
+	italics: "\\emph{$1}",
+
+	ul: "\\begin{itemize}", _ul: "\\end{itemize}\n",
+	li: '\\item $2',
+
+	pre: "\\begin{verbatim}\n", _pre: "\\end{verbatim}\n",
+
+	footer: function() { return "\\end{document}\n"; },
+
+	escape: function(s) {
+	    // html tags:
+	    s = s.replace(/<[^>]+>/g, "HTML");
+
+	    s = s.replace(/_/g, "\\_");
+	    s = s.replace(/&/g, "\\&");
+	    s = s.replace(/\\$/g, "\\$");
+	    s = s.replace(/%/g, "\\%");
+	    s = s.replace(/\{/g, "\\{");
+	    s = s.replace(/\}/g, "\\}");
+	    s = s.replace(/#/g, "\\#");
+	    s = s.replace(/\^/g, "\\^");
+	    s = s.replace(/~/g, "\\~");
+	    s = s.replace(/</g, "\\textless ");
+	    s = s.replace(/>/g, "\\textgreater ");
+
+	    return s;
+	},
+
+	programmer: []
+
+    };
+
+    this.htmldevice = { 
+
+	header: function() { return ""; },
+
+	h: [
+	    "<h1>$1</h1>",
+	    "<h2>$1</h2>",
+	    "<h3>$1</h3>",
+	    "<h4>$1</h4>",
+	    "<h5>$1</h5>"],
+
+	p: "<p>\n",
+
+        a1:'<a href="$1">$2</a>',
+        a2:'<a href="$1">$1</a>',
+        a3:'<a href="$1">$2</a>',
+        a4:'<a href="$1">$1</a>',
+
+        bold: "<strong>$1</strong>",
+	italics: "<em>$1</em>",
+
+	ul: "<ul>", _ul: "</ul>",
+	li: '<li class="u">$2</li>',
+
+	pre: "<pre>", _pre: "</pre>",
+
+	footer: function() { return ""; },
+
+	escape: function(s) { return s; },
+
+	// wiki extensions helpful for development
+	// the first rule here automatically marks up a core.foo() tag to link to 
+	// the associated corejs.10gen.com/admin/doc page.
+	programmer : [ 
+                      { r: /^([^\[]*)core\.([a-zA-Z0-9_.]+)\(\)/g, 
+			s: function(a,b,c) { 
+			      return b + '<a href="http://corejs.10gen.com/admin/doc?f=/' +
+			      c.replace(/[.]/, "/") + '">' + "core." + c + '()</a>';
+			  }
+		      }
+		       ]
+
+    };
+
+    this.d /*"device"*/ = device == "tex" ? this.texdevice : this.htmldevice;
+
     this.prefixRE = null;
     this.outp = undefined;
     this.noWiki = 0;
+    this.preMode = 0; // in a <pre> block
     this.noHtml = 0; // normally we allow html tags within the wiki markup
     this.level = 0;
     this.inRow = false;
 
     // ==header==
     this.h = [
-        { r: /^=====\s*(.*)\s*=====/, s: "<h5>$1</h5>" },
-        { r: /^====\s*(.*)\s*====/, s: "<h4>$1</h4>" },
-        { r: /^===\s*(.*)\s*===/, s: "<h3>$1</h3>" },
-        { r: /^==\s*(.*)\s*==/, s: "<h2>$1</h2>" },
-        { r: /^=\s*(.*)\s*=/, s: "<h1>$1</h1>" } ];
+        { r: /^=====\s*(.*)\s*=====/, s: this.d.h[4] },
+        { r: /^====\s*(.*)\s*====/, s: this.d.h[3] },
+        { r: /^===\s*(.*)\s*===/, s: this.d.h[2] },
+        { r: /^==\s*(.*)\s*==/, s: this.d.h[1] },
+        { r: /^=\s*(.*)\s*=/, s: this.d.h[0] } ];
 
     // [[links]]
     this.link = [
-        { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: '<a href="$1">$2</a>' }, // [[link|pretty text]]
-        { r: /\[\[([^\[]+)\]\]/g , s: '<a href="$1">$1</a>' }, // [[link]]
+        { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: this.d.a1 }, // [[link|pretty text]]
+        { r: /\[\[([^\[]+)\]\]/g , s: this.d.a2 }, // [[link]]
         // FIXME: this following regexp doesn't eat trailing spaces, because
         // the name part matches "anything which isn't a bracket"; probably
         // this is correct, because a name-part can have spaces in it.
-        { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: '<a href="$1">$2</a>' }, // [http://zzz name]
+        { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: this.d.a3 }, // [http://zzz name]
         // If there was anything after trailing space, it would match the above
         // regexp, so match up to "anything which isn't a space or a bracket".
-        { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: '<a href="$1">$1</a>' }, // [http://zzz]
+        { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: this.d.a4 }, // [http://zzz]
         ];
 
     this.urls = [
@@ -44,21 +148,10 @@ content.WikiParser = function() {
         ];
 
     this.basics = [
-        { r: /'''(.+?)'''/g , s: "<strong>$1</strong>" }, // '''bold'''
-        { r: /''(.+?)''/g , s: "<em>$1</em>" }, // ''italics''
+        { r: /'''(.+?)'''/g , s: this.d.bold }, // '''bold'''
+        { r: /''(.+?)''/g , s: this.d.italics }, // ''italics''
     ];
 
-    // wiki extensions helpful for development
-    // the first rule here automatically marks up a core.foo() tag to link to 
-    // the associated corejs.10gen.com/admin/doc page.
-    this.programmer = [ 
-        { r: /^([^\[]*)core\.([a-zA-Z0-9_.]+)\(\)/g, 
-	  s: function(a,b,c) { 
-               return b + '<a href="http://corejs.10gen.com/admin/doc?f=/' +
-	       c.replace(/[.]/, "/") + '">' + "core." + c + '()</a>';
-	     }
-        }
-    ];
 };
 
 content.WikiParser._repl = function(patts, str) {
@@ -68,36 +161,48 @@ content.WikiParser._repl = function(patts, str) {
     return str;
 };
 
+/* reset our indentation level (for bullets) as appropriate
+ */
 content.WikiParser.prototype._reLevel = function(newLevel) {
     var str = "";
     while ( this.level < newLevel ) {
         this.level++;
-        str = "<ul>" + str;
+        str = this.d.ul + str;
     }
 
     while ( this.level > newLevel ) {
         this.level = this.level-1;
-        str = "</ul>" + str;
+        str = this.d._ul + str;
     }
 
     this.outp += str;
 };
 
+/* process a wiki line of wiki content.
+   str - the line
+*/
 content.WikiParser.prototype._line = function(str) {
     var trimmed = str.trim();
     var newLevel = 0;
 
-    if( trimmed.length == 0 ) { this.outp += "<p>\n"; return; }
+    if( trimmed.length == 0 ) { this.outp += this.d.p; return; }
     if( trimmed == "</nowiki>" ) { this.noWiki = 0; return; }
     if( trimmed == "</nohtml>" ) { this.noHtml = 0; return; }
-    if( trimmed == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+="</pre>\n"; return; }
-    if( trimmed == "</pre>" ) { this.outp+="</pre>\n"; return; }
+    if( trimmed == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+=this.d._pre; this.preMode = 0; return; }
+    if( trimmed == "</pre>" ) { this.outp+=this.d._pre; this.preMode = 0; return; }
     if( trimmed == "<prenh>" ) {
-        this._reLevel(newLevel); this.noWiki=1; this.noHtml=1; this.outp += "<pre>"; return;
+        this._reLevel(newLevel); this.noWiki=1; this.noHtml=1; this.outp += this.d.pre; this.preMode = 1; return;
     }
-    if( trimmed == "<pre>" ) { this._reLevel(newLevel); this.outp += "<pre>"; return; }
+    if( trimmed == "<pre>" ) { this._reLevel(newLevel); this.outp += this.d.pre; this.preMode = 1; return; }
     if( trimmed == "<nowiki>" ) { this.noWiki++; return; }
     if( trimmed == "<nohtml>" ) { this.noHtml++; return; }
+
+    if( this.preMode && this.d != this.htmldevice ) { 
+	this.outp += str + '\n'; 
+	return; 
+    }
+
+    str = this.d.escape(str);
 
     if( this.noHtml ) {
         str = str.replace(/</g, "&lt;");
@@ -132,7 +237,7 @@ content.WikiParser.prototype._line = function(str) {
 
     if( str.match(/core/) && app.wiki && (app.wiki.programmer==null || !app.wiki.programmer) ) {
 	var old = str;
-	str = content.WikiParser._repl(this.programmer, str);
+	str = content.WikiParser._repl(this.d.programmer, str);
     }
 
     // links
@@ -153,7 +258,7 @@ content.WikiParser.prototype._line = function(str) {
         var stars = "" + str.match(/^\*+/);
 	//stars = stars.replace( /\*/g, "u" );
         newLevel = stars.length;
-        str = str.replace( /^(\*+ *)(.*)/, '<li class="u">$2</li>');
+        str = str.replace( /^(\*+ *)(.*)/, this.d.li );
     }
 
     this._reLevel(newLevel);
@@ -166,10 +271,12 @@ content.WikiParser.prototype._reset = function() {
     this.prefixRE = null;
     this.outp = "";
     this.noWiki = 0;
+    this.noHtml = 0;
+    this.preMode = 0;
     this.level = 0;
 };
 
-content.WikiParser.prototype.toHtml = function(str, prefix) {
+content.WikiParser.prototype.toHtml = function(str, prefix, title) {
     lastPrefix = { last: prefix };
 
     log.wiki.error("prefix2:"+ prefix);
@@ -184,7 +291,9 @@ content.WikiParser.prototype.toHtml = function(str, prefix) {
     for( var i = 0; i < ln.length; i++ ) {
         this._line(ln[i]);
     }
-    return this.outp;
+    this._reLevel(0);  // closes out </ul>'s.
+
+    return this.d.header(title) + this.outp + this.d.footer();
 };
 
 content.WikiParser._chk = function(a,b) {
@@ -205,5 +314,3 @@ content.WikiParser.test = function() {
     content.WikiParser._chk("*** test", "<ul><ul><ul><li class=\"u\">test</li>\n");
     print("---------\nTest Done\n");
 };
-
-

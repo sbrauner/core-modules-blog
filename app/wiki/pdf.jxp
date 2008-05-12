@@ -1,0 +1,42 @@
+<%
+
+    core.core.file();
+
+    var doc = wikiPage.getParsedText();
+
+var root = ("/tmp/"+Math.random()).replace(/\./, '_')
+var fn = root + ".tex";
+
+var s = wikiPage.getParsedText("tex");
+
+var file = File.create(s);
+file.writeToLocalFile(fn);
+
+var res =
+sysexec("latex -halt-on-error -no-shell-escape -output-format=pdf " + 
+	"-output-directory=tmp/ " +
+	" ." + fn);
+
+var rm = sysexec("rm -f tmp/*tex tmp/*aux tmp/*log " + fn);
+
+var pdf = openFile(root+".pdf"); 
+if ( !pdf.exists() ) {
+    response.setHeader("Content-Type", "text/plain");
+    print("Error rendering document. Latex output follows.\n\n");
+    print(res.err);
+    print(res.out);
+    if( !request.debug ) 
+	return;
+    print("---------------------\n");
+}
+
+if( request.debug ) { 
+    response.setHeader("Content-Type", "text/plain");
+    print(s);
+    return;
+}
+
+response.setHeader("Content-Type", "application/pdf");
+response.sendFile(pdf);
+
+%>
