@@ -3,16 +3,20 @@
 var table = obj.table;
 var top = obj.top;
 var th = obj.th;
+if (table.rows.length == 0){
+    var ary = {};
+    ary[th[0].name] = "No entries.";
 
+    for(var i = 1; i < th.length; ++i){
+        ary[th[i].name] = "";
+    }
+    table.rows.push(ary);
+}
 %>
 
   <!-- Main area -->
   <tr class="white-main">
     <td class="left">&nbsp;</td>
-
-    <if (table.rows.length == 0)>
-        <td>No entries.</td>
-    </if>
 
     <forin i th>
       <th class="$th[i].className">
@@ -40,10 +44,10 @@ var th = obj.th;
         <td>$table.rows[row].index</td>
         <td class="center">$table.rows[row].capped</td>
         <td class="center">
-	  <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
+          <input type="image" src="/~~/admin/assets/img/button_stats_on_white.gif" value="Stats" alt="Stats" onclick="getValidation('$table.rows[row].name')">
         </td>
         <td class="center">
-	  <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropTable('$table.rows[row].name')">
+          <input type="image" src="/~~/admin/assets/img/button_drop_on_white.gif" value="Drop" alt="Drop" onclick="dropTable('$table.rows[row].name')">
         </td>
         <td class="right">&nbsp;</td>
       </tr>
