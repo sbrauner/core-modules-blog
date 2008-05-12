@@ -53,3 +53,11 @@ addToNotice = function(key, value){
     value = content.HTML.escape(value);
     notice[key] = value;
 };
+
+addModule = function(name, params) {
+	if (!allowedModules) {
+		allowedModules = {};
+	}
+	
+	allowedModules[name] = params;
+}
