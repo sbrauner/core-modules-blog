@@ -16,7 +16,7 @@ var cookieUser = (function(){
 })();
 
 var uname = digestUser || cookieUser;
-
+if(! uname) return; // can't be logging in, so no worries
     var key = "name";
 if(uname.indexOf('@') != -1) key = "email";
 var search = {};
