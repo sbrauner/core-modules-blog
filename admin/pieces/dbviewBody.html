@@ -3,7 +3,7 @@
 var table = obj.table;
 var top = obj.top;
 var th = obj.th;
-if (table.rows.length == 0){
+if (table.rows.length == 0 && th.length != 0){
     var ary = {};
     ary[th[0].name] = "No entries.";
 
@@ -17,6 +17,10 @@ if (table.rows.length == 0){
   <!-- Main area -->
   <tr class="white-main">
     <td class="left">&nbsp;</td>
+
+    <if (table.rows.length == 0 && th.length == 0)>
+      <td>No entries.</td>
+    </if>
 
     <forin i th>
       <th class="$th[i].className">
