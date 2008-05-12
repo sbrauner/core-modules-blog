@@ -27,17 +27,17 @@ app.wiki.WikiPage.prototype.getDisplayName = function() {
     return this.name.replace(new RegExp('^' + app.wiki.config.prefix), '');
 };
 
-app.wiki.WikiPage.prototype.getParsedText = function() {
+app.wiki.WikiPage.prototype.getParsedText = function(device) {
     if ( ! this.text )
         return "";
     if ( this.text.trim().length == 0 )
         return "";
 
-    return this.formatText(this.text);
+    return this.formatText(this.text, device);
 };
 
-app.wiki.WikiPage.prototype.formatText = function(text){
-    var s = (new app.wiki.WikiController.TEXT_PARSER()).toHtml(text, app.wiki.config.prefix).trim();
+app.wiki.WikiPage.prototype.formatText = function(text, device){
+    var s = (new app.wiki.WikiController.TEXT_PARSER(device)).toHtml(text, app.wiki.config.prefix, this.name).trim();
     if ( s.length == 0 )
         throw "parser broken?";
 

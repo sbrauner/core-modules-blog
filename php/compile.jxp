@@ -1,0 +1,30 @@
+Compile
+<p>
+<pre>
+<%
+
+core.php.php2js();
+
+if( !request.filename ) { 
+    print("pass ?filename=\n");
+    return;
+}
+
+var f = openFile( request.filename ); 
+
+if ( !f.exists() ) {
+    print("File " + request.filename + " does not exist");
+    return;
+}
+ 
+var php = f.getDataAsString();
+
+var j = tojs(php);
+
+print("<hr>translated:\n");
+print(j.replace(/</g, '&lt;'));
+
+
+
+
+%>

@@ -1,7 +1,4 @@
 <%
-    /* determine the base url we are running under.
-    */
-
     assert( app );
     assert( app.wiki );
 
@@ -14,15 +11,17 @@
         return;
     }
 
-    var base = request.getURI().match( /^.*?wiki\// );
+    var base = uri.match( /^.*?wiki\// );
+
+    /* if user hits .../wiki, redirect to .../wiki/ */
     if( !base && request.getURI().match(/wiki/) ) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , uri.match(/^.*wiki/) + '/' );
         return;
     }
 
-if ( ! request.name )
-    request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
+    if ( ! request.name )
+	request.applyServletParams( /wiki\/([^\/]+)/ , [ "name" ] );
 
     // Get the name of the page we are supposed to display. Assume we want the Main page if no page name is provided
     var displayName = request.name;
@@ -38,10 +37,18 @@ if ( ! request.name )
     var wikiPage = db.wiki.findOne( { name : name } );
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
+if( request.pdf ) { 
+    core.app.wiki.pdf();
+    return;
+}
+
     // Check to see if we have been asked for an historical version of this wiki page
     var wikiPageHistoricalVersion;
     if (request.version) {
         wikiPageHistoricalVersion = wikiPage.getWikiPageHistory(request.version);
+        if(! wikiPageHistoricalVersion){
+            log.app.wiki.error("Got a request for historical version " + request.version + " but was unable to find it in the database.");
+        }
         if (request.diff == "true") {
             wikiPageShowDiff = true;
         }

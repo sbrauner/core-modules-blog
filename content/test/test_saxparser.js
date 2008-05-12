@@ -1,4 +1,4 @@
-core.content.saxparser();
+core.content.xml();
 
 var cases = [
 	{
@@ -100,7 +100,7 @@ var TestHandler = function(eventStack){
 
 for(var i=0; i< cases.length; i++) {
 	var handler = TestHandler(cases[i].stack);
-	var parser = saxparser(handler, cases[i].xml)
+	var parser = xml.parseSaxFromString(handler, cases[i].xml)
 		
 	print("passed case#" + i);
 }
