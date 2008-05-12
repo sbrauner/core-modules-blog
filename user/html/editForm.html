@@ -5,7 +5,9 @@
    // login_user -> username, etc. If JS is disabled, registration is impossible
 %>
 <div id="register">
-  <div class="notice"><%= opts.error %>
+  <if opts.error>
+    <div class="notice"><%= opts.error %></div>
+  </if>
 
   <form method="post" class="edit register" id="edit_form">
 
