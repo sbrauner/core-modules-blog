@@ -9,6 +9,7 @@
     <li><% core.analytics.admin.pieces.stringSection( { name : "Pages (last hour)" , field : "title" , table : db.analytics.title } ); %></li>
     <li><% core.analytics.admin.pieces.stringSection( { name : "Pages (24 hours)" , field : "title" , table : db.analytics.title , hours : 24 } ); %></li>
 
-    <li><% core.analytics.admin.pieces.stringSection( { name : "Local Searches" , field : "search" , table : db.analytics.search } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Local Searches (1 hour)" , field : "search" , table : db.analytics.search , hours : 1 } ); %></li>
+    <li><% core.analytics.admin.pieces.stringSection( { name : "Local Searches (24 hour)" , field : "search" , table : db.analytics.search , hours : 24 } ); %></li>
   </ul>
 </td></tr></table>
