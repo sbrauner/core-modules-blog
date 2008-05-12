@@ -172,7 +172,7 @@ Auth = {
 
     /* cookie-style user authentication */
     cookie :  {
-        getUser : function( request , response , name ){
+        getUser : function( request , response , name , u ){
             var now = new Date();
 
             var username = request.getCookie( "username" );
@@ -182,7 +182,8 @@ Auth = {
 
                 log.user.auth.cookie.debug( "got old username and hash " + username + " , " + myHash );
 
-                var u = User.find( username );
+                if( ! u )
+                    u = User.find( username );
                 if ( u && u.tokens ){
                     log.user.auth.cookie.debug( "\t found user" );
 
@@ -225,7 +226,8 @@ Auth = {
 
             log.user.auth.cookie.debug( "prefix ok.  username : " + request.username );
 
-            var u = User.find( request.username );
+            if( ! u )
+                u = User.find( request.username );
             if ( ! u )
                 return null;
 
