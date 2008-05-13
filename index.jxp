@@ -54,9 +54,11 @@ else if (result.posts.length > 1) {
         date_format : "F",
         user : user,
         recent : recent,
-        categories : categories
+        categories : categories	
     };
-    core.blog.pieces.postSnippetList( blogObj );
+
+	var f = Blog.getTemplate("postSnippetList");	
+	f(blogObj);
 }
 
 %>
