@@ -247,6 +247,8 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
 
+	    comment.url = Blog.fixCommentURL( comment.url );
+
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
 
@@ -260,3 +262,15 @@ Blog.handlePosts = function( request , thePost , user ){
             return "need to specify email address";
     }
 };
+
+Blog.fixCommentURL = function( url ){
+    if ( ! url )
+	return null;
+    
+    if ( url.startsWith( "http://" ) ||
+	 url.startsWith( "https://" ) ||
+	 url.startsWith( "/" ) )
+	return url;
+    
+    return "http://" + url;
+}
