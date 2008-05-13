@@ -61,9 +61,9 @@ addToNotice = function(key, value){
  *   @param {Object} params - paramter object for the specified module
  */
 addModule = function(name, params) {
-	if (!allowedModules) {
-		allowedModules = {};
-	}
-	
-	allowedModules[name] = params;
+    if (!allowModule) {
+	allowModule = {};
+    }
+    
+    allowModule[name] = params || {};
 }
