@@ -156,3 +156,6 @@ User.statusLink = function(status){
 };
 
 log.user.level = log.LEVEL.ERROR;
+
+return 0;
+
