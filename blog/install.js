@@ -2,6 +2,8 @@
  *  blog app-module installation script
  */
  
-addModule("blog", arguments[0] || {});
+Blog._options = arguments[0] || {}
 
-return Blog.routes;
+addModule("blog", Blog._options);
+ 
+return Blog;
