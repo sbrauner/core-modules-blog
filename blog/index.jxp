@@ -69,8 +69,9 @@ if ( result.posts.length == 1 ) {
 else if (result.posts.length > 1) {
     blogObj.posts = result.posts;
     blogObj.date_format = "F";
-
-    core.blog.pieces.postSnippetList( blogObj );
+	blogObj.snippetTemplate = Blog.getTemplate("postSnippet");
+	var f = Blog.getTemplate("postSnippetList");	
+	f(blogObj);
 }
 
 %>
