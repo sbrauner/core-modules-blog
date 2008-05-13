@@ -45,6 +45,7 @@ if ( result.posts.length == 1 ){
     if(request && request.addComment == "yes") {
         Blog.handlePosts(request, result.posts[0], user);
     }
+
     core.blog.pieces.post( blogObj );
 }
 else if (result.posts.length > 1) {
