@@ -13,7 +13,7 @@ var categories = db.blog.categories.find().sort({name: 1}).toArray();
 
 if ( result.posts.length == 1 && result.posts[0].name == "404") {
     core.blog.pieces.post({post: {}, user: user, comments_enabled: false});
-    if(user.permissions[0] == "admin") {
+    if( user && user.hasPermission( "admin" ) ){
         print("<p>To add some posts, go to admin/blog/post_edit.</p>");
     }
     return;
