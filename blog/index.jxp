@@ -32,6 +32,15 @@ var blogObj = {
     categories : categories
 }
 
+//log(result.search+" "+result.isCategorySearch+" "+result.isDateSearch);
+if(result.isCategorySearch || (result.uri == "/category" && request.category) )
+    blogObj.title = "Category Search Results: "+request.category;
+else if( result.isDateSearch )
+    blogObj.title = "Date Search Results: "+result.search;
+else if( result.search )
+    blogObj.title = "Search Results: "+result.search;
+
+
 var stupid_pages = ["404", "no_results"];
 if ( result.posts.length == 1 && stupid_pages.contains(result.posts[0].name)) {
     result.posts[0].author = null;
