@@ -24,9 +24,18 @@
       <h2>categories</h2>
       <p>
         {% for cat in categories %}
-          <a href="categories?{{ cat.label }}">{{ cat.name }}</a>
+          <a href="/blog/category?category={{ cat.name|urlencode }}">{{ cat.name }}</a>
         {% endfor %}
       </p>
+
+      {% if pages %}
+        <h2>pages</h2>
+        <p>
+          {% for p in pages %}
+            <a href="/blog/{{ p.name|urlencode }}">{{ p.title }}</a>
+          {% endfor %}
+        </p>
+      {% endif %}
 
     {% else %}
 
