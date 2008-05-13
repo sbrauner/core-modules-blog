@@ -39,9 +39,9 @@ function checkComment() {
            {% if user %}
               <div id="comment-form-name">{{ comment_form_name|default:"Comment as " }}{{ user.name }}</div>
            {% else %}
-                <input class="text" id="yourname" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
-                <input class="text" id="email" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
-                <input class="text" id="url" name="url" size="30" value="" />{{ comment_url|default:"URL" }}<br />
+              <input class="text" id="yourname" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
+              <input class="text" id="email" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
+              <input class="text" id="url" name="url" value="" />{{ comment_url|default:"URL" }}<br />
            {% endif %}
            <textarea rows="20" id="txt" name="txt"></textarea><br />
            {% if not user %}
