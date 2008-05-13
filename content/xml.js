@@ -434,7 +434,7 @@ xml = {
             stack : [],
             startElement : function(uri, localName, name, attributes) {
                 
-                var node = new xml.Node( localName , qName , uri );
+                var node = new xml.Node( localName , name , uri );
                 
                 attributes.forEach(function(attr) {
                     node.attributes[attr.qName] = attr;
@@ -473,7 +473,7 @@ xml = {
         };
         
         
-        xml.parseSaxFromString(handler, content);
+        this.parseSaxFromString(handler, content);
         
         return handler.root;
     }
