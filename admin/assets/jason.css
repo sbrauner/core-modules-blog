@@ -122,16 +122,18 @@ img {
 	padding-top: 19px;
 }
 
+#navcontainer h1#admininfo {
+    margin: 0px;
+    padding: 0px;
+    color: #ffffff;
+    clear: none;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
 #navcontainer ul {
 	margin: 0;
 	padding: 0;
-}
-
-#navcontainer ul li {
-	float: left;
-	margin: 0 1.5em;
-	padding: 0 0 0 0;
-	height: 24px;
 }
 
 #navcontainer ul li.active {

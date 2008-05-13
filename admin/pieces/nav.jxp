@@ -13,8 +13,9 @@ var sectionTree = core.admin.data.sectiontree();
     <!-- Global Nav -->
     <div id="navcontainer">
       <ul>
-        <!-- FIXME: NAV HEADER HERE -->
-        <%= db.getName() %>
+        <li>
+          <h1 id="admininfo"><%= db.getName() %></h1>
+        </li>
       </ul>
     </div>
     
