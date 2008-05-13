@@ -19,20 +19,31 @@ captcha_message
 
 {% if comments_enabled %}
 
+<script type="text/javascript">
+function checkComment() {
+    if(document.getElementById("txt").value == "") { alert("You must enter a comment."); return false; }
+    {% if not user %}
+    if(document.getElementById("yourname").value == "") { alert("You must enter your name."); return false; }
+    if(document.getElementById("email").value == "") { alert("You must enter your email."); return false; }
+    {% endif %}
+    return true;
+}
+</script>
+
    <h2 class="comments-open-header">{{ comments_open_header|default:"add a comment" }}</h2>
    <div class="comments container">
-       <form method="post" name="comment" id="comments-form" class="search">
+       <form method="post" name="comment" id="comments-form" onsubmit="return checkComment()" class="search">
 	 <input type="hidden" name="addComment" value="yes" />
 
          <p>
            {% if user %}
               <div id="comment-form-name">{{ comment_form_name|default:"Comment as " }}{{ user.name }}</div>
            {% else %}
-                <input class="text" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
-                <input class="text" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
-                <input class="text" name="url" size="30" value="" />{{ comment_url|default:"URL" }}<br />
+                <input class="text" id="yourname" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
+                <input class="text" id="email" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
+                <input class="text" id="url" name="url" size="30" value="" />{{ comment_url|default:"URL" }}<br />
            {% endif %}
-           <textarea rows="20" name="txt"></textarea><br />
+           <textarea rows="20" id="txt" name="txt"></textarea><br />
            {% if not user %}
              <div id="comments-open-captcha">
 		<div><img src="NOCDN/~~/user/captchaIMG.jxp" vspace="10"></div>
@@ -45,5 +56,6 @@ captcha_message
        </form>
        <a name="comments" style="border: none; "></a>
   </div>
+
 
 {% endif %}
