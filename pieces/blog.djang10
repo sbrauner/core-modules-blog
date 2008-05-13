@@ -4,13 +4,14 @@
 <div id="blog-main">
 
 <div id="rightmain">
+
   {% block rightnav %}
 
     {% if user %}
-      <form id="" class="search" name="" method="POST">
+      <form id="" class="search" name="">
         <p>
           <input class="text" type="text" name="q" value="" /><br />
-          <input class="submit" type="button" value="Search">
+          <input class="submit" type="submit" value="Search">
         </p>
       </form>
 
@@ -55,6 +56,12 @@
 </div>
 
 <div id="leftmain">
+  {% block title %}
+    {% if title %}
+      <h1>{{ title }}</h1>
+    {% endif %}
+  {% endblock %}
+
   <div class="blog-content">
     {% block content %}
       Welcome to the blog.  There are no posts, yet.
