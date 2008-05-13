@@ -44,6 +44,24 @@ Post.prototype.hasJump = function(){
     return ( idx + 10 ) < this.content.length;
 };
 
+Post.prototype.getNumCommentsSince = function( when ){
+    if ( ! when )
+	return this.getNumComments();
+    
+    var c = this.getComments();
+    if ( ! c )
+	return 0;
+    
+    var num = 0;
+    for ( var i=0; i<c.length; i++ ){
+	SYSOUT( c[i].ts + " <? " + when );
+	if ( c[i].ts < when ){
+	    continue;
+	}
+	num++;
+    }
+    return num;
+}
 
 Post.prototype.getNumComments = function(){
     if ( !this.comments )
@@ -245,7 +263,7 @@ Post.getMostPopular = function( num , articlesBack ){
     return all;
 };
 
-Post.getMostCommented = function( num , articlesBack ){
+Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
     
     var key = "__mostCommented_" + num + "_" + articlesBack;
 
@@ -257,10 +275,18 @@ Post.getMostCommented = function( num , articlesBack ){
     if ( old[0] )
 	Post.cache.add( key , old[0] );
 
+    var sinceWhen = null;
+    if ( daysBackToCountComments )
+	sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
+
     all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
-    all = all.sort( function( a , b ){
-	return b.getNumComments() - a.getNumComments();
-    } );
+    all = all.sort(
+		   function( a , b ){
+		       if ( ! sinceWhen )
+			   return b.getNumComments() - a.getNumComments();
+		       return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
+		   }
+		   );
     
     all = all.slice( 0 , num );
     
