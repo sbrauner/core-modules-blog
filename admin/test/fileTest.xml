@@ -1,0 +1,38 @@
+<project default="test">
+  <target name="test">
+    <webtest name="Test the files section">
+      <config>
+        <header name="User-Agent" value="Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0"/>
+      </config>
+      <invoke url="${site}/admin/files"  username="test@10gen.com" password="test"/>
+      <!-- believe it or not, there's AJAX in loading the table on the cron page -->
+      <verifyXPath xpath="//*[contains(text(), 'No files')]"/>
+      <not>
+        <verifyXPath xpath="//*[contains(text(), 'No files')]/ancestor::tr[1]=//th[contains(text(),Filename')]/ancestor::tr[1]"/>
+      </not>
+
+      <!-- Somehow I can upload a file that doesn't exist! -->
+      <!--
+      <setFileField name="theFile" fileName="woog.js" checkFileExists="false"/>
+      <clickButton xpath="//*[@value='Upload File']"/>
+
+      <sleep seconds="1"/>
+      <verifyXPath xpath="//*[contains(text(), 'No files')]"/>
+      -->
+      <!-- this is true even when the dialog isn't shown :( -->
+      <!--
+      <verifyXPath xpath="//*[contains(text(), 'not be uploaded')]"/>
+      -->
+      <setFileField name="theFile" fileName="setup.js"/>
+      <clickButton xpath="//*[@value='Upload File']"/>
+      
+      <sleep seconds="1"/>
+
+      <verifyXPath xpath="//a[contains(text(), 'setup.js')]"/>
+      <not>
+        <verifyXPath xpath="//a[contains(text(), 'No files')]"/>
+      </not>
+
+    </webtest>
+  </target>
+</project>

@@ -14,7 +14,7 @@ head.push( "<script src='/~~/ui/js/common.js'></script>" ); %>
   <if user >
     <nobr>
       <span>
-        Logged in as <%= user.name %> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
+        Logged in as <a href="<%= login %>/edit"><%= user.name %></a> &mdash; <a href="<%= login %>/logout?to=<%= request.getURL() %>">logout</a>
         <if user.isAdmin()>
           <a href="/admin/">*</a>
         </if>
