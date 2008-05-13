@@ -22,46 +22,44 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
 if ( sectionName == "" || sectionName.match( /^index/ ) )
-    sectionName = "system";
+    sectionName = "welcome";
 
 
 // Maps jxp names to sections
 var sectionMap = {
-    'system': ['system'],
+    'statistics' : ['statistics', 'usage'],
+    'usage' : ['statistics', 'usage'],
 
-    'statistics' : ['system', 'statistics', 'usage'],
-    'usage' : ['system', 'statistics', 'usage'],
+    'users': ['users'],
+    'user': ['users'],
 
-    'users': ['system', 'users'],
-    'user': ['system', 'users'],
+    'database': ['database', 'dbview'],
+    'dbview': ['database', 'dbview'],
+    'dbprofile': ['database', 'dbprofile'],
+    'dbshell' : ['database', 'dbshell'],
 
-    'database': ['system', 'database', 'dbview'],
-    'dbview': ['system', 'database', 'dbview'],
-    'dbprofile': ['system', 'database', 'dbprofile'],
-    'dbshell' : ['system', 'database', 'dbshell'],
+    'files': ['files'],
 
-    'files': ['system', 'files'],
-    'cron': ['system', 'cron'],
+    'cron': ['cron'],
+    'editCron': ['cron'],
 
-    'cron': ['system', 'cron'],
-    'editCron': ['system', 'cron'],
+    'logs': ['logs', 'logScroll'],
+    'logScroll': ['logs', 'logScroll'],
+    'logMemory': ['logs', 'logMemory'],
 
-    'logs': ['system', 'logs', 'logScroll'],
-    'logScroll': ['system', 'logs', 'logScroll'],
-    'logMemory': ['system', 'logs', 'logMemory'],
-
-    'shell': ['system', 'shell'],
+    'shell': ['shell'],
 
     'editor': ['editor', 'editor'],
     'gitLocal': ['git', 'git'],
 
-    'doc': ['docs', 'docs'],
+    'doc': ['docs'],
     'applications': ['applications'],
 };
+
 var sectionList = sectionMap[sectionName];
 
 // map main sections to default pages
-var defaultPage = { 'system' : 'welcome',
+var defaultPage = {
     'statistics' : 'usage',
     'database' : 'dbview',
     'logs' : 'logScroll'
