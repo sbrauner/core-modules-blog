@@ -481,7 +481,7 @@ xml = {
         };
         
         
-        xml.parseSaxFromString(handler, xml);
+        this.parseSaxFromString(handler, xml);
         
         return handler.root;
     }
