@@ -64,13 +64,13 @@ Blog.handleRequest = function( request , arg ){
     with ( result ){
         // define a standard search, which restricts pages/posts to entries that are live, and publishDate earlier than now
 
-		// ensure that the root of the matched route is removed from the URI so we can place the 
+		// ensure that the root of the matched route is removed from the URI so we can place the
 		// blog anywhere we want on our site.
-		
+
 		if (routes && routes.currentRoot() && routes.currentRoot().length > 1) {
 			uri = uri.substring(routes.currentRoot().length);
 		}
-        
+
         // find any paging instructions in the url
         page = uri.match(/\/page\/([0-9]*)$/);
         if (page) {
@@ -230,6 +230,9 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.user = user;
         }
         else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
+            if ( !Captcha )
+                core.user.captcha();
+
             if ( Captcha.valid( request ) ) {
                 comment = {};
                 comment.author = request.yourname;
@@ -247,6 +250,8 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
 
+	    comment.url = Blog.fixCommentURL( comment.url );
+
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
 
@@ -260,3 +265,15 @@ Blog.handlePosts = function( request , thePost , user ){
             return "need to specify email address";
     }
 };
+
+Blog.fixCommentURL = function( url ){
+    if ( ! url )
+	return null;
+
+    if ( url.startsWith( "http://" ) ||
+	 url.startsWith( "https://" ) ||
+	 url.startsWith( "/" ) )
+	return url;
+
+    return "http://" + url;
+}
