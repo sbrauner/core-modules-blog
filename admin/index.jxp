@@ -21,6 +21,8 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 }
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
+sectionName = sectionName.replace(/\/(index)?$/, '');
+
 if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
 
@@ -55,6 +57,21 @@ var sectionMap = {
     'doc': ['docs'],
     'applications': ['applications'],
 };
+
+for(var key in allowModule){
+    var appNav = admin.getAppNav(key);
+
+    for(var i in appNav){
+        var pair = appNav[i];
+        var name = key;
+        if(pair.target != false)
+            name += '/'+pair.target;
+        sectionMap[name] = [key, pair.target];
+    }
+}
+
+log(tojson(sectionMap));
+log(tojson(sectionName));
 
 var sectionList = sectionMap[sectionName];
 

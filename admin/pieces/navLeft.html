@@ -8,14 +8,6 @@ var sectionList = obj.sectionList || ["$"];
 
 var sectionTree = core.admin.data.sectiontree();
 
-var sectionNames = {
-   'statistics/usage': 'Usage',
-   'database/dbview': 'View Collections',
-   'database/dbprofile': 'Profiling',
-   'database/dbshell': 'Database Shell',
-   'logs/logScroll': 'Scrolling Logs',
-   'logs/logMemory': 'Logs in Memory',
-};
 %>
 <table cellpadding="0" cellspacing="0" border="0">
   <tr>
@@ -36,7 +28,7 @@ var sectionNames = {
               <% for(var subkey in sectionTree[key]){
                   if(subkey == "$") continue;
                       %>
-              <li class="<%= subkey == sectionList[1] ? 'current-page' : "" %>"><a href="/admin/<%= subkey %>"><%= sectionNames[[key, subkey].join('/')] || subkey %></a></li>
+              <li class="<%= subkey == sectionList[1] ? 'current-page' : "" %>"><a href="/admin/<%= subkey %>"><%= sectionTree[key][subkey] %></a></li>
               <% } %>
             </ul>
           </li>
