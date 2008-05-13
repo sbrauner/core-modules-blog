@@ -14,16 +14,27 @@ dateline - Text appearing before the date field.  Defaults to "".
 
 <div class="date-circle">{{ post.ts|date:"j" }}<br />{{ post.ts|date:"b"|upper }}</div>
 <h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
-<p class="byline">{{ post.author }}, <a href="{{ post.name }}#comments">{% if post.comments.length %}
-   {{ post.comments.length }}
-{% else %}
-   0
+<p class="byline">
+{% if post.author %}
+  {{ post.author }},
 {% endif %}
-comments
-</a></p>
+{% if post.commentsEnabled %}
+  <a href="{{ post.name }}#comments">
+    {% if post.comments.length %}
+      {{ post.comments.length }}
+    {% else %}
+      0
+    {% endif %}
+    comments
+  </a>
+{% endif %}
+</p>
 
 <div class="entry-content">
   {{ post.content }}
 </div>
 
-<p style="padding-bottom: 0; "><a href="#" target="_bottom">Add a Comment</a></p>
+{% if post.commentsEnabled %}
+  <p style="padding-bottom: 0; "><a href="#" target="_bottom">Add a Comment</a></p>
+{% endif %}
+
