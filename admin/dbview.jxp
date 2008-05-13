@@ -47,7 +47,7 @@ if(!top) {
     var validation = x.result;
 
     %>
-    <p><a href="dbview?currentPage=<%= request.refPage %>" style="display: block;">Back to Collection View</a></p>
+    <p><a href="dbview?currentPage=<%= request.refPage ? request.refPage : 1 %>" style="display: block;">Back to Collection View</a></p>
     <%
     var r = new RegExp(request.ns+".*");
     var metarows = db["system.namespaces"].find({name: r}).toArray();
