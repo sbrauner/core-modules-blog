@@ -81,5 +81,5 @@ if( request.pdf ) {
     else if ( request.compare )
         core.app.wiki.pieces.compare();
     else
-            core.app.wiki.pieces.view();
+        core.app.wiki.pieces.view();
 %>

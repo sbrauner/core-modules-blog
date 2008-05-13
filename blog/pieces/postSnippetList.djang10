@@ -7,6 +7,10 @@ posts - an array of objects from the blog.posts collection
 
 {% endcomment %}
 
+{% extends "blog.djang10" %}
+
+{% block content %}
+
 <div class="posts-snippets-block">
   {% for post in posts %}
     <div id="post-snippet-{{ post._id }}" class="post-snippet">
@@ -14,3 +18,5 @@ posts - an array of objects from the blog.posts collection
     </div>
   {% endfor %}
 </div>
+
+{% endblock %}
