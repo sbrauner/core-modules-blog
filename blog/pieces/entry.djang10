@@ -12,32 +12,18 @@ dateline - Text appearing before the date field.  Defaults to "".
 {% endcomment %}
 
 
-<div id="entry-{{ post._id }}" class="newhp">
-  <div class="asset-header">
-    <h2 class="asset-name">
-      <a href="{{ post.name }}">{{ post.title }}</a>
-    </h2>
+<div class="date-circle">{{ post.ts|date:"j" }}<br />{{ post.ts|date:"b"|upper }}</div>
+<h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
+<p class="byline">{{ post.author }}, <a href="{{ post.name }}#comments">{% if post.comments.length %}
+   {{ post.comments.length }}
+{% else %}
+   0
+{% endif %}
+comments
+</a></p>
 
-    <div class="asset-meta">
-      <h3 class="timestamp" >
-        {% if post.author %}
-          <span class="byline">{{ byline|default:"" }}{{ post.author }}</span> |
-        {% endif %}
-        <span class="dateline">{{ dateline|default:"" }}
-          {% if date_format %}
-            <span class="dateline">{{ post.ts|date:date_format }}</span>
-          {% else %}
-            <span class="dateline">{{ post.ts|date:"F j, Y g:ia" }}</span>
-          {% endif %}
-        </span>
-      </h3>
-    </div>
-  </div>
-
-  <div class="asset-content">
-    <div class="asset-body">
-      {{ post.content }}
-    </div>
-  </div>
+<div class="entry-content">
+  {{ post.content }}
 </div>
 
+<p style="padding-bottom: 0; "><a href="#" target="_bottom">Add a Comment</a></p>

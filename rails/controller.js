@@ -101,6 +101,10 @@ function ApplicationResponse( controller , method ){
 };
 
 ApplicationResponse.prototype.html = function(){
+    if ( arguments.length > 0 && 
+         isFunction( arguments[ arguments.length - 1 ] ) ){
+        return arguments[arguments.length-1].call( this );
+    }
     var blah = this.requestThis;
 
     blah.__notFoundHandler = function( thing ){

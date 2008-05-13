@@ -46,6 +46,9 @@ if( request.pdf ) {
     var wikiPageHistoricalVersion;
     if (request.version) {
         wikiPageHistoricalVersion = wikiPage.getWikiPageHistory(request.version);
+        if(! wikiPageHistoricalVersion){
+            log.app.wiki.error("Got a request for historical version " + request.version + " but was unable to find it in the database.");
+        }
         if (request.diff == "true") {
             wikiPageShowDiff = true;
         }
@@ -78,5 +81,5 @@ if( request.pdf ) {
     else if ( request.compare )
         core.app.wiki.pieces.compare();
     else
-            core.app.wiki.pieces.view();
+        core.app.wiki.pieces.view();
 %>

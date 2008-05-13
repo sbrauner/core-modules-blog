@@ -1,0 +1,60 @@
+<link type="text/css" rel="stylesheet" href="/~~/blog/assets/blog.css" />
+
+
+<div id="blog-main">
+
+<div id="rightmain">
+  {% block rightnav %}
+
+    {% if user %}
+      <form id="" class="search" name="" method="POST">
+        <p>
+          <input class="text" type="text" name="q" value="" /><br />
+          <input class="submit" type="button" value="Search">
+        </p>
+      </form>
+
+      <h2>recent posts</h2>
+      <p>
+        {% for r in recent %}
+          <a href="{{ r.name }}">{{ r.ts|date:"b j"|upper }} - {{ r.title }}</a>
+        {% endfor %}
+      </p>
+
+      <h2>categories</h2>
+      <p>
+        {% for cat in categories %}
+          <a href="categories?{{ cat.label }}">{{ cat.name }}</a>
+        {% endfor %}
+      </p>
+
+    {% else %}
+
+      <h2>participate</h2>
+      <p><a href="/signup/">Sign up</a> to be notified when our public beta is available.</a></p>
+
+      <h2>latest</h2>
+      <p>10gen, new cloud computing company unveils limited alpha.<br /><a href="assets/10gen_New_Cloud_Computing_Company_Unveils_Limited_Alpha_(Apr_15_2008).pdf">Full Release (PDF)</a></p>
+
+      <h2>see it in action</h2>
+      <p style="background-image: none; ">Powered by 10gen, check out <a href="http://www.alleyinsider.com">Silicon Alley Insider</a></p>
+
+    {% endif %}
+
+  {% endblock %}
+
+</div>
+
+<div id="leftmain">
+  <div class="blog-content">
+    {% block content %}
+      Welcome to the blog.  There are no posts, yet.
+    {% endblock %}
+  </div>
+</div>
+
+</div>
+
+<div id="blog-footer">
+Powered by 10gen.
+</div>

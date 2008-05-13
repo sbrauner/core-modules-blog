@@ -43,7 +43,7 @@ content.WikiParser = function(device) {
 
 	colAligns: { c: "", done: false },
 	tr: "$1",
-	_tr: function() { this.colAligns.done = true; return "\\\\\n"; },
+	_tr: function() { this.colAligns.done = true; return "\\\\\n "; },
 	td: function() { if( !this.colAligns.done ) this.colAligns.c += "l "; return " & $1"; },
 	_table: function(wikiobj) { 
 	    print("\n\n_TABLE " + this.colAligns.c + "\n\n");
@@ -73,7 +73,7 @@ content.WikiParser = function(device) {
 	    s = s.replace(/&/g, "\\&");
 	    s = s.replace(/\\$/g, "\\$");
 	    s = s.replace(/%/g, "\\%");
-	    s = s.replace(/\[/g, "\\[");
+//	    s = s.replace(/\[/g, "\\[");
 	    s = s.replace(/\{/g, "\\{");
 	    s = s.replace(/\}/g, "\\}");
 	    s = s.replace(/#/g, "\\#");
@@ -81,6 +81,7 @@ content.WikiParser = function(device) {
 	    s = s.replace(/~/g, "\\~");
 	    s = s.replace(/</g, "\\textless ");
 	    s = s.replace(/>/g, "\\textgreater ");
+//	    s = s.replace(/\[/g, "B");
 
 	    return s;
 	},
@@ -315,7 +316,6 @@ content.WikiParser.prototype._reset = function() {
 content.WikiParser.prototype.toHtml = function(str, prefix, title) {
     lastPrefix = { last: prefix };
 
-    log.wiki.error("prefix2:"+ prefix);
     this._reset();
     if( prefix && prefix.length ) {
         var s = prefix.replace(/\./g, '\.');

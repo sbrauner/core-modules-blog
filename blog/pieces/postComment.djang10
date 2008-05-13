@@ -17,55 +17,45 @@ captcha_message
 
 {% endcomment %}
 
-
 {% if comments_enabled %}
 
-  <div class="comments-line"></div>
-  <div class="comments-open" id="comments-open">
-     <h2 class="comments-open-header">{{ comments_open_header|default:"Join the discussion" }}</h2>
-     <div class="comments-open-content">
+<script type="text/javascript">
+function checkComment() {
+    if(document.getElementById("txt").value == "") { alert("You must enter a comment."); return false; }
+    {% if not user %}
+    if(document.getElementById("yourname").value == "") { alert("You must enter your name."); return false; }
+    if(document.getElementById("email").value == "") { alert("You must enter your email."); return false; }
+    {% endif %}
+    return true;
+}
+</script>
 
-       <form method="post" name="comment" id="comments-form" class="comment">
+   <h2 class="comments-open-header">{{ comments_open_header|default:"add a comment" }}</h2>
+   <div class="comments container">
+       <form method="post" name="comment" id="comments-form" onsubmit="return checkComment()" class="search">
 	 <input type="hidden" name="addComment" value="yes" />
 
-         <div id="comments-open-data">
+         <p>
            {% if user %}
               <div id="comment-form-name">{{ comment_form_name|default:"Comment as " }}{{ user.name }}</div>
            {% else %}
-              <div id="comment-form-name">
-                <label for="comment-author">{{ comment_author|default:"Name" }}</label>
-                <input class="text" name="yourname" size="30" value="" />
-              </div>
-              <div id="comment-form-email">
-                 <label for="comment-email">{{ comment_email|default:"Email Address"}}</label>
-                 <input class="text" name="email" size="30" value="" />
-              </div>
-              <div id="comment-form-url">
-                 <label for="comment-url">{{ comment_url|default:"URL" }}</label>
-                 <input class="text" name="url" size="30" value="" />
-              </div>
+                <input class="text" id="yourname" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
+                <input class="text" id="email" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
+                <input class="text" id="url" name="url" size="30" value="" />{{ comment_url|default:"URL" }}<br />
            {% endif %}
-         </div>
-
-         <div id="comments-open-text">
-           <label for="comment-text">{{ comment_text|default:"Comments <i>(You may use HTML tags for style)</i>" }}</label>
-           <textarea rows="20" cols="42" name="txt"></textarea>
-         </div>
-
-         {% if not user %}
-           <div id="comments-open-captcha">
+           <textarea rows="20" id="txt" name="txt"></textarea><br />
+           {% if not user %}
+             <div id="comments-open-captcha">
 		<div><img src="NOCDN/~~/user/captchaIMG.jxp" vspace="10"></div>
 		<div>{{ captch_message|default:"Type the characters you see in the picture above.<br />(Just to make sure you&apos;re a human)." }}</div>
 		<div><input class="text" name="captcha" /></div>
-           </div>
-         {% endif %}
-
-	 <div>
-	   <label></label>
-	   <input name="action" type="submit" value="Submit" class="submit" /> <br />
-         </div>
+             </div>
+           {% endif %}
+	   <input name="action" type="submit" value="Submit" class="Post" /> <br />
+         </p>
        </form>
-     </div>
+       <a name="comments" style="border: none; "></a>
   </div>
+
 
 {% endif %}

@@ -22,19 +22,28 @@ captcha_message
 
 {% endcomment %}
 
+{% extends "blog.djang10" %}
 
+{% block content %}
 <div id="post-{{ post._id }}" class="post">
   <div id="entry-{{ post._id }}">
     {% include '/core/blog/pieces/entry' %}
   </div>
-  <div id="comments-{{ post._id }}">
-    {% if post.comments.length %}
-      <a name="comments">Comments:</a>
+  {% if post.comments.length %}
+    <div id="comments">
+      <h2>Comments</h2>
       {% for c in post.comments %}
+        <div class="container {% cycle zebra "" %}">
+        {% if c.user.permissions %}
+          <div class="num-circle green-circle">{{ forloop.counter }}</div>
+        {% else %}
+          <div class="num-circle">{{ forloop.counter }}</div>
+        {% endif %}
         {% include '/core/blog/pieces/comment' %}
+        </div>
       {% endfor %}
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
   <div id="category-list-{{ post._id }}">
     {% include '/core/blog/pieces/categories' %}
   </div>
@@ -42,4 +51,5 @@ captcha_message
     {% include '/core/blog/pieces/postComment' %}
   </div>
 </div>
+{% endblock %}
 
