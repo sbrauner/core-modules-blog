@@ -15,6 +15,9 @@
       <enableJavaScript enable="false"/>
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="STATISTICS"/>
+      <!-- this won't actually do anything because JS was disabled for this test -->
+
+      <invoke url="${site}/admin/usage"/>
       <enableJavaScript enable="true"/>
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
@@ -22,6 +25,16 @@
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="DATABASE"/>
+      <!-- Verify that we went somewhere? Or, not? -->
+
+      <invoke url="${site}/admin/"/>
+      <clickLink label="View Collections"/>
+
+      <invoke url="${site}/admin/"/>
+      <clickLink label="Profiling"/>
+
+      <invoke url="${site}/admin/"/>
+      <clickLink label="Database Shell"/>
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
       <clickLink label="FILES"/>
@@ -30,7 +43,15 @@
       <clickLink label="CRON"/>
 
       <invoke url="${site}/admin/"  username="test@10gen.com" password="test"/>
-      <clickLink label="LOGS"/>
+      <clickLink label="LOGS" description="This actually does JS to display stuff"/>
+      <!-- Verify that we went somewhere? Or, not? -->
+
+      <invoke url="${site}/admin/"/>
+      <clickLink label="Logs in Memory"/>
+
+      <invoke url="${site}/admin/"/>
+      <clickLink label="Scrolling Logs"/>
+
     </webtest>
   </target>
 </project>
