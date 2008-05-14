@@ -297,7 +297,7 @@ function createIndex() {
 
     for(var i in f) {
         if(!ignore[i]) {
-            if(existing.indexOf(i) > 0)
+            if(existing.indexOf(i) >= 0)
                 print('<div class="existing_index">'+i+' <span>(index exists)</span></div>');
             else
                 print('<div><input type="checkbox" onclick="changeSearchbox()" name="createidx" value="'+i+'" /> '+i+'</div>');
