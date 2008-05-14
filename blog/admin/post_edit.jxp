@@ -222,7 +222,7 @@ tinyMCE.init({
     <div id="post_action">
         <input type="submit" value="Save">
         <input type="button" value="Preview" onclick="window.open('<%=routes.find(Blog.routes)%>/<%=thePost.name%>', '_top');">
-        <input type="button" value="New Preview" onclick="previewPost()" />
+        <input type="button" value="New Preview" onclick="preview('preview')" />
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
     <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
@@ -231,7 +231,10 @@ tinyMCE.init({
         <h2>Post Meta</h2>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
-            <div class="post_meta_field_value"><textarea id="excerpt" name="excerpt"><%= thePost.excerpt || "" %></textarea></div>
+            <div class="post_meta_field_value">
+              <textarea id="excerpt" name="excerpt"><%= thePost.excerpt || "" %></textarea>
+              <input type="button" value="Preview Excerpt" onclick="preview('previewExcerpt')" />
+            </div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Status</div>
@@ -343,7 +346,7 @@ function autosave() {
          "&excerpt="+encodeURIComponent(document.getElementById("excerpt").value)+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
-         "&suppressImage="+document.getElementById("suppressImage").value+
+         "&suppressImage="+document.getElementById("suppressImage").checked+
          "&new_categories="+document.getElementById("new_categories").value+
          "&"+categories, "autosave", function(response) {
         id = response;
@@ -357,14 +360,15 @@ function autosave() {
 setTimeout(autosave, 60000);
 
 var firstSave = true;
-function previewPost() {
+function preview(path) {
+    // we have to wait until the async save is complete
     if( !saved ) {
         if( firstSave ) autosave();
         firstSave = false;
-        setTimeout('previewPost()', 1000);
+        setTimeout('preview("'+path+'")', 1000);
     }
     else {
-        window.open('<%=routes.find(Blog.routes)%>/preview?id='+id, '_blank');
+        window.open('<%=routes.find(Blog.routes)%>/'+path+'?id='+id, '_blank');
         firstSave = true;
         saved = false;
     }

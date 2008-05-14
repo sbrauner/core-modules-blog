@@ -50,6 +50,7 @@ Blog.handleRequest = function( request , arg ){
 
         category : null ,
         search : request.q ,
+        preview : null ,
 
         pageNumber : 1 ,
         pageSize : arg.limit || 30 ,
@@ -164,9 +165,10 @@ Blog.handleRequest = function( request , arg ){
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         }
-        else if (uri == "preview") {
+        else if (uri.match(/^preview/)) {
             // display a preview of a post
-            entries = db.blog.drafts.find( {_id : request.id} ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            entries = db.blog.drafts.find( {_id : request.id} );
+            preview = (uri == "previewExcerpt") ? true : false;
             // so that the blog doesn't think this is a search
             uri = null;
         }

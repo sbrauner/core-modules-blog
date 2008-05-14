@@ -188,3 +188,12 @@ a:hover {
 div.blog-content {
     width: 60%;
 }
+div.post-snippet img {
+    max-width: 150px;
+    max-height: 120px;
+    float: left;
+    padding: 10px;
+}
+div.post-snippet a:hover {
+border: none;
+}

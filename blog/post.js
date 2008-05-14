@@ -47,11 +47,11 @@ Post.prototype.hasJump = function(){
 Post.prototype.getNumCommentsSince = function( when ){
     if ( ! when )
 	return this.getNumComments();
-    
+
     var c = this.getComments();
     if ( ! c )
 	return 0;
-    
+
     var num = 0;
     for ( var i=0; i<c.length; i++ ){
 	SYSOUT( c[i].ts + " <? " + when );
@@ -66,7 +66,7 @@ Post.prototype.getNumCommentsSince = function( when ){
 Post.prototype.getNumComments = function(){
     if ( !this.comments )
         return 0;
-    
+
     if ( isArray( this.comments ) )
         return this.comments.length;
 
@@ -86,7 +86,7 @@ Post.prototype.deleteComment = function(cid){
 	l.debug( "no comments" );
         return;
     }
-    
+
     if ( ! isArray( this.comments ) )
 	this.getComments();
 
@@ -164,11 +164,11 @@ Post.prototype.getNextPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
     if ( filter )
 	Object.extend( s , filter );
-    
+
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : -1 } );
     cursor.limit( 1 );
-    
+
     if ( cursor.hasNext() )
 	return cursor.next();
 
@@ -182,7 +182,7 @@ Post.prototype.getPreviousPost = function( filter ){
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
     cursor.limit( 1 );
-    
+
     if ( cursor.hasNext() )
 	return cursor.next();
 
@@ -200,9 +200,9 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     var r = p.exec( this.content );
     if ( ! r )
         return null;
-    
+
     var url = r[1];
-    
+
     if ( ! url.match( /f?id=/ ) )
 	return null;
 
@@ -215,7 +215,7 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
 	if ( maxY )
 	    url += "&maxY=" + maxY;
     }
-    
+
     return url;
 };
 
@@ -246,25 +246,25 @@ Post.getNoResults = function() {
 Post.cache = new TimeOutCache();
 
 Post.getMostPopular = function( num , articlesBack ){
-    
+
     var key = "__mostPopular_" + num + "_" + articlesBack;
     var all = Post.cache.get( key );
     if ( all )
 	return all;
-    
+
     all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort( function( a , b ){
 	return b.views - a.views;
     } );
-    
+
     all = all.slice( 0 , num );
-    
+
     Post.cache.add( key , all );
     return all;
 };
 
 Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
-    
+
     var key = "__mostCommented_" + num + "_" + articlesBack;
 
     var old = [];
@@ -287,15 +287,15 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
 		       return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
 		   }
 		   );
-    
+
     all = all.slice( 0 , num );
-    
+
     Post.cache.add( key , all );
     return all;
 };
 
 function fixComments() {
-    
+
     SYSOUT('Fixing Comments!');
     cursor = db.blog.posts.find();
     // iterate through each post
@@ -306,7 +306,7 @@ function fixComments() {
             SYSOUT('Converting Post ID (' + post._id + ')');
             post.comments = post.getComments();
 	}
-	
+
 	if ( ! post.views )
 	    post.views = 1;
 
@@ -321,6 +321,7 @@ if ( db ) {
     db.blog.posts.ensureIndex( { name : 1 } );
 
     db.blog.posts.setConstructor( Post );
+    db.blog.drafts.setConstructor( Post );
 
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_OPTIONS );
 
