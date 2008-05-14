@@ -6,7 +6,7 @@ var to = request.to || '/';
 var error;
 if(request.save){
     u.email = request.u_email;
-    u.url = request.u_url;
+    u.url = User.fixURL(request.u_url);
     u.nickname = request.u_nickname;
     if(request.u_firstname)
         u.firstname = request.u_firstname;

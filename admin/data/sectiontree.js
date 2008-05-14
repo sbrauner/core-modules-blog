@@ -24,8 +24,12 @@ if ( allowModule ){
     tree['applications'] = false;
 
     for ( var mod in allowModule ){
-        tree[mod] = { $: "/admin/" + mod + "/index" };
         var appNav = admin.getAppNav(mod);
+        if(appNav.length == 0){
+            tree[mod] = "/admin/" + mod + "/index";
+            continue;
+        }
+        tree[mod] = { $: "/admin/" + mod + "/index" };
         for ( var i in appNav ){
             if(appNav[i].target != false)
                 tree[mod][mod+'/'+appNav[i].target] = appNav[i].pretty;

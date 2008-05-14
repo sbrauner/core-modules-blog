@@ -155,6 +155,16 @@ User.statusLink = function(status){
         return new URL(User.findMyLocation()+"confirm_send").toString()
 };
 
+User.fixURL = function(url){
+    if ( ! url )
+        return url;
+    if ( url.startsWith( "http://" ) ||
+         url.startsWith( "https://" ) ||
+         url.startsWith( "/" ) )
+        return url;
+    return 'http://'+url;
+};
+
 log.user.level = log.LEVEL.ERROR;
 
 return 0;
