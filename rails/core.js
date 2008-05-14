@@ -27,6 +27,7 @@ __path__.request();
 __path__.session();
 __path__.mailer();
 __path__.view();
+__path__.helpers();
 
 __path__.hacks();
 
