@@ -8,7 +8,7 @@ htmlheader();
 
 core.blog.urls();
 var result = Blog.handleRequest( request );
-log(tojson(result));
+
 // find the most recent posts
 var recent = db.blog.posts.find({live: true, cls: "entry"}).sort({ts: -1}).limit(5).toArray();
 // find the categories
@@ -35,14 +35,12 @@ var blogObj = {
     categories : categories
 }
 
-//log(result.search+" "+result.isCategorySearch+" "+result.isDateSearch);
 if(result.isCategorySearch || (result.uri == "/category" && request.category) )
     blogObj.title = "Category Search Results: "+request.category;
 else if( result.isDateSearch )
     blogObj.title = "Date Search Results: "+result.search;
 else if( result.search )
     blogObj.title = "Search Results: "+result.search;
-
 
 var stupid_pages = ["404", "no_results"];
 if ( result.posts.length == 1 && stupid_pages.contains(result.posts[0].name)) {
@@ -56,10 +54,15 @@ if ( result.posts.length == 1 && stupid_pages.contains(result.posts[0].name)) {
     if( user && user.hasPermission( "admin" ) ){
         print("<p>To edit this message, go to <a href='/admin/blog/pages'>the blog page admin</a> and edit \""+result.posts[0].name+"\".</p>");
     }
-    return;
 }
-
-if ( result.posts.length == 1 ) {
+else if ( result.posts.length > 1 || result.preview ) {
+    blogObj.posts = result.posts;
+    blogObj.date_format = "F";
+    blogObj.snippetTemplate = Blog.getTemplate("postSnippet");
+    var f = Blog.getTemplate("postSnippetList");
+    f(blogObj);
+}
+else if (result.posts.length == 1) {
     blogObj.post = result.posts[0];
     blogObj.comments_enabled = result.posts[0].commentsEnabled;
 
@@ -68,13 +71,6 @@ if ( result.posts.length == 1 ) {
     }
 
     core.blog.pieces.post( blogObj );
-}
-else if (result.posts.length > 1) {
-    blogObj.posts = result.posts;
-    blogObj.date_format = "F";
-	blogObj.snippetTemplate = Blog.getTemplate("postSnippet");
-	var f = Blog.getTemplate("postSnippetList");
-	f(blogObj);
 }
 
 // render the default page footer
