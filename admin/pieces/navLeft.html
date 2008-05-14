@@ -33,17 +33,13 @@ var toggleDisplay = function(elemId){
              if(key != sectionList[0]){ %>
           <li><a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %></a></li>
           <% } else { %>
-          <li>
-            <ul>
-              <li class="current-heading"><a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %></a>
-              </li>
-            </ul>
-          </li>
+          <li class="current-section current-page"><a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %></a></li>
           <% }
              }
               else { %>
-          <li><a href="#" onclick="toggleDisplay('ul_<%= key %>')"><%= key.toUpperCase() %></a>
-            <ul <%= sectionList[0] != key ? 'style="display: none;"' : "" %> id="ul_<%= key %>">
+          <li class="expand <%= sectionList[0] == key ? 'current-section' : "" %>">
+            <a href="#" onclick="toggleDisplay('ul_<%= key %>')"><%= key.toUpperCase() %></a>
+            <ul <%= sectionList[0] != key ? 'style="display: none;"' : '' %> id="ul_<%= key %>">
               <% for(var subkey in sectionTree[key]){
                   if(subkey == "$") continue;
                       %>

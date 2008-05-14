@@ -27,13 +27,13 @@
     list-style-type: none;
 }
 
-#leftnav li ul li.current-page {
+#leftnav li.current-page {
     background-image: url(img/icon_leftnav_active.gif);
     background-repeat: no-repeat;
-    background-position: 144px .35em;    
+/*    background-position: 144px .35em; */
 }
 
-#leftnav li ul {
+#leftnav li.current-section {
     margin: 0;
     padding: .2em 0 0em 0;
     background-color: #eff4ff;
@@ -53,8 +53,17 @@
     padding-bottom: .3em;
 }
 
-#leftnav li ul li.current-heading a {
+#leftnav li.current-section a {
     font-weight: bold;
+}
+
+#leftnav li.current-section ul a {
+    font-weight: normal;
+}
+
+#leftnav li.expand {
+    background-image: url(img/icon_plus_sign.gif);
+    background-repeat: no-repeat;
 }
 
 #leftnav a {
