@@ -1,7 +1,4 @@
 
-if ( ! Blog )
-    Blog = {};
-
 core.blog.post();
 core.blog.category();
 core.blog.missingpage();
@@ -166,6 +163,12 @@ Blog.handleRequest = function( request , arg ){
                 searchCriteria.categories = arg.homeCategory; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+        }
+        else if (uri == "preview") {
+            // display a preview of a post
+            entries = db.blog.drafts.find( {_id : request.id} ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            // so that the blog doesn't think this is a search
+            uri = null;
         }
         else {
             // search categories
