@@ -1,6 +1,7 @@
 <%
 /* If there is one post, show it.  If there is more than one post, display a page
  * of post snippets.  If there are no posts, display a default empty blog page.
+ * If we are previewing a draft, just display that post.
  */
 
 core.blog.urls();
@@ -11,7 +12,7 @@ var recent = db.blog.posts.find({live: true, cls: "entry"}).sort({ts: -1}).limit
 // find the categories
 var categories = db.blog.categories.find().sort({label: 1}).toArray();
 // Now, it would be lovely if the sort above actually worked, but it doesn't because
-// sort doesn't work on non-indexed fields yet.  So, for now, we'll manually sort
+// db sort doesn't work on non-indexed fields yet.  So, for now, we'll manually sort
 // the array.
 categories.sort(function(a,b) {
     // defense against the dark npe
@@ -70,7 +71,7 @@ else if (result.posts.length > 1) {
     blogObj.posts = result.posts;
     blogObj.date_format = "F";
 	blogObj.snippetTemplate = Blog.getTemplate("postSnippet");
-	var f = Blog.getTemplate("postSnippetList");	
+	var f = Blog.getTemplate("postSnippetList");
 	f(blogObj);
 }
 
