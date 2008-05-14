@@ -25,7 +25,7 @@ dateline - Text appearing before the date field.  Defaults to "".
     {% else %}
       0
     {% endif %}
-    comments
+    comment{% if post.comments|length_is:"1" %} {% else %}s{% endif %}
   </a>
 {% endif %}
 </p>
@@ -34,7 +34,7 @@ dateline - Text appearing before the date field.  Defaults to "".
   {{ post.content }}
 </div>
 
-{% if post.commentsEnabled %}
+{% if post.commentsEnabled and post.comments.length %}
   <p style="padding-bottom: 0; "><a href="#" target="_bottom">Add a Comment</a></p>
 {% endif %}
 
