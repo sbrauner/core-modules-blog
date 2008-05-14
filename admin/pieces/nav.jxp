@@ -13,18 +13,9 @@ var sectionTree = core.admin.data.sectiontree();
     <!-- Global Nav -->
     <div id="navcontainer">
       <ul>
-<%
-var className;
-for(var key in sectionTree){
-    if(sectionList[0] == key) className = "active";
-    else className = "";
-    var link = "/admin/" + key;
-    if(sectionTree[key].$) link = sectionTree[key].$;
-%>
-    <li class="<%= className %>"><a href="<%= link %>"><%= key.toUpperCase() %></a></li>
-<% 
-}
-%>
+        <li>
+          <h1 id="admininfo"><%= db.getName() %></h1>
+        </li>
       </ul>
     </div>
     
