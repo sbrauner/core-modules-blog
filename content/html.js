@@ -22,7 +22,7 @@ content.HTML.escape_js = function(str){
     return str;
 };
 
-content.HTMl.escape = escapeHTML;
+content.HTML.escape = escapeHTML;
 
 content.HTML.escape_html = content.HTML.escape;
 
