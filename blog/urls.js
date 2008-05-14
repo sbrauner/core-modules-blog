@@ -167,6 +167,12 @@ Blog.handleRequest = function( request , arg ){
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         }
+        else if (uri == "preview") {
+            // display a preview of a post
+            entries = db.blog.drafts.find( {_id : request.id} ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            // so that the blog doesn't think this is a search
+            uri = null;
+        }
         else {
             // search categories
             searchCriteria.categories = uri;

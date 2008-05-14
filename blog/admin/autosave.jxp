@@ -27,8 +27,8 @@ if (id) {
 }
 
 thePost.title = request.title;
-thePost.content = request.content;
-thePost.excerpt = request.excerpt;
+thePost.content = decodeURIComponent(request.content);
+thePost.excerpt = decodeURIComponent(request.excerpt);
 thePost.ts = new Date( request.ts );
 if ( request.author )
     thePost.author = request.author;

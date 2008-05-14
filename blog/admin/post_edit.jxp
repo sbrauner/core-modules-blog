@@ -222,6 +222,7 @@ tinyMCE.init({
     <div id="post_action">
         <input type="submit" value="Save">
         <input type="button" value="Preview" onclick="window.open('<%=routes.find(Blog.routes)%>/<%=thePost.name%>', '_top');">
+        <input type="button" value="New Preview" onclick="previewPost()" />
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
     <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
@@ -323,6 +324,7 @@ tinyMCE.init({
 <script type="text/javascript">
 
 var id<%= id ? ' = "'+id+'"' : '' %>;
+var saved = false;
 
 //'
 //autosave every 60 seconds
@@ -337,8 +339,8 @@ function autosave() {
     categories = categories.join("&");
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
-         "&content="+tinyMCE.activeEditor.getContent()+
-         "&excerpt="+document.getElementById("excerpt").value+
+         "&content="+encodeURIComponent(tinyMCE.activeEditor.getContent())+
+         "&excerpt="+encodeURIComponent(document.getElementById("excerpt").value)+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
          "&suppressImage="+document.getElementById("suppressImage").value+
@@ -347,11 +349,26 @@ function autosave() {
         id = response;
         var now = new Date();
         document.getElementById("autosave_ts").innerHTML = "Draft autosaved at "+now.toString();
+        saved = true;
     });
     setTimeout(autosave, 60000);
 }
 
 setTimeout(autosave, 60000);
+
+var firstSave = true;
+function previewPost() {
+    if( !saved ) {
+        if( firstSave ) autosave();
+        firstSave = false;
+        setTimeout('previewPost()', 1000);
+    }
+    else {
+        window.open('<%=routes.find(Blog.routes)%>/preview?id='+id, '_blank');
+        firstSave = true;
+        saved = false;
+    }
+}
 
 </script>
 
