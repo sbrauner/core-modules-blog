@@ -2,29 +2,22 @@ var tree = {
     'statistics' : {
         'usage': 'Usage',
     },
-    'users': {},
+    'users': '/admin/users',
     'database': {
         'dbview': 'View Collections',
         'dbprofile': 'Profiling',
         'dbshell': 'Database Shell',
     },
-    'files': {
-    },
-    'cron': {
-    },
+    'files': '/admin/files',
+    'cron': '/admin/cron',
     'logs': {
         'logMemory': 'Logs in Memory',
         'logScroll': 'Scrolling Logs'
     },
-    'shell': {
-    },
-    'editor': {
-        $: '/admin/ed'
-    },
-    'git': {
-        $: '/admin/gitLocal',
-    },
-    'docs': {},
+    'shell': '/admin/shell',
+    'editor': '/admin/ed',
+    'git': '/admin/gitLocal',
+    'docs': '/admin/docs',
 };
 
 if ( allowModule ){
