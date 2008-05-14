@@ -29,6 +29,10 @@ captcha_message
   <div id="entry-{{ post._id }}">
     {% include '/core/blog/pieces/entry' %}
   </div>
+  <div id="category-list-{{ post._id }}" class="category-list">
+    Categories:
+    {% include '/core/blog/pieces/categories' %}
+  </div>
   {% if post.comments.length %}
     <div id="comments">
       <h2>Comments</h2>
@@ -44,9 +48,6 @@ captcha_message
       {% endfor %}
     </div>
   {% endif %}
-  <div id="category-list-{{ post._id }}" class="category-list">
-    {% include '/core/blog/pieces/categories' %}
-  </div>
   <div id="comment-form-{{ post._id }}">
     {% include '/core/blog/pieces/postComment' %}
   </div>

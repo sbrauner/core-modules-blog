@@ -11,18 +11,10 @@ date_format - format string for date
 
 {% endcomment %}
 
-{% if c.user %}
-  {% if c.user.url %}
-    <h3><a href="{{ c.user.url }}">{{ c.user.name }}</a></h3>
-  {% else %}
-    <h3>{{ c.user.name }}</h3>
-  {% endif %}
+{% if c.url %}
+  <h3><a href="{{ c.url }}">{{ c.author }}</a></h3>
 {% else %}
-  {% if c.url %}
-    <h3><a href="{{ c.url }}">{{ c.author }}</a></h3>
-  {% else %}
-    <h3>{{ c.author }}</h3>
-  {% endif %}
+  <h3>{{ c.author }}</h3>
 {% endif %}
 
 <div class="comment-date">
