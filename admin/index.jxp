@@ -70,9 +70,6 @@ for(var key in allowModule){
     }
 }
 
-log(tojson(sectionMap));
-log(tojson(sectionName));
-
 var sectionList = sectionMap[sectionName];
 
 // map main sections to default pages
