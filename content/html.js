@@ -14,13 +14,15 @@ content.HTML._entities = [{s: '&', r: "&amp;"},
 // convert-to-utf8 function, and I'm not enough of a Unicode wizard to do that.
 // -Ethan
 
-content.HTML.escape = function(str){
+content.HTML.escape_js = function(str){
     for(var i in content.HTML._entities){
         var pair = content.HTML._entities[i];
         str = str.replace(new RegExp(pair.s, 'g'), pair.r);
     }
     return str;
 };
+
+content.HTML.escape = escapeHTML;
 
 content.HTML.escape_html = content.HTML.escape;
 
