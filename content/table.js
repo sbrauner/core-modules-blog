@@ -12,7 +12,7 @@ ns:             database collection object to query
 searchable:     if true, search header provided and supported
 cols:           array of column specifications
   name:         column name (corresponds to name of member in each database object)
-  searchWidth:  width of the search input field in the heading, if using search
+  searchWidth:  width of the search input field in the heading, if using search (depreciated)
   heading:      prettier name than 'name' for col heading
   view:         function that makes the value for the column pretty
   type:         "boolean" for bool columns.  used by search.
@@ -40,7 +40,7 @@ var tab = new htmltable(
  {
   ns : db.posts,
   cols : [
-    { name: "title", searchWidth: 40 },
+    { name: "title", view: function(x){ return "<h1>"+x+"</h1>" },
     { name: "author" },
     { name: "ts" },
     { name: "live", view: function(x){return x?"yes":"no";}, searchable: false }
@@ -189,6 +189,7 @@ function htmltable(specs) {
             if( this.filter && !this.filter(obj) ) continue;
 
             rows[count] = {};
+            if(!colnames) break;
             for( var c in colnames ) {
 
                 var fieldValue = obj[colnames[c]]

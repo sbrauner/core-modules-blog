@@ -2,6 +2,12 @@
   <nobr>Upload Files</nobr>
 </h1>
 
+<form method="POST" enctype="multipart/form-data" onsubmit="return checkFileUpload()">
+   <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
+   Choose a file to upload: <input name="theFile" id="theFile" type="file" />
+   <input type="submit" value="Upload File" />
+</form>
+
 <p>Upload local files to your 10gen account.</p>
 
 <%
@@ -19,12 +25,6 @@ db._files.ensureIndex( { uploadDate : 1 } );
 %>
 
 <div id="dlgbox" class="yui-skin-sam"></div>
-
-<form method="POST" enctype="multipart/form-data" onsubmit="return checkFileUpload()">
-   <input type="hidden" name="MAX_FILE_SIZE" value="<%= 1024 * 1024 * 100 %>" />
-   Choose a file to upload: <input name="theFile" id="theFile" type="file" />
-   <input type="submit" value="Upload File" />
-</form>
 
 <script type="text/javascript">
 
