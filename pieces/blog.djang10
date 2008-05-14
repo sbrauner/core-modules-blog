@@ -24,9 +24,7 @@
 
       <h2>categories</h2>
       <p>
-        {% for cat in categories %}
-          <a href="/blog/category?category={{ cat.name|urlencode }}">{{ cat.name }}</a>
-        {% endfor %}
+        {% include "categories" %}
       </p>
 
       {% if pages %}
