@@ -3,7 +3,7 @@
 
 <div id="blog-main">
 
-<div id="rightmain">
+<div id="blog-right">
 
   {% block rightnav %}
 
@@ -53,7 +53,7 @@
 
 </div>
 
-<div id="leftmain">
+<div id="blog-left">
   {% block title %}
     {% if title %}
       <h1>{{ title }}</h1>

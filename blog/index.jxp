@@ -1,4 +1,6 @@
 <%
+// render the default page header
+htmlheader();
 /* If there is one post, show it.  If there is more than one post, display a page
  * of post snippets.  If there are no posts, display a default empty blog page.
  * If we are previewing a draft, just display that post.
@@ -6,7 +8,7 @@
 
 core.blog.urls();
 var result = Blog.handleRequest( request );
-
+log(tojson(result));
 // find the most recent posts
 var recent = db.blog.posts.find({live: true, cls: "entry"}).sort({ts: -1}).limit(5).toArray();
 // find the categories
@@ -75,4 +77,6 @@ else if (result.posts.length > 1) {
 	f(blogObj);
 }
 
+// render the default page footer
+htmlfooter();
 %>

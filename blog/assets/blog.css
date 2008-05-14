@@ -131,10 +131,10 @@ a:hover {
 #blog-main {
         clear: both;
 }
-#leftmain {
+#blog-left {
         margin-left: 150px;
 }
-#comments a, #leftmain #comments a:visited {
+#comments a, #blog-left #comments a:visited {
 	color: #666;
 	border-bottom: none;
 }
@@ -145,28 +145,28 @@ a:hover {
 
 /*
 
-#leftmain a, #leftmain a:visited {
+#blog-left a, #blog-left a:visited {
 	color: #666;
 	text-decoration: underline;
 }
 
-#leftmain a:hover {
+#blog-left a:hover {
 	color: #333;
 	border: none;
 }
 
 */
-#rightmain {
+#blog-right {
      float: right;
 }
-#rightmain p {
+#blog-right p {
 	margin-top: 0;
 	margin-bottom: 1em;
 	padding-bottom: 1em;
 	background-image: none;
 }
 
-#rightmain a, #rightmain a:visited {
+#blog-right a, #blog-right a:visited {
 	display:block;
 	padding: 4px;
 	line-height: 1.2em;
@@ -177,7 +177,7 @@ a:hover {
 	border-bottom: none;
 }
 
-#rightmain a:hover {
+#blog-right a:hover {
 	display:block;
 	line-height: 1.2em;
 	color: #333;
