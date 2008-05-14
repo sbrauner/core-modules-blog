@@ -1,7 +1,4 @@
 
-if ( ! Blog )
-    Blog = {};
-
 core.blog.post();
 core.blog.category();
 core.blog.missingpage();
