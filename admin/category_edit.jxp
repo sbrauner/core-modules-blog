@@ -1,4 +1,4 @@
-<% 
+<%
 var isNewCategory = true;
 var category = new Category();
 
@@ -16,9 +16,9 @@ var justSaved = false;
 
 if ( request.action == "save" ) {
 
-    if (!request.label || 
-        request.label.trim().length == 0 || 
-        !request.name || 
+    if (!request.label ||
+        request.label.trim().length == 0 ||
+        !request.name ||
         request.name.trim().length == 0 ) {
       	print("<p>Error saving: label/name is blank?<p>");
     } else {
@@ -30,7 +30,7 @@ if ( request.action == "save" ) {
 
 	    if (!category._id) print( "Error saving category." );
 	    else {
-	        justSaved = true;	
+	        justSaved = true;
             print( "<i>Saved.</i>" );
 	    }
     }
@@ -44,7 +44,7 @@ if ( request.action == "save" ) {
 }
 %>
 
-<script type="text/javascript" src="NOCDN/~~/tinymce/3.0rc1/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/~~/tinymce/current/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",

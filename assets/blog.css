@@ -135,23 +135,12 @@ a:hover {
         margin-left: 150px;
 }
 #comments a, #leftmain #comments a:visited {
-	display:block;
-	padding: 4px;
-	line-height: 1.2em;
 	color: #666;
-	font-size: 85%;
-	font-weight: normal;
-	border-top: 1px dotted #ccc;
 	border-bottom: none;
 }
 
 #comments a:hover {
-	display:block;
-	line-height: 1.2em;
 	color: #333;
-	background-color: #eee;
-	font-size: 85%;
-	font-weight: normal;
 }
 
 /*
