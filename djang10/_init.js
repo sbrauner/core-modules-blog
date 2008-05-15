@@ -187,6 +187,11 @@ for (p in urlpatterns) {
     var scp = djang10.retrieveAppScope(arr[1]);
     var func = arr[arr.length-1];
 
+    if(scp == null) {
+        log.error("Found dead url mapping: "+ urlpatterns[p])
+        continue;        
+    }
+
     var pkg = "local." + arr.slice(1 , -1).join(".");
 
     log.djang10("Found pattern invoker :" + invoker + " : app = " + arr[1]
