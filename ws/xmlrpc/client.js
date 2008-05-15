@@ -48,6 +48,7 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
         }
     }
     // get the XML for the parameters
+    assert( xml , "why is xml null" );
     content += xml.toString( "methodCall" , callObject );
     
     var url = 'http://' + this.host + ':' + this.port + this.path;

@@ -1,4 +1,3 @@
-content.HTML = {};
 
 content.HTML._entities = [{s: '&', r: "&amp;"},
                           {s: '<', r: "&lt;"},

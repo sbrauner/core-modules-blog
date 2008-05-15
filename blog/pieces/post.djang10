@@ -22,18 +22,23 @@ captcha_message
 
 {% endcomment %}
 
-{% extends "blog.djang10" %}
+{% extends "blog" %}
 
 {% block content %}
+
+{% if not post %}
+  {% set post = blogDTO.getPost %}
+{% endif %}
+
 <div id="post-{{ post._id }}" class="post">
   <div id="entry-{{ post._id }}">
-    {% include '/core/blog/pieces/entry' %}
+    {% include 'entry' %}
   </div>
   <div id="category-list-{{ post._id }}" class="category-list">
     Categories:
-    {% include '/core/blog/pieces/categories' %}
+    {% include 'categories' %}
   </div>
-  {% if post.comments.length %}
+  {% if post.comments|length %}
     <div id="comments">
       <h2>Comments</h2>
       {% for c in post.comments %}
@@ -43,14 +48,16 @@ captcha_message
           {% else %}
             <div class="num-circle">{{ forloop.counter }}</div>
           {% endif %}
-        {% include '/core/blog/pieces/comment' %}
+        {% include 'comment' %}
         </div>
       {% endfor %}
     </div>
   {% endif %}
-  <div id="comment-form-{{ post._id }}">
-    {% include '/core/blog/pieces/postComment' %}
-  </div>
+  {% if post.commentsEnabled %}
+    <div id="comment-form-{{ post._id }}">
+      {% include 'postComment' %}
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
 

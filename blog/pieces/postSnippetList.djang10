@@ -7,14 +7,14 @@ posts - an array of objects from the blog.posts collection
 
 {% endcomment %}
 
-{% extends "blog.djang10" %}
+{% extends "blog" %}
 
 {% block content %}
 
 <div class="posts-snippets-block">
-  {% for post in posts %}
+  {% for post in blogDTO.getPostArray %}
     <div id="post-snippet-{{ post._id }}" class="post-snippet">
-      {% include '/core/blog/pieces/postSnippet' %}
+      {% include 'postSnippet' %}
     </div>
   {% endfor %}
 </div>
