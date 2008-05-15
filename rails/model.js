@@ -272,10 +272,9 @@ function helper( name ){
     SYSOUT( "ignoring helper [" + name + "]" );
 }
 
-function helper_method(){
-    SYSOUT( "ignoring helper_method [" + arguments + "]" );
+function filter_parameter_logging(){
+    SYSOUT( "ignoring filter_parameter_logging " );
 }
-
 
 // ---
 

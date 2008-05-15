@@ -17,7 +17,7 @@ pluralize =  function( num , s ){
         return num + "s";
     
     if ( num <= 1 )
-        return s;
+        return num + " " + s;
     
-    return s + "s";
+    return num + " " + s + "s";
 }
