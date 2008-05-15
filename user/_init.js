@@ -24,6 +24,9 @@ for(var i = 0; i < urls.length; i++){
     User.routes[urls[i]] = User.defaultRoot + '/' + urls[i];
 }
 
+User.routes.assets = new Routes();
+User.routes.assets.add(/(.+)/,  '/~~/user/assets/$1');
+
 User.findMyLocation = function(){
     if ( ! routes )
         return User.defaultRoot;
