@@ -37,7 +37,7 @@ Blog.pingSync = function(articleUrl) {
 	    response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
 	}
 	catch ( e ){
-	    print( "couldn't ping : " + tojson( service ) + " because of " + e );
+	    log.blog.ping( "couldn't ping : " + tojson( service ) + " because of " + e );
 	    return;
 	}
         
