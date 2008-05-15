@@ -48,7 +48,7 @@ var template = null;
 blogDTO.setPostArray(result.posts);
 blogDTO.setDateFormat("F");
 
-if ( result.preview ) {
+if ( result.previewSnippet ) {
     blogDTO.snippetTemplate = Blog.getTemplate("postSnippet");
     template = blog.getTemplate("postSnippetList");
 }
