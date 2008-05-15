@@ -12,7 +12,7 @@ Optional parameters:
 <div class="posts-block">
   {% for post in posts %}
     <div id="post-{{ post._id }}" class="post">
-      {% include '/core/blog/pieces/entry' %}
+      {% include 'entry' %}
     </div>
   {% endfor %}
 </div>
