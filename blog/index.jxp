@@ -36,8 +36,13 @@ if (isComment) {
 var blogDTO = new BlogDTO();
 
 blogDTO.setUser(user);
-blogDTO.setRecentPosts(blogUtils.getRecentPosts(5));
 blogDTO.setCategories(blogUtils.getCategories());
+blogDTO.setSidebar( [ { title: "recent posts", posts: blogUtils.getRecentPosts(5) },
+                      { title: "categories", include : "categories" },
+                      { title: "most popular", posts: Post.getMostPopular(5, 100) },
+                      { title: "most commented", posts: Post.getMostCommented(5, 100) },
+                      { title: "pages", posts: blogUtils.getPages() }
+                    ] );
 blogDTO.setBaseURL(routes.find(Blog.routes));
 
 /*

@@ -8,6 +8,7 @@ function BlogDTO() {
     this._dateFormat = "F";
     this._commentsEnabled = false;
     this._baseURL = "/blog";
+    this._sidebar = {};
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -17,6 +18,7 @@ function BlogDTO() {
     this._commentURL = null;
     this._commentText = null;
     this._captchaMessage = null;
+
 };
 
 BlogDTO.prototype.setUser = function(name) {
@@ -25,14 +27,6 @@ BlogDTO.prototype.setUser = function(name) {
 
 BlogDTO.prototype.getUser = function() {
     return this._user;
-}
-
-BlogDTO.prototype.setRecentPosts = function(postArr) {
-    this._recentPostArray = postArr;
-}
-
-BlogDTO.prototype.getRecentPosts = function() {
-	return this._recentPostArray;
 }
 
 BlogDTO.prototype.setCategories = function(catArr) {
@@ -81,6 +75,14 @@ BlogDTO.prototype.setDateFormat = function(format) {
 
 BlogDTO.prototype.getDateFormat = function() {
     return this._dateFormat;
+}
+
+BlogDTO.prototype.setSidebar = function(sidebarObj) {
+    this._sidebar = sidebarObj;
+}
+
+BlogDTO.prototype.getSidebar = function() {
+    return this._sidebar;
 }
 
 BlogDTO.prototype.setCommentsEnabled = function(bool) {
