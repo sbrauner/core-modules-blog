@@ -108,7 +108,7 @@ img {
 
 .blhd-left {
 	float: left;
-	padding: 0 30px 0 85px;
+	padding: 0 80px 0 28px;
 }
 
 .blhd-center {
@@ -118,17 +118,22 @@ img {
 /* Tabs */
 
 #navcontainer {
-	margin-left: 40px;
-	padding-top: 19px;
+	position: absolute;
+	top: 16px;
+	left: 190px;
 }
 
-#navcontainer h1#admininfo {
-    margin: 0px;
-    padding: 2px 0 0 0;
+#navcontainer a#admininfo, #navcontainer a#admininfo:visited {
+    line-height: 15px;
     color: #83b1ec;
     clear: none;
     font-size: 148%;
     font-weight: normal;
+	display: inline;
+}
+
+#navcontainer a#admininfo:hover {
+    color: #a6c9f6;
 }
 
 #navcontainer ul {

@@ -3,61 +3,50 @@
 #leftnav {
     width: 170px;
     margin: 0;
-    padding: 0 0 0 0;
-    text-align: right;    
+    padding: 0 0 0 0;  
 }
 
 #leftnav h1 {
-    padding: 0;
-    margin: 16px 0 .5em 0;
-    font-size: 12px;
-    font-style: italic;
-    color: #a9a9a9;
+    padding: 6px 0 5px 18px;
+    margin: 0 0 .66em 0;
+	font-size: 12px;
+	background-color: #2c65af;
+    color: #fff;
 }
 
 #leftnav ul {
-    padding-top: 0;
-	margin-bottom: 2em;
-    margin-left: 16px;
+    padding: 0;
+	margin: 0 0 2.5em 0;
 }
 
 #leftnav li {
     margin: 0;
-    padding: 0;
+    padding: 3px 0 1px 18px;
     border-bottom: 1px solid #e5e5e5;
     list-style-type: none;
 }
 
-#leftnav li.current-page {
-    background-image: url(img/icon_leftnav_active.gif);
-    background-repeat: no-repeat;
-	background-position: 144px .4em;
-}
-
 #leftnav li.current-section {
-    margin: 0;
-    padding: 0;
     background-color: #eff4ff;
 }
+
+#leftnav li.current-section li {
+	border-color: #eff4ff;;
+}
+
 
 #leftnav li ul {
     margin: 0;
     padding: 0;
-    border-bottom: 0px solid #eff4ff;
 }
 
 #leftnav li ul li {
     margin: 0;
-    padding: 0;
-    border-bottom: 0px solid #eff4ff;
-}
-
-#leftnav li ul li a {
-    line-height: 1.7em;
+    padding: 0 0 0 9px;
+    border-bottom: 1px solid #fff;
 }
 
 #leftnav li ul li.current-heading {
-    padding-bottom: .3em;
 }
 
 #leftnav li.current-section a {
@@ -69,21 +58,30 @@
 }
 
 #leftnav li.expand {
-    background-image: url(img/icon_plus_sign.gif);
+    background-image: url(img/icon_arrow_blue_right.gif);
     background-repeat: no-repeat;
-    background-position: 144px .5em; 
+    background-position: 8px .6em; 
 }
 
-#leftnav a {
-    padding: .5em 12px .4em 0;
-    line-height: 2.4em;
+#leftnav li.expand-toggle {
+    background-image: url(img/icon_arrow_blue_down.gif);
+    background-repeat: no-repeat;
+    background-position: 8px .5em; 
+}
+
+#leftnav a, #leftnav a:visited {
+	display: block;
+	margin: 0;
+    padding: 0;
     font-size: 11px;
     color: #2c65af;
     text-decoration: none;
     font-weight:normal;
+
 }
 
 #leftnav a:hover {
+	display: block;
     color: #0f2659;
 }
 
