@@ -6,34 +6,19 @@
  *  modeled after  django.template package
  */
 
-function Context(dict) {
-    this.dicts = [ dict || {} ];
+function Context() {
+    this.storage = {};
 }
 
-Context.prototype.containsKey = function(key) {
-    return this.dict.some(function(dict) { return key in dict; })
-};
-
 Context.prototype.get = function(key) {
-    for(var dict in dicts)
-        if(key in dict) 
-            return dict[key];
-
-    return null;
-};
+    return this.storage[key];
+}
 
 Context.prototype.put = function(key, value) {
-    return this.dicts[0][key] = value;
-};
+    return this.storage[key] = value;
+}
 
-Context.prototype.push = function() {
-    var dict = {};
-    this.dicts.unshift(dict);
-    
-    return dict;
-};
-
-Context.prototype.pop = function() {
-    return this.dicts.shift();
-};
+Context.prototype.getRawStorageObject = function() {
+    return this.storage;
+}
 
