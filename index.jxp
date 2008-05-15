@@ -40,7 +40,6 @@ blogDTO.setRecentPosts(blogUtils.getRecentPosts(5));
 blogDTO.setCategories(blogUtils.getCategories());
 blogDTO.setBaseURL(routes.find(Blog.routes));
 
-
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
  */
