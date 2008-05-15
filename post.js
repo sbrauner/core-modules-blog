@@ -237,6 +237,7 @@ Post.getNoResults = function() {
         noResultsPage = new Post('no_results', 'No Results');
         noResultsPage.cls = 'page';
         noResultsPage.live = true;
+	noResultsPage.commentsEnabled = false;
         db.blog.posts.save(noResultsPage);
     }
     return noResultsPage;
