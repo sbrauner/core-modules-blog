@@ -17,37 +17,37 @@ captcha_message
 
 {% endcomment %}
 
-{% if comments_enabled %}
-
+{% if blogDTO.comments_enabled %}
+<script type="text/javascript" src="{{ js_comment_src|default:'comment.js' }}">
 <script type="text/javascript">
 function checkComment() {
-    if(document.getElementById("txt").value == "") { alert("You must enter a comment."); return false; }
-    {% if not user %}
-    if(document.getElementById("yourname").value == "") { alert("You must enter your name."); return false; }
-    if(document.getElementById("email").value == "") { alert("You must enter your email."); return false; }
+    if(document.getElementById("txt").value == "") { return invalidTxt(); }
+    {% if not blogDTO.getUser %}
+    if(document.getElementById("yourname").value == "") { return invalidName(); }
+    if(document.getElementById("email").value == "") { return invalidEmail(); }
     {% endif %}
     return true;
 }
 </script>
 
-   <h2 class="comments-open-header">{{ comments_open_header|default:"add a comment" }}</h2>
+   <h2 class="comments-open-header">{{ blogDTO.getCommentsOpenHeader|default:"add a comment" }}</h2>
    <div class="comments container">
        <form method="post" name="comment" id="comments-form" onsubmit="return checkComment()" class="search">
 	 <input type="hidden" name="addComment" value="yes" />
 
          <p>
-           {% if user %}
-              <div id="comment-form-name">{{ comment_form_name|default:"Comment as " }}{{ user.name }}</div>
+           {% if blogDTO.getUser %}
+              <div id="comment-form-name">{{ blogDTO.getCommentFormName|default:"Comment as " }}{{ blogDTO.getUser.name }}</div>
            {% else %}
-              <input class="text" id="yourname" name="yourname" value="" />{{ comment_author|default:"Name" }}<br />
-              <input class="text" id="email" name="email" value="" />{{ comment_email|default:"Email Address"}}<br />
-              <input class="text" id="url" name="url" value="" />{{ comment_url|default:"URL" }}<br />
+              <input class="text" id="yourname" name="yourname" value="" />{{ blogDTO.getCommentAuthor|default:"Name" }}<br />
+              <input class="text" id="email" name="email" value="" />{{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
+              <input class="text" id="url" name="url" value="" />{{ blogDTO.getCommentUrl|default:"URL" }}<br />
            {% endif %}
            <textarea rows="20" id="txt" name="txt"></textarea><br />
-           {% if not user %}
+           {% if not blogDTO.getUser %}
              <div id="comments-open-captcha">
 		<div><img src="NOCDN/~~/user/captchaIMG.jxp" vspace="10"></div>
-		<div>{{ captch_message|default:"Type the characters you see in the picture above.<br />(Just to make sure you&apos;re a human)." }}</div>
+		<div>{{ blogDTO.getCaptchMessage|default:"Type the characters you see in the picture above.<br />(Just to make sure you&apos;re a human)." }}</div>
 		<div><input class="text" name="captcha" /></div>
              </div>
            {% endif %}

@@ -1,10 +1,21 @@
 function BlogDTO() {
-	this._user = null;
-	this._recentPostArray = [];
-	this._categoryArray = [];
-	this._postArray = [];
-	this._pageTitle = "";
-	this._dateFormat = "F";
+    this._user = null;
+    this._recentPostArray = [];
+    this._categoryArray = [];
+    this._postArray = [];
+    this._pageTitle = null;
+    this._pages = [];
+    this._dateFormat = "F";
+    this._commentsEnabled = false;
+
+    // optional config strings
+    this._commentsOpenHeader = null;
+    this._commentFormName = null;
+    this._commentAuthor = null;
+    this._commentEmail = null;
+    this._commentURL = null;
+    this._commentText = null;
+    this._captchaMessage = null;
 };
 
 BlogDTO.prototype.setUser = function(name) {
@@ -55,6 +66,14 @@ BlogDTO.prototype.getPageTitle = function() {
     return this._pageTitle;
 }
 
+BlogDTO.prototype.setPages = function(pages) {
+    this._pages = pages;
+}
+
+BlogDTO.prototype.getPages = function() {
+    return this._pages;
+}
+
 BlogDTO.prototype.setDateFormat = function(format) {
     this._dateFormat = format;
 }
@@ -62,3 +81,32 @@ BlogDTO.prototype.setDateFormat = function(format) {
 BlogDTO.prototype.getDateFormat = function() {
     return this._dateFormat;
 }
+
+BlogDTO.prototype.setCommentsEnabled = function(bool) {
+    this._commentsEnabled = bool;
+}
+
+BlogDTO.prototype.getCommentsEnabled = function() {
+    return this._commentsEnabled;
+}
+
+BlogDTO.prototype.setCommentsOpenHeader = function(bool) { this._commentsOpenHeader = bool; }
+BlogDTO.prototype.getCommentsOpenHeader = function() { return this._commentsOpenHeader; }
+
+BlogDTO.prototype.setCommentFormName = function(name) { this._commentFormName = name; }
+BlogDTO.prototype.getCommentFormName = function() { return this._commentFormName; }
+
+BlogDTO.prototype.setCommentAuthor = function(author) { this._commentAuthor = author; }
+BlogDTO.prototype.getCommentAuthor = function() { return this._commentAuthor; }
+
+BlogDTO.prototype.setCommentEmail = function(email) { this._commentEmail = email; }
+BlogDTO.prototype.getCommentEmail = function() { return this._commentEmail; }
+
+BlogDTO.prototype.setCommentURL = function(url) { this._commentURL = url; }
+BlogDTO.prototype.getCommentURL = function() { return this._commentURL; }
+
+BlogDTO.prototype.setCommentText = function(txt) { this._commentText = txt; }
+BlogDTO.prototype.getCommentText = function() { return this._commentText; }
+
+BlogDTO.prototype.setCaptchaMessage = function(msg) { this._captchaMessage = msg; }
+BlogDTO.prototype.getCaptchaMessage = function() { return this._captchaMessage; }
