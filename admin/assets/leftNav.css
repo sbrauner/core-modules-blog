@@ -9,7 +9,7 @@
 
 #leftnav h1 {
     padding: 0;
-    margin: 1.5em 0 0 0;
+    margin: 16px 0 .5em 0;
     font-size: 12px;
     font-style: italic;
     color: #a9a9a9;
@@ -17,6 +17,7 @@
 
 #leftnav ul {
     padding-top: 0;
+	margin-bottom: 2em;
     margin-left: 16px;
 }
 
@@ -30,13 +31,19 @@
 #leftnav li.current-page {
     background-image: url(img/icon_leftnav_active.gif);
     background-repeat: no-repeat;
-/*    background-position: 144px .35em; */
+	background-position: 144px .4em;
 }
 
 #leftnav li.current-section {
     margin: 0;
-    padding: .2em 0 0em 0;
+    padding: 0;
     background-color: #eff4ff;
+}
+
+#leftnav li ul {
+    margin: 0;
+    padding: 0;
+    border-bottom: 0px solid #eff4ff;
 }
 
 #leftnav li ul li {
@@ -64,6 +71,7 @@
 #leftnav li.expand {
     background-image: url(img/icon_plus_sign.gif);
     background-repeat: no-repeat;
+    background-position: 144px .5em; 
 }
 
 #leftnav a {

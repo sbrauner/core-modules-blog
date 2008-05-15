@@ -108,7 +108,7 @@ img {
 
 .blhd-left {
 	float: left;
-	padding: 5px 50px 5px 75px;
+	padding: 0 30px 0 85px;
 }
 
 .blhd-center {
@@ -124,11 +124,11 @@ img {
 
 #navcontainer h1#admininfo {
     margin: 0px;
-    padding: 0px;
-    color: #ffffff;
+    padding: 2px 0 0 0;
+    color: #83b1ec;
     clear: none;
-    font-size: 2.5em;
-    font-weight: bold;
+    font-size: 148%;
+    font-weight: normal;
 }
 
 #navcontainer ul {
@@ -796,10 +796,10 @@ div.content {
 	margin: 0 10px 0 180px;
 }
 td.maincontent {
-	padding: 0 16px 0 18px;
+	padding: 16px 16px 0 18px;
 }
 div.topbar {
-	height: 80px;
+	height: 53px;
 	line-height: 80px;
 }
 

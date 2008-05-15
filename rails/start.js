@@ -4,6 +4,11 @@
 var useGlobal = globals;
 
 // -------------------
+// ----- plugins -----
+// -------------------
+Rails.loadPlugins( useGlobal , "vendor/plugins" );
+
+// -------------------
 // ----- libs -----
 // -------------------
 

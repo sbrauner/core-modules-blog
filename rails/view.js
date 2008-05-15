@@ -93,5 +93,5 @@ ActionController.Base.prototype.form_for = function( what , options ){
 
 
 ActionController.Base.prototype.submit_tag = function( name ){
-    return "<input type='submit' name='action' value='" + name + "'>";
+    return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";
 }
