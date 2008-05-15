@@ -282,3 +282,5 @@ Blog.fixCommentURL = function( url ){
 
     return "http://" + url;
 }
+
+return Blog;
