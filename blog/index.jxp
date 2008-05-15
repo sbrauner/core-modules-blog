@@ -38,11 +38,7 @@ var blogDTO = new BlogDTO();
 blogDTO.setUser(user);
 blogDTO.setRecentPosts(blogUtils.getRecentPosts(5));
 blogDTO.setCategories(blogUtils.getCategories());
-
-
-if (result.isCategorySearch || (result.uri == "/category" && request.category) ) {
-    blogDTO.setPageTitle("Category Search Results: "+request.category);
-}
+blogDTO.setBaseURL(routes.find(Blog.routes));
 
 
 /*
@@ -55,6 +51,10 @@ blogDTO.setDateFormat("F");
 
 if ( result.preview ) {
     blogDTO.snippetTemplate = Blog.getTemplate("postSnippet");
+    template = blog.getTemplate("postSnippetList");
+}
+else if ( result.isCategorySearch ) {
+    blogDTO.setPageTitle("Category Search Results: "+request.category);
     template = blog.getTemplate("postSnippetList");
 }
 else if ( result.search ) {

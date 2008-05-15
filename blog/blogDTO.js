@@ -7,6 +7,7 @@ function BlogDTO() {
     this._pages = [];
     this._dateFormat = "F";
     this._commentsEnabled = false;
+    this._baseURL = "/blog";
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -88,6 +89,14 @@ BlogDTO.prototype.setCommentsEnabled = function(bool) {
 
 BlogDTO.prototype.getCommentsEnabled = function() {
     return this._commentsEnabled;
+}
+
+BlogDTO.prototype.setBaseURL = function(url) {
+    this._baseURL = url;
+}
+
+BlogDTO.prototype.getBaseURL = function() {
+    return this._baseURL;
 }
 
 BlogDTO.prototype.setCommentsOpenHeader = function(bool) { this._commentsOpenHeader = bool; }
