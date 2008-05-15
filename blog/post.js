@@ -54,7 +54,6 @@ Post.prototype.getNumCommentsSince = function( when ){
 
     var num = 0;
     for ( var i=0; i<c.length; i++ ){
-	SYSOUT( c[i].ts + " <? " + when );
 	if ( c[i].ts < when ){
 	    continue;
 	}
@@ -238,6 +237,7 @@ Post.getNoResults = function() {
         noResultsPage = new Post('no_results', 'No Results');
         noResultsPage.cls = 'page';
         noResultsPage.live = true;
+	noResultsPage.commentsEnabled = false;
         db.blog.posts.save(noResultsPage);
     }
     return noResultsPage;

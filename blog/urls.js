@@ -50,7 +50,7 @@ Blog.handleRequest = function( request , arg ){
 
         category : null ,
         search : request.q ,
-        preview : null ,
+        previewSnippet : null ,
 
         pageNumber : 1 ,
         pageSize : arg.limit || 30 ,
@@ -82,8 +82,10 @@ Blog.handleRequest = function( request , arg ){
 
         if (request.q)
             posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
-        else if (request.category)
+        else if (request.category) {
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
+            isCategorySearch = true;
+        }
 
         if (request.q || request.category) {
             var now = new Date();
@@ -168,7 +170,7 @@ Blog.handleRequest = function( request , arg ){
         else if (uri.match(/^preview/)) {
             // display a preview of a post
             entries = db.blog.drafts.find( {_id : request.id} );
-            preview = (uri == "previewExcerpt") ? true : false;
+            previewSnippet = (uri == "previewExcerpt");
             // so that the blog doesn't think this is a search
             uri = null;
         }

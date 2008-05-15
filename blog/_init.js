@@ -7,6 +7,10 @@ djang10.addTemplateRoot(core.blog.pieces);
 
 Blog = {};
 
+__path__.post();
+__path__.category();
+__path__.ping();
+
 /*
  *   Array of roots to search, in array order.  Used by embedding apps to override the
  *   template search path.  Adds the default for the blog first, so it's the last one checked

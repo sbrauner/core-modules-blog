@@ -9,10 +9,16 @@ Optional parameters:
 
 {% endcomment %}
 
+{% extends "blog" %}
+
+{% block content %}
+
 <div class="posts-block">
-  {% for post in posts %}
+  {% for post in blogDTO.getPostArray %}
     <div id="post-{{ post._id }}" class="post">
       {% include 'entry' %}
     </div>
   {% endfor %}
 </div>
+
+{% endblock %}
