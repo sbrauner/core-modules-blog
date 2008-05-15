@@ -29,3 +29,26 @@ Rails.getRubyFilesFromDir = function( name ){
     );
     return all;
 }
+
+Rails.loadPlugins = function( gl , path ){
+    var d = openFile( path );
+    if ( ! d.exists() )
+        return;
+
+    var l = log.rails.init.plugins.info;
+
+    d.listFiles().forEach(
+        function(z){
+            var theirLib = path + "/" + z.filename + "/lib";
+            Ruby.libPath.push( theirLib );
+            l( "added [" + z.filename + "]" );
+
+            var init = local.getFromPath( path + "/" + z.filename + "/init" );
+            if ( init ){
+                l( "running init [" + z.filename + "]" );
+                init();
+                l( "done running init [" + z.filename + "]" );
+            }
+        }
+    );
+}
