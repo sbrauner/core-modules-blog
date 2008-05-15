@@ -17,9 +17,11 @@ captcha_message
 
 {% endcomment %}
 
-{% if blogDTO.comments_enabled %}
-<script type="text/javascript" src="{{ js_comment_src|default:'comment.js' }}">
+{% if blogDTO.getPost.commentsEnabled %}
+
 <script type="text/javascript">
+{% include 'postCommentJS' %}
+
 function checkComment() {
     if(document.getElementById("txt").value == "") { return invalidTxt(); }
     {% if not blogDTO.getUser %}
