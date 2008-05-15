@@ -16,7 +16,7 @@
 
       <h2>recent posts</h2>
       <p>
-        {% for r in recent %}
+        {% for r in blogDTO.getRecentPosts %}
           <a href="{{ r.name }}">{{ r.ts|date:"b j"|upper }} - {{ r.title }}</a>
         {% endfor %}
       </p>
@@ -26,10 +26,10 @@
         {% include "categories" %}
       </p>
 
-      {% if pages %}
+      {% if blogDTO.getPages|length %}
         <h2>pages</h2>
         <p>
-          {% for p in pages %}
+          {% for p in blogDTO.getPages %}
             <a href="/blog/{{ p.name|urlencode }}">{{ p.title }}</a>
           {% endfor %}
         </p>
@@ -41,8 +41,8 @@
 
 <div id="blog-left">
   {% block title %}
-    {% if title %}
-      <h1>{{ title }}</h1>
+    {% if blogDTO.getPageTitle %}
+      <h1>{{ blogDTO.getPageTitle }}</h1>
     {% endif %}
   {% endblock %}
 

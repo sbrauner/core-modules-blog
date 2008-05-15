@@ -24,8 +24,8 @@ var result = blog.handleRequest(request);
 /*
  *  if we are adding a comment, handle it and pray that the comment gets added
  */
- var isComment = (request && request.addComment == "yes");
- 
+var isComment = (request && request.addComment == "yes");
+
 if (isComment) {
 	blog.handlePosts(request, result.posts[0], user);
 }
@@ -43,12 +43,7 @@ blogDTO.setCategories(blogUtils.getCategories());
 if (result.isCategorySearch || (result.uri == "/category" && request.category) ) {
     blogDTO.setPageTitle("Category Search Results: "+request.category);
 }
-else if ( result.isDateSearch ) {
-    blogDTO.setPageTitle ("Date Search Results: "+result.search);
-}
-else if ( result.search ) {
-    blogDTO.setPageTitle("Search Results: "+result.search);
-}
+
 
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
@@ -58,30 +53,33 @@ var template = null;
 blogDTO.setPostArray(result.posts);
 blogDTO.setDateFormat("F");
 
-if (result.preview) {
+if ( result.preview ) {
     blogDTO.snippetTemplate = Blog.getTemplate("postSnippet");
-    
+    template = blog.getTemplate("postSnippetList");
+}
+else if ( result.search ) {
+    blogDTO.setPageTitle("Search Results: "+result.posts.length+(result.posts.length == 1 ? " match for " : " matches for ")+result.search);
     template = blog.getTemplate("postSnippetList");
 }
 else {
     blogDTO.setDateFormat("F");
-	
-	if (result.posts.length == 1) {
+
+    if (result.posts.length == 1) {
         template = blog.getTemplate("post");
-	}
-	else {
+    }
+    else {
         template = blog.getTemplate("postList");
-	}
+    }
 }
 
 if (template == null) {
-	// template == error 
+	// template == error
 }
 
 log.blogcontroller("Chose template : " + template);
 
-template({ blogDTO : blogDTO});
- 
+template({ blogDTO : blogDTO });
+
 // render the default page footer
 htmlfooter();
 %>
