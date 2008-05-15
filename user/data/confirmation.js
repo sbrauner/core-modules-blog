@@ -14,8 +14,9 @@ core.core.mail();
 User.Confirmation.prototype.send = function(){
     this.save();
 
-    if(! mail){
-        throw "mail is not configured";
+    if( ! mail){
+        log.user.confirmation.error( "want to send confirmation but no mail configured" );
+        return;
     }
 
     // Send a mail to the user
