@@ -14,26 +14,16 @@
         </p>
       </form>
 
-      <h2>recent posts</h2>
-      <p>
-        {% for r in blogDTO.getRecentPosts %}
-          <a href="{{ r.name }}">{{ r.ts|date:"b j"|upper }} - {{ r.title }}</a>
-        {% endfor %}
-      </p>
-
-      <h2>categories</h2>
-      <p>
-        {% include "categories" %}
-      </p>
-
-      {% if blogDTO.getPages|length %}
-        <h2>pages</h2>
-        <p>
-          {% for p in blogDTO.getPages %}
-            <a href="/blog/{{ p.name|urlencode }}">{{ p.title }}</a>
+      {% for item in blogDTO.getSidebar %}
+        <h2>{{ item.title }}</h2>
+        {% if item.include %}
+          {% include item.include %}
+        {% else %}
+          {% for post in item.posts %}
+            <a href="{{ blogDTO.getBaseURL }}/{{ post.name }}">{{ post.title }}</a>
           {% endfor %}
-        </p>
-      {% endif %}
+        {% endif %}
+      {% endfor %}
 
   {% endblock %}
 
