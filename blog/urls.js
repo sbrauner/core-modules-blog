@@ -82,8 +82,10 @@ Blog.handleRequest = function( request , arg ){
 
         if (request.q)
             posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
-        else if (request.category)
+        else if (request.category) {
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
+            isCategorySearch = true;
+        }
 
         if (request.q || request.category) {
             var now = new Date();

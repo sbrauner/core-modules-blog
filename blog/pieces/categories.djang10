@@ -12,7 +12,7 @@ entry_categories_header - The title for the categories section.  Defaults to "ca
 
 {% if blogDTO.getCategories|length %}
   {% for category in blogDTO.getCategories %}
-    <a href="category?category={{ category.label|urlencode }}">{{ category.name }}</a>
+    <a href="{{ blogDTO.getBaseURL }}/category?category={{ category.label|urlencode }}">{{ category.name }}</a>
   {% endfor %}
 {% endif %}
 
