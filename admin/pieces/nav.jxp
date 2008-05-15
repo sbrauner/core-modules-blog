@@ -14,7 +14,7 @@ var sectionTree = core.admin.data.sectiontree();
     <div id="navcontainer">
       <ul>
         <li>
-          <h1 id="admininfo"><%= db.getName() %></h1>
+          <a href="/" id="admininfo"><%= db.getName() %></a>
         </li>
       </ul>
     </div>

@@ -12,19 +12,36 @@ var sectionTree = core.admin.data.sectiontree();
 <script>
 var toggleDisplay = function(elemId){
   var elem = document.getElementById(elemId);
-  if(elem.style.display == '')
+  if(elem.style.display == '') {
     elem.style.display = 'none';
-  else
+  } else {
     elem.style.display = '';
+  }
 };
+var toggleClass = function(elemId){
+  var elem = document.getElementById(elemId);
+  var oldclass = "expand-toggle";
+  var newclass = "expand";
+  var classes = elem.className.split(/\s+/);
+  for(var i = 0; i < classes.length; i++){
+    if(classes[i] == oldclass){
+	  classes[i] = newclass;
+    }
+	else if(classes[i] == newclass){
+	  classes[i] = oldclass;
+	}
+  }
+  elem.className = classes.join(" ");
+};
+
 </script>
 
 <table cellpadding="0" cellspacing="0" border="0">
   <tr>
         <!-- Left Side -->
-    <td width="180" valign="top">
+    <td width="180" valign="top" style="padding: 18px 0 0 18px; ">
       <div id="leftnav">
-		<h1>system administration</h1>
+		<h1>System Administration</h1>
         <ul>
           <% for(var key in sectionTree){
               if(sectionTree[key] == false){ %>
@@ -34,18 +51,26 @@ var toggleDisplay = function(elemId){
              if(key != sectionList[0]){ %>
           <li><a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %></a></li>
           <% } else { %>
-          <li class="current-section current-page"><a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %></a></li>
+          <li class="current-section">
+			<a href="<%= sectionTree[key] %>"><%= key.toUpperCase() %>
+			  <img src="/~~/admin/assets/img/icon_leftnav_active.gif" />
+			</a>
+		  </li>
           <% }
              }
               else { %>
-          <li class="expand <%= sectionList[0] == key ? 'current-section' : "" %>">
-            <a href="#" onclick="toggleDisplay('ul_<%= key %>')"><%= key.toUpperCase() %></a>
+		    <li id="hd_ul_<%= key %>" class="<%= sectionList[0] == key ? 'current-section expand-toggle' : "expand" %>">
+		    <a href="#" onclick="toggleClass('hd_ul_<%= key %>'); toggleDisplay('ul_<%= key %>')"><%= key.toUpperCase() %></a>
             <ul <%= sectionList[0] != key ? 'style="display: none;"' : '' %> id="ul_<%= key %>">
               <% for(var subkey in sectionTree[key]){
                   if(subkey == "$") continue;
                       %>
-              <li class="<%= subkey == sectionList[1] ? 'current-page' : '' %>">
-                <a href="/admin/<%= subkey %>"><%= sectionTree[key][subkey] %></a>
+              <li>
+                <a href="/admin/<%= subkey %>"><%= sectionTree[key][subkey] %>
+				<% if(subkey == sectionList[1]) { %>
+					<img src="/~~/admin/assets/img/icon_leftnav_active.gif" />
+				<% } %>
+				</a>
               </li>
               <% } %>
             </ul>

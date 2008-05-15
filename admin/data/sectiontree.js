@@ -21,7 +21,7 @@ var tree = {
 };
 
 if ( allowModule ){
-    tree['applications'] = false;
+    tree['Applications'] = false;
 
     for ( var mod in allowModule ){
         var appNav = admin.getAppNav(mod);
