@@ -14,8 +14,10 @@ var toggleDisplay = function(elemId){
   var elem = document.getElementById(elemId);
   if(elem.style.display == '') {
     elem.style.display = 'none';
+    return false;
   } else {
     elem.style.display = '';
+    return true;
   }
 };
 var toggleClass = function(elemId){
@@ -60,7 +62,7 @@ var toggleClass = function(elemId){
              }
               else { %>
 		    <li id="hd_ul_<%= key %>" class="<%= sectionList[0] == key ? 'current-section expand-toggle' : "expand" %>">
-		    <a href="#" onclick="toggleClass('hd_ul_<%= key %>'); toggleDisplay('ul_<%= key %>')"><%= key.toUpperCase() %></a>
+		    <a href="#" onclick="toggleClass('hd_ul_<%= key %>'); setCookie('hd_ul_<%=key%>_open', toggleDisplay('ul_<%= key %>'))"><%= key.toUpperCase() %></a>
             <ul <%= sectionList[0] != key ? 'style="display: none;"' : '' %> id="ul_<%= key %>">
               <% for(var subkey in sectionTree[key]){
                   if(subkey == "$") continue;
@@ -74,6 +76,12 @@ var toggleClass = function(elemId){
               </li>
               <% } %>
             </ul>
+            <script ? (sectionList[0] != key) >
+              if(getCookie('hd_ul_<%= key %>_open') == "true"){
+                  toggleClass('hd_ul_<%= key %>');
+                  toggleDisplay('ul_<%= key %>');
+              }
+            </script>
           </li>
           <% } %>
           <% } %>
