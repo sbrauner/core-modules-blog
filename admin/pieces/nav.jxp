@@ -8,13 +8,13 @@ var sectionTree = core.admin.data.sectiontree();
   <div class="onecolumn topbar">
     
     <!-- 10gen Logo -->
-    <div class="blhd-left"><a href="/"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="85" height="48" alt="10gen logo"></a></div>
+    <div class="blhd-left"><a href="/admin/"><img src="/~~/admin/assets/img/logo_10gen_on_blue.gif" width="85" height="48" alt="10gen logo"></a></div>
     
     <!-- Global Nav -->
     <div id="navcontainer">
       <ul>
         <li>
-          <a href="/admin/" id="admininfo"><%= db.getName() %></a>
+          <a href="/" id="admininfo"><%= db.getName() %></a>
         </li>
       </ul>
     </div>
