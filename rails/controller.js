@@ -53,12 +53,13 @@ ActionController.Base.prototype._before = function( appResponse ){
     
     while ( a ){
         for ( var i=0; i<a.length; i++ ){
+            var name = a[i];
             var f = a[i];
             
             log.rails.beforeFilter[this.shortName].info( "running before filter [" + tojson( f ) + "]" );
             
-            if ( isString( f ) ){
-                f = appResponse[f];
+            if ( isString( name ) ){
+                f = appResponse.requestThis[name];
             }
             
             if ( ! isFunction( f ) ){
