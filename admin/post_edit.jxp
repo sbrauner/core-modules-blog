@@ -13,16 +13,11 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
-        foundPost = db.blog.drafts.findOne( CrID( id ) );
-        if (foundPost) {
-            db.blog.drafts.remove({ _id: id });
-            thePost = foundPost;
-            newPost = false;
-        } else {
-            id = null;
-        }
+        id = null;
     }
 }
+
+db.blog.drafts.remove({ post_id: id });
 
 var justSaved = false;
 

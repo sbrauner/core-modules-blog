@@ -15,16 +15,18 @@ if (id) {
     foundPost = db.blog.posts.findOne( CrID( id ) );
     if (foundPost) {
         thePost = foundPost;
+        thePost.post_id = id;
         newPost = false;
     }
     else {
-        foundPost = db.blog.drafts.findOne( CrID( id ) );
+        foundPost = db.blog.drafts.findOne({ post_id : id } );
         if(foundPost) {
             thePost = foundPost;
             newPost = false;
         }
     }
 }
+if (!thePost.post_id) thePost.post_id = ObjId();
 
 thePost.title = request.title;
 thePost.content = decodeURIComponent(request.content);
@@ -78,7 +80,6 @@ if ( Blog.extraFields ){
 }
 
 db.blog.drafts.save( thePost );
-thePost = db.blog.drafts.findOne( thePost );
-print(thePost._id);
+print(thePost.post_id);
 
 %>
