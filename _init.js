@@ -1,6 +1,3 @@
-var djang10 = core.templates.djang10();
-djang10.addTemplateRoot(core.blog.pieces);
-
 /*
  *  Blog App Module
  */
@@ -12,13 +9,10 @@ __path__.category();
 __path__.ping();
 
 /*
- *   Array of roots to search, in array order.  Used by embedding apps to override the
- *   template search path.  Adds the default for the blog first, so it's the last one checked
+ *  initialize djang10 framework and add our default templates
  */
-//Blog._templateRoots = ["/core/blog/pieces"];
-Blog._templateRoots = [];
-log("path: "+__path__.pieces);
-Blog._templateRoots.unshift(__path__.pieces);
+var djang10 = core.templates.djang10();
+djang10.addTemplateRoot(core.blog.pieces);
 
 /**
  *   options for this usage.  Set in blog.install.js
@@ -44,7 +38,7 @@ Blog.getModelCallback = function() {
  *  @param {path object} root path to search (ex. __path__.blog.templates)
  */
 Blog.addTemplateRoot = function(root) {
-	Blog._templateRoots.unshift(root);
+	djang10.addTemplateRoot(root);
 }
 
 /**
@@ -59,22 +53,7 @@ Blog.getRoutes = function() {
  *   @param {string} templateName name of template to find.  Do not include extension
  */
 Blog.getTemplate = function(templateName) {
-
-	var result = null;
-
-	//  uses the new "each()" method of JSArray w/ the Ruby foreach() semantics
-	Blog._templateRoots.each(
-		function(root) {
-
-			if (!root) {
-				return;
-			}
-			result = root[templateName];
-			return result == null;
-		 }
-	);
-
-	return result;
+	return djang10.loadTemplate(templateName);
 }
 
 /*
