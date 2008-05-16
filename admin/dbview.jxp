@@ -770,7 +770,16 @@ if(!top) {
     createRecordPanel.render("myMarkedUpContainer");
     document.getElementById("createRecord").style.display = "block";
 
+    var closeDlg = function() {
+        alert("hi");
+        editRowPanel.hide();
+    }
     editRowPanel = new YAHOO.widget.Panel("editRecord", { visible: false, constraintoviewport: true, fixedcenter: true });
+    var kl = new YAHOO.util.KeyListener(document, { keys:27 },
+        { fn:editRowPanel.hide,
+        scope:editRowPanel,
+        correctScope:true } );
+    editRowPanel.cfg.queueProperty("keylisteners", kl);
     editRowPanel.render("myMarkedUpContainer");
     document.getElementById("editRecord").style.display = "block";
 
