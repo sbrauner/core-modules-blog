@@ -10,6 +10,7 @@ Rails.requestFix = function( request , theRoute ){
         REQUEST_PATH : request.getURL()
     };
     
+    cookies = request.getCookies() || {}
 };
 
 Rails.Params = function( request , matchingRoute ){

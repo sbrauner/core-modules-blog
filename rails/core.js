@@ -20,6 +20,7 @@ __path__.utils();
 __path__.lib.all();
 
 __path__.controller();
+__path__.filters();
 __path__.model();
 __path__.viewutils();
 __path__.routes();

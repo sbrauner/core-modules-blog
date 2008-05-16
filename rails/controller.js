@@ -29,49 +29,7 @@ function caches_page( name ){
     SYSOUT( "ignore caches_page [" + name + "]" );
 };
 
-before_filter = function(){
-    
-    if ( ! this.keySet().contains( "beforeFilters" ) ){
-        var old = this.beforeFilters;
-        this.beforeFilters = [];
-        this.beforeFilters._prev = old;
-    }
-    
-    for ( var i=0; i<arguments.length; i++ ){
-        log.rails.init.beforeFilter.info( "added [" + tojson( arguments[i] ) + "] to " + this.beforeFilters.hashCode() );
-        this.beforeFilters.add( arguments[i] );
-    }
-};
 
-ActionController.Base.prototype._before = function( appResponse ){
-    this.__debug();
-    
-    if ( ! this.beforeFilters )
-        return;
-    
-    var a = this.beforeFilters;
-    
-    while ( a ){
-        for ( var i=0; i<a.length; i++ ){
-            var f = a[i];
-            
-            log.rails.beforeFilter[this.shortName].info( "running before filter [" + tojson( f ) + "]" );
-            
-            if ( isString( f ) ){
-                f = appResponse[f];
-            }
-            
-            if ( ! isFunction( f ) ){
-                SYSOUT( "skipping before filter [" + tojson( a[i] ) + "] " );
-                continue;
-            }
-            
-            f.call( appResponse.requestThis );
-        }
-        a = a._prev;
-    }
-
-}
 
 // -----------
 //   dispatch
