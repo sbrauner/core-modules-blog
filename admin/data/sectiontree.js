@@ -17,7 +17,10 @@ var tree = {
     'shell': '/admin/shell',
     'editor': '/admin/ed',
     'git': '/admin/gitLocal',
-    'docs': '/admin/docs',
+    
+ // remove for now until we get this sorted
+ 
+ /*   'docs': '/admin/docs', */
 };
 
 if ( allowModule ){
