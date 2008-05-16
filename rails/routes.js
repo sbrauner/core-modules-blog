@@ -194,7 +194,6 @@ ActionController.Routing.Routes.prototype.with_options = function( options , fun
 ActionController.Routing.Routes.prototype.__notFoundHandler = function( r ){
     if ( r == "_inInit" || ! this._inInit )
         return null;
-    SYSOUT( r );
     var place = this.il;
     return function( name ){ 
         place.error( "ignoring method [" + r + "] name [" + name + "]" );
