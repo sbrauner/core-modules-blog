@@ -27,38 +27,41 @@ ActionController.Base.prototype.render = function( options ){
     if ( ! options )
         throw "are you allowed to pass render nothing?";
 
-    if ( options.partial ){
+    var controllerName = myController.shortName;
+    var pieceName = null;
 
-        var controllerName = myController.shortName;
-        var pieceName = null;
-
-        var blah = options.partial.split( "/" );        
-        if ( blah.length == 2 ){
-            controllerName = blah[0];
-            pieceName = blah[1];
-        }
-        else if ( blah.length == 1 )
-            pieceName = blah[0];
-        else
-            throw "can't handle partial [" + options.partial + "]";
-        
-        var p = local.app.views[ controllerName ][ "_" + pieceName + ".html" ];
-        if  ( ! p )
-            throw "couldn't find [" + options.partial + "]";
-
-
-        // START TOTAL GUESS
-        if ( options.object ){
-            SYSOUT( "options.object : " + options.object );
-            p.getScope( true ).putExplicit( pieceName , options.object );
-        }
-        // END TOTAL GUESS (as if the rest isn't)
-        
-        p.apply( this );
-        return "";
+    var name = null;
+    if ( isString( options ) )
+        name = options;
+    else if ( options.partial )
+        name = options.partial;
+    else
+        throw "cannot render [" + tojson( options ) + "]";
+    
+    var blah = name.split( "/" );        
+    if ( blah.length == 2 ){
+        controllerName = blah[0];
+        pieceName = blah[1];
     }
+    else if ( blah.length == 1 )
+        pieceName = blah[0];
+    else
+        throw "can't handle [" + name + "]";
+    
+    var p = local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ];
+    if  ( ! p )
+        throw "couldn't find [" + name + "]";
+    
 
-    return "don't know what do do with render : " + tojson( options );
+    // START TOTAL GUESS
+    if ( options.object ){
+        SYSOUT( "options.object : " + options.object );
+        p.getScope( true ).putExplicit( pieceName , options.object );
+    }
+    // END TOTAL GUESS (as if the rest isn't)
+        
+    p.apply( this );
+    return "";
 }
 
 

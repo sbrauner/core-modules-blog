@@ -18,6 +18,7 @@ Rails.mapURI = function( uri ){
 ActionController.Base = function(){
     this.shortName = null;
     this.className = null;
+    this.settings = {};
 };
 
 ActionController.Base.prototype.__magic = 17;

@@ -26,7 +26,7 @@ if ( ! myController ){
 
 params = new Rails.Params( request , matchingRoute );
 
-Rails.requestFix( request );
+Rails.requestFix( request , matchingRoute );
 
 session = new CGI.Session.ActiveRecordStore.Session();
 

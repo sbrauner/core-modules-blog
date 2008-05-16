@@ -21,6 +21,11 @@ ActiveRecord.Base.prototype.setConstructor = function( cons ){
 // ---------
 
 
+ActiveRecord.Base.prototype.sum = function( col ){
+    SYSOUT( "sum not working yet" );
+    return -2;
+};
+
 ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
 
@@ -191,6 +196,10 @@ function after_create(){
 
 function after_destroy(){
     SYSOUT( "ignoring before_create" );
+}
+
+function skip_filter(){
+    SYSOUT( "ignoring skip_filter" );
 }
 
 // --

@@ -1,7 +1,15 @@
 
-Rails.requestFix = function( request ){
+Rails.requestFix = function( request , theRoute ){
+
     request.request_uri = request.getURI();
     request.host_with_port = request.getHeader( "Host" );
+    
+    request.path_parameters = theRoute;
+
+    request.env = {
+        REQUEST_PATH : request.getURL()
+    };
+    
 };
 
 Rails.Params = function( request , matchingRoute ){
