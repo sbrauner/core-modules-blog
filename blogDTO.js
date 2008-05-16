@@ -7,6 +7,7 @@ function BlogDTO() {
     this._pages = [];
     this._dateFormat = "F";
     this._baseURL = "/blog";
+    this._blockedIP = null;
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -81,6 +82,14 @@ BlogDTO.prototype.setBaseURL = function(url) {
 
 BlogDTO.prototype.getBaseURL = function() {
     return this._baseURL;
+}
+
+BlogDTO.prototype.setBlockedIP = function(bool) {
+    this._blockedIP = bool;
+}
+
+BlogDTO.prototype.getBlockedIP = function() {
+    return this._blockedIP;
 }
 
 BlogDTO.prototype.setCommentsOpenHeader = function(bool) { this._commentsOpenHeader = bool; }
