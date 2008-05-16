@@ -92,14 +92,14 @@ var callback = blog.getModelCallback();
 if (callback != null) { 
     var callbackResult = callback(model);
 
-	for (f in callbackResult) {
-		if (f == "blogDTO") {
-			log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
-		}
-		else {
-			model[f] = callbackResult[f];
-		}
-	}
+    for (f in callbackResult) {
+        if (f == "blogDTO") {
+            log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
+        }
+        else {
+            model[f] = callbackResult[f];
+        }
+    }
 }
 
 /*
