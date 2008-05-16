@@ -18,7 +18,7 @@ captcha_message
 {% endcomment %}
 
 {% if blogDTO.getPost.commentsEnabled %}
-<a name="comment-form">
+<a name="comment-form"></a>
 <script type="text/javascript">
 {% include 'postCommentJS' %}
 
