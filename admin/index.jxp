@@ -51,7 +51,9 @@ var sectionMap = {
 
     'shell': ['shell'],
 
-    'editor': ['editor', 'editor'],
+ // remove for now until we get this improved
+/*    'editor': ['editor', 'editor'], */
+
     'gitLocal': ['git', 'git'], 
 
 //  remove for now until we get this sorted

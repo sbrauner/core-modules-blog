@@ -15,7 +15,9 @@ var tree = {
         'logScroll': 'Scrolling Logs'
     },
     'shell': '/admin/shell',
-    'editor': '/admin/ed',
+
+ // remove for now until we get this improved
+/*    'editor': '/admin/ed', */
     'git': '/admin/gitLocal',
     
  // remove for now until we get this sorted
