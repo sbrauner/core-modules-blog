@@ -25,6 +25,20 @@ Blog._templateRoots.unshift(__path__.pieces);
 Blog._options = {};
 
 /**
+ *  function to call right before rendering to allow the user to 
+ *  provide a callback to fill the model with additional data
+ */
+Blog._modelCallback = null;
+
+Blog.setModelCallback = function(callback) { 
+	Blog._modelCallback = callback;
+}
+
+Blog.getModelCallback = function() { 
+	return Blog._modelCallback;
+}
+
+/**
  *  Adds a directory for templates to the search path.
  *  @param {path object} root path to search (ex. __path__.blog.templates)
  */
