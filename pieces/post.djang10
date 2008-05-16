@@ -24,6 +24,12 @@ captcha_message
 
 {% extends "blog" %}
 
+{% block pageheader %}
+  {% if not post %}
+    <a href="{{ blogDTO.getBaseURL }}">Back to main page</a>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
 {% if not post %}
