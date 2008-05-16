@@ -31,11 +31,11 @@ Blog._options = {};
 Blog._modelCallback = null;
 
 Blog.setModelCallback = function(callback) { 
-	Blog._modelCallback = callback;
+    Blog._modelCallback = callback;
 }
 
 Blog.getModelCallback = function() { 
-	return Blog._modelCallback;
+    return Blog._modelCallback;
 }
 
 /**
