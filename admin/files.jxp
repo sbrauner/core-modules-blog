@@ -122,10 +122,6 @@ function uploadFileError() {
 }
 
 
-function getFile(id) {
-    location = "file?id="+id;
-}
-
 <%
 
 var theFile = request.getFile( "theFile" );

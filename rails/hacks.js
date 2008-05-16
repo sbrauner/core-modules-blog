@@ -19,3 +19,7 @@ edit_todo_path = function(){
 user_path = function(){
     return "broken user_path";
 }
+
+rescue_from = function(){
+    SYSOUT( "ignoring rescue_from" );
+}

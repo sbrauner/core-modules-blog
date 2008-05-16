@@ -1,9 +1,13 @@
+var nativeHelper = globals[javaStaticProp("ed.appserver.templates.djang10.JSHelper", "NS")];
+
 djang10 = {
     addTemplateRoot : function(newRoot) {
-        var namespace = javaStaticProp("ed.appserver.templates.djang10.JSHelper", "NS")
-        globals[namespace].addTemplateRoot(newRoot);
+        nativeHelper.addTemplateRoot(newRoot);
+    },
+    
+    loadTemplate : function(name) {
+        return nativeHelper.loadPath(name);
     }
-
 };
 
 return djang10;

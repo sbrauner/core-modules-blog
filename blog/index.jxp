@@ -1,7 +1,4 @@
 <%
-// render the default page header
-htmlheader();
-
 
 /* If there is one post, show it.  If there is more than one post, display a page
  * of post snippets.  If there are no posts, display a default empty blog page.
@@ -21,12 +18,15 @@ core.blog.blogDTO();
 
 var result = blog.handleRequest(request);
 
+/* check that the ip isn't blocked */
+var blocked = BlogUtils.isBlockedIP(request.getRemoteIP());
+
 /*
  *  if we are adding a comment, handle it and pray that the comment gets added
  */
 var isComment = (request && request.addComment == "yes");
 
-if (isComment) {
+if (isComment && !blocked) {
 	blog.handlePosts(request, result.posts[0], user);
 }
 
@@ -36,9 +36,9 @@ if (isComment) {
 var blogDTO = new BlogDTO();
 
 blogDTO.setUser(user);
-blogDTO.setRecentPosts(blogUtils.getRecentPosts(5));
 blogDTO.setCategories(blogUtils.getCategories());
 blogDTO.setBaseURL(routes.find(Blog.routes));
+blogDTO.setBlockedIP(blocked);
 
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
@@ -72,13 +72,36 @@ else {
 }
 
 if (template == null) {
-	// template == error
+	log.blog("ERROR : template = null");
+	print("Sorry - programming error.");
+	return;
 }
 
 log.blogcontroller("Chose template : " + template);
 
-template({ blogDTO : blogDTO });
+var model = {blogDTO : blogDTO};
+var callback = blog.getModelCallback();
 
-// render the default page footer
-htmlfooter();
+/*
+ * call the user callback to give user code a chance to add to the model
+ */
+
+if (callback != null) {
+    var callbackResult = callback(model);
+
+    for (f in callbackResult) {
+
+        if (f == "blogDTO") {
+            log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
+        }
+        else {
+            model[f] = callbackResult[f];
+        }
+    }
+}
+
+/*
+ *  now render the template
+ */
+template(model);
 %>

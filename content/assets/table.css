@@ -181,9 +181,6 @@ table.htmltable tr.white-main td {
 	font-size: 11px;
 }
 
-input {
-}
-
 table.htmltable tr.white-main td.lmod {
 	padding: .5em 0 1.5em 1em;
 }
@@ -432,54 +429,6 @@ table.htmltable tr.paging-bottom td.right {
 	color: #555656;
 }
 
-/* Form Edit */
-
-form.edit {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */s
-  margin: 0;
-  padding: 0;
-  font-size: 12px;
-}
-
-form.edit textarea {
-  width: auto;
-}
-
-form.edit fieldset, div.fieldset {
-	width: auto;
-  	border: 1px solid #dddddd;
-  	padding: 20px 10px;        /* padding in fieldset support spotty in IE */
-  	margin: 0;
-  	/ * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
-}
-
-form.edit input.text {
-  border: 1px solid #cccccc;
-  width: 200px;
-}
-
-form.edit label {
-	display: block;  /* block float the labels to left column, set a width */
-	float: left;
-	width: 200px;
-	padding: 0;
-	margin: 8px 0 0; /* set top margin same as form input - textarea etc. elements */
-	text-align: right;
-}
-
-form.edit input, form.edit textarea, form.edit select {
-	/* display: inline; inline display must not be set or will hide submit buttons in IE 5x mac */
-	width:auto;      /* set width of form elements to auto-size, otherwise watch for wrap on resize */
-	margin:5px 0 0 10px; /* set margin on left of form elements rather than right of
-                              label aligns textarea better in IE */
-}
-
-form.edit textarea { overflow: auto; }
-
-form.edit .required{font-weight:bold;} /* uses class instead of div, more efficient */
-
-form.edit br {
-	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
-}
 
 /* Footer */
 
@@ -493,84 +442,11 @@ p.footer {
 
 /* Layout */
 
-div.float-left {
-	float: left;
-}
-
-div.float-right {
-	float: right;
-}
-
-div.container {
-	min-width: 975px;
-}
-
-div.content {
-	margin: 0 10px 0 180px;
-}
 table.htmltable {
 	padding: 0 16px 0 18px;
-}
-div.topbar {
-	height: 80px;
-	line-height: 80px;
-}
-
-div.wrapper {
-	float:left;
-	width:100%;
-}
-
-div.leftcolumn {
-	float: left;
-	width: 170px;
-	margin-left: -100%;
-	text-align: right;
-}
-
-div.extra{
-	float: left;
-	width: 10px;
-	margin-left: -10px;
-}
-
-div.onecolumn {
-	clear:left;
-	width:100%;
 }
 
 tr.white-main td {
     white-space: nowrap;
-}
-
-td div.nofield {
-    text-align: center;
-    background: #CCCCCC;
-}
-td div.nullfield {
-    color: #CCCCCC;
-    font-style: italic;
-}
-
-div.twocolumns {
-	overflow: auto;
-	width: 100%
-}
-
-div.twocolumns div.left {
-	width: 45%;
-	float: left;
-}
-
-div.twocolumns div.right {
-	width: 45%;
-	float: right;
-}
-div.existing_index {
-        margin-left: 18px;
-        font-style: italic;
-}
-div.existing_index span {
-        font-size: 10px;
 }
 

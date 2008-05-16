@@ -19,8 +19,6 @@ MapperFilter.matchURI = function(uri)  {
             break;
         }
     }
-
-    log.djang10("WOOG : " + tojson(match_array));
     
     if (duple == null) {
         return null;

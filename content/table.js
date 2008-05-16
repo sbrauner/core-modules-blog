@@ -143,8 +143,9 @@ function htmltable(specs) {
         var currentPage = request.currentPage || this.specs.currentPage || 1;
         var rowsPerPage = request.rowsPerPage || this.specs.rowsPerPage || 100;
 
-        if ( this.specs.actions && this.specs.actions.length > 0 )
+        if ( this.specs.actions && this.specs.actions.length > 0 ) {
             displaycolnames.push( "Actions" );
+        }
 
         var sort = this._sort();
         var u = new URL(request.getURL());
@@ -224,8 +225,10 @@ function htmltable(specs) {
         if ( this.specs.actions && this.specs.actions.length != 0){
             var acts = "";
             colnames.push( "actions" );
+            th.push({ heading: "Actions" });
             for(var count=0; count<rows.length; count++) {
                 for ( var i=0; i<this.specs.actions.length; i++ ){
+                    obj = dbResult[count];
                     var action = this.specs.actions[i];
                     acts += "<form method='post'>" ;
                     acts += "<input type='hidden' name='_id' value='" + obj._id + "'>" ;
@@ -233,6 +236,7 @@ function htmltable(specs) {
                     acts += "</form>" ;
                 }
                 rows[count]["actions"] = ({value: acts});
+                acts = "";
             }
         }
 

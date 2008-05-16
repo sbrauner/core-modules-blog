@@ -6,8 +6,8 @@ function BlogDTO() {
     this._pageTitle = null;
     this._pages = [];
     this._dateFormat = "F";
-    this._commentsEnabled = false;
     this._baseURL = "/blog";
+    this._blockedIP = null;
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -17,6 +17,7 @@ function BlogDTO() {
     this._commentURL = null;
     this._commentText = null;
     this._captchaMessage = null;
+
 };
 
 BlogDTO.prototype.setUser = function(name) {
@@ -25,14 +26,6 @@ BlogDTO.prototype.setUser = function(name) {
 
 BlogDTO.prototype.getUser = function() {
     return this._user;
-}
-
-BlogDTO.prototype.setRecentPosts = function(postArr) {
-    this._recentPostArray = postArr;
-}
-
-BlogDTO.prototype.getRecentPosts = function() {
-	return this._recentPostArray;
 }
 
 BlogDTO.prototype.setCategories = function(catArr) {
@@ -83,20 +76,20 @@ BlogDTO.prototype.getDateFormat = function() {
     return this._dateFormat;
 }
 
-BlogDTO.prototype.setCommentsEnabled = function(bool) {
-    this._commentsEnabled = bool;
-}
-
-BlogDTO.prototype.getCommentsEnabled = function() {
-    return this._commentsEnabled;
-}
-
 BlogDTO.prototype.setBaseURL = function(url) {
     this._baseURL = url;
 }
 
 BlogDTO.prototype.getBaseURL = function() {
     return this._baseURL;
+}
+
+BlogDTO.prototype.setBlockedIP = function(bool) {
+    this._blockedIP = bool;
+}
+
+BlogDTO.prototype.getBlockedIP = function() {
+    return this._blockedIP;
 }
 
 BlogDTO.prototype.setCommentsOpenHeader = function(bool) { this._commentsOpenHeader = bool; }

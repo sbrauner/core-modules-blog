@@ -18,9 +18,22 @@ Rails.mapURI = function( uri ){
 ActionController.Base = function(){
     this.shortName = null;
     this.className = null;
+    
+    this.settings = {};
+
 };
 
 ActionController.Base.prototype.__magic = 17;
+
+function caches_page( name ){
+    SYSOUT( "ignore caches_page [" + name + "]" );
+};
+
+
+
+// -----------
+//   dispatch
+// -----------
 
 ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
@@ -53,27 +66,11 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
     
     // --- invoke action
 
+    this._before( appResponse );
+
     f.call( appResponse.requestThis );
     
     if ( ! appResponse.anythingRendered ){
-        /*
-        if ( ! local.app.views )
-            throw "no views directory";
-        
-        if ( ! local.app.views[ this.shortName ] )
-            throw "no views directory for " + this.shortName;
-        
-        var viewName = Rails.unmangleName( matchingRoute.action );
-        
-
-        var view = local.app.views[ this.shortName ][viewName];
-        if ( ! view )
-            view = local.app.views[ this.shortName ][viewName + ".html" ];
-        if ( ! view )
-            throw "no view for " + this.shortName + "." + viewName;
-        
-        view.call( appResponse.requestThis );
-*/
         appResponse.html();
     }
 
@@ -85,6 +82,7 @@ ActionController.Base.prototype.toString = function(){
 };
 
 
+// ----
 
 function ApplicationResponse( controller , method ){
 
@@ -136,7 +134,6 @@ ApplicationResponse.prototype.html = function(){
 
     if ( Rails.helpers.application ){
         Object.extend( this.requestThis , Rails.helpers.application );
-        SYSOUT ( "HERE : " + this.requestThis.keySet() );
     }
     
     if ( Rails.helpers[ this.controller.shortName ] ){
@@ -183,17 +180,4 @@ ApplicationResponse.prototype.html = function(){
 
 ApplicationResponse.prototype.xml = function(){
     return false;
-};
-
-
-// ---------
-// data model
-// ---------
-
-function caches_page( name ){
-    SYSOUT( "ignore caches_page [" + name + "]" );
-};
-
-function before_filter( name ){
-    SYSOUT( "ignore before_filter [" + name + "]" );
 };
