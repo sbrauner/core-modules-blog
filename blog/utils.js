@@ -47,4 +47,11 @@ BlogUtils.getPages = function(count) {
     });
 }
 
+BlogUtils.isBlockedIP = function(ip) {
+    if(!ip && request) ip = request.getRemoteIP();
+    if ( db.blog.blocked.findOne( { ip : ip } ) )
+        return true;
+    return false;
+}
+
  return BlogUtils;
