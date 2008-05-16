@@ -6,8 +6,8 @@ var obj = arguments[0] || {};
 // in the section tree, thereby rendering no links.
 var sectionList = obj.sectionList || ["$"];
 
-var sectionTree = core.admin.data.sectiontree();
-
+var sectionTree = core.admin.data.sectiontree().tree;
+log(tojson(sectionList));
 %>
 <script>
 var toggleDisplay = function(elemId){
@@ -68,7 +68,7 @@ var toggleClass = function(elemId){
                   if(subkey == "$") continue;
                       %>
               <li>
-                <a href="/admin/<%= subkey %>"><%= sectionTree[key][subkey] %>
+                <a href="/admin/<%= sectionTree[key].$? sectionTree[key].$+'/': '' %><%= subkey %>"><%= sectionTree[key][subkey] %>
 				<% if(subkey == sectionList[1]) { %>
 					<img src="/~~/admin/assets/img/icon_leftnav_active.gif" />
 				<% } %>

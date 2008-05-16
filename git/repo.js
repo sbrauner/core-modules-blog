@@ -448,7 +448,10 @@ Object.extend(git.Repo.prototype, {
             }
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
-                if(! exec) throw ("holy crap, failed to parse " + statlines[i]);
+                if (!exec) {
+                	log.admingit("repo.js : _parseStatus() : Error : failed to parse " + statlines[i]);
+                	return null;
+                }
                 file = {name: exec[1]};
             }
 

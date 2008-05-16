@@ -1,5 +1,7 @@
 <link type="text/css" rel="stylesheet" href="/~~/blog/assets/blog.css" />
 
+{% block pageheader %}
+{% endblock %}
 
 <div id="blog-main">
 
@@ -14,7 +16,7 @@
         </p>
       </form>
 
-      {% for item in blogDTO.getSidebar %}
+      {% for item in sidebar %}
         <h2>{{ item.title }}</h2>
         {% if item.include %}
           {% include item.include %}
@@ -48,3 +50,7 @@
 <div id="blog-footer">
 Powered by 10gen.
 </div>
+
+{% block pagefooter %}
+{% endblock %}
+
