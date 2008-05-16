@@ -7,7 +7,6 @@ function BlogDTO() {
     this._pages = [];
     this._dateFormat = "F";
     this._baseURL = "/blog";
-    this._sidebar = {};
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -74,14 +73,6 @@ BlogDTO.prototype.setDateFormat = function(format) {
 
 BlogDTO.prototype.getDateFormat = function() {
     return this._dateFormat;
-}
-
-BlogDTO.prototype.setSidebar = function(sidebarObj) {
-    this._sidebar = sidebarObj;
-}
-
-BlogDTO.prototype.getSidebar = function() {
-    return this._sidebar;
 }
 
 BlogDTO.prototype.setBaseURL = function(url) {
