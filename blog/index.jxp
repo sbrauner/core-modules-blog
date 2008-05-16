@@ -18,12 +18,15 @@ core.blog.blogDTO();
 
 var result = blog.handleRequest(request);
 
+/* check that the ip isn't blocked */
+var blocked = BlogUtils.isBlockedIP(request.getRemoteIP());
+
 /*
  *  if we are adding a comment, handle it and pray that the comment gets added
  */
 var isComment = (request && request.addComment == "yes");
 
-if (isComment) {
+if (isComment && !blocked) {
 	blog.handlePosts(request, result.posts[0], user);
 }
 
@@ -35,6 +38,7 @@ var blogDTO = new BlogDTO();
 blogDTO.setUser(user);
 blogDTO.setCategories(blogUtils.getCategories());
 blogDTO.setBaseURL(routes.find(Blog.routes));
+blogDTO.setBlockedIP(blocked);
 
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
@@ -76,17 +80,17 @@ if (template == null) {
 log.blogcontroller("Chose template : " + template);
 
 var model = {blogDTO : blogDTO};
-var callback = blog.getModelCallback(); 
+var callback = blog.getModelCallback();
 
 /*
  * call the user callback to give user code a chance to add to the model
  */
- 
-if (callback != null) { 
+
+if (callback != null) {
     var callbackResult = callback(model);
 
     for (f in callbackResult) {
-    	
+
         if (f == "blogDTO") {
             log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
         }
