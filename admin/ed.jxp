@@ -1,1 +1,11 @@
-<% core.admin.editor.ed( { baseURL : "/~~/admin/editor/" } ); %>
+<% 
+
+var f = core.admin.editor;
+
+if (f != null) {
+	f.ed( { baseURL : "/~~/admin/editor/" } ); 
+}
+else { 
+	print ("Editor currently not installed.");
+}	
+%>
