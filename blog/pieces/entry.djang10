@@ -35,6 +35,8 @@ dateline - Text appearing before the date field.  Defaults to "".
 </div>
 
 {% if post.commentsEnabled and post.comments.length %}
-  <p style="padding-bottom: 0; "><a href="#comment-form">Add a Comment</a></p>
+  {% if not mainpage %}
+    <p style="padding-bottom: 0; "><a href="#comment-form">Add a Comment</a></p>
+  {% endif %}
 {% endif %}
 
