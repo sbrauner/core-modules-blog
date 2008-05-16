@@ -36,7 +36,7 @@ ActiveRecord.Base.prototype.find = function( filter ){
         return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
 
-    return db[ this.collectionName ].find().toArray();
+    return db[ this.collectionName ].find().toArray() || [];
 };
 
 ActiveRecord.Base.prototype.save = function(){
@@ -223,8 +223,16 @@ function has_many( name ){
     SYSOUT( "ignoring has_many [" + name + "]" );
 }
 
+function has_one(){
+    SYSOUT( "ignoring has_one" );
+}
+
 function has_and_belongs_to_many( name , option ){
     SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
+}
+
+function has_attachment(){
+    SYSOUT( "ignoring has_attachment" );
 }
 
 // -----
@@ -267,6 +275,14 @@ function validates_uniqueness_of( name , options ){
     SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
 }
 
+function validates_confirmation_of(){
+    SYSOUT( "ignoring validates_confirmation_of" );
+}
+
+function validates_numericality_of(){
+    SYSOUT( "ignoring validates_numericality_of" );
+}
+
 // --
 
 function with_options( options ){
@@ -283,6 +299,10 @@ function helper( name ){
 
 function filter_parameter_logging(){
     SYSOUT( "ignoring filter_parameter_logging " );
+}
+
+function tz_time_attributes(){
+    SYSOUT( "ignoring tz_time_attributes" );
 }
 
 // ---
