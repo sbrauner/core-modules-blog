@@ -11,6 +11,7 @@ Optional parameters:
 
 {% extends "blog" %}
 
+
 {% block content %}
 
 <div class="posts-block">

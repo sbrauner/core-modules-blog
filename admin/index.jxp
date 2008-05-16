@@ -26,7 +26,6 @@ sectionName = sectionName.replace(/\/(index)?$/, '');
 if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
 
-
 var sectionMap = core.admin.data.sectiontree().reverse;
 
 var sectionList = sectionMap[sectionName];
