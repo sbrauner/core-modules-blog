@@ -4,6 +4,7 @@ djang10 = {
     addTemplateRoot : function(newRoot) {
         nativeHelper.addTemplateRoot(newRoot);
     },
+    
     loadTemplate : function(name) {
         return nativeHelper.loadPath(name);
     }
