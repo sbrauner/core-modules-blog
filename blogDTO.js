@@ -6,7 +6,6 @@ function BlogDTO() {
     this._pageTitle = null;
     this._pages = [];
     this._dateFormat = "F";
-    this._commentsEnabled = false;
     this._baseURL = "/blog";
     this._sidebar = {};
 
@@ -83,14 +82,6 @@ BlogDTO.prototype.setSidebar = function(sidebarObj) {
 
 BlogDTO.prototype.getSidebar = function() {
     return this._sidebar;
-}
-
-BlogDTO.prototype.setCommentsEnabled = function(bool) {
-    this._commentsEnabled = bool;
-}
-
-BlogDTO.prototype.getCommentsEnabled = function() {
-    return this._commentsEnabled;
 }
 
 BlogDTO.prototype.setBaseURL = function(url) {
