@@ -51,9 +51,14 @@ var parseStatus = function(){
     // Get current status of working directory.
     var parsed = g.status().parsed;
 
+	if (!parsed) {
+		print("Sorry - there was a problem parsing the results of the git command.  Please see log.<br/>");
+		return null;
+	}
+	
     newfiles = {};
     // Marge staged and changed so that files only appear once, changed first.
-    if(parsed.staged){
+    if (parsed.staged){
         var files = {};
         parsed.staged.forEach(function(z){
             files[z.name] = z.type;
@@ -234,6 +239,13 @@ else if ( request.action && request.action.match(/^add_/)){
 }
 
 var parsed = parseStatus();
+
+/*
+ *   if we didn't parse, just bail
+ */
+if (!parsed) { 
+	return;
+}
 
 var changedbuttons = [{name: 'checkout', disabled: conflicts, onclick: "showConfirm(this); return false"}, 
     {name: g.mergeMessage()?'commit_as_res':'commit', disabled: (Object.keys(unmerged).length != 0)}];

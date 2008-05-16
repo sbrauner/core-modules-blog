@@ -15,7 +15,8 @@ __path__.ping();
  *   Array of roots to search, in array order.  Used by embedding apps to override the
  *   template search path.  Adds the default for the blog first, so it's the last one checked
  */
-Blog._templateRoots = ["/corejs/blog/pieces"];
+//Blog._templateRoots = ["/core/blog/pieces"];
+Blog._templateRoots = [];
 log("path: "+__path__.pieces);
 Blog._templateRoots.unshift(__path__.pieces);
 
@@ -23,6 +24,20 @@ Blog._templateRoots.unshift(__path__.pieces);
  *   options for this usage.  Set in blog.install.js
  */
 Blog._options = {};
+
+/**
+ *  function to call right before rendering to allow the user to 
+ *  provide a callback to fill the model with additional data
+ */
+Blog._modelCallback = __path__.modelCallbackDefault;
+
+Blog.setModelCallback = function(callback) { 
+    Blog._modelCallback = callback;
+}
+
+Blog.getModelCallback = function() { 
+    return Blog._modelCallback;
+}
 
 /**
  *  Adds a directory for templates to the search path.

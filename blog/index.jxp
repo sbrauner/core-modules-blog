@@ -1,7 +1,4 @@
 <%
-// render the default page header
-htmlheader();
-
 
 /* If there is one post, show it.  If there is more than one post, display a page
  * of post snippets.  If there are no posts, display a default empty blog page.
@@ -37,12 +34,6 @@ var blogDTO = new BlogDTO();
 
 blogDTO.setUser(user);
 blogDTO.setCategories(blogUtils.getCategories());
-blogDTO.setSidebar( [ { title: "recent posts", posts: blogUtils.getRecentPosts(5) },
-                      { title: "categories", include : "categories" },
-                      { title: "most popular", posts: Post.getMostPopular(5, 100) },
-                      { title: "most commented", posts: Post.getMostCommented(5, 100) },
-                      { title: "pages", posts: blogUtils.getPages() }
-                    ] );
 blogDTO.setBaseURL(routes.find(Blog.routes));
 
 /*
@@ -77,13 +68,36 @@ else {
 }
 
 if (template == null) {
-	// template == error
+	log.blog("ERROR : template = null");
+	print("Sorry - programming error.");
+	return;
 }
 
 log.blogcontroller("Chose template : " + template);
 
-template({ blogDTO : blogDTO });
+var model = {blogDTO : blogDTO};
+var callback = blog.getModelCallback(); 
 
-// render the default page footer
-htmlfooter();
+/*
+ * call the user callback to give user code a chance to add to the model
+ */
+ 
+if (callback != null) { 
+    var callbackResult = callback(model);
+
+    for (f in callbackResult) {
+    	
+        if (f == "blogDTO") {
+            log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
+        }
+        else {
+            model[f] = callbackResult[f];
+        }
+    }
+}
+
+/*
+ *  now render the template
+ */
+template(model);
 %>
