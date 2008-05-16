@@ -13,7 +13,7 @@ Optional parameters:
 
 
 {% block content %}
-
+{% set mainpage = "1" %}
 <div class="posts-block">
   {% for post in blogDTO.getPostArray %}
     <div id="post-{{ post._id }}" class="post">
