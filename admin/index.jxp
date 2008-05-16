@@ -27,50 +27,7 @@ if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
 
 
-// Maps jxp names to sections
-var sectionMap = {
-    'statistics' : ['statistics', 'usage'],
-    'usage' : ['statistics', 'usage'],
-
-    'users': ['users'],
-    'user': ['users'],
-
-    'database': ['database', 'dbview'],
-    'dbview': ['database', 'dbview'],
-    'dbprofile': ['database', 'dbprofile'],
-    'dbshell' : ['database', 'dbshell'],
-
-    'files': ['files'],
-
-    'cron': ['cron'],
-    'editCron': ['cron'],
-
-    'logs': ['logs', 'logScroll'],
-    'logScroll': ['logs', 'logScroll'],
-    'logMemory': ['logs', 'logMemory'],
-
-    'shell': ['shell'],
-
-    'editor': ['editor', 'editor'],
-    'gitLocal': ['git', 'git'], 
-
-//  remove for now until we get this sorted
-
-	/* 'doc': ['docs'], */
-    'applications': ['applications'],
-};
-
-for(var key in allowModule){
-    var appNav = admin.getAppNav(key);
-
-    for(var i in appNav){
-        var pair = appNav[i];
-        var name = key;
-        if(pair.target != false)
-            name += '/'+pair.target;
-        sectionMap[name] = [key, pair.target];
-    }
-}
+var sectionMap = core.admin.data.sectiontree().reverse;
 
 var sectionList = sectionMap[sectionName];
 
