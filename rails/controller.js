@@ -18,10 +18,49 @@ Rails.mapURI = function( uri ){
 ActionController.Base = function(){
     this.shortName = null;
     this.className = null;
+    
     this.settings = {};
+    
+    this.beforeFilters = [];
+    
+    
 };
 
 ActionController.Base.prototype.__magic = 17;
+
+function caches_page( name ){
+    SYSOUT( "ignore caches_page [" + name + "]" );
+};
+
+before_filter = function(){
+    for ( var i=0; i<arguments.length; i++ )
+        this.beforeFilters.add( arguments[i] );
+};
+
+ActionController.Base.prototype._before = function( appResponse ){
+    if ( this.getSuper() && this.getSuper()._before )
+        this.getSuper()._before( appResponse );
+
+    for ( var i=0; i<this.beforeFilters.length; i++ ){
+        var f = this.beforeFilters[i];
+        
+        if ( isString( f ) ){
+            f = appResponse[f];
+        }
+        
+        if ( ! isFunction( f ) ){
+            SYSOUT( "skipping before filter [" + tojson( this.beforeFilters[i] ) + "]" );
+            continue;
+        }
+        
+        f.call( appResponse.requestThis );
+    }
+
+}
+
+// -----------
+//   dispatch
+// -----------
 
 ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
@@ -54,27 +93,11 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
     
     // --- invoke action
 
+    this._before( appResponse );
+
     f.call( appResponse.requestThis );
     
     if ( ! appResponse.anythingRendered ){
-        /*
-        if ( ! local.app.views )
-            throw "no views directory";
-        
-        if ( ! local.app.views[ this.shortName ] )
-            throw "no views directory for " + this.shortName;
-        
-        var viewName = Rails.unmangleName( matchingRoute.action );
-        
-
-        var view = local.app.views[ this.shortName ][viewName];
-        if ( ! view )
-            view = local.app.views[ this.shortName ][viewName + ".html" ];
-        if ( ! view )
-            throw "no view for " + this.shortName + "." + viewName;
-        
-        view.call( appResponse.requestThis );
-*/
         appResponse.html();
     }
 
@@ -86,6 +109,7 @@ ActionController.Base.prototype.toString = function(){
 };
 
 
+// ----
 
 function ApplicationResponse( controller , method ){
 
@@ -184,17 +208,4 @@ ApplicationResponse.prototype.html = function(){
 
 ApplicationResponse.prototype.xml = function(){
     return false;
-};
-
-
-// ---------
-// data model
-// ---------
-
-function caches_page( name ){
-    SYSOUT( "ignore caches_page [" + name + "]" );
-};
-
-function before_filter( name ){
-    SYSOUT( "ignore before_filter [" + name + "]" );
 };

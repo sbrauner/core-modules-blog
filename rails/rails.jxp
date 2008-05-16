@@ -31,5 +31,6 @@ Rails.requestFix( request , matchingRoute );
 session = new CGI.Session.ActiveRecordStore.Session();
 
 myController.dispatch( request , response , matchingRoute );
+
 %>
 
