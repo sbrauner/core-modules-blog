@@ -13,7 +13,6 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
-        log("id: "+id);
         foundPost = db.blog.drafts.findOne( { post_id : ObjId(id) } );
         if (foundPost) {
             thePost = foundPost;
