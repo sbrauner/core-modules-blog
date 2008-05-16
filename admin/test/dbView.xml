@@ -53,7 +53,7 @@
       <clickElement xpath="//div[@id='myCollection']//*[contains(text(), '${id_1}')]/ancestor::tr//img[contains(@onclick, 'delete')]"/>
       <clickElement xpath="//button[text()='Yes']" />
 
-      <sleep seconds="1"/>
+      <sleep seconds="2"/>
       <verifyXPath xpath="count(//div[@id='myCollection']//a)+1=${numOfLinks}"/>
 
       <not>
