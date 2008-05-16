@@ -212,6 +212,9 @@ ActionController.Routing.Routes.draw = function( f ){
 // ---  runtime  -----
 // --------------------------
 
+/**
+* @return Rails.Route
+*/
 ActionController.Routing.Routes.prototype.find = function( request ){
     var state = new RailsURI( request.getURI() );
     log.rails.routes.info( "incoming : " + state );
