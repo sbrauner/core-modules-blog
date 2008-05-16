@@ -5,7 +5,8 @@ var tree = [
     {pretty: 'Pages', target: 'pages'},
     {pretty: 'Categories', target: 'categories'},
     {pretty: '404s', target: 'missing'},
-    {pretty: 'Comments', target: 'comments'}
+    {pretty: 'Comments', target: 'comments'},
+    {pretty: 'Blocked IPs', target: 'blockIP'}
 ];
 
 var reverse = {
