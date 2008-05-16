@@ -82,7 +82,30 @@ if (template == null) {
 
 log.blogcontroller("Chose template : " + template);
 
-template({ blogDTO : blogDTO });
+var model = {blogDTO : blogDTO};
+var callback = blog.getModelCallback(); 
+
+/*
+ * call the user callback to give user code a chance to add to the model
+ */
+ 
+if (callback != null) { 
+    var callbackResult = callback(model);
+
+	for (f in callbackResult) {
+		if (f == "blogDTO") {
+			log.blogcontroller("WARNING : model callback returned a 'blogDTO' object.  Dropping.");
+		}
+		else {
+			model[f] = callbackResult[f];
+		}
+	}
+}
+
+/*
+ *  now render the template
+ */
+template(model);
 
 // render the default page footer
 htmlfooter();
