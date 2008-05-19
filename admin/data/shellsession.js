@@ -34,7 +34,6 @@ Object.extend(admin.data.ShellSession.prototype, {
     getCommands : function(mode){
         mode = mode || 'js';
         var history = this.get(mode);
-        log(tojson(history));
         if(history)
             return history.commands.map(Ext.pluck('input'));
         return [];
