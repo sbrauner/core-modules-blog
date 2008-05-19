@@ -25,6 +25,10 @@ javascript_include_tag = function(){
     return html;
 }
 
+javascript_tag = function( code ){
+    return "<script>" + code + "</script>";
+}
+
 auto_discovery_link_tag = function(){
     // TODO
     return "";
