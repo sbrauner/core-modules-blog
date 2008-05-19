@@ -19,6 +19,9 @@ Rails.Filter.prototype.skip = function( route ){
     if ( this.options.except && this.options.except.contains( route.action ) )
         return true;
     
+    if ( this.options.only && ! this.options.only.contains( route.action ) )
+        return true;
+    
     return false;
 }
 
