@@ -19,7 +19,7 @@ if (id) {
         newPost = false;
     }
     else {
-        foundPost = db.blog.drafts.findOne({ post_id : id } );
+        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) } );
         if(foundPost) {
             thePost = foundPost;
             newPost = false;
@@ -66,7 +66,7 @@ thePost.live = parseBool( request.live );
 thePost.commentsEnabled = parseBool(request.commentsEnabled);
 thePost.suppressImage = parseBool( request.suppressImage );
 
-if ( Blog.extraFields ){
+/*if ( Blog.extraFields ){
     for ( var extraFieldName in Blog.extraFields ){
 	var extraVal = request[ "extra_" + extraFieldName ];
 	var extraConfig = Blog.extraFields[extraFieldName];
@@ -77,7 +77,7 @@ if ( Blog.extraFields ){
 	}
 	thePost[ extraFieldName ] = extraVal;
     }
-}
+}*/
 
 db.blog.drafts.save( thePost );
 print(thePost.post_id);
