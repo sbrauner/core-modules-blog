@@ -23,19 +23,11 @@ captcha_message
 <script type="text/javascript">
 {% include 'postCommentJS' %}
 
-function checkComment() {
-    if(document.getElementById("txt").value == "") { return invalidTxt(); }
-    {% if not blogDTO.getUser %}
-    if(document.getElementById("yourname").value == "") { return invalidName(); }
-    if(document.getElementById("email").value == "") { return invalidEmail(); }
-    {% endif %}
-    return true;
-}
 </script>
 
    <h2 class="comments-open-header">{{ blogDTO.getCommentsOpenHeader|default:"add a comment" }}</h2>
    <div class="comments container">
-       <form method="post" name="comment" id="comments-form" onsubmit="return checkComment()" class="search">
+       <form method="post" name="comment" id="comments-form" onsubmit="return customFormSubmit()" class="search">
 	 <input type="hidden" name="addComment" value="yes" />
 
          <p>
@@ -54,7 +46,7 @@ function checkComment() {
 		<div><input class="text" name="captcha" /></div>
              </div>
            {% endif %}
-	   <input name="action" type="submit" value="Submit" class="Post" /> <br />
+	   <input name="action" id="submitComment" type="submit" value="Submit" class="Post" /> <br />
          </p>
        </form>
        <a name="comments" style="border: none; "></a>
