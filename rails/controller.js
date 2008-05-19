@@ -105,16 +105,6 @@ ApplicationResponse.prototype.html = function(){
     }
     var blah = this.requestThis;
 
-    blah.__notFoundHandler = function( thing ){
-        if ( thing.endsWith( "_path" ) ){
-            return function(z){
-                return "BROKEN : " + z;
-            }
-        }
-        return null;
-    }
-
-
     if ( ! local.app.views )
         throw "no views directory";
     

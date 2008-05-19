@@ -45,10 +45,12 @@ Rails.InternalRoute = function( uri , options ){
 Rails.InternalRoute.prototype.addGlobals = function(){
     var ir = this;
     var f = function( options ){
-        return "broken152";
+        if ( options )
+            return "broken152";
+        return ir.uri;
     }
-    globals.putExplicit( options.name + "_url" , f );
-    globals.putExplicit( options.name + "_path" , f );
+    globals.putExplicit( this.options.name + "_url" , f );
+    globals.putExplicit( this.options.name + "_path" , f );
 };
 
 Rails.InternalRoute.prototype.match = function( request , other ){
@@ -127,6 +129,7 @@ ActionController.Routing.Routes.prototype.home = function( r , options ){
     this.il.error( "routes.home is probably broken" );
     //this._home = new Rails.InternalRoute( r , options );
     //this.connect( r , options );
+    globals.putExplicit( "root_path" , "/" );
 };
 
 ActionController.Routing.Routes.prototype.root = ActionController.Routing.Routes.prototype.home;
@@ -251,7 +254,7 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     
     if ( ! thing )
-        throw "can't link to null";
+        return "/NULL";
 
     if ( isString( thing ) )
         return thing;
