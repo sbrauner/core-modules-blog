@@ -19,7 +19,7 @@ if (id) {
         newPost = false;
     }
     else {
-        foundPost = db.blog.drafts.findOne({ post_id : id } );
+        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) } );
         if(foundPost) {
             thePost = foundPost;
             newPost = false;
