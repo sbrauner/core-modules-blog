@@ -215,6 +215,7 @@ Blog.handleRequest = function( request , arg ){
 };
 
 Blog.handlePosts = function( request , thePost , user ){
+
     if ( user && user.isAdmin() && request.action == "delete" ) {
         thePost.deleteComment( request.cid );
         db.blog.posts.save( thePost );
@@ -256,6 +257,11 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.ts = new Date();
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
+            log("ip: "+comment.ip);
+            if(db.blog.blocked.find({ ip: comment.ip })) {
+                log("A blocked IP tried to comment");
+                throw "This ip is blocked from commenting.";
+            }
 
 	    comment.url = Blog.fixCommentURL( comment.url );
 
