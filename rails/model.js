@@ -39,7 +39,18 @@ ActiveRecord.Base.prototype.find = function( filter ){
     return db[ this.collectionName ].find().toArray() || [];
 };
 
+ActiveRecord.Base.prototype._checkTS = function( name ){
+    if ( ! this[ name ] )
+        this[name] = new Date();
+}
+
 ActiveRecord.Base.prototype.save = function(){
+    this._checkTS( "created_at" );
+    this._checkTS( "created_on" );
+    
+    this.updated_at = new Date();
+    this.updated_on = new Date();
+    
     db[this.collectionName].save( this );
     return true;
 };
@@ -160,8 +171,8 @@ ActiveRecord.Base.prototype.submit = function( name ){
 };
 
 
-ActiveRecord.Base.prototype.paginate = function(){
-    return [];
+ActiveRecord.Base.prototype.paginate = function( options ){
+    return db[ this.collectionName ].find().toArray() || [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){

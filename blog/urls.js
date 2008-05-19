@@ -184,7 +184,7 @@ Blog.handleRequest = function( request , arg ){
         }
         else if (uri.match(/^preview/)) {
             // display a preview of a post
-            entries = db.blog.drafts.find( {_id : request.id} );
+            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} );
             previewSnippet = (uri == "previewExcerpt");
             // so that the blog doesn't think this is a search
             uri = null;
@@ -230,6 +230,7 @@ Blog.handleRequest = function( request , arg ){
 };
 
 Blog.handlePosts = function( request , thePost , user ){
+
     if ( user && user.isAdmin() && request.action == "delete" ) {
         thePost.deleteComment( request.cid );
         db.blog.posts.save( thePost );
@@ -271,6 +272,9 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.ts = new Date();
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
+            if(db.blog.blocked.find({ ip: comment.ip })) {
+                throw "This ip is blocked from commenting.";
+            }
 
 	    comment.url = Blog.fixCommentURL( comment.url );
 
