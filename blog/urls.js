@@ -89,8 +89,15 @@ Blog.handleRequest = function( request , arg ){
 
         if (request.q || request.category) {
             var now = new Date();
-            posts = posts.filter( function( z ){ return z.live && z.ts <= now; } );
-	    //sorting now done by Search
+            var resultFilter;
+            if (request.q) resultFilter = function(z){
+                return z.live && z.ts <= now && ! z.dontSearch;
+            };
+            else resultFilter = function(z){
+                return z.live && z.ts <= now;
+            };
+            posts = posts.filter( resultFilter );
+            //sorting now done by Search
             //posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 
             var postResults = 0;
