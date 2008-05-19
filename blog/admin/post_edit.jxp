@@ -1,4 +1,12 @@
 <%
+head.addCSS("NOCDN/@@/yui/current/container/assets/skins/sam/container.css");
+head.addCSS("NOCDN/@@/yui/current/button/assets/skins/sam/button.css");
+head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js"></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>');
+head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>');
+
 
 var id = request.id;
 log(request.id);
@@ -186,6 +194,17 @@ tinyMCE.init({
 </script>
 
 <script language="javascript" type="text/javascript">
+
+function confirmExit() {
+    if(!submitted_form) {
+        if(confirm("Would you like to save your draft before exiting?")) {
+            autosave();
+        }
+    }
+}
+
+  window.onbeforeunload = confirmExit;
+
   var newPost = <%= id ? "false" : "true" %>;
   function titleChange(){
     if ( ! newPost ) return;
@@ -197,6 +216,7 @@ tinyMCE.init({
 
   function confirmDelete() {
       var confirmed = window.confirm('Are you sure you want to delete this post? You cannot undelete!');
+      submitted_form = true;
 
       if (confirmed) {
           document.getElementById("form_action").value = 'delete';
@@ -216,7 +236,7 @@ tinyMCE.init({
 &nbsp;<span style="font-size: 14px; color: grey;" id="autosave_ts"></span>
 </h1>
 
-<form method="post" action="post_edit.jxp" name="editForm">
+<form method="post" action="post_edit.jxp" name="editForm" onsubmit="submitted_form = true; return true;">
     <input type="hidden" name="action" value="save" id="form_action">
     <input type="hidden" name="cls" value="<%= thePost.cls %>">
     <div id="post_form">
@@ -328,10 +348,11 @@ tinyMCE.init({
 
 <script type="text/javascript">
 
+
 var id<%= id ? ' = "'+id+'"' : '' %>;
 var saved = false;
+var submitted_form = false;
 
-//'
 //autosave every 60 seconds
 function autosave() {
     var cat = document.getElementsByName("categories");
@@ -376,6 +397,9 @@ function preview(path) {
         saved = false;
     }
 }
+//'
 
 </script>
 
+<div id="myMarkedUpContainer" class="yui-skin-sam">
+</div>
