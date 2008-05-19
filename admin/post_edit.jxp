@@ -364,7 +364,7 @@ function preview(path) {
         setTimeout('preview("'+path+'")', 1000);
     }
     else {
-        window.open('<%=routes.find(Blog.routes)%>/'+path+'?id='+id, '_blank');
+        window.open('<%=routes.find(Blog.routes) ? routes.find(Blog.routes) : "" %>/'+path+'?id='+id, '_blank');
         firstSave = true;
         saved = false;
     }
