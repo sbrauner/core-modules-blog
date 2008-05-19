@@ -257,9 +257,7 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.ts = new Date();
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
-            log("ip: "+comment.ip);
             if(db.blog.blocked.find({ ip: comment.ip })) {
-                log("A blocked IP tried to comment");
                 throw "This ip is blocked from commenting.";
             }
 
