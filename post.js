@@ -46,18 +46,18 @@ Post.prototype.hasJump = function(){
 
 Post.prototype.getNumCommentsSince = function( when ){
     if ( ! when )
-	return this.getNumComments();
+        return this.getNumComments();
 
     var c = this.getComments();
     if ( ! c )
-	return 0;
+        return 0;
 
     var num = 0;
     for ( var i=0; i<c.length; i++ ){
-	if ( c[i].ts < when ){
-	    continue;
-	}
-	num++;
+        if ( c[i].ts < when ){
+            continue;
+        }
+        num++;
     }
     return num;
 }
@@ -82,15 +82,15 @@ Post.prototype.deleteComment = function(cid){
     l.debug( cid );
 
     if ( ! this.comments ){
-	l.debug( "no comments" );
+        l.debug( "no comments" );
         return;
     }
 
     if ( ! isArray( this.comments ) )
-	this.getComments();
+        this.getComments();
 
     if ( isArray( this.comments ) ){
-	l.debug( "array version" );
+        l.debug( "array version" );
         this.comments = this.comments.filter( function(z){
                 return z.cid.toString() != cid.toString();
             } );
@@ -162,14 +162,14 @@ Post.prototype.getUrl = function( r ){
 Post.prototype.getNextPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
     if ( filter )
-	Object.extend( s , filter );
+        Object.extend( s , filter );
 
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : -1 } );
     cursor.limit( 1 );
 
     if ( cursor.hasNext() )
-	return cursor.next();
+        return cursor.next();
 
     return null;
 };
@@ -177,13 +177,13 @@ Post.prototype.getNextPost = function( filter ){
 Post.prototype.getPreviousPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
     if ( filter )
-	Object.extend( s , filter );
+        Object.extend( s , filter );
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
     cursor.limit( 1 );
 
     if ( cursor.hasNext() )
-	return cursor.next();
+        return cursor.next();
 
     return null;
 };
@@ -193,7 +193,7 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
         return null;
 
     if ( this.suppressImage )
-	return null;
+        return null;
 
     var p = /<img[^>]+src="(.*?)"/;
     var r = p.exec( this.content );
@@ -203,16 +203,16 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     var url = r[1];
 
     if ( ! url.match( /f?id=/ ) )
-	return null;
+        return null;
 
     if ( ( maxX || maxY ) ){
-	url = url.replace( /.*f?id=/ , "/~~/f?id=" );
+        url = url.replace( /.*f?id=/ , "/~~/f?id=" );
 
-	if ( maxX )
-	    url += "&maxX=" + maxX;
+        if ( maxX )
+            url += "&maxX=" + maxX;
 
-	if ( maxY )
-	    url += "&maxY=" + maxY;
+        if ( maxY )
+            url += "&maxY=" + maxY;
     }
 
     return url;
@@ -225,7 +225,8 @@ Post.get404 = function() {
         http404Page = new Post('404', '404');
         http404Page.cls = 'page';
         http404Page.live = true;
-	http404Page.commentsEnabled = false;
+        http404Page.commentsEnabled = false;
+        http404Page.dontSearch = true;
         db.blog.posts.save(http404Page);
     }
     return http404Page;
@@ -237,7 +238,8 @@ Post.getNoResults = function() {
         noResultsPage = new Post('no_results', 'No Results');
         noResultsPage.cls = 'page';
         noResultsPage.live = true;
-	noResultsPage.commentsEnabled = false;
+        noResultsPage.commentsEnabled = false;
+        noResultsPage.dontSearch = true;
         db.blog.posts.save(noResultsPage);
     }
     return noResultsPage;
@@ -250,11 +252,11 @@ Post.getMostPopular = function( num , articlesBack ){
     var key = "__mostPopular_" + num + "_" + articlesBack;
     var all = Post.cache.get( key );
     if ( all )
-	return all;
+        return all;
 
     all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort( function( a , b ){
-	return b.views - a.views;
+        return b.views - a.views;
     } );
 
     all = all.slice( 0 , num );
@@ -270,23 +272,23 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
     var old = [];
     var all = Post.cache.get( key , old );
     if ( all )
-	return all;
+        return all;
 
     if ( old[0] )
-	Post.cache.add( key , old[0] );
+        Post.cache.add( key , old[0] );
 
     var sinceWhen = null;
     if ( daysBackToCountComments )
-	sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
+        sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
 
     all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
     all = all.sort(
-		   function( a , b ){
-		       if ( ! sinceWhen )
-			   return b.getNumComments() - a.getNumComments();
-		       return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
-		   }
-		   );
+                   function( a , b ){
+                       if ( ! sinceWhen )
+                           return b.getNumComments() - a.getNumComments();
+                       return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
+                   }
+                   );
 
     all = all.slice( 0 , num );
 
@@ -305,10 +307,10 @@ function fixComments() {
         if ( post.comments && ! isArray( post.comments ) ){
             SYSOUT('Converting Post ID (' + post._id + ')');
             post.comments = post.getComments();
-	}
+        }
 
-	if ( ! post.views )
-	    post.views = 1;
+        if ( ! post.views )
+            post.views = 1;
 
         db.blog.posts.save(post);
         SYSOUT('\tSaving Post ID (' + post._id + ')');
