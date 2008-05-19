@@ -169,7 +169,7 @@ Blog.handleRequest = function( request , arg ){
         }
         else if (uri.match(/^preview/)) {
             // display a preview of a post
-            entries = db.blog.drafts.find( {_id : request.id} );
+            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} );
             previewSnippet = (uri == "previewExcerpt");
             // so that the blog doesn't think this is a search
             uri = null;
