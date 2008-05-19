@@ -1,4 +1,8 @@
 
+// ------------
+//     utils
+// -------------
+
 var getFilterOptions = function( lst ){
     if ( ! ( lst && lst.length ) )
         return {};
@@ -9,6 +13,10 @@ var getFilterOptions = function( lst ){
     
     return options;
 }
+
+// ------------
+//     filter object
+// -------------
 
 Rails.Filter = function( filter , options ){
     this.filter = filter;
@@ -29,29 +37,54 @@ Rails.Filter.prototype.toString = function(){
     return this.filter;
 }
 
-before_filter = function(){
-    
-    options = getFilterOptions( arguments );
+// ------------
+//     setup
+// -------------
 
-    if ( ! this.keySet().contains( "beforeFilters" ) ){
-        var old = this.beforeFilters;
-        this.beforeFilters = [];
-        this.beforeFilters._prev = old;
+
+before_filter = function(){
+    this._addFilters( "beforeFilters" , arguments );
+};
+
+around_filter = function(){
+    this._addFilters( "aroundFilters" , arguments );
+};
+
+after_filter = function(){
+    this._addFilters( "afterFilters" , arguments );
+};
+
+ActionController.Base.prototype._addFilters = function( name , args ){
+
+    options = getFilterOptions( args );
+    
+    if ( ! this.keySet().contains( name ) ){
+        var old = this[name];
+        this[name] = [];
+        this[name]._prev = old;
     }
     
-    for ( var i=0; i<arguments.length; i++ ){
-        var f = new Rails.Filter( arguments[i] , options );
-        log.rails.init.beforeFilter.info( "added [" + f + "]" );
-        this.beforeFilters.add( f );
+    for ( var i=0; i<args.length; i++ ){
+        var f = new Rails.Filter( args[i] , options );
+        log.rails.init[name].info( "added [" + f + "]" );
+        this[name].add( f );
     }
 };
 
+// ------------
+//     exec
+// -------------
+
 ActionController.Base.prototype._before = function( appResponse ){
-    
-    if ( ! this.beforeFilters )
+    this._applyFilters( appResponse , this.beforeFilters );
+    this._applyFilters( appResponse , this.aroundFilters );
+}
+
+ActionController.Base.prototype._applyFilters = function( appResponse , filters ){
+    if ( ! filters )
         return;
     
-    var a = this.beforeFilters;
+    var a = filters;
     
     while ( a ){
         for ( var i=0; i<a.length; i++ ){
@@ -60,14 +93,14 @@ ActionController.Base.prototype._before = function( appResponse ){
             var options = filter.options;
             var f = a[i];
             
-            log.rails.beforeFilter[this.shortName].info( "running before filter [" + filter + "]" );
+            log.rails.filters[this.shortName].info( "running filter [" + filter + "]" );
             
             if ( isString( name ) ){
                 f = appResponse.requestThis[name];
             }
             
             if ( ! isFunction( f ) ){
-                SYSOUT( "skipping before filter [" + filter + "] " );
+                SYSOUT( "skipping filter [" + filter + "] " );
                 continue;
             }
             

@@ -263,3 +263,5 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
         return "/" + thing.collectionName + "s/" + thing._id;
 
 };
+
+log.rails.init.routes.level = log.LEVEL.ERROR;

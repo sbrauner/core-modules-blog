@@ -197,10 +197,6 @@ function before_validation(){
     SYSOUT( "ignoring before_validation" );
 }
 
-function around_filter(){
-    SYSOUT( "ignoring around_filter" );
-}
-
 function after_create(){
     SYSOUT( "ignoring before_create" );
 }
