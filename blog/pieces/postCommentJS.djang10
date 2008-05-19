@@ -1,4 +1,13 @@
 
+function checkComment() {
+    if(document.getElementById("txt").value == "") { return invalidTxt(); }
+    {% if not blogDTO.getUser %}
+    if(document.getElementById("yourname").value == "") { return invalidName(); }
+    if(document.getElementById("email").value == "") { return invalidEmail(); }
+    {% endif %}
+    return true;
+}
+
 function invalidTxt() {
     alert("You must enter a comment."); return false;
 }
@@ -9,4 +18,12 @@ function invalidName() {
 
 function invalidEmail() {
     alert("You must enter your email."); return false;
+}
+
+function customFormSubmit() {
+    if(checkComment()) {
+        document.getElementById("submitComment").disabled = true;
+        return true;
+    }
+    return false;
 }
