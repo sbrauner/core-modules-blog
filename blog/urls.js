@@ -258,7 +258,7 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.text = request.txt;
 	    comment.ip = request.getRemoteIP();
             if(db.blog.blocked.find({ ip: comment.ip }).length() > 0) {
-                throw "This ip is blocked from commenting.";
+                return "System error: KP37-6";
             }
 
 	    comment.url = Blog.fixCommentURL( comment.url );
