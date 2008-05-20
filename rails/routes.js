@@ -39,7 +39,7 @@ Rails.InternalRoute = function( uri , options ){
     this.ruri = new RailsURI( uri );
     this.options = options || {};
     this.name = options.name || this.uri;
-    this.options.action = Rails.mangleName( this.options.action );
+    this.options.action = Rails.mangleName( this.options.action || "index" );
 };
 
 Rails.InternalRoute.prototype.addGlobals = function(){
@@ -125,14 +125,15 @@ ActionController.Routing.Routes.prototype.connect = function( r , options ){
 };
 
 ActionController.Routing.Routes.prototype.home = function( r , options ){
-    // TODO: not sure this is correct
     this.il.error( "routes.home is probably broken" );
-    //this._home = new Rails.InternalRoute( r , options );
-    //this.connect( r , options );
+    this._home = new Rails.InternalRoute( r , options );
     globals.putExplicit( "root_path" , "/" );
+    this.il.error( "home : " + this._home );
 };
 
-ActionController.Routing.Routes.prototype.root = ActionController.Routing.Routes.prototype.home;
+ActionController.Routing.Routes.prototype.root = function( options ){
+    this.home( "/" , options );
+}
 
 ActionController.Routing.Routes.prototype.open_id_complete = function( r , options ){
     this.il.error( "routes.open_id_complete not implemented" );
@@ -247,6 +248,10 @@ ActionController.Routing.Routes.prototype.find = function( request ){
         log.rails.routes.info( "match " + route + " : " + theRoute );
         return theRoute;
     }
+    
+    if ( request.getURI() == "/" )
+        return this._home.match( request , state );
+
     return null;
 };
 

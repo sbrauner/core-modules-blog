@@ -23,6 +23,9 @@ ActionController.Base = function(){
 
 };
 
+
+ActionController.Base.prototype = ActionView.Base;
+
 ActionController.Base.prototype.__magic = 17;
 
 function caches_page( name ){

@@ -3,7 +3,11 @@ Rails.View = {};
 
 var myContentCache = {};
 
-ActionController.Base.prototype.content_for = function( name , func ){
+ActionView.Base = function(){
+    
+}
+
+ActionView.Base.content_for = function( name , func ){
 
     var savePrint = print;
     
@@ -22,7 +26,7 @@ ActionController.Base.prototype.content_for = function( name , func ){
 };
 
 
-ActionController.Base.prototype.render = function( options ){
+ActionView.Base.render = function( options ){
 
     if ( ! options )
         throw "are you allowed to pass render nothing?";
@@ -48,6 +52,9 @@ ActionController.Base.prototype.render = function( options ){
     else
         throw "can't handle [" + name + "]";
     
+    if ( pieceName.endsWith( ".html.erb" ) )
+        pieceName = pieceName.substring( 0 , pieceName.length - 9 );
+
     var p = local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ];
     if  ( ! p )
         throw "couldn't find [" + name + "]";
@@ -65,7 +72,7 @@ ActionController.Base.prototype.render = function( options ){
 }
 
 
-ActionController.Base.prototype.form_for = function( what , options ){
+ActionView.Base.form_for = function( what , options ){
     
     var frm = arguments[ arguments.length - 1 ];
 
@@ -95,6 +102,6 @@ ActionController.Base.prototype.form_for = function( what , options ){
 };
 
 
-ActionController.Base.prototype.submit_tag = function( name ){
+ActionView.Base.submit_tag = function( name ){
     return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";
 }
