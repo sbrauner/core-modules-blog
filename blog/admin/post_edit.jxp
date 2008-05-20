@@ -1,5 +1,6 @@
 <%
 var id = request.id;
+log(request.id);
 
 var newPost = true;
 var thePost = new Post();
@@ -89,6 +90,7 @@ if ( request.action == "save" ) {
 	thePost.categories = thePost.categories.unique().sort();
 
         thePost.live = parseBool( request.live );
+        thePost.dontSearch = parseBool( request.dontSearch );
         thePost.commentsEnabled = parseBool(request.commentsEnabled);
         thePost.suppressImage = parseBool( request.suppressImage );
 
@@ -256,6 +258,15 @@ function confirmExit() {
             </div>
         </div>
         <div class="post_meta_field">
+            <div class="post_meta_field_name">Exclude from Search Results?</div>
+            <div class="post_meta_field_value">
+                <select name="dontsearch" id="dontsearch">
+                    <option value="false">No</option>
+                    <option value="true" <%= thePost.dontSearch ? "selected" : "" %> >Yes</option>
+                </select>
+            </div>
+        </div>
+        <div class="post_meta_field">
             <div class="post_meta_field_name">Comments</div>
             <div class="post_meta_field_value">
                 <select name="commentsEnabled" id="commentsEnabled">
@@ -388,5 +399,4 @@ function preview(path) {
 }
 
 </script>
-
 

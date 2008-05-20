@@ -27,7 +27,7 @@ Template.prototype.render = function(context) {
     }
     else {
         f.getScope(true).print = function(s) { myBuf += s;};
-        f(context.getRawStorageObject());
+        f(context);
         f.clearScope();
     }
 

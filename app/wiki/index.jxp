@@ -1,4 +1,6 @@
 <%
+    core.util.string();
+
     assert( app );
     assert( app.wiki );
 
@@ -35,6 +37,21 @@
 
     // Get the actual wiki page. If there is no page with the given name, create a new page
     var wikiPage = db.wiki.findOne( { name : name } );
+
+/* check case */
+if( !wikiPage && name && name.length ) {
+    var w = db.wiki.findOne( { name: RegExp("^" + name + "$", "i") } );
+    if( w ) {
+	var nm = w.name;
+	if( app.wiki.config.prefix ) {
+	    nm = nm.lessPrefix(app.wiki.config.prefix);
+	}
+        response.setResponseCode( 302 );
+        response.setHeader( "Location" , base + nm );
+        return;
+    }
+} 
+
     if (!wikiPage) wikiPage = new app.wiki.WikiPage(name);
 
 if( request.pdf ) { 

@@ -7,7 +7,12 @@ djang10 = {
     
     loadTemplate : function(name) {
         return nativeHelper.loadPath(name);
-    }
+    },
+    
+    Context : nativeHelper.Context
 };
+
+djang10.Context.prototype.push = nativeHelper.Context.__push;
+djang10.Context.prototype.pop = nativeHelper.Context.__pop;
 
 return djang10;
