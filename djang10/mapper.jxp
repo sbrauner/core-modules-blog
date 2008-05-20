@@ -13,7 +13,7 @@ core.djang10.http();
 
 core.djang10.mapper_filter();
     
-var match_array = null;
+var match_array = [];
 var duple = null;
 
 var thing = MapperFilter.matchURI(request.getURI());
@@ -43,7 +43,7 @@ else {
     // @TODO - move this to mapper as we can tell earlier and warn on deployment
     
     if (func != null) {
-        var httpResp = func(request, match_array);
+        var httpResp = func.apply(null, match_array);
         print(httpResp.getContent());
     }
     else {
