@@ -89,23 +89,8 @@ Blog.handleRequest = function( request , arg ){
 
         if (request.q || request.category) {
             var now = new Date();
-            // We filter dontSearch posts out of search results but not category
-            // searches. This was the result of a debate between me and Paul;
-            // this leaves the site admin with the power to include/declude
-            // posts from category searches by removing them from categories.
-            // Besides, to a user, a search and a category page are totally
-            // different, meaning we'd have to make clear the link between
-            // dontSearch and categories via interface, i.e. graying out
-            // the category checkbox if the dontSearch item was "on", etc.
-            var resultFilter;
-            if (request.q) resultFilter = function(z){
-                return z.live && z.ts <= now && ! z.dontSearch;
-            };
-            else resultFilter = function(z){
-                return z.live && z.ts <= now;
-            };
-            posts = posts.filter( resultFilter );
-            //sorting now done by Search
+            posts = posts.filter( function( z ){ return z.live && z.ts <= now; } );
+	    //sorting now done by Search
             //posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 
             var postResults = 0;

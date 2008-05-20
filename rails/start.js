@@ -43,7 +43,7 @@ Rails.baseThis = scope.child( "Rails Scope" );
 var allModelFiles = Rails.getRubyFilesFromDir( "app/models" );
 
 var numPasses = allModelFiles.length;
-for ( var pass=1; pass<=numPasses; pass++ ){
+for ( var pass=0; pass<numPasses; pass++ ){
 
     allModelFiles.forEach( 
         function(z){
@@ -57,11 +57,10 @@ for ( var pass=1; pass<=numPasses; pass++ ){
             try {
                 z.func();
                 log.rails.init.model.info( "loaded : " + z.func );
-                z._loaded = true;
             }
             catch ( e if ( pass + 1 < numPasses ) ){
                 
-                log.rails.init.model.info( z.filename + " failed, but ignoring " + ( pass + 1 ) + "/" + numPasses);
+                log.rails.init.model.info( z.filename + " failed, but ignoring" );
                 try {
                     e.printStackTrace();
                 }
@@ -82,7 +81,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 if ( ! ( model && isObject( model ) ) )
                     continue;
                 
-                log.rails.init.model.info( "Added Object With Name : " + name + " | " + model.keySet() );
+                log.rails.init.model.info( "Added Object With Name : " + name );
                 useGlobal.putExplicit( name , model );
                 
                 if ( ! model._isModel )
@@ -105,6 +104,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 model.find();
             }
             
+            z._loaded = true;
         }
     );
 }

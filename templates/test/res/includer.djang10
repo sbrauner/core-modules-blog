@@ -1,5 +1,1 @@
 {% include "includee" %}
-{{ a }}
-{{ b }}
-{{ c }}
-{{ d }}

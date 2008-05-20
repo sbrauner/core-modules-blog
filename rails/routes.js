@@ -34,26 +34,14 @@ Rails.Route.prototype.toString = function(){
     return "( Route controller:" + this.controller + " action:" + this.action + ")";
 }
 
-Rails.InternalRoute = function( uri , options ){
+var RailsRoute = function( uri , options ){
     this.uri = uri;
     this.ruri = new RailsURI( uri );
-    this.options = options || {};
-    this.name = options.name || this.uri;
+    this.options = options;
     this.options.action = Rails.mangleName( this.options.action );
 };
 
-Rails.InternalRoute.prototype.addGlobals = function(){
-    var ir = this;
-    var f = function( options ){
-        if ( options )
-            return "broken152";
-        return ir.uri;
-    }
-    globals.putExplicit( this.options.name + "_url" , f );
-    globals.putExplicit( this.options.name + "_path" , f );
-};
-
-Rails.InternalRoute.prototype.match = function( request , other ){
+RailsRoute.prototype.match = function( request , other ){
     if ( ! ( other && other instanceof RailsURI ) )
         return null;
 
@@ -107,8 +95,8 @@ Rails.InternalRoute.prototype.match = function( request , other ){
     return theRoute;
 };
 
-Rails.InternalRoute.prototype.toString = function(){
-    return " { " + this.name + " " + tojson( this.options ) + " } ";
+RailsRoute.prototype.toString = function(){
+    return " { " + this.uri + " " + tojson( this.options ) + " } ";
 };
 
 // --------------------------
@@ -117,22 +105,15 @@ Rails.InternalRoute.prototype.toString = function(){
 
 ActionController.Routing.Routes.prototype.connect = function( r , options ){
     this.il.info( "connect : " + r  + " options [ " + tojson( options ) + "]" );
-    var ir = new Rails.InternalRoute( r , options );
-    this._routes.push( ir );
-    if ( options.name )
-        ir.addGlobals();
-    
+    this._routes.push( new RailsRoute( r , options ) );
 };
 
 ActionController.Routing.Routes.prototype.home = function( r , options ){
     // TODO: not sure this is correct
     this.il.error( "routes.home is probably broken" );
-    //this._home = new Rails.InternalRoute( r , options );
+    //this._home = new RailsRoute( r , options );
     //this.connect( r , options );
-    globals.putExplicit( "root_path" , "/" );
 };
-
-ActionController.Routing.Routes.prototype.root = ActionController.Routing.Routes.prototype.home;
 
 ActionController.Routing.Routes.prototype.open_id_complete = function( r , options ){
     this.il.error( "routes.open_id_complete not implemented" );
@@ -147,6 +128,12 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
 
     this.il.info( "resources : " + r + " [" + singularName + "]" );
     
+
+    globals.putExplicit( r + "_path" , "/" + r );
+    globals.putExplicit( r + "_url" , "/" + r );
+
+    // new
+    globals.putExplicit( "new_" + singularName + "_path" , "/" + r + "/new2" );
 
     // create
     this.connect( "/" + r , { controller : r , 
@@ -186,10 +173,7 @@ ActionController.Routing.Routes.prototype.resources = function( r ){
                                      } );
 
     this.connect( "/" + r , { controller : r ,
-                              action : "index" ,
-                              name : r
-                            } 
-                );
+                              action : "index" } );
     
 };
 
@@ -201,7 +185,6 @@ ActionController.Routing.Routes.prototype.with_options = function( options , fun
             if ( ! moreOptions )
                 moreOptions = {};
             Object.extend( moreOptions , options );
-            moreOptions.name = name;
             base.connect( pieces + "" , moreOptions );
         }
     }
@@ -209,15 +192,11 @@ ActionController.Routing.Routes.prototype.with_options = function( options , fun
 };
 
 ActionController.Routing.Routes.prototype.__notFoundHandler = function( r ){
-    var t = this;
     if ( r == "_inInit" || ! this._inInit )
         return null;
     var place = this.il;
-    return function( uri , options ){ 
-        if ( ! options )
-            options = {};
-        options.name = r;
-        t.connect( uri , options );
+    return function( name ){ 
+        place.error( "ignoring method [" + r + "] name [" + name + "]" );
     }
 };
 
@@ -233,9 +212,6 @@ ActionController.Routing.Routes.draw = function( f ){
 // ---  runtime  -----
 // --------------------------
 
-/**
-* @return Rails.Route
-*/
 ActionController.Routing.Routes.prototype.find = function( request ){
     var state = new RailsURI( request.getURI() );
     log.rails.routes.info( "incoming : " + state );
@@ -254,7 +230,7 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     
     if ( ! thing )
-        return "/NULL";
+        throw "can't link to null";
 
     if ( isString( thing ) )
         return thing;
@@ -263,5 +239,3 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
         return "/" + thing.collectionName + "s/" + thing._id;
 
 };
-
-log.rails.init.routes.level = log.LEVEL.ERROR;

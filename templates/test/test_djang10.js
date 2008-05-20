@@ -7,21 +7,15 @@ var oldPrint = print;
 var buffer = "";
 var print = function(str){ buffer += str + "\n"; };
 
-var c = new djang10.Context({a: "A", b:"B"});
-c.push();
-c.c = "C";
-c.push();
-c.d = "D";
-c.pop();
 //Test addTemplateRoot
-core.templates.test.res.includer(c);
+core.templates.test.res.includer();
 
 //Test loadTemplate
 djang10.loadTemplate("includee")();
 
 print = oldPrint;
 
-log(buffer.replace(/\s/g,"") )//== "mooABCmoo")
+assert(buffer.replace(/\s/g,"") == "moomoo")
 
 
 

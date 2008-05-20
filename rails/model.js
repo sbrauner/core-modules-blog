@@ -26,36 +26,20 @@ ActiveRecord.Base.prototype.sum = function( col ){
     return -2;
 };
 
-ActiveRecord.Base.prototype.find = function( type , filter ){
+ActiveRecord.Base.prototype.find = function( filter ){
     assert( this.collectionName );
-    
-    var c = db[ this.collectionName ];
 
     var jsFilter = {};
-    if ( type == null || type == "all" ){
+    if ( filter == null || filter == "all" ){
     }
-    else if ( "first" == type ){
-        return c.findOne();
-    }
-    else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( filter ) );
+    else if ( isString( filter ) && filter.length == 24 ){
+        return db[ this.collectionName ].findOne( ObjectId( filter ) );
     }
 
-    return c.find().toArray() || [];
+    return db[ this.collectionName ].find().toArray();
 };
 
-ActiveRecord.Base.prototype._checkTS = function( name ){
-    if ( ! this[ name ] )
-        this[name] = new Date();
-}
-
 ActiveRecord.Base.prototype.save = function(){
-    this._checkTS( "created_at" );
-    this._checkTS( "created_on" );
-    
-    this.updated_at = new Date();
-    this.updated_on = new Date();
-    
     db[this.collectionName].save( this );
     return true;
 };
@@ -176,8 +160,8 @@ ActiveRecord.Base.prototype.submit = function( name ){
 };
 
 
-ActiveRecord.Base.prototype.paginate = function( options ){
-    return db[ this.collectionName ].find().toArray() || [];
+ActiveRecord.Base.prototype.paginate = function(){
+    return [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){
@@ -200,6 +184,10 @@ function before_create(){
 
 function before_validation(){
     SYSOUT( "ignoring before_validation" );
+}
+
+function around_filter(){
+    SYSOUT( "ignoring around_filter" );
 }
 
 function after_create(){
@@ -235,16 +223,8 @@ function has_many( name ){
     SYSOUT( "ignoring has_many [" + name + "]" );
 }
 
-function has_one(){
-    SYSOUT( "ignoring has_one" );
-}
-
 function has_and_belongs_to_many( name , option ){
     SYSOUT( "ignoring has_and_belongs_to_many [" + name + "]" );
-}
-
-function has_attachment(){
-    SYSOUT( "ignoring has_attachment" );
 }
 
 // -----
@@ -287,14 +267,6 @@ function validates_uniqueness_of( name , options ){
     SYSOUT( "ignoring validates_uniqueness_of [" + name + "]" );
 }
 
-function validates_confirmation_of(){
-    SYSOUT( "ignoring validates_confirmation_of" );
-}
-
-function validates_numericality_of(){
-    SYSOUT( "ignoring validates_numericality_of" );
-}
-
 // --
 
 function with_options( options ){
@@ -311,10 +283,6 @@ function helper( name ){
 
 function filter_parameter_logging(){
     SYSOUT( "ignoring filter_parameter_logging " );
-}
-
-function tz_time_attributes(){
-    SYSOUT( "ignoring tz_time_attributes" );
 }
 
 // ---
