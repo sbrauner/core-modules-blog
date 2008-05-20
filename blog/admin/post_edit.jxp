@@ -362,6 +362,10 @@ function autosave() {
          "&"+categories, "autosave", function(response) {
         id = response;
         var now = new Date();
+        if(!response.match(/\S+/) || response.match(/\S+/)[0].length != 24){
+            document.getElementById("autosave_ts").innerHTML = "<span class='error'>Autosaving FAILED at "+ now.toString() + "</div>";
+            return;
+        }
         document.getElementById("autosave_ts").innerHTML = "Draft autosaved at "+now.toString();
         document.getElementById("draft_id").value = id;
         saved = true;
