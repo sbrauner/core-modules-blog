@@ -9,7 +9,6 @@ head.push('<script type="text/javascript" src="/@@/yui/current/container/contain
 
 
 var id = request.id;
-log(request.id);
 
 var newPost = true;
 var thePost = new Post();
@@ -22,6 +21,12 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
+        foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
+        if (foundPost) {
+            thePost = foundPost;
+            newPost = false;
+            db.blog.drafts.remove({ _id : ObjId(id) });
+        }
         id = null;
     }
 }
