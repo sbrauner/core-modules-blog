@@ -231,8 +231,7 @@ function confirmExit() {
     <div id="post_form">
     <div id="post_action">
         <input type="submit" value="Save">
-        <input type="button" value="Preview" onclick="window.open('<%=routes.find(Blog.routes)%>/<%=thePost.name%>', '_top');">
-        <input type="button" value="New Preview" onclick="preview('preview')" />
+        <input type="button" value="Preview" onclick="preview('preview')" />
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
     <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>

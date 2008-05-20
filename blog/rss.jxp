@@ -41,13 +41,6 @@ function clean( s ){
 
     return s;
 }
-
-// We add track info to the link but the guid we keep clean
-var fixUrl = function(u){
-    if(request.src)
-        u = u + "?src="+request.src;
-    return u;
-};
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml"); %>
@@ -66,7 +59,7 @@ var fixUrl = function(u){
         <item>
             <guid><%= post.getUrl(request) %></guid>
             <title><%= clean( post.title ) %></title>
-            <link><%= fixUrl(post.getUrl(request)) %></link>
+            <link><%= post.getUrl(request) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
             <%

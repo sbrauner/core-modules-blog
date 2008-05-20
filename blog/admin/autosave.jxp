@@ -15,11 +15,11 @@ if (id) {
     foundPost = db.blog.posts.findOne( CrID( id ) );
     if (foundPost) {
         thePost = foundPost;
-        thePost.post_id = id;
+        thePost.post_id = ObjId(id);
         newPost = false;
     }
     else {
-        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) } );
+        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) });
         if(foundPost) {
             thePost = foundPost;
             newPost = false;
