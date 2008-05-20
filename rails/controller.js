@@ -68,11 +68,24 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
 
     this._before( appResponse );
 
-    f.call( appResponse.requestThis );
+    var aroundFilters = this._getMatchingFilters( appResponse , this.aroundFilters );
+    var aroundFiltersPos = 0;
     
-    if ( ! appResponse.anythingRendered ){
-        appResponse.html();
+    function go(){
+        if ( aroundFiltersPos < aroundFilters.length ){
+            return aroundFilters[aroundFiltersPos++].call( appResponse.requestThis , go );
+        }
+        
+        f.call( appResponse.requestThis );
+        
+        if ( ! appResponse.anythingRendered ){
+            appResponse.html();
+        }
+        
     }
+
+    go();
+
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
 };

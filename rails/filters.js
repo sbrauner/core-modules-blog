@@ -77,13 +77,12 @@ ActionController.Base.prototype._addFilters = function( name , args ){
 
 ActionController.Base.prototype._before = function( appResponse ){
     this._applyFilters( appResponse , this.beforeFilters );
-    this._applyFilters( appResponse , this.aroundFilters );
 }
 
-ActionController.Base.prototype._applyFilters = function( appResponse , filters ){
-    if ( ! filters )
-        return;
-    
+ActionController.Base.prototype._getMatchingFilters = function( appResponse , filters ){
+
+    var all = [];
+
     var a = filters;
     
     while ( a ){
@@ -100,16 +99,26 @@ ActionController.Base.prototype._applyFilters = function( appResponse , filters 
             }
             
             if ( ! isFunction( f ) ){
-                SYSOUT( "skipping filter [" + filter + "] " );
+                log.error( "don't know what to do with filter [" + filter + "] " );
                 continue;
             }
             
             if ( filter.skip( matchingRoute ) )
                 continue;
-
-            f.call( appResponse.requestThis );
+            
+            all.add( f );
         }
         a = a._prev;
+    }
+
+    return all;
+}
+
+
+ActionController.Base.prototype._applyFilters = function( appResponse , filters ){
+    var all = this._getMatchingFilters( appResponse , filters );
+    for ( var i=0; i<all.length; i++ ){
+        all[i].call( appResponse.requestThis );
     }
 
 }
