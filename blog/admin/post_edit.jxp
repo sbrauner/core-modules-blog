@@ -9,7 +9,6 @@ head.push('<script type="text/javascript" src="/@@/yui/current/container/contain
 
 
 var id = request.id;
-log(request.id);
 
 var newPost = true;
 var thePost = new Post();
@@ -22,13 +21,20 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
+        foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
+        if (foundPost) {
+            thePost = foundPost;
+            newPost = false;
+            db.blog.drafts.remove({ _id : ObjId(id) });
+        }
         id = null;
     }
 }
 
-if(request.draft_id) {
+/*if(request.draft_id) {
   db.blog.drafts.remove({ post_id: ObjId(request.draft_id) });
 }
+*/
 
 var justSaved = false;
 
@@ -190,7 +196,7 @@ tinyMCE.init({
 <script language="javascript" type="text/javascript">
 
 function confirmExit() {
-    if(!submitted_form) {
+    if(needs_save) {
         if(confirm("Would you like to save your draft before exiting?")) {
             autosave();
         }
@@ -210,7 +216,7 @@ function confirmExit() {
 
   function confirmDelete() {
       var confirmed = window.confirm('Are you sure you want to delete this post? You cannot undelete!');
-      submitted_form = true;
+      needs_save = false;
 
       if (confirmed) {
           document.getElementById("form_action").value = 'delete';
@@ -230,31 +236,30 @@ function confirmExit() {
 &nbsp;<span style="font-size: 14px; color: grey;" id="autosave_ts"></span>
 </h1>
 
-<form method="post" action="post_edit.jxp" name="editForm" onsubmit="submitted_form = true; return true;">
+<form method="post" action="post_edit.jxp" name="editForm" onsubmit="needs_save = false; return true;">
     <input type="hidden" name="action" value="save" id="form_action">
     <input type="hidden" name="cls" value="<%= thePost.cls %>">
     <div id="post_form">
     <div id="post_action">
         <input type="submit" value="Save">
-        <input type="button" value="Preview" onclick="window.open('<%=routes.find(Blog.routes)%>/<%=thePost.name%>', '_top');">
-        <input type="button" value="New Preview" onclick="preview('preview')" />
+        <input type="button" value="Preview" onclick="preview('preview')" />
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
-    <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
-    <div id="post_body"><textarea id="content" name="content"><%= thePost.content %></textarea></div>
+    <div id="post_title"><input id="title" name="title" onkeypress="needs_save = true;" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
+    <div id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
             <div class="post_meta_field_value">
-              <textarea id="excerpt" name="excerpt"><%= thePost.excerpt || "" %></textarea>
+              <textarea id="excerpt" name="excerpt" onkeypress="needs_save = true;"><%= thePost.excerpt || "" %></textarea>
               <input type="button" value="Preview Excerpt" onclick="preview('previewExcerpt')" />
             </div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Status</div>
             <div class="post_meta_field_value">
-                <select name="live" id="live">
+                <select name="live" id="live" onchange="needs_save = true;">
                     <option value="false">Not Live</option>
                     <option value="true" <%= thePost.live ? "selected" : "" %> >Live</option>
                 </select>
@@ -272,7 +277,7 @@ function confirmExit() {
         <div class="post_meta_field">
             <div class="post_meta_field_name">Comments</div>
             <div class="post_meta_field_value">
-                <select name="commentsEnabled" id="commentsEnabled">
+                <select name="commentsEnabled" onchange="needs_save = true;" id="commentsEnabled">
                     <option value="false">Disabled</option>
                     <option value="true" <%= thePost.commentsEnabled ? "selected" : "" %> >Enabled</option>
                 </select>
@@ -281,13 +286,13 @@ function confirmExit() {
         <div class="post_meta_field">
             <div class="post_meta_field_name">Slug</div>
             <div class="post_meta_field_value">
-	      <input id="name" size="39" name="name" value="<%= thePost.name || "" %>"   <%= thePost.live ? "disabled" : "" %> >
+	      <input id="name" size="39" onkeypress="needs_save = true;" name="name" value="<%= thePost.name || "" %>"   <%= thePost.live ? "disabled" : "" %> >
 	    </div>
         </div>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Author</div>
             <div class="post_meta_field_value">
-                <select name="author">
+                <select name="author" onchange="needs_save = true;">
                     <%
                         var cursor = db.users.find( {permissions : "admin"} );
                         cursor.forEach( function(author) {
@@ -300,12 +305,12 @@ function confirmExit() {
         <div class="post_meta_field">
             <div class="post_meta_field_name">Categories</div>
             <div class="post_meta_field_value ">
-                <input id="new_categories" name="new_categories" size="35" /><br/>
+                <input id="new_categories" onkeypress="needs_save = true;" name="new_categories" size="35" /><br/>
                 <div class="scrollable">
                 <%
                     categories.forEach( function(category) {
                 %>
-                    <input type="checkbox" name="categories" value="<%= category.name %>"
+                    <input type="checkbox" onclick="needs_save = true;" name="categories" value="<%= category.name %>"
 		        <%= thePost.categories.contains(category.name) ? 'checked' : '' %> >
 			<%= category.getLabel() %>
 		    <br/>
@@ -327,12 +332,12 @@ function confirmExit() {
 
         <div class="post_meta_field">
             <div class="post_meta_field_name">Publish Date</div>
-            <div class="post_meta_field_value"><input name="ts" size="30" value="<%= thePost.ts.simpleFormat() %>"/></div>
+            <div class="post_meta_field_value"><input name="ts" onkeypress="needs_save = true;" size="30" value="<%= thePost.ts.simpleFormat() %>"/></div>
         </div>
 
         <div class="post_meta_field">
             <div class="post_meta_field_name">Suppress Image</div>
-            <div class="post_meta_field_value"><input type="checkbox" id="suppressImage" name="suppressImage" value="true" <%= thePost.suppressImage ? "checked" : ""  %> ></div>
+            <div class="post_meta_field_value"><input type="checkbox" onclick="needs_save = true;" id="suppressImage" name="suppressImage" value="true" <%= thePost.suppressImage ? "checked" : ""  %> ></div>
         </div>
 
         <div class="post_meta_field">
@@ -354,7 +359,7 @@ function confirmExit() {
 
 var id<%= id ? ' = "'+id+'"' : '' %>;
 var saved = false;
-var submitted_form = false;
+var needs_save = false;
 
 //autosave every 60 seconds
 function autosave() {
@@ -377,9 +382,14 @@ function autosave() {
          "&"+categories, "autosave", function(response) {
         id = response;
         var now = new Date();
+        if(!response.match(/\S+/) || response.match(/\S+/)[0].length != 24){
+            document.getElementById("autosave_ts").innerHTML = "<span class='error'>Autosaving FAILED at "+ now.toString() + "</div>";
+            return;
+        }
         document.getElementById("autosave_ts").innerHTML = "Draft autosaved at "+now.toString();
         document.getElementById("draft_id").value = id;
         saved = true;
+        needs_save = false;
     });
     setTimeout(autosave, 60000);
 }
