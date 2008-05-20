@@ -1,5 +1,6 @@
 <%
 var u = user;
+if(! u) return response.sendRedirectTemporary("/");
 log(tojson(request));
 
 var to = request.to || '/';

@@ -215,7 +215,7 @@ function htmltable(specs) {
                     }
                     var viewMethod = this.specs.cols[c].view;
                     var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
-                    rows[count][colnames[c]].value += fieldDisplay || ( linkToDetails ? "go to" : "" );
+                    rows[count][colnames[c]].value += fieldDisplay || ( linkToDetails ? "(go to)" : "" );
                     if( linkToDetails ) rows[count][colnames[c]].value += "</a>";
                 }
             }
