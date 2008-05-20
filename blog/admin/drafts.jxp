@@ -4,6 +4,7 @@ Drafts
 if(request.action == "Delete") {
     db.blog.drafts.remove({ _id : request._id });
 }
+db.blog.drafts.ensureIndex({ts : 1 });
 
     var tab = new htmltable({
         ns: db.blog.drafts,
