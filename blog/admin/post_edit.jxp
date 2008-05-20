@@ -1,13 +1,4 @@
 <%
-head.addCSS("NOCDN/@@/yui/current/container/assets/skins/sam/container.css");
-head.addCSS("NOCDN/@@/yui/current/button/assets/skins/sam/button.css");
-head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>');
-head.push('<script type="text/javascript" src="/@@/yui/current/dragdrop/dragdrop-min.js"></script>');
-head.push('<script type="text/javascript" src="/@@/yui/current/element/element-beta-min.js"></script>');
-head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>');
-head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>');
-
-
 var id = request.id;
 log(request.id);
 
@@ -22,14 +13,13 @@ if (id) {
         thePost = foundPost;
         newPost = false;
     } else {
-        foundPost = db.blog.drafts.findOne( CrID( id ) );
+        log("id: "+id);
+        foundPost = db.blog.drafts.findOne( { post_id : ObjId(id) } );
         if (foundPost) {
-            db.blog.drafts.remove({ _id: id });
             thePost = foundPost;
             newPost = false;
-        } else {
-            id = null;
         }
+        id = null;
     }
 }
 
@@ -397,9 +387,7 @@ function preview(path) {
         saved = false;
     }
 }
-//'
 
 </script>
 
-<div id="myMarkedUpContainer" class="yui-skin-sam">
-</div>
+
