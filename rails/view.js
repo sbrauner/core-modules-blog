@@ -73,6 +73,7 @@ ActionView.Base.render = function( options ){
 
 
 ActionView.Base.form_for = function( what , options ){
+    options = options || {};
     
     var frm = arguments[ arguments.length - 1 ];
 
@@ -86,7 +87,7 @@ ActionView.Base.form_for = function( what , options ){
         what = Rails.findModel( what );
     }
 
-    print( "\n<form action='/" + myController.shortName );
+    print( "\n<form action='/" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
     if ( what._id )
         print( "/" + what._id );
 
