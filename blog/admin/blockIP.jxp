@@ -1,33 +1,37 @@
-<%
+<h1>Blocked IPs</h1>
 
-if(request.action == "Add") {
-    db.blog.blocked.save({ ip : parseInt(request.ip1)+"."+parseInt(request.ip2)+"."+parseInt(request.ip3)+"."+parseInt(request.ip4) });
+<%
+core.net.ipaddr();
+
+if(request.action == "Block") {
+    var ip = db.blog.blocked.find({ ip : request.ipx });
+    if(ip.length() > 0) {
+        print('<div style="color: red">Error: '+request.ipx + ' is already  blocked.</div>');
+    }
+    else {
+        if(net.isIPAddr(request.ipx)) {
+            db.blog.blocked.save({ ip : request.ipx });
+        }
+    }
 }
-else if(request.action == "Delete") {
+else if(request.action == "Unblock") {
     db.blog.blocked.remove({ _id : request._id });
 }
 
 %>
 
-<h1>Blocked IPs</h1>
-
 <form method="POST" name="blockNewIP" onsubmit="return checkIP()">
-New IP: <input type="text" name="ip1" size="3" maxlength="3">.<input type="text" name="ip2" size="3" maxlength="3">.<input type="text" name="ip3" size="3" maxlength="3">.<input type="text" name="ip4" size="3" maxlength="3">
-<input type="submit" name="action" value="Add">
+New IP: <input type="text" name="ipx" maxlength="15">
+<input type="submit" name="action" value="Block">
 </form>
 
 <script type="text/javascript">
 
-document.blockNewIP.ip1.focus();
+document.blockNewIP.ip.focus();
 
 function checkIP() {
-    var go = true;
-    if(!parseInt(document.blockNewIP.ip1.value) && parseInt(document.blockNewIP.ip1.value) != 0) { go = false; }
-    if(!parseInt(document.blockNewIP.ip2.value) && parseInt(document.blockNewIP.ip2.value) != 0) { go = false; }
-    if(!parseInt(document.blockNewIP.ip3.value) && parseInt(document.blockNewIP.ip3.value) != 0) { go = false; }
-    if(!parseInt(document.blockNewIP.ip4.value) && parseInt(document.blockNewIP.ip4.value) != 0) { go = false; }
-    if(!go) alert("Invalid IP.");
-    return go;
+    if(!document.blockNewIP.ipx.value.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) { alert("Invalid IP."); return false; }
+    return true;
 }
 
 </script>
@@ -37,11 +41,10 @@ function checkIP() {
     var tab = new htmltable({
         ns: db.blog.blocked,
         cols: [
-            { name: "ip", isLink: true, searchWidth: 50 },
+            { name: "ip", searchWidth: 50 },
         ],
-        detailUrl: "post_edit?id=",
         searchable: true,
-        actions: [ { name: "Delete" } ]
+        actions: [ { name: "Unblock" } ]
     });
 
     tab.dbview( tab.find() );
