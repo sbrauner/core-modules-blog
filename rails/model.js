@@ -26,17 +26,22 @@ ActiveRecord.Base.prototype.sum = function( col ){
     return -2;
 };
 
-ActiveRecord.Base.prototype.find = function( filter ){
+ActiveRecord.Base.prototype.find = function( type , filter ){
     assert( this.collectionName );
+    
+    var c = db[ this.collectionName ];
 
     var jsFilter = {};
-    if ( filter == null || filter == "all" ){
+    if ( type == null || type == "all" ){
     }
-    else if ( isString( filter ) && filter.length == 24 ){
-        return db[ this.collectionName ].findOne( ObjectId( filter ) );
+    else if ( "first" == type ){
+        return c.findOne();
+    }
+    else if ( isString( type ) && type.length == 24 ){
+        return c.findOne( ObjectId( filter ) );
     }
 
-    return db[ this.collectionName ].find().toArray() || [];
+    return c.find().toArray() || [];
 };
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
