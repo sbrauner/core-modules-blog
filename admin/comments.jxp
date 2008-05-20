@@ -38,6 +38,7 @@ if ( sortFunction )
     <th>Commenter</th>
     <th>Date</th>
     <th>Comment</th>
+    <th>IP</th>
   </tr>
 
 <% var lastId = null; all.forEach( function(z){ %>
@@ -50,6 +51,7 @@ if ( sortFunction )
     <td>
     <%= z.comment.text %>
     </td>
+    <td><%= z.comment.ip %></td>
   </tr>
 <% lastId = z.post._id; } ); %>
 
