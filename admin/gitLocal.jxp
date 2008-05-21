@@ -271,7 +271,9 @@ var filetitles= {"changed": "CHANGED OR REMOVED FILES", "untracked": "UNTRACKED 
 
 showHeader();
 
-if(g.showRef("origin/master").parsed.rev != g.showRef("heads/master").parsed.rev){
+var branch = g.getCurrentBranch().parsed.branch;
+
+if(g.showRef("origin/"+branch).parsed.rev != g.showRef("heads/"+branch).parsed.rev){
     core.admin.pieces.gitNotPushed();
 }
 
