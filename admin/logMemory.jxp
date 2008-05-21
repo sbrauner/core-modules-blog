@@ -26,7 +26,9 @@ else {
 
     fields = ["date", "thread", "level", "msg", "throwable"];
     table = { rows: ma.cache[all[0]], fields: fields};
-    table.rows.reverse();
+    if(table.rows.length > 0 && table.rows[0].date < table.rows[table.rows.length - 1].date) {
+        table.rows.reverse();
+    }
     for(var i in table.rows) {
         if(table.rows[i].date instanceof Date)
             table.rows[i].date = table.rows[i].date.format("E MMM dd, yyyy HH:mm:ss");
