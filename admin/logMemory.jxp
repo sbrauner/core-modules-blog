@@ -26,7 +26,7 @@ else {
 
     fields = ["date", "thread", "level", "msg", "throwable"];
     table = { rows: ma.cache[all[0]], fields: fields};
-    if(table.rows[0].date < table.rows[table.rows.length - 1].date) {
+    if(table.rows.length > 0 && table.rows[0].date < table.rows[table.rows.length - 1].date) {
         table.rows.reverse();
     }
     for(var i in table.rows) {
