@@ -66,7 +66,7 @@ ActionController.Base.prototype._addFilters = function( name , args ){
     
     for ( var i=0; i<args.length; i++ ){
         var f = new Rails.Filter( args[i] , options );
-        log.rails.init[name].info( "added [" + f + "]" );
+        log.rails.init.filters[name].info( "added [" + f + "]" );
         this[name].add( f );
     }
 };
@@ -112,7 +112,7 @@ ActionController.Base.prototype._getMatchingFilters = function( appResponse , fi
     }
 
     return all;
-}
+};
 
 
 ActionController.Base.prototype._applyFilters = function( appResponse , filters ){
@@ -121,4 +121,6 @@ ActionController.Base.prototype._applyFilters = function( appResponse , filters 
         all[i].call( appResponse.requestThis );
     }
 
-}
+};
+
+log.rails.init.filters.level = log.LEVEL.ERROR;
