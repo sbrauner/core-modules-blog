@@ -65,7 +65,6 @@ function doSearch() {
 }
 function clearSearch() {
     document.getElementById("searchtext").value = "";
-    document.getElementById("searchbox").value = "";
     document.getElementById("searchopt").options[0].selected = true;
     currentSearch = {};
     lastSearch = "";
@@ -97,6 +96,7 @@ function newCron() {
     document.getElementById("c_name").value = "";
     document.getElementById("c_url").value = "";
     document.getElementById("c_xminutes").value = "";
+    document.getElementById("editCronPanelHd").innerHTML = "Add New Cron";
     editCronPanel.show();
 }
 
