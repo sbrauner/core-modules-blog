@@ -38,10 +38,10 @@ ActiveRecord.Base.prototype.find = function( type , filter ){
         return c.findOne();
     }
     else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( filter ) );
+        return c.findOne( ObjectId( type ) );
     }
 
-    return c.find().toArray() || [];
+    return this._clean( c.find() ) || [];
 };
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
@@ -177,13 +177,26 @@ ActiveRecord.Base.prototype.submit = function( name ){
 
 
 ActiveRecord.Base.prototype.paginate = function( options ){
-    return db[ this.collectionName ].find().toArray() || [];
+    return this._clean( db[ this.collectionName ].find() ) || [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){
     SYSOUT( "don't know how to build_search_conditions" );
     return "";
 }
+
+ActiveRecord.Base.prototype._clean = function( cursor ){
+    var a = [];
+    cursor.forEach( 
+        function(z){
+            if ( z._id )
+                z.id = z._id;
+            a.add( z );
+        }
+    );
+    return a;
+}
+
 
 
 // ---------

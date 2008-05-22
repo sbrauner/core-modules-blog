@@ -102,6 +102,19 @@ ActionView.Base.form_for = function( what , options ){
     print( "\n</form>\n" );
 };
 
+ActionView.Base.form_tag = function( url , options , cont ){
+    if ( url == null || ! isString( url ) )
+        throw "form_tag needs url";
+    
+    if ( isFunction( options ) ){
+        cont = options;
+        options = {};
+    }
+
+    print( "<form action=\"" + url + "\">" );
+    cont.call( this );
+    print( "</form>" );
+}
 
 ActionView.Base.submit_tag = function( name ){
     return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";

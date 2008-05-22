@@ -15,7 +15,7 @@ ActionController.Routing.Routes = function(){
 
 var RailsURI = function( uri ){
     this.uri = uri;
-    uri = uri.replace( /^\/+/ , "" );
+    uri = uri.replace( /^\/+/ , "" ).replace( /\/$/ , "" );
     this.pieces = uri.split( "[/\.]+" );
     for ( var i=0; i<this.pieces.length; i++)
         this.pieces[i] = Rails.mangleName( this.pieces[i] );
@@ -38,7 +38,7 @@ Rails.InternalRoute = function( uri , options ){
     this.uri = uri;
     this.ruri = new RailsURI( uri );
     this.options = options || {};
-    this.name = options.name || this.uri;
+    this.name = this.options.name || this.uri;
     this.options.action = Rails.mangleName( this.options.action || "index" );
 };
 
@@ -119,7 +119,7 @@ ActionController.Routing.Routes.prototype.connect = function( r , options ){
     this.il.info( "connect : " + r  + " options [ " + tojson( options ) + "]" );
     var ir = new Rails.InternalRoute( r , options );
     this._routes.push( ir );
-    if ( options.name )
+    if ( options && options.name )
         ir.addGlobals();
     
 };
@@ -267,6 +267,17 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
 
+    var link = "/" + ( myController.shortName || thing.controller ) ;
+    if ( thing.action )
+        link += "/" + thing.action;
+
+    if ( thing.id )
+        link += "/" + thing.id;
+    
+    SYSOUT( tojson( thing ) );
+
+    return link;
+    
 };
 
 log.rails.init.routes.level = log.LEVEL.ERROR;
