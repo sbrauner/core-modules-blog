@@ -100,7 +100,7 @@ Search = {
         for(var i = 0; i < keys.length; i ++){
             if(keys[i].match(/searchIndex/)) delete obj[keys[i]];
         }
-        return Search.indexSub(obj, obj, weights, options);
+        return Search.indexSub(obj, obj, weights, options || {} );
     },
 
     indexSub : function( top , obj , weights, options){
