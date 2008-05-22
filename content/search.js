@@ -127,7 +127,7 @@ Search = {
                 var s = obj[field];
                 if ( ! s )
                     continue;
-                if(o.stripHTML){
+                if( o.stripHTML || options.stripHTML ){
                     s = content.HTML.strip(s);
                 }
                 if ( ! s )
