@@ -12,7 +12,6 @@ head.push('<script type="text/javascript" src="/@@/yui/current/container/contain
 
 
 <h1 style="margin:0;">
-  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
   <nobr>Cron Jobs</nobr>
 </h1>
 
