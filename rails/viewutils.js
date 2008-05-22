@@ -49,9 +49,6 @@ image_tag = function( url , options ){
     return html;
 }
 
-form_tag = function( url , options , cont ){
-    print( "BROKEN FORM" );
-}
 
 // ----
 

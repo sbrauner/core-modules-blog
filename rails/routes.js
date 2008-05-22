@@ -267,6 +267,17 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
 
+    var link = "/" + ( myController.shortName || thing.controller ) ;
+    if ( thing.action )
+        link += "/" + thing.action;
+
+    if ( thing.id )
+        link += "/" + thing.id;
+    
+    SYSOUT( tojson( thing ) );
+
+    return link;
+    
 };
 
 log.rails.init.routes.level = log.LEVEL.ERROR;
