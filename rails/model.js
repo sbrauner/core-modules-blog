@@ -38,7 +38,7 @@ ActiveRecord.Base.prototype.find = function( type , filter ){
         return c.findOne();
     }
     else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( filter ) );
+        return c.findOne( ObjectId( type ) );
     }
 
     return this._clean( c.find() ) || [];
