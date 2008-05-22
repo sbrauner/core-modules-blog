@@ -1,3 +1,4 @@
+core.db.sql();
 
 ActiveRecord = {};
 
@@ -26,22 +27,29 @@ ActiveRecord.Base.prototype.sum = function( col ){
     return -2;
 };
 
-ActiveRecord.Base.prototype.find = function( type , filter ){
+ActiveRecord.Base.prototype.find = function( type , options ){
     assert( this.collectionName );
     
     var c = db[ this.collectionName ];
+    
+    var filters = {};
+    
+    if ( isObject( options ) ){
+        if ( options.conditions ){
+            filters = SQL.parseWhere( options.conditions );
+        }
+    }
 
-    var jsFilter = {};
     if ( type == null || type == "all" ){
     }
     else if ( "first" == type ){
-        return c.findOne();
+        return c.findOne( filters );
     }
     else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( filter ) );
+        return c.findOne( ObjectId( type ) );
     }
-
-    return c.find().toArray() || [];
+    
+    return this._clean( c.find( filters ) || [] );
 };
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
@@ -177,13 +185,26 @@ ActiveRecord.Base.prototype.submit = function( name ){
 
 
 ActiveRecord.Base.prototype.paginate = function( options ){
-    return db[ this.collectionName ].find().toArray() || [];
+    return this._clean( db[ this.collectionName ].find() ) || [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){
     SYSOUT( "don't know how to build_search_conditions" );
     return "";
 }
+
+ActiveRecord.Base.prototype._clean = function( cursor ){
+    var a = [];
+    cursor.forEach( 
+        function(z){
+            if ( z._id )
+                z.id = z._id;
+            a.add( z );
+        }
+    );
+    return a;
+}
+
 
 
 // ---------
