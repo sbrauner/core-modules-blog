@@ -194,7 +194,15 @@ function before_save(){
     SYSOUT( "ignoring before_save" );
 }
 
+function before_update(){
+    SYSOUT( "ignoring before_update" );
+}
+
 function before_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function before_destroy(){
     SYSOUT( "ignoring before_create" );
 }
 
@@ -203,11 +211,19 @@ function before_validation(){
 }
 
 function after_create(){
-    SYSOUT( "ignoring before_create" );
+    SYSOUT( "ignoring after_create" );
+}
+
+function after_save(){
+    SYSOUT( "ignoring after_save" );
+}
+
+function after_create(){
+    SYSOUT( "ignoring after_create" );
 }
 
 function after_destroy(){
-    SYSOUT( "ignoring before_create" );
+    SYSOUT( "ignoring after_destroy" );
 }
 
 function skip_filter(){
@@ -319,3 +335,13 @@ function tz_time_attributes(){
 
 // ---
 
+// --------------------
+// --- caching api ---
+// --------------------
+
+ActionController.Caching = {}
+ActionController.Caching.Sweeper = function(){}
+
+observe = function(){
+    SYSOUT( "Sweeper.observe ignred" );
+}

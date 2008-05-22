@@ -54,3 +54,6 @@ Rails.loadPlugins = function( gl , path ){
 }
 
 
+function alias_method( n , o ){
+    this[n] = this[o];
+}
