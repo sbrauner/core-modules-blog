@@ -12,7 +12,6 @@ core.content.html();
 %>
 
 <h1 style="margin:0;">
-  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="">Collection Detail Documentation</a></div>
   <nobr>Database Shell</nobr>
 </h1>
 
