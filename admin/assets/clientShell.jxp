@@ -169,7 +169,7 @@ loader.insert({
             }
             if(msg.category == "response" || msg.category == 'response-noret'){
                 var string = function(msg){
-                    return "<span class=\"response\">" + msg + "</span><br/>";
+                    return "<span class=\"response\">" + HTMLEscape(msg) + "</span><br/>";
                 }
                 if(!msg.msg) return "";
 
@@ -497,7 +497,7 @@ function populateTree(treenode, obj, name) {
             s += obj[field];
         }
         else if(typeof obj[field] == "string") {
-            s += '"' + obj[field] + '"';
+            s += '"' + HTMLEscape(obj[field]) + '"';
         }
         else if(typeof obj[field] == "number") {
             s += obj[field];
