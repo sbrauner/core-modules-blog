@@ -373,6 +373,7 @@ function autosave() {
     categories = categories.join("&");
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
+         "&name="+encodeURIComponent(document.getElementById("name").value)+
          "&content="+encodeURIComponent(tinyMCE.activeEditor.getContent())+
          "&excerpt="+encodeURIComponent(document.getElementById("excerpt").value)+
          "&live="+document.getElementById("live").value+
