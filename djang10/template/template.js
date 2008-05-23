@@ -7,8 +7,8 @@
  */
 
 
-function Template(name) {
-    this.template_name = name;
+function Template(compiledTemplate) {
+    this.compiledTemplate = compiledTemplate;
 }
 
 Template.prototype.render = function(context) {
@@ -17,7 +17,8 @@ Template.prototype.render = function(context) {
 
     scope.setGlobal(true);
 
-    f = scope.eval("jxp." + this.template_name);
+
+    f = this.compiledTemplate;
 
     if (f == null) {
         f = scope.eval("core.djang10.templates.notemplatefound");
