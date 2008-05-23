@@ -46,10 +46,10 @@ ActiveRecord.Base.prototype.find = function( type , options ){
         return c.findOne( filters );
     }
     else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( type ) );
+        return this._cleanOne( c.findOne( ObjectId( type ) ) );
     }
     
-    return this._clean( c.find( filters ) || [] );
+    return this._cleanCursor( c.find( filters ) || [] );
 };
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
@@ -60,6 +60,10 @@ ActiveRecord.Base.prototype._checkTS = function( name ){
 ActiveRecord.Base.prototype.save = function(){
 
     var columns = Rails.schema.tables[this.collectionName].columns;
+    
+    var removeId = this.id == this._id;
+    if ( removeId )
+        delete this.id;
 
     for ( var c in columns ){
 
@@ -88,6 +92,10 @@ ActiveRecord.Base.prototype.save = function(){
     }
 
     db[this.collectionName].save( this );
+    
+    if ( removeId )
+        this.id = this._id;
+    
     return true;
 };
 
@@ -208,7 +216,7 @@ ActiveRecord.Base.prototype.submit = function( name ){
 
 
 ActiveRecord.Base.prototype.paginate = function( options ){
-    return this._clean( db[ this.collectionName ].find() ) || [];
+    return this._cleanCursor( db[ this.collectionName ].find() ) || [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){
@@ -216,19 +224,20 @@ ActiveRecord.Base.prototype.build_search_conditions = function( options ){
     return "";
 }
 
-ActiveRecord.Base.prototype._clean = function( cursor ){
-    var a = [];
-    cursor.forEach( 
-        function(z){
-            if ( z._id )
-                z.id = z._id;
-            a.add( z );
-        }
-    );
+ActiveRecord.Base.prototype._cleanCursor = function( cursor ){
+    var a = cursor.toArray();
+    a.forEach( this._cleanOne );
     return a;
 }
 
+ActiveRecord.Base.prototype._cleanOne = function( o ){
+    if ( ! o )
+        return o;
 
+    if ( o._id )
+        o.id = o._id;
+    return o;
+}
 
 // ---------
 // data model

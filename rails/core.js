@@ -7,12 +7,16 @@ ActionView = {}
 Rails.mangleName = function( name ){
     if ( name == "new" )
         return "__rnew";
+    if ( name == "delete" )
+        return "__delete";
     return name;
 };
 
 Rails.unmangleName = function( name ){
     if ( name == "__rnew" )
         return "new";
+    if ( name == "__delete" )
+        return "delete";
     return name;
 };
 
