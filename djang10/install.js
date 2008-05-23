@@ -1,5 +1,6 @@
 core.core.routes();
 core.templates.djang10();
+var settings = core.djang10.conf.settings();
 
 var log = log.djang10;
 
@@ -66,16 +67,6 @@ var prepModelForApp = function( appDir , appScope ) {
                                             all : function() { return this.__collection.find(); }
         };
     }
-};
-
-var getProjectSettingsScope = function() {
-    scope.setGlobal(true);
-    
-    if(local.settings != null) {
-        local.settings();
-    }
-    
-    return scope;
 };
 
 var scopebag = {};
@@ -146,8 +137,6 @@ for (p in urlpatterns) {
 }
 
 //Get the users settings
-var settings = getProjectSettingsScope();
-
 var templateRoots = settings.TEMPLATE_DIRS || [];
 for(var i=0; i<templateRoots.length; i++) {
     djang10.addTemplateRoot(templateRoots[i]);
