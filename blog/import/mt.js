@@ -48,14 +48,14 @@ while ( res.hasNext() ){
 
     var temp = db.blog.posts.findOne( { mt_id : res.entry_id } );
     if ( temp != null ){
-	myPost = temp;
+        myPost = temp;
     }
 
     myPost.ts = res.entry_authored_on;
     if( res.entry_class == "page" )
-	myPost.name = res.entry_basename;
+        myPost.name = res.entry_basename;
     else
-        myPost.name = myPost.ts.getFullYear() + "/" + myPost.ts.getMonth() + "/" + res.entry_basename;
+        myPost.name = myPost.ts.getFullYear() + "/" + (myPost.ts.getMonth()+1) + "/" + res.entry_basename;
 
     myPost.ts = res.entry_authored_on;
     print( myPost.name + "\t" + myPost.ts );
