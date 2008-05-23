@@ -50,6 +50,16 @@ SQL.parseWhere = function( sql , existingFilters ){
     return filters;
 };
 
+SQL._parseToNumber = function( s ){
+    if ( ! isString( s ) )
+        return s;
+    
+    if ( ! s.match( /\d+/ ) )
+        return s;
+    
+    return parseNumber( s );
+}
+
 SQL.Tokenizer = function( sql ){
     this.sql = sql;
     this.length = this.sql.length;
@@ -87,7 +97,7 @@ SQL.Tokenizer.prototype.nextToken = function(){
     if ( t.length == 0 )
         return null;
     
-    return t;
+    return SQL._parseToNumber( t );
 }
 
 SQL._parseToken = function( token ){

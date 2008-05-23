@@ -30,6 +30,24 @@ Rails.getRubyFilesFromDir = function( name ){
     return all;
 }
 
+Rails.loadSymbols = function( func ){
+    var before = scope.keySet();
+    scope.setGlobal( true );
+    func.call();
+    var after = scope.keySet();
+    
+    var s = {};
+
+    for ( var i=0; i<after.length; i++ ){
+        var name = after[i];
+        if ( before.contains( name ) )
+            continue;
+        s[name] = scope[ name ];
+    }
+    
+    return s;
+}
+
 Rails.loadPlugins = function( gl , path ){
     var d = openFile( path );
     if ( ! d.exists() )
@@ -54,3 +72,6 @@ Rails.loadPlugins = function( gl , path ){
 }
 
 
+function alias_method( n , o ){
+    this[n] = this[o];
+}

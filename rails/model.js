@@ -1,3 +1,4 @@
+core.db.sql();
 
 ActiveRecord = {};
 
@@ -10,7 +11,7 @@ ActiveRecord.Base = function( obj ){
 ActiveRecord.Base.prototype._isModel = true;
 
 ActiveRecord.Base.prototype.setFile = function( filename ){
-    this.collectionName = filename.replace( /\.rb$/ , "" );
+    this.collectionName = filename.replace( /\.rb$/ , "" ) + "s";
 };
 
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
@@ -26,22 +27,29 @@ ActiveRecord.Base.prototype.sum = function( col ){
     return -2;
 };
 
-ActiveRecord.Base.prototype.find = function( type , filter ){
+ActiveRecord.Base.prototype.find = function( type , options ){
     assert( this.collectionName );
     
     var c = db[ this.collectionName ];
+    
+    var filters = {};
+    
+    if ( isObject( options ) ){
+        if ( options.conditions ){
+            filters = SQL.parseWhere( options.conditions );
+        }
+    }
 
-    var jsFilter = {};
     if ( type == null || type == "all" ){
     }
     else if ( "first" == type ){
-        return c.findOne();
+        return c.findOne( filters );
     }
     else if ( isString( type ) && type.length == 24 ){
-        return c.findOne( ObjectId( type ) );
+        return this._cleanOne( c.findOne( ObjectId( type ) ) );
     }
-
-    return this._clean( c.find() ) || [];
+    
+    return this._cleanCursor( c.find( filters ) || [] );
 };
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
@@ -50,13 +58,44 @@ ActiveRecord.Base.prototype._checkTS = function( name ){
 }
 
 ActiveRecord.Base.prototype.save = function(){
-    this._checkTS( "created_at" );
-    this._checkTS( "created_on" );
+
+    var columns = Rails.schema.tables[this.collectionName].columns;
     
-    this.updated_at = new Date();
-    this.updated_on = new Date();
-    
+    var removeId = this.id == this._id;
+    if ( removeId )
+        delete this.id;
+
+    for ( var c in columns ){
+
+        var config = columns[c];
+        var type = config.type;
+        var options = config.options;
+        
+        if ( c == "created_at" || c == "created_on" ){
+            this._checkTS( c );
+            continue;
+        }
+        
+        if ( c == "updated_at" || c == "updated_on" || c == "last_update" ){
+            this[ c ] = new Date();
+            continue;
+        }
+        
+        if ( options ){
+            if ( "default" in options && ! ( c in this ) ){
+                this[c] = options["default"];
+            }
+        }
+        
+        if ( type == "integer" )
+            this[c] = parseInt( this[c] );
+    }
+
     db[this.collectionName].save( this );
+    
+    if ( removeId )
+        this.id = this._id;
+    
     return true;
 };
 
@@ -177,7 +216,7 @@ ActiveRecord.Base.prototype.submit = function( name ){
 
 
 ActiveRecord.Base.prototype.paginate = function( options ){
-    return this._clean( db[ this.collectionName ].find() ) || [];
+    return this._cleanCursor( db[ this.collectionName ].find() ) || [];
 }
 
 ActiveRecord.Base.prototype.build_search_conditions = function( options ){
@@ -185,19 +224,20 @@ ActiveRecord.Base.prototype.build_search_conditions = function( options ){
     return "";
 }
 
-ActiveRecord.Base.prototype._clean = function( cursor ){
-    var a = [];
-    cursor.forEach( 
-        function(z){
-            if ( z._id )
-                z.id = z._id;
-            a.add( z );
-        }
-    );
+ActiveRecord.Base.prototype._cleanCursor = function( cursor ){
+    var a = cursor.toArray();
+    a.forEach( this._cleanOne );
     return a;
 }
 
+ActiveRecord.Base.prototype._cleanOne = function( o ){
+    if ( ! o )
+        return o;
 
+    if ( o._id )
+        o.id = o._id;
+    return o;
+}
 
 // ---------
 // data model
@@ -207,7 +247,15 @@ function before_save(){
     SYSOUT( "ignoring before_save" );
 }
 
+function before_update(){
+    SYSOUT( "ignoring before_update" );
+}
+
 function before_create(){
+    SYSOUT( "ignoring before_create" );
+}
+
+function before_destroy(){
     SYSOUT( "ignoring before_create" );
 }
 
@@ -216,11 +264,19 @@ function before_validation(){
 }
 
 function after_create(){
-    SYSOUT( "ignoring before_create" );
+    SYSOUT( "ignoring after_create" );
+}
+
+function after_save(){
+    SYSOUT( "ignoring after_save" );
+}
+
+function after_create(){
+    SYSOUT( "ignoring after_create" );
 }
 
 function after_destroy(){
-    SYSOUT( "ignoring before_create" );
+    SYSOUT( "ignoring after_destroy" );
 }
 
 function skip_filter(){
@@ -332,3 +388,13 @@ function tz_time_attributes(){
 
 // ---
 
+// --------------------
+// --- caching api ---
+// --------------------
+
+ActionController.Caching = {}
+ActionController.Caching.Sweeper = function(){}
+
+observe = function(){
+    SYSOUT( "Sweeper.observe ignred" );
+}

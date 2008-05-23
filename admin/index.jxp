@@ -21,7 +21,9 @@ if ( !_openAccess && (! user || ! user.isAdmin()) ){
 }
 
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
-sectionName = sectionName.replace(/\/(index)?$/, '');
+sectionName = sectionName.replace(/^\/(index)?$/, '');
+if ( sectionName.endsWith("/") && sectionName.length > 1 )
+    sectionName += "index";
 
 if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
