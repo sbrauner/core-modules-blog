@@ -57,7 +57,7 @@ if ( request.action == "save" ) {
 		if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
 		    thePost.name = request.name;
     		else
-		    thePost.name = thePost.ts.getFullYear() + "/" + thePost.ts.getMonth() + "/" + request.name;
+		    thePost.name = thePost.ts.getFullYear() + "/" + (thePost.ts.getMonth()+1) + "/" + request.name;
 	    }
 	    else {
 		thePost.name = request.name;
