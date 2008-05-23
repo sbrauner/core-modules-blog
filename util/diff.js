@@ -209,8 +209,16 @@ Util.Diff = {
     applyBackwards : function(base, diff){
         return Util.Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
     },
-
-diffFunc : {"string" : Util.Diff.diffStr, "number" : Util.Diff.diffInt, "boolean" : Util.Diff.diffBool, "Object" : Util.Diff.diffObj, "Array" : Util.Diff.diffArray, "Date" : Util.Diff.diffDate }
+    
 };
+
+Util.Diff.diffFunc = { "string" : Util.Diff.diffStr, 
+                       "number" : Util.Diff.diffInt, 
+                       "boolean" : Util.Diff.diffBool, 
+                       "Object" : Util.Diff.diffObj, 
+                       "Array" : Util.Diff.diffArray, 
+                       "Date" : Util.Diff.diffDate 
+                     };
+
 
 
