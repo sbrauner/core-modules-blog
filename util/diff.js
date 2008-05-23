@@ -1,6 +1,7 @@
 Util.Diff = {
 
     diffStr : function( a , b ){
+        if(a == b) return "";
         return javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b );
     } ,
 
@@ -56,54 +57,106 @@ Util.Diff = {
     },
 
     diffArray : function( a , b ){
-        // This is really hard!
-        // OK, start with the simplest cases:
-        // An array of a strings vs another array of strings.
-        // We can't just join the strings with newlines and pass it to the
-        // underlying string method..
-        // In this case we should probably expose more of the underlying bmsi diff
-        // code. Pass the arrays of strings "a", "b", "d" and "a", "b", "c", "d"
-        // and hope it does the right thing -- try to insert a c.
-        // I'm concerned that it always pick the "smallest" when it comes to
-        // inserting elements.
-        // An array of ints could be tricky too, especially when it comes to insert
-        // them.
-        // Arrays of objects are really hairy. I guess maybe come up with a
-        // "distance" metric? I'd really have to look at the actual diff code
+        // if we are comparing the same array to itself, we need to make a copy
+        // so that we aren't unshifting it twice
+        if(a == b) {
+            b = Object.extend([], a);
+        }
 
-        // For now, throw an exception and hope it never happens.
-        throw new Exception("diff on array not supported");
+        var dArr = [];
+        c = [];
+        a.unshift();
+        b.unshift();
+        for(var i in a) {
+            c[i] = [];
+            c[i][0] = 0;
+        }
+        for(var j=1; j< b.length; j++) {
+            c[0][j] = 0;
+        }
+        for(var i=1; i< a.length; i++) {
+            for(var j=1; j< b.length; j++) {
+                var obj = Util.Diff.diff(a[i], b[j]);
+                if(obj == null) {
+                    return ["oops, something went wrong diffing the array."];
+                }
+                if ( Object.keys(obj).length == 0)
+                    c[i][j] = c[i-1][j-1] + 1;
+                else
+                    c[i][j] = Math.max(c[i][j-1], c[i-1][j]);
+            }
+        }
+
+        function printDiff(c, x, y, i, j) {
+            if (i > 0 && j > 0 && x[i] == y[j]) {
+                printDiff(c, x, y, i-1, j-1);
+//                dArr.push({});
+            }
+            else {
+                if (j > 0 && (i == 0 || (i > 0 && j > 0 && c[i][j-1] >= c[i-1][j]))) {
+                    printDiff(c, x, y, i, j-1);
+                    dArr.push({ add : y[j]});
+                }
+                else if (i > 0 && (j == 0 || ( i > 0 && j > 0 && c[i][j-1] < c[i-1][j]))) {
+                    printDiff(c, x, y, i-1, j);
+                    dArr.push({ remove : x[i] });
+                }
+            }
+        }
+        printDiff(c, a, b, a.length-1, b.length-1);
+        a.shift();
+        b.shift();
+        return dArr;
+
     },
 
     applyBackwardsArray : function( base , diff ){
         throw new Exception("how did you get a diff on an array??");
     },
 
-    // Note: these functions are totally incomplete
+    diffBool : function( a, b ) {
+        if(a == b) return 0;
+        if(a) return { add : true, remove: false};
+        return { add : false, remove: true};
+    },
+
 
     diffObj : function( a , b ){
         var d = {};
+        var valid_type = ["string", "number", "boolean"];
+        var valid_instance = ["Array", "Object"];
         for(var prop in a){
             if(! (prop in b) ){
                 // mark it as removed
                 d[prop] = {remove: a[prop]};
             }
-
-            if(typeof a[prop] == "number" && typeof b[prop] == "number"){
-                d[prop] = {change: Util.Diff.diffInt(a[prop], b[prop])};
+            else if(typeof a[prop] == typeof b[prop] && valid_type.contains(typeof a[prop])){
+                var diffy = Util.Diff.diffFunc[typeof a[prop]](a[prop], b[prop]);
+                if(diffy && diffy != 0 && diffy != "") {
+                    d[prop] = {change: diffy};
+                }
             }
-            else if(typeof a[prop] == "string" && typeof b[prop] == "string"){
-                d[prop] = {change: Util.Diff.diffStr(a[prop], b[prop])};
+            else if(a[prop] instanceof Date && b[prop] instanceof Date) {
+                var diffy = Util.Diff.diffFunc["Date"](a[prop], b[prop]);
+                if(diffy && diffy != 0) {
+                    d[prop] = {change: diffy};
+                }
             }
-            else if(a[prop] instanceof Array && b[prop] instanceof Array){
-                d[prop] = {change: Util.Diff.diffArray(a[prop], b[prop])};
+            else if(a[prop] instanceof Array && b[prop] instanceof Array) {
+                var diffy = Util.Diff.diffFunc["Array"](a[prop], b[prop]);
+                if(diffy instanceof Array && diffy.length > 0) {
+                    d[prop] = {change: diffy};
+                }
             }
-            else if(a[prop] instanceof Object && b[prop] instanceof Object){
-                d[prop] = {change: Util.Diff.diffObj(a[prop], b[prop])};
+            else if(a[prop] instanceof Object && b[prop] instanceof Object) {
+                var diffy = Util.Diff.diffFunc["Object"](a[prop], b[prop]);
+                if(diffy instanceof Object && Object.keys(diffy).length > 0) {
+                    d[prop] = {change: diffy};
+                }
             }
             else {
                 log.diff.warning("property " + prop + " is of different types in the two objects");
-                d[prop] = {remove: a[prop], add: b[prop]};
+                d[prop] = {change: {remove: a[prop], add: b[prop]}};
             }
         }
         for(var prop in b){
@@ -147,11 +200,17 @@ Util.Diff = {
     },
 
     diff : function(a, b){
-        return Util.Diff.diffObj({arg: a}, {arg: b})["arg"].change;
+        var diffy = Util.Diff.diffObj({arg: a}, {arg: b})["arg"];
+        if(!diffy) return {};
+        else if(diffy.change) return diffy.change;
+        else return diffy;
     },
 
     applyBackwards : function(base, diff){
         return Util.Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
-    }
+    },
 
+diffFunc : {"string" : Util.Diff.diffStr, "number" : Util.Diff.diffInt, "boolean" : Util.Diff.diffBool, "Object" : Util.Diff.diffObj, "Array" : Util.Diff.diffArray, "Date" : Util.Diff.diffDate }
 };
+
+

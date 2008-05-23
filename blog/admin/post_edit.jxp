@@ -7,6 +7,7 @@ head.push('<script type="text/javascript" src="/@@/yui/current/element/element-b
 head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>');
 
+core.util.diff();
 
 var id = request.id;
 
@@ -14,12 +15,14 @@ var newPost = true;
 var thePost = new Post();
 thePost.cls = request.cls || "entry";
 thePost.author = user.name;
+var origPost;
 
 if (id) {
     foundPost = db.blog.posts.findOne( CrID( id ) );
     if (foundPost) {
         thePost = foundPost;
         newPost = false;
+        origPost = Object.extend({}, thePost);
     } else {
         foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
         if (foundPost) {
@@ -116,6 +119,12 @@ if ( request.action == "save" ) {
 	    }
 	}
 
+        if(origPost) {
+            log.blog("Post changed by "+(user ? user.name : "(unknown)")+", diff: "+tojson(Util.Diff.diffObj(thePost, origPost)));
+        }
+        else {
+            log.blog("Saved new post: "+tojson(thePost));
+        }
 
         db.blog.posts.save( thePost );
 
@@ -134,6 +143,7 @@ if ( request.action == "save" ) {
     }
 }
 else if (request.action == 'delete') {
+    log('Post titled "'+thePost.title+'" deleted by '+user.name);
     if (db.blog.posts.remove(thePost)) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "posts" );
@@ -207,7 +217,7 @@ function confirmExit() {
 
   var newPost = <%= id ? "false" : "true" %>;
   function titleChange(){
-    if ( ! newPost ) return;
+//    if ( ! newPost ) return;
 
     var t = document.getElementById( "title" ).value;
     t = t.replace( /[^a-zA-Z0-9]+/g , "_" ).toLowerCase();
@@ -245,7 +255,7 @@ function confirmExit() {
         <input type="button" value="Preview" onclick="preview('preview')" />
         <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
     </div>
-    <div id="post_title"><input id="title" name="title" onkeypress="needs_save = true;" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange()" ></div>
+    <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange(); needs_save = true;" ></div>
     <div id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content"><%= thePost.content %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
