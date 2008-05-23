@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <rss version="2.0">
 <%
-
 core.blog.post();
 
 var requestResult = Blog.handleRequest(request);
@@ -50,7 +49,7 @@ var fixUrl = function(u){
 };
 %>
 
-<% response.setHeader( "Content-Type" , "text/xml"); %>
+<% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
     <channel>
         <title><%= siteName %></title>
         <link>http://<%= request.getHeader( "Host") %></link>
