@@ -92,9 +92,7 @@ testing.Client.prototype.execute = function(f){
         try{
             return f();
         }
-        catch(e){
-            if(! (e instanceof Exception.Quiet)) throw e;
-            // if it was Quiet..
+        catch(e if (e instanceof Exception.Quiet)){
             return e;
         }
     });
