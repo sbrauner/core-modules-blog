@@ -11,7 +11,7 @@ ActiveRecord.Base = function( obj ){
 ActiveRecord.Base.prototype._isModel = true;
 
 ActiveRecord.Base.prototype.setFile = function( filename ){
-    this.collectionName = filename.replace( /\.rb$/ , "" );
+    this.collectionName = filename.replace( /\.rb$/ , "" ) + "s";
 };
 
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
@@ -58,12 +58,35 @@ ActiveRecord.Base.prototype._checkTS = function( name ){
 }
 
 ActiveRecord.Base.prototype.save = function(){
-    this._checkTS( "created_at" );
-    this._checkTS( "created_on" );
-    
-    this.updated_at = new Date();
-    this.updated_on = new Date();
-    
+
+    var columns = Rails.schema.tables[this.collectionName].columns;
+
+    for ( var c in columns ){
+
+        var config = columns[c];
+        var type = config.type;
+        var options = config.options;
+        
+        if ( c == "created_at" || c == "created_on" ){
+            this._checkTS( c );
+            continue;
+        }
+        
+        if ( c == "updated_at" || c == "updated_on" || c == "last_update" ){
+            this[ c ] = new Date();
+            continue;
+        }
+        
+        if ( options ){
+            if ( "default" in options && ! ( c in this ) ){
+                this[c] = options["default"];
+            }
+        }
+        
+        if ( type == "integer" )
+            this[c] = parseInt( this[c] );
+    }
+
     db[this.collectionName].save( this );
     return true;
 };

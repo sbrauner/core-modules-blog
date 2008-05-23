@@ -19,6 +19,12 @@ if ( configFile.exists() ){
 Rails.loadPlugins( useGlobal , "vendor/plugins" );
 
 // -------------------
+// ----- db -----
+// -------------------
+
+Rails.schema = Rails.loadCurrentSchema();
+
+// -------------------
 // ----- libs -----
 // -------------------
 

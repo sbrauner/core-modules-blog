@@ -23,7 +23,10 @@ __path__.lib.all();
 __path__.view();
 __path__.controller();
 __path__.filters();
+
 __path__.model();
+__path__.migration();
+
 __path__.viewutils();
 __path__.routes();
 __path__.request();
