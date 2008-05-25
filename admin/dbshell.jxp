@@ -16,7 +16,7 @@ core.content.html();
   <nobr>Database Shell</nobr>
 </h1>
 
-<p class="abstract">Run a command and see the output in the table below.</p>
+<p class="abstract">Run a command and see the output in the table below; e.g., <i>db.users.find();</i></p>
 <div id="myMarkedUpContainer" class="yui-skin-sam">
 </div>
 
