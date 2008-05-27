@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
 <%
+var RSSTHUMBX = 154; // FIXME: blog configuration parameter
+var RSSTHUMBY = 115;
 core.blog.post();
+core.net.url();
 
 var requestResult = Blog.handleRequest(request);
 var now = new Date();
@@ -74,6 +77,10 @@ var fixUrl = function(u){
 
             %>
             <description> <%= clean( post.getFullContent() ) %> </description>
+            <% var imgSRC = post.getFirstImageSrc( RSSTHUMBX, RSSTHUMBY ); %>
+            <% if(imgSRC){ %>
+            <media:thumbnail url="<%= clean((LocalURL(imgSRC)).toString()) %>"/>
+            <% } %>
         </item>
         <% } %>
 
