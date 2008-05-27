@@ -1,4 +1,5 @@
 core.net.url();
+core.testing.client();
 
 s = 'http://localhost:8080/a/b/c/?hi=there&you=funny';
 u = new URL(s);
@@ -72,3 +73,14 @@ assert( URL.escape_queryargs( " " , true ) == "%20" );
 assert( URL.unescape_queryargs( "+" ) == " " );
 assert( URL.unescape_queryargs( "+" , true ) == "+" );
 
+var c = new testing.Client();
+c = c.setAnswer("value");
+
+var l = c.setURL("http://localhost:2008/blog/posts/").execute(function(){
+    return LocalURL("/~~/f.jxp?id=deadbeefdeadbeefdeadbeef&maxX=154&maxY=115");
+});
+
+print(tojson(l));
+assert(l.hostname == "localhost");
+assert(l.port == 2008);
+assert(l.toString() == "http://localhost:2008/~~/f.jxp?id=deadbeefdeadbeefdeadbeef&maxX=154&maxY=115");
