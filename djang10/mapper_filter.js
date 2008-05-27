@@ -11,7 +11,7 @@ MapperFilter.matchURI = function(uri)  {
     var match_array = null;
     var duple = null;
 
-    for (i in keys) {
+    for(var i=keys.length - 1; i>=0 ; i--) {
         match_array = uri.match(keys[i]);
 
         if (match_array != null) {
