@@ -2,7 +2,8 @@ Util.Diff = {
 
     diffStr : function( a , b ){
         if(a == b) return "";
-        x= javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b );
+        // you need a '+""' at the end to convert it from a "native_string" to a "string"
+        var x= javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b )+"";
         return x;
     } ,
 
