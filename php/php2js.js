@@ -995,7 +995,7 @@ function tojs(php, fname) {
 //var fname = "/data/sites/php/popslamui/lib/Config.php";
 //var fname = "/data/sites/php/popslamui/lib/Cache/Cache.php";
 //var fname = "/data/sites/php/popslamui/lib/Cache/PEAR.php";
-var fname = javaStatic( "java.lang.System" , "getenv", "fname" );
+var fname = arguments[0] || javaStatic( "java.lang.System" , "getenv", "fname" );
 //    "/data/sites/php/www/index.php";
 
 try { 
