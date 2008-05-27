@@ -29,7 +29,7 @@ if( User.requirements.confirmed_email && user && ! user.isAdmin() && ! user.hasP
 
 to = request.to || "/";
 if( notice )
-    to = to + "?notice="+notice;
+    to = new URL(to).addArgs({notice:notice}).toString();
 
 response.setResponseCode( 301 );
 response.setHeader( "Location" , to );
