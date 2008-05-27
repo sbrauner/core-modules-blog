@@ -35,3 +35,10 @@ File.read = function( file ){
         throw "file doesn't exist";
     return f.asString();
 };
+
+File.dirname = function( dirname ){
+    var idx = dirname.lastIndexOf( "/" );
+    if ( idx < 0 )
+        return dirname;
+    return dirname.substring( 0 , idx );
+}
