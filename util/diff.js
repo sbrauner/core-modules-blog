@@ -2,7 +2,8 @@ Util.Diff = {
 
     diffStr : function( a , b ){
         if(a == b) return "";
-        return javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b );
+        x= javaStatic( "ed.util.DiffUtil" , "computeDiff" , a , b );
+        return x;
     } ,
 
     applyBackwardsStr : function( base , diff ){
@@ -124,7 +125,7 @@ Util.Diff = {
     diffObj : function( a , b ){
         var d = {};
         var valid_type = ["string", "number", "boolean"];
-        var valid_instance = ["Array", "Object"];
+        var valid_instance = ["Array", "Object", "Date"];
         for(var prop in a){
             if(! (prop in b) ){
                 // mark it as removed
@@ -132,7 +133,7 @@ Util.Diff = {
             }
             else if(typeof a[prop] == typeof b[prop] && valid_type.contains(typeof a[prop])){
                 var diffy = Util.Diff.diffFunc[typeof a[prop]](a[prop], b[prop]);
-                if(diffy && diffy != 0 && diffy != "") {
+                if(diffy && ((typeof diffy == "number" && diffy != 0) || (typeof diffy == "string" && diffy != ""))) {
                     d[prop] = {change: diffy};
                 }
             }
@@ -209,15 +210,15 @@ Util.Diff = {
     applyBackwards : function(base, diff){
         return Util.Diff.applyBackwardsObj({arg: base}, {arg: {change: diff}})["arg"];
     },
-    
+
 };
 
-Util.Diff.diffFunc = { "string" : Util.Diff.diffStr, 
-                       "number" : Util.Diff.diffInt, 
-                       "boolean" : Util.Diff.diffBool, 
-                       "Object" : Util.Diff.diffObj, 
-                       "Array" : Util.Diff.diffArray, 
-                       "Date" : Util.Diff.diffDate 
+Util.Diff.diffFunc = { "string" : Util.Diff.diffStr,
+                       "number" : Util.Diff.diffInt,
+                       "boolean" : Util.Diff.diffBool,
+                       "Object" : Util.Diff.diffObj,
+                       "Array" : Util.Diff.diffArray,
+                       "Date" : Util.Diff.diffDate
                      };
 
 
