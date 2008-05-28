@@ -1,3 +1,11 @@
+// FIXME: currently, if a user doesn't have permission to access something, but
+// there's a child permission object that grants permission to the same thing,
+// permission will be granted. I don't know if this is the corrcet behavior 
+// or not.
+
+// Similarly, if this class has a role that grants permission to something,
+// child permissions aren't even consulted (even if they deny access to that 
+// thing).
 User.Perm.RoleDB = Class.create(User.Perm, {
         initialize: function($super, collection){
             $super();
