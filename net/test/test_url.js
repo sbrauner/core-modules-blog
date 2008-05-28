@@ -80,7 +80,6 @@ var l = c.setURL("http://localhost:2008/blog/posts/").execute(function(){
     return LocalURL("/~~/f.jxp?id=deadbeefdeadbeefdeadbeef&maxX=154&maxY=115");
 });
 
-print(tojson(l));
 assert(l.hostname == "localhost");
 assert(l.port == 2008);
 assert(l.toString() == "http://localhost:2008/~~/f.jxp?id=deadbeefdeadbeefdeadbeef&maxX=154&maxY=115");
