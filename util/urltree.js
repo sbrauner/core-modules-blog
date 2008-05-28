@@ -41,6 +41,14 @@ Object.extend(Util.URLTree.prototype, {
     },
 
     apply: function( recurse , uri , request , extras ){
+        // Step through a level of URI, calling recurse() when necessary.
+        // This API sucks a little. The problem is that apply needs to recurse,
+        // but doesn't know how to recur or what arguments to give. So we pass
+        // this "recurse" function which adapts the needs of the subclass to
+        // the apply method.
+        // To check whether to recurse, this.canRecurse(child) is called.
+
+        // If no recurse method is provided, we just call apply again.
         Util.URLTree.log.debug( "apply\t" + uri );
         if ( uri == "" )
             return this.emptyString( uri, request , extras );
@@ -117,7 +125,7 @@ Object.extend(Util.URLTree.prototype, {
         if ( isObject( end ) && end.isValue )
             end = value.end;
 
-        if ( isObject( end ) ){
+        if ( isObject( end ) && this.canRecurse(end) ){
             Util.URLTree.log.debug("Recursing on end");
             var res = recurse( end, uri.substring( 1 + firstPiece.length ) , request , extras );
             if(res == null) res = this.getDefault();
@@ -137,6 +145,8 @@ Object.extend(Util.URLTree.prototype, {
     currentRoot: function(){
         return currentRoot;
     },
+
+    canRecurse: function(next){ return next.apply; },
 
     getDefault: function(){
         return "";

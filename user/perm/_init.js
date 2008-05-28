@@ -14,6 +14,8 @@ User.Perm = Class.create(Util.URLTree, {
         return r;
     }, // fail open like allowed()
 
+    canRecurse: function(next){ return next.allowed; },
+
     terminal: function(end, uri, request, firstPiece, key, value, extras){
         User.Perm.log("Got a terminal " + tojson(end));
         if(isObject(end) && end.allowed) return end.allowed(user, request);
