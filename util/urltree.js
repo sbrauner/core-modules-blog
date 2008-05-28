@@ -112,13 +112,14 @@ Object.extend(Util.URLTree.prototype, {
     },
 
     finish: function( recurse, uri, request , firstPiece , key , value , extras ){
+        if(! recurse) recurse = function(end, uri, request, extras){ return end.apply(null, uri, request, extras); };
         var end = value;
         if ( isObject( end ) && end.isValue )
             end = value.end;
 
-        if ( isObject( end ) && end[recurse] ){
+        if ( isObject( end ) ){
             Util.URLTree.log.debug("Recursing on end");
-            var res = end[recurse]( uri.substring( 1 + firstPiece.length ) , request , extras );
+            var res = recurse( end, uri.substring( 1 + firstPiece.length ) , request , extras );
             if(res == null) res = this.getDefault();
             res = this.unwind( res, uri, request, firstPiece, key, value, extras);
             return res;
