@@ -25,4 +25,12 @@ return function(p){
     var output = tryAllowed("/admin/blog/post_edit");
 
     assert(output == true);
+
+    p.forum = new User.Perm();  // which fails open by default
+    
+    var output = tryAllowed("/forum/woog");
+    assert(output == true);
+
+    var output = tryAllowed("/admin/forum");
+    assert(output == false);
 };
