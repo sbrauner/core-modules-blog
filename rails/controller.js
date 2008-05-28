@@ -32,6 +32,10 @@ function caches_page( name ){
     SYSOUT( "ignore caches_page [" + name + "]" );
 };
 
+ActionController.Base.prototype.layout = function( layout ){
+    this.layout = layout;
+    this.layoutSet = true;
+}
 
 
 // -----------
@@ -161,7 +165,9 @@ ApplicationResponse.prototype.html = function( options ){
     // layout
 
     var layout = null;
-    if ( local.app.views.layouts ){
+    if ( this.controller.layoutSet )
+        layout = this.controller.layout;
+    else if ( local.app.views.layouts ){
         layout = 
             local.app.views.layouts[ this.controller.shortName + ".html" ] || 
             local.app.views.layouts.application || 

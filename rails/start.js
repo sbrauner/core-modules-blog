@@ -155,12 +155,14 @@ Rails.helpers = {};
 Rails.getRubyFilesFromDir( "app/helpers/" ).forEach( 
     function(z){
         z.func();
-        var little = z.filename.replace( "_helper.rb$" , "" );
-        var className = little.substring(0,1).toUpperCase() + little.substring(1) + "Helper";
+        var little = z.filename.replace( ".rb$" , "" ).replace( "_helper$" , "" );
+        var className = little.substring(0,1).toUpperCase() + little.substring(1);
+        if ( z.filename.contains( "_helper" ) )
+            className += "Helper";
         
         var helper = scope[ className ];
         if ( ! helper )
-            throw "couldn't find [" + className + "] in [" + shortName + "]";
+            throw "couldn't find [" + className + "] in [" + z.filename + "]";
         
         log.rails.init.helpers.info( "Added: [" + little + "] --> " + className );
         Rails.helpers[little] = helper;

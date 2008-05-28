@@ -36,7 +36,16 @@ ActiveRecord.Base.prototype.find = function( type , options ){
     
     if ( isObject( options ) ){
         if ( options.conditions ){
-            filters = SQL.parseWhere( options.conditions );
+            var s = options.conditions;
+            
+            if ( isArray( options.conditions ) ){
+                s = options.conditions[0];
+                for ( var i=1; i<options.conditions.length; i++ ){
+                    s = s.replace( /\?/ , options.conditions[i] );
+                }
+            }
+             
+            filters = SQL.parseWhere( s );
         }
     }
 
@@ -51,6 +60,11 @@ ActiveRecord.Base.prototype.find = function( type , options ){
     
     return this._cleanCursor( c.find( filters ) || [] );
 };
+
+ActiveRecord.Base.prototype.find_by_sql = function( sql ){
+    SYSOUT( "find_by_sql doesn't work" );
+    return [];
+}
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
     if ( ! this[ name ] )
