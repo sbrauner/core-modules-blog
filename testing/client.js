@@ -86,8 +86,6 @@ testing.Client.prototype.execute = function(f){
     this.redirects = [];
     var answer = this.answer || 'output';
     request = this.getRequest(this.url.toString());
-    print(this.url.toString());
-    print(request.toString());
     response = this.getResponse();
     head = Object.extend([], {addScript: function() {},
                               addCSS: function() {} });
