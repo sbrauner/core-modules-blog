@@ -1,5 +1,5 @@
 core.user.perm.deny();
-Util.URLTree.log.level = log.LEVEL.DEBUG;
+//Util.URLTree.log.level = log.LEVEL.DEBUG;
 
 var p = new User.Perm();
 
@@ -20,9 +20,8 @@ p.forum = new User.Perm.Deny();
 p.admin = false;
 
 var output = tryAllowed("/forum");
-//assert(output == false);
-print(output);
+assert(output == false);
 
 var output = tryAllowed("/admin");
-//assert(output == false);
-print(output);
+assert(output == false);
+

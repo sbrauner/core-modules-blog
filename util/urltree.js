@@ -40,7 +40,7 @@ Object.extend(Util.URLTree.prototype, {
         return obj;
     },
 
-    apply: function( uri , request , extras ){
+    apply: function( recurse , uri , request , extras ){
         Util.URLTree.log.debug( "apply\t" + uri );
         if ( uri == "" )
             return this.emptyString( uri, request , extras );
@@ -64,22 +64,22 @@ Object.extend(Util.URLTree.prototype, {
             if ( key.startsWith( "_" ) )
                 continue;
             if ( key == firstPiece )
-                return this.finish( uri , request , firstPiece , key, this[ key ] , extras );
+                return this.finish( recurse , uri , request , firstPiece , key, this[ key ] , extras );
         }
 
         if(firstPiece.substring( 0, firstPiece.indexOf('.') ) in this){
             key = firstPiece.substring( 0, firstPiece.indexOf('.'));
-            return this.finish(uri, request, firstPiece, key, this[key], extras);
+            return this.finish(recurse, uri, request, firstPiece, key, this[key], extras);
         }
 
         for(var i = 0; i < this._regexp.length; i++){
             var value = this._regexp[i];
             if ( value.key.test( uri ) )
-                return this.finish( uri, request, firstPiece, value.key, value, extras);
+                return this.finish( recurse, uri, request, firstPiece, value.key, value, extras);
         }
 
         Util.URLTree.log.debug( "\t using default\t" + this._default );
-        return this.finish( uri , request , firstPiece , null , this._default , extras );
+        return this.finish( recurse, uri , request , firstPiece , null , this._default , extras );
     },
 
     /**
@@ -111,18 +111,15 @@ Object.extend(Util.URLTree.prototype, {
         return null;
     },
 
-    finish: function( uri, request , firstPiece , key , value , extras ){
-        if (! value) return null;
-
+    finish: function( recurse, uri, request , firstPiece , key , value , extras ){
         var end = value;
         if ( isObject( end ) && end.isValue )
             end = value.end;
-        if ( ! end )
-            return null;
 
-        if ( isObject( end ) && end.apply ){
+        if ( isObject( end ) && end[recurse] ){
             Util.URLTree.log.debug("Recursing on end");
-            var res = end.apply( uri.substring( 1 + firstPiece.length ) , request , extras ) || "";
+            var res = end[recurse]( uri.substring( 1 + firstPiece.length ) , request , extras );
+            if(res == null) res = this.getDefault();
             res = this.unwind( res, uri, request, firstPiece, key, value, extras);
             return res;
         }
@@ -138,6 +135,10 @@ Object.extend(Util.URLTree.prototype, {
     // This is mostly routes-specific. FIXME: Move this into a subclass
     currentRoot: function(){
         return currentRoot;
+    },
+
+    getDefault: function(){
+        return "";
     },
 
     emptyString: function(uri, request, extras){

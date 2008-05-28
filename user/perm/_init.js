@@ -6,7 +6,7 @@ User.Perm = Class.create(Util.URLTree, {
     },
 
     allowed: function(user, request){
-        var r = this.apply(request.getURI(), request, user);
+        var r = this.apply('allowed', request.getURI(), request, user);
         return r;
     }, // fail open like allowed()
 
@@ -22,11 +22,11 @@ User.Perm = Class.create(Util.URLTree, {
     },
 
     unwind: function(result, uri, request, firstPiece, key, value, extras){
-        User.Perm.log("Unwinding");
+        User.Perm.log("Unwinding " + tojson(result));
         return result;
     },
 });
 
 
 User.Perm.log = log.user.perm;
-User.Perm.log.level = log.LEVEL.DEBUG;
+User.Perm.log.level = log.LEVEL.ERROR;
