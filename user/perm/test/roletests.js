@@ -33,4 +33,16 @@ return function(p){
 
     var output = tryAllowed("/admin/forum");
     assert(output == false);
+
+    var bigPerm = new User.Perm();
+    bigPerm.roles = p;
+    
+    var tryAllowed = function(path){
+        return c.setURL(path).execute(function(){ return bigPerm.allowed(u, request); });
+    };
+
+    assert(tryAllowed("/roles/forum/woog") == true);
+    assert(tryAllowed("/open") == true);
+    assert(tryAllowed("/roles/admin/unknown") == false);
+    assert(tryAllowed("/roles/admin/files") == true);
 };
