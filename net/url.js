@@ -56,6 +56,15 @@ URL = function(s){
     }
 };
 
+LocalURL = function(path){
+    // Don't call using new, bad things happen
+    // Tests not yet written
+    var u = new URL(path);
+    u.hostname = request.getHost();
+    u.port = request.getPort();
+    return u;
+};
+
 URL.prototype.toString = function(){
     // Generate the string for this URL object.
     if(this.hostname){

@@ -3,10 +3,26 @@
 
 var useGlobal = globals;
 
+logger = function(){
+    return log;
+};
+
+appconf = {}
+var configFile = File.open( "config/config.yml" );
+if ( configFile.exists() ){
+    appconf = YAML.load( configFile.asString() );
+}
+
 // -------------------
 // ----- plugins -----
 // -------------------
 Rails.loadPlugins( useGlobal , "vendor/plugins" );
+
+// -------------------
+// ----- db -----
+// -------------------
+
+Rails.schema = Rails.loadCurrentSchema();
 
 // -------------------
 // ----- libs -----
@@ -16,7 +32,7 @@ var inStart = true;
 
 if ( local.config ){
     
-    var files = [ "app" ];
+    var files = [  "app" ];
     files.forEach( 
         function(z){
             if ( local.config[z] )

@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
-<rss version="2.0">
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
 <%
-
+var RSSTHUMBX = 154; // FIXME: blog configuration parameter
+var RSSTHUMBY = 115;
 core.blog.post();
+core.net.url();
 
 var requestResult = Blog.handleRequest(request);
 var now = new Date();
@@ -41,9 +43,16 @@ function clean( s ){
 
     return s;
 }
+
+// We add track info to the link but the guid we keep clean
+var fixUrl = function(u){
+    if(request.src)
+        u = u + "?src="+request.src;
+    return u;
+};
 %>
 
-<% response.setHeader( "Content-Type" , "text/xml"); %>
+<% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
     <channel>
         <title><%= siteName %></title>
         <link>http://<%= request.getHeader( "Host") %></link>
@@ -59,7 +68,7 @@ function clean( s ){
         <item>
             <guid><%= post.getUrl(request) %></guid>
             <title><%= clean( post.title ) %></title>
-            <link><%= post.getUrl(request) %></link>
+            <link><%= fixUrl(post.getUrl(request)) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
             <%
@@ -68,6 +77,10 @@ function clean( s ){
 
             %>
             <description> <%= clean( post.getFullContent() ) %> </description>
+            <% var imgSRC = post.getFirstImageSrc( RSSTHUMBX, RSSTHUMBY ); %>
+            <% if(imgSRC){ %>
+            <media:thumbnail url="<%= clean((LocalURL(imgSRC)).toString()) %>"/>
+            <% } %>
         </item>
         <% } %>
 

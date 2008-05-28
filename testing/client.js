@@ -20,6 +20,8 @@ testing.Client.prototype.getHeaders = function(){
         headers = headers.concat(["Cookie: " + cookieStrings.join("; ")]);
     }
     headers = headers.concat(["X-Cluster-Client-Ip: " + this.ip]);
+    headers = headers.concat(["Host: " + this.url.hostname + (this.url.port ? ":"+this.url.port : "")]);
+
     return headers.join("\n");
 };
 
@@ -82,7 +84,7 @@ testing.Client.prototype.execute = function(f){
     // sensible request and response objects and keep track of what happens to
     // them
     this.redirects = [];
-    answer = this.answer || 'output';
+    var answer = this.answer || 'output';
     request = this.getRequest(this.url.toString());
     response = this.getResponse();
     head = Object.extend([], {addScript: function() {},
@@ -92,9 +94,7 @@ testing.Client.prototype.execute = function(f){
         try{
             return f();
         }
-        catch(e){
-            if(! (e instanceof Exception.Quiet)) throw e;
-            // if it was Quiet..
+        catch(e if (e instanceof Exception.Quiet)){
             return e;
         }
     });

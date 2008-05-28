@@ -3,7 +3,11 @@ Rails.View = {};
 
 var myContentCache = {};
 
-ActionController.Base.prototype.content_for = function( name , func ){
+ActionView.Base = function(){
+    
+}
+
+ActionView.Base.content_for = function( name , func ){
 
     var savePrint = print;
     
@@ -22,7 +26,7 @@ ActionController.Base.prototype.content_for = function( name , func ){
 };
 
 
-ActionController.Base.prototype.render = function( options ){
+ActionView.Base.render = function( options ){
 
     if ( ! options )
         throw "are you allowed to pass render nothing?";
@@ -48,6 +52,9 @@ ActionController.Base.prototype.render = function( options ){
     else
         throw "can't handle [" + name + "]";
     
+    if ( pieceName.endsWith( ".html.erb" ) )
+        pieceName = pieceName.substring( 0 , pieceName.length - 9 );
+
     var p = local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ];
     if  ( ! p )
         throw "couldn't find [" + name + "]";
@@ -65,7 +72,8 @@ ActionController.Base.prototype.render = function( options ){
 }
 
 
-ActionController.Base.prototype.form_for = function( what , options ){
+ActionView.Base.form_for = function( what , options ){
+    options = options || {};
     
     var frm = arguments[ arguments.length - 1 ];
 
@@ -79,7 +87,7 @@ ActionController.Base.prototype.form_for = function( what , options ){
         what = Rails.findModel( what );
     }
 
-    print( "\n<form action='/" + myController.shortName );
+    print( "\n<form action='/" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
     if ( what._id )
         print( "/" + what._id );
 
@@ -94,7 +102,20 @@ ActionController.Base.prototype.form_for = function( what , options ){
     print( "\n</form>\n" );
 };
 
+ActionView.Base.form_tag = function( url , options , cont ){
+    if ( url == null || ! isString( url ) )
+        throw "form_tag needs url";
+    
+    if ( isFunction( options ) ){
+        cont = options;
+        options = {};
+    }
 
-ActionController.Base.prototype.submit_tag = function( name ){
+    print( "<form action=\"" + url + "\">" );
+    cont.call( this );
+    print( "</form>" );
+}
+
+ActionView.Base.submit_tag = function( name ){
     return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";
 }

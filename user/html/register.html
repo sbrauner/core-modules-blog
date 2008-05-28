@@ -97,8 +97,9 @@
     var p1 = frm.login_pass1.value;
     var p2 = frm.login_pass2.value;
 
+    <% if(User.config.useCaptcha){ %>
     var c = frm.login_captcha.value;
-
+    <% } %>
     var n = frm.login_nickname.value;
     var fn = frm.login_firstname.value;
     var ln = frm.login_lastname.value;
@@ -148,7 +149,11 @@
       return false;
     }
 
-    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + "&captcha=" + c + "&nickname=" + n + "&firstname=" + fn + "&lastname=" + ln + "&url="+ url;
+    var u = "<%= login %>/register?username=" + u + "&email=" + e + "&password=" + p1 + 
+    <% if(User.config.useCaptcha){ %>
+            "&captcha=" + c +
+    <% } %>
+            "&nickname=" + n + "&firstname=" + fn + "&lastname=" + ln + "&url="+ url;
     if(to) u = u + "&to=" + to;
     location.href = u;
     return false;

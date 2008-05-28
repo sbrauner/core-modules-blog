@@ -10,6 +10,11 @@ Rails.requestFix = function( request , theRoute ){
         REQUEST_PATH : request.getURL()
     };
     
+    if ( request.getMethod() == "POST" ){
+        request[ Rails.mangleName( "post?" ) ] = true;
+        request[ "post?" ] = true;
+    }
+
     cookies = request.getCookies() || {}
 };
 

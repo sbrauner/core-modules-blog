@@ -17,12 +17,12 @@ var login = User.findMyLocation();
     if ( u.indexOf( "?" ) < 0 ) u += "?";
     u += "&prefix=" + prefix;
     u += "&username=" + frm.login_user.value;
-    
+
     var thing = frm.login_user.value + ":" + area + ":" + frm.login_pass.value;
 
     u += "&hash=" + hex_md5( prefix + ":" + hex_md5( thing  ) );
 
-    if ( frm.login_remember.value == "yes" ) u += "&remember=t";
+    if ( frm.login_remember.checked ) u += "&remember=t";
 
     location.href = u;
     return false;
@@ -50,7 +50,15 @@ var login = User.findMyLocation();
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="checkbox" name="login_remember" value="yes"> Remember me</td>
+                    <td>
+                      <if (request.getCookie( "__sudo" ) == "11")>
+                        <input type="checkbox" name="login_remember" checked>
+                      </if>
+                      <if (request.getCookie( "__sudo" ) != "11")>
+                        <input type="checkbox" name="login_remember">
+                      </if>
+                      Remember me
+                    </td>
                 </tr>
                 <tr>
                     <td></td>

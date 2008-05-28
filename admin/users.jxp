@@ -4,11 +4,10 @@ request.action = "userssearch";
 fields = [];
 %>
 <h1 style="margin:0;">
-  <div class="links-table"><a href="daf">Hide Help</a> | <a class="external" href="http://www.10gen.com/wiki/users">Users Documentation</a></div>
   <nobr>USERS</nobr>
 </h1>
 
-<p>10gen provides built-in support for user management, authentication, and access control.</p> 
+<p>10gen provides built-in support for user management, authentication, and access control.</p>
 <div id="myCollection">
 <%
 core.admin.table();

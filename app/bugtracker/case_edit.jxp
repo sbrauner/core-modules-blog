@@ -363,7 +363,7 @@ if(project.areas.length > 0){
           <td class="label">Estimated date of completion</td>
           <td class="value">
             <input id="showEstimatedCompletionDate" name="showEstimatedCompletionDate" size="12" disabled="true"
-                   value="<%= feature.estimatedCompletionDate ? (feature.estimatedCompletionDate.getMonth() + '/' + feature.estimatedCompletionDate.getDate() + '/' + feature.estimatedCompletionDate.getFullYear()) : ""%>"/>
+                   value="<%= feature.estimatedCompletionDate ? ((feature.estimatedCompletionDate.getMonth()+1) + '/' + feature.estimatedCompletionDate.getDate() + '/' + feature.estimatedCompletionDate.getFullYear()) : ""%>"/>
             <button id="show1up" type="button">Show calendar</button><div id="completeCal"></div>
           </td>
           <input id="festimatedCompletionDate" name="festimatedCompletionDate" type="hidden" value="<%= feature.estimatedCompletionDate ? feature.estimatedCompletionDate.getTime() : "" %>"/>

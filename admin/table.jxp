@@ -341,7 +341,7 @@ else {
             return obj[field];
         }
         else if(typeof obj[field] == "object" || obj[field].toString().length >= 20) {
-            var subobj = obj[field];
+            var subobj = content.HTML.escape(obj[field]);
             var str = "";
             var fullText = '<div class="fullText" id="fulltext'+fcount+'">';
             fcount++;

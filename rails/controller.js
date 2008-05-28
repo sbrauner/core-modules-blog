@@ -23,6 +23,9 @@ ActionController.Base = function(){
 
 };
 
+
+ActionController.Base.prototype = ActionView.Base;
+
 ActionController.Base.prototype.__magic = 17;
 
 function caches_page( name ){
@@ -64,15 +67,33 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
         return true;
     };
     
+    funcScope.render = function( options ){
+        appResponse.html( options );
+        appResponse.anythingRendered = true;
+    }
+    
     // --- invoke action
 
     this._before( appResponse );
 
-    f.call( appResponse.requestThis );
+    var aroundFilters = this._getMatchingFilters( appResponse , this.aroundFilters );
+    var aroundFiltersPos = 0;
     
-    if ( ! appResponse.anythingRendered ){
-        appResponse.html();
+    function go(){
+        if ( aroundFiltersPos < aroundFilters.length ){
+            return aroundFilters[aroundFiltersPos++].call( appResponse.requestThis , go );
+        }
+        
+        f.call( appResponse.requestThis );
+        
+        if ( ! appResponse.anythingRendered ){
+            appResponse.html();
+        }
+        
     }
+
+    go();
+
 
     print( "\n <!-- " + this.className + "." + method + " -->" );
 };
@@ -98,22 +119,14 @@ function ApplicationResponse( controller , method ){
     this.requestThis.prototype = controller;
 };
 
-ApplicationResponse.prototype.html = function(){
+ApplicationResponse.prototype.html = function( options ){
+    options = options || {};
+
     if ( arguments.length > 0 && 
          isFunction( arguments[ arguments.length - 1 ] ) ){
         return arguments[arguments.length-1].call( this );
     }
     var blah = this.requestThis;
-
-    blah.__notFoundHandler = function( thing ){
-        if ( thing.endsWith( "_path" ) ){
-            return function(z){
-                return "BROKEN : " + z;
-            }
-        }
-        return null;
-    }
-
 
     if ( ! local.app.views )
         throw "no views directory";
@@ -154,9 +167,8 @@ ApplicationResponse.prototype.html = function(){
             local.app.views.layouts.application || 
             local.app.views.layouts["application.html"];
     }
-    
-    SYSOUT( "layout : " + layout );
-    if ( layout ){
+
+    if ( layout && ( options.layout == null || options.layout ) ){
         
         layout.getScope( true ).controller = { action_name : this.method }; // ???
         
