@@ -119,6 +119,14 @@ ActionView.Base.form_tag = function( url , options , cont ){
     print( "</form>" );
 }
 
+ActionView.Base.check_box_tag = function( name , checkedValue , startChecked ){
+    var html = "<input type='checkbox' name='" + name + "' value='" + checkedValue + "' ";
+    if ( startChecked )
+        html += " checked ";
+    html += " >";
+    return html;
+}
+
 ActionView.Base.submit_tag = function( name ){
     return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";
 }

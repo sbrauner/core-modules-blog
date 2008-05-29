@@ -138,7 +138,8 @@ Rails.findModel = function( thing ){
             var m = Rails.models[i];
 
             if ( m.shortName == thing ||
-                 m.collectionName == thing )
+                 m.collectionName == thing ||
+                 m.collectionName == thing + "s" )
                 return m;
         }
     }
