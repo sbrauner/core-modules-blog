@@ -12,8 +12,8 @@ date_format - format string for date
 
 {% endcomment %}
 
-<div class="date-circle">{{ post.ts|date:"j" }}<br />{{ post.ts|date:"b"|upper }}</div>
 <h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
+<p class="post-date">{{ post.ts|date:"j M Y" }}</p>
 <p class="byline">{{ post.author }}, <a href="{{ post.name }}#comments">{% if post.comments.length %}
    {{ post.comments.length }}
 {% else %}

@@ -27,7 +27,7 @@ captcha_message
 
 {% block content %}
   {% if not post %}
-    <a href="{{ blogDTO.getBaseURL }}">Back to main page</a>
+    <p><a href="{{ blogDTO.getBaseURL }}">Back to main page</a></p>
   {% endif %}
 
 {% if not post %}
@@ -39,8 +39,9 @@ captcha_message
     {% include 'entry' %}
   </div>
   <div id="category-list-{{ post._id }}" class="category-list">
-    Categories:
+    <p>Categories:
     {% include 'categories' %}
+	</p>
   </div>
   {% if post.comments|length %}
     <div id="comments">
@@ -48,9 +49,9 @@ captcha_message
       {% for c in post.comments %}
         <div class="container {% cycle zebra "" %}">
           {% if c.user.isAdmin %}
-            <div class="num-circle green-circle">{{ forloop.counter }}</div>
+            <h3 class="user-admin">{{ forloop.counter }}.
           {% else %}
-            <div class="num-circle">{{ forloop.counter }}</div>
+            <h3>{{ forloop.counter }}.	
           {% endif %}
         {% include 'comment' %}
         </div>
