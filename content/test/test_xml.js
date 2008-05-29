@@ -154,6 +154,7 @@ try {
 catch (e) {
     print(e);
 }
+assert(e);
 
 var s = "invalid";
 var e = true;
@@ -176,3 +177,4 @@ try {
 catch(e) {
     print(e);
 }
+assert(e);
