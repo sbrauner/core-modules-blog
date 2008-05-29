@@ -741,7 +741,7 @@ form.edit fieldset, div.fieldset {
   	/ * clear: both; note that this clear causes inputs to break to left in ie5.x mac, commented out */
 }
 
-form.edit input.text, form.edit div.scrollable {
+form.edit input.text {
   border: 1px solid #cccccc;
   width: 200px;
 }

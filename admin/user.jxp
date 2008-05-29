@@ -51,6 +51,15 @@ if ( u && (request.action == "save" || request['save.x'] || request.save)){
     }
 }
 
+var allRoles = db.roles.find().toArray();
+var rolesMap = {};
+allRoles.forEach(function(z){ rolesMap[z.name] = true; });
+u.permissions.forEach(function(z){
+   if(!rolesMap[z]){
+       rolesMap[z] = true;
+       allRoles.push({name: z});
+   }
+});
 print.setFormObject( u );
 %>
 <!-- Heading and links-table Links -->
@@ -85,10 +94,10 @@ print.setFormObject( u );
     <input class="text" type="password" name="p2"><br />
     <label>Permissions</label>
     <div style="float: left;">
-    <% db.roles.find().toArray().concat(u.permissions || []).forEach( function(role){ %>
-    <input type="checkbox" name="permission" value="<%= role.name || role %>"
-           <%= u.hasPermission(role.name || role) ? 'checked' : '' %> >
-    <%= role.name || role %>
+    <% allRoles.forEach( function(role){ %>
+    <input type="checkbox" name="permission" value="<%= role.name %>"
+           <%= u.hasPermission(role.name ) ? 'checked' : '' %> >
+    <%= role.name %>
     <br />
     <% }); %>
     </div>
