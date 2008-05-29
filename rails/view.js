@@ -75,7 +75,13 @@ ActionView.Base.render = function( options ){
 }
 
 
-ActionView.Base.form_for = function( what , options ){
+ActionView.Base.form_for = function( what , myThing , options ){
+    if ( myThing && ! options && isObject( myThing ) &&
+         ( myThing.url ) ){
+        options = myThing;
+        myThing = null;
+    }
+
     options = options || {};
     
     var frm = arguments[ arguments.length - 1 ];
@@ -90,11 +96,11 @@ ActionView.Base.form_for = function( what , options ){
         what = Rails.findModel( what );
     }
 
-    print( "\n<form action='/" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
+    print( "\n<form action='" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
     if ( what._id )
         print( "/" + what._id );
 
-    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
+    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='get'>\n" );
 
     var newThing = what;
     if ( isFunction( what ) ){

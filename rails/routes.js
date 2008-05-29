@@ -262,12 +262,12 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
         return "/NULL";
 
     if ( isString( thing ) )
-        return thing;
+        return "/" + thing;
     
     if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
 
-    var link = "/" + ( myController.shortName || thing.controller ) ;
+    var link = "/" + ( thing.controller || myController.shortName );
     if ( thing.action )
         link += "/" + thing.action;
 

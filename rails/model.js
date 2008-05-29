@@ -11,7 +11,8 @@ ActiveRecord.Base = function( obj ){
 ActiveRecord.Base.prototype._isModel = true;
 
 ActiveRecord.Base.prototype.setFile = function( filename ){
-    this.collectionName = filename.replace( /\.rb$/ , "" ) + "s";
+    this.singularName = filename.replace( /\.rb$/ , "" );
+    this.collectionName = this.singularName + "s";
 };
 
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
@@ -138,8 +139,8 @@ ActiveRecord.Base.prototype.count = function( options ){
 ActiveRecord.Base.prototype.text_area = function( name ){
     var html =
         "<textarea " +
-        " id=\"" + this.collectionName + "_" + name + "\" " +
-        " name=\"" + this.collectionName + "[" + name + "]\" " +
+        " id=\"" + this.singularName + "_" + name + "\" " +
+        " name=\"" + this.singularName + "[" + name + "]\" " +
         " cols=\"40\" rows=\"20\" >";
     if ( this[name] )
         html += this[name];
@@ -150,8 +151,8 @@ ActiveRecord.Base.prototype.text_area = function( name ){
 ActiveRecord.Base.prototype.text_field = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.collectionName + "_" + name + "\" " +
-        " name=\"" + this.collectionName + "[" + name + "]\" " +
+        " id=\"" + this.singularName + "_" + name + "\" " +
+        " name=\"" + this.singularName + "[" + name + "]\" " +
         " size=\"30\" type=\"text\" ";
     if ( this[name] )
         html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
@@ -162,8 +163,8 @@ ActiveRecord.Base.prototype.text_field = function( name ){
 ActiveRecord.Base.prototype.password_field = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.collectionName + "_" + name + "\" " +
-        " name=\"" + this.collectionName + "[" + name + "]\" " +
+        " id=\"" + this.singularName + "_" + name + "\" " +
+        " name=\"" + this.singularName + "[" + name + "]\" " +
         " size=\"30\" type=\"password\" ";
     if ( this[name] )
         html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
@@ -174,8 +175,8 @@ ActiveRecord.Base.prototype.password_field = function( name ){
 ActiveRecord.Base.prototype.check_box = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.collectionName + "_" + name + "\" " +
-        " name=\"" + this.collectionName + "[" + name + "]\" " +
+        " id=\"" + this.singularName + "_" + name + "\" " +
+        " name=\"" + this.singularName + "[" + name + "]\" " +
         " value=\"1\" type=\"checkbox\" ";
     if ( this[name] )
         html += " selected ";
@@ -223,7 +224,7 @@ ActiveRecord.Base.prototype.datetime_select = function( name ){
 
 ActiveRecord.Base.prototype.submit = function( name ){
     return "<input " +
-        " id=\"" + this.collectionName + "_" + submit + "\" " +
+        " id=\"" + this.singularName + "_" + submit + "\" " +
         " name=\"commit\" " +
         " value=\"" + name + "\" type=\"submit\" />";
 };
