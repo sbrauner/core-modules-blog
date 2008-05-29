@@ -1,4 +1,6 @@
 
+// --- Schema ---
+
 Rails.Schema = function(){
     this.tables = {};
 };
@@ -11,6 +13,8 @@ Rails.Schema.prototype.toString = function(){
     return this.tables.toString();
 }
 
+// --- Table ---
+
 Rails.Schema.Table = function( name ){
     this.name = name;
     this.columns = {};
@@ -20,9 +24,15 @@ Rails.Schema.Table.prototype.column = function( name , type , options ){
     this.columns[ name ] = { type : type , options : options };
 };
 
+Rails.Schema.Table.prototype.index = function( column ){
+    SYSOUT( "don't know what to do with index yet" );
+};
+
 Rails.Schema.Table.prototype.toString = function(){
     return "[ table : " + this.name + " columns : " + this.columns.keySet() + "]";
 }
+
+// --- Migratioon ---
 
 ActiveRecord.Migration = function(){
     
@@ -48,6 +58,19 @@ ActiveRecord.Migration.functions.add_column = function( tableName , name , type 
         throw "can't find table [" + tableName + "]";
     t.column( name , type , options );
 };
+
+ActiveRecord.Migration.functions.add_index = function( tableName , col ){
+    var t = Rails.schema.tables[ tableName ];
+    if ( ! t )
+        throw "can't find table [" + tableName + "]";
+    t.index( col );
+};
+
+ActiveRecord.Migration.functions.execute = function( sql ){
+    SYSOUT( "can't execute sql [" + sql + "]" );
+}
+
+// --- main
 
 Rails.loadCurrentSchema = function(){
     
