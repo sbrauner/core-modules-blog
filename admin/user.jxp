@@ -22,18 +22,10 @@ if ( u && (request.action == "save" || request['save.x'] || request.save)){
    u.url = User.fixURL(request.url);
    u.nickname = request.nickname;
 
-   var adm = u.permissions&&u.permissions.contains("admin");
-
-   if( adm && !(request.perm == 'admin') ) {
-       print("<br>revoke admin<br>");
-       if( u.permissions.length>1 ) print("can't revoke, mult permissions, not implemented<br>");
-       else u.permissions = [];
-   }
-   if( !adm && request.perm == 'admin' ) {
-       print("<br>make admin<br>");
-       if( !u.permissions ) u.permissions = [];
-       u.permissions.push("admin");
-   }
+   u.permissions = [];
+   (request.getParameters("permission") || []).forEach(function(z){
+       u.permissions.push(new String(z));
+   });
 
    if ( request.p1 && request.p1.length != 0 ){
 	if ( request.p1 == request.p2 )
@@ -82,14 +74,26 @@ print.setFormObject( u );
     <input class="text" type="text" name="nickname"><br />
     <label>URL</label>
     <input class="text" type="text" name="url"><br />
-    <label></label>
-    <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br />
+<!--    <label></label>
+    <input type="checkbox" name="perm" value="admin" <%=u.permissions&&u.permissions.contains("admin")?"checked":""%> > Admin<br />-->
+
     <label>New Password</label>
     <input class="text" type="password" name="p1">
     <% if (request._id) { %> (Leave blank to leave unchanged)<% } %>
     <br />
     <label>Re-enter Password</label>
     <input class="text" type="password" name="p2"><br />
+    <label>Permissions</label>
+    <div style="float: left;">
+    <% db.roles.find().toArray().concat(u.permissions || []).forEach( function(role){ %>
+    <input type="checkbox" name="permission" value="<%= role.name || role %>"
+           <%= u.hasPermission(role.name || role) ? 'checked' : '' %> >
+    <%= role.name || role %>
+    <br />
+    <% }); %>
+    </div>
+    <br />
+
     <label></label>
     <input type="image" src="assets/img/button_save_on_white.gif" name="save" value="save"/>
     <input type="image" src="assets/img/button_cancel_on_white.gif" name="cancel" value="cancel"/>
