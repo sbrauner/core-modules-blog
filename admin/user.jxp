@@ -51,7 +51,7 @@ if ( u && (request.action == "save" || request['save.x'] || request.save)){
     }
 }
 
-var allRoles = db.roles.find().toArray();
+var allRoles = db.roles.find().sort({name: 1}).toArray();
 var rolesMap = {};
 allRoles.forEach(function(z){ rolesMap[z.name] = true; });
 u.permissions.forEach(function(z){
