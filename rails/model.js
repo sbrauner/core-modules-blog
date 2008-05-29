@@ -16,6 +16,7 @@ ActiveRecord.Base.prototype.setFile = function( filename ){
 };
 
 ActiveRecord.Base.prototype.setConstructor = function( cons ){
+    this.theCons = cons;
     db[ this.collectionName ].setConstructor( cons );
 };
 // ---------
@@ -39,14 +40,18 @@ ActiveRecord.Base.prototype.find = function( type , options ){
         if ( options.conditions ){
             var s = options.conditions;
             
-            if ( isArray( options.conditions ) ){
-                s = options.conditions[0];
-                for ( var i=1; i<options.conditions.length; i++ ){
-                    s = s.replace( /\?/ , options.conditions[i] );
+            if ( isObject( s ) )
+                filters = s;
+            else {
+                if ( isArray( options.conditions ) ){
+                    s = options.conditions[0];
+                    for ( var i=1; i<options.conditions.length; i++ ){
+                        s = s.replace( /\?/ , options.conditions[i] );
+                    }
                 }
+                
+                filters = SQL.parseWhere( s );
             }
-             
-            filters = SQL.parseWhere( s );
         }
     }
 
@@ -65,6 +70,23 @@ ActiveRecord.Base.prototype.find = function( type , options ){
 ActiveRecord.Base.prototype.find_by_sql = function( sql ){
     SYSOUT( "find_by_sql doesn't work" );
     return [];
+}
+
+ActiveRecord.Base.prototype.__notFoundHandler = function( n ){
+    if ( n.startsWith( "find_or_create_by" ) ){
+        var s = n.substring( 18 );
+        return function( z ){
+            var options = { conditions : {} };
+            options.conditions[s] = z;
+            var res = this.find( "first" , options );
+            if ( res )
+                return res;
+            res = new this.theCons();
+            res[s] = z;
+            return res;
+        }
+    }
+    
 }
 
 ActiveRecord.Base.prototype._checkTS = function( name ){
@@ -129,7 +151,7 @@ ActiveRecord.Base.prototype.destroy = function(){
 };
 
 ActiveRecord.Base.prototype.count = function( options ){
-    return -2;
+    return this.find( "all" , options ).length;
 };
 
 // ---------

@@ -133,6 +133,10 @@ ActionView.Base.check_box_tag = function( name , checkedValue , startChecked ){
     return html;
 }
 
+ActionView.Base.button_to_function = function( name , js ){
+    return "<a href='#' onclick='" + js + "'>" + name + "</a>";
+}
+
 ActionView.Base.submit_tag = function( name ){
     return "<input type='submit' name='action' value='" + ( name || "Submit" ) + "'>";
 }
