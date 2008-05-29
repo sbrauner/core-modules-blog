@@ -25,18 +25,19 @@ captcha_message
 
 </script>
 
-   <h2 class="comments-open-header">{{ blogDTO.getCommentsOpenHeader|default:"add a comment" }}</h2>
+<div id="comments">
+   <h2 class="comments-open-header">{{ blogDTO.getCommentsOpenHeader|default:"Add a Comment" }}</h2>
    <div class="comments container">
-       <form method="post" name="comment" id="comments-form" onsubmit="return customFormSubmit()" class="search">
+       <form method="post" name="comment" id="comments-form" onsubmit="return customFormSubmit()">
 	 <input type="hidden" name="addComment" value="yes" />
 
          <p>
            {% if blogDTO.getUser %}
               <div id="comment-form-name">{{ blogDTO.getCommentFormName|default:"Comment as " }}{{ blogDTO.getUser.name }}</div>
            {% else %}
-              <input class="text" id="yourname" name="yourname" value="" />{{ blogDTO.getCommentAuthor|default:"Name" }}<br />
-              <input class="text" id="email" name="email" value="" />{{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
-              <input class="text" id="url" name="url" value="" />{{ blogDTO.getCommentUrl|default:"URL" }}<br />
+              <input class="text" id="yourname" name="yourname" value="" /> {{ blogDTO.getCommentAuthor|default:"Name" }}<br />
+              <input class="text" id="email" name="email" value="" /> {{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
+              <input class="text" id="url" name="url" value="" /> {{ blogDTO.getCommentUrl|default:"URL" }}<br />
            {% endif %}
            <textarea rows="20" id="txt" name="txt"></textarea><br />
            {% if not blogDTO.getUser %}
@@ -51,7 +52,7 @@ captcha_message
        </form>
        <a name="comments" style="border: none; "></a>
   </div>
-
+</div>
 
 {% endif %}
 {% endif %}
