@@ -25,3 +25,19 @@ assert(output == false);
 var output = tryAllowed("/admin");
 assert(output == false);
 
+p.forum = true;
+
+var output = tryAllowed("/forum");
+assert(output == true);
+
+p.admin = new User.Perm();
+
+p.admin.allowed = function(user, request, uri){
+    if(uri.startsWith("/blog")) return false;
+    return true;
+};
+
+var output = tryAllowed("/admin/blog");
+assert(output == false);
+var output = tryAllowed("/admin/forum");
+assert(output == true);

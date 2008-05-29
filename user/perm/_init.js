@@ -5,10 +5,16 @@ User.Perm = Class.create(Util.URLTree, {
         this.setDefault(true, {});
     },
 
-    allowed: function(user, request){
-        var r = this.apply('allowed', request.getURI(), request, user);
+    allowed: function(user, request, uri){
+        if(uri == null) uri = request.getURI();
+        var recursefunc = function(next, uri, request, extras){
+            return next.allowed(user, request, uri);
+        };
+        var r = this.apply(recursefunc, uri, request, user);
         return r;
     }, // fail open like allowed()
+
+    canRecurse: function(next){ return next.allowed; },
 
     terminal: function(end, uri, request, firstPiece, key, value, extras){
         User.Perm.log("Got a terminal " + tojson(end));
