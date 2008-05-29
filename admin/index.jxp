@@ -16,10 +16,6 @@ if ( ! user ){
     user = Auth.getUser( request );
 }
 
-if ( !_openAccess && (! user || ! user.isAdmin()) ){
-    return Auth.cookie.reject( request , response );
-}
-
 var sectionName = request.getURI().replace( /.*admin\/*/ , "" ).replace( /\.jxp/ , "" );
 sectionName = sectionName.replace(/^\/(index)?$/, '');
 if ( sectionName.endsWith("/") && sectionName.length > 1 )
@@ -27,6 +23,18 @@ if ( sectionName.endsWith("/") && sectionName.length > 1 )
 
 if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
+
+var allowed = _openAccess;
+if( ! allowed && ( user && adminperm && adminperm.allowed(user, request, sectionName) ) )
+    allowed = true;
+
+if ( ! allowed && user && user.isAdmin() ){
+    allowed = true;
+}
+
+if ( ! allowed ){
+    return Auth.cookie.reject( request , response );
+}
 
 var sectionMap = core.admin.data.sectiontree().reverse;
 
