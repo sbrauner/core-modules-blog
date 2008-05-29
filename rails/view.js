@@ -54,12 +54,15 @@ ActionView.Base.render = function( options ){
     
     if ( pieceName.endsWith( ".html.erb" ) )
         pieceName = pieceName.substring( 0 , pieceName.length - 9 );
-
-    var p = local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ];
+    
+    var p = 
+        local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ] ||
+        local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".rhtml" ];
+    
     if  ( ! p )
         throw "couldn't find [" + name + "]";
     
-
+    
     // START TOTAL GUESS
     if ( options.object ){
         SYSOUT( "options.object : " + options.object );
