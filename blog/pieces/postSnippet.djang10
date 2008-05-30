@@ -31,7 +31,7 @@ date_format - format string for date
 </h2>
 
 <div class="summary">
-  {{ post.excerpt }}
+  {{ post.getExcerpt }}
 </div>
 
 <p><a href="{{ post.name }}">Continue Reading</a></p>
