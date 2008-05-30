@@ -11,7 +11,14 @@ dateline - Text appearing before the date field.  Defaults to "".
 
 {% endcomment %}
 
-<h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
+<h1>
+{% if mainpage %}
+  <a href="{{ post.name }}">{{ post.title }}</a>
+{% else %}
+ {{ post.title }}
+{% endif %}
+</h1>
+
 <p class="post-date">{{ post.ts|date:"j M Y" }}</p>
 <p class="byline">
 {% if post.author %}
