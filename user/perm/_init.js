@@ -1,8 +1,10 @@
 core.util.urltree();
 User.Perm = Class.create(Util.URLTree, {
-    initialize: function(){
+    initialize: function(args){
         Util.URLTree.call(this);
-        this.setDefault(true, {});
+        var def = true;
+        if(args.closed) def = false;
+        this.setDefault(def, {});
     },
 
     allowed: function(user, request, uri){
