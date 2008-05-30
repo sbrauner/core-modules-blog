@@ -282,8 +282,12 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     var l = this._getLinkFor( thing );
-    if ( l.startsWith( "/" ) )
+
+    if ( l.startsWith( "/" ) || 
+         l.startsWith( "http://" ) ||
+         l.startsWith( "https://" ) )
         return l;
+
     return "/" + l;
 }
 

@@ -16,7 +16,7 @@ Rails.requestFix = function( request , theRoute ){
     }
 
     cookies = request.getCookies() || {}
-    DOMAIN_NAME = request.getHost();
+    DOMAIN_NAME = "http://" + request.getHeader( "Host" ) + "/";
 };
 
 Rails.Params = function( request , matchingRoute ){
