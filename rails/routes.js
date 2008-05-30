@@ -257,12 +257,19 @@ ActionController.Routing.Routes.prototype.find = function( request ){
 
 
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
+    var l = this._getLinkFor( thing );
+    if ( l.startsWith( "/" ) )
+        return l;
+    return "/" + l;
+}
+
+ActionController.Routing.Routes.prototype._getLinkFor = function( thing ){
     
     if ( ! thing )
         return "/NULL";
 
     if ( isString( thing ) )
-        return "/" + thing;
+        return thing;
     
     if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
@@ -274,8 +281,6 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     if ( thing.id )
         link += "/" + thing.id;
     
-    SYSOUT( tojson( thing ) );
-
     return link;
     
 };
