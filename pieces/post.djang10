@@ -48,10 +48,10 @@ captcha_message
       <h2>Comments</h2>
       {% for c in post.comments %}
         <div class="container {% cycle zebra "" %}">
-          {% if c.user.isAdmin %}
+          {% if c.isAdmin %}
             <h3 class="user-admin">{{ forloop.counter }}.
           {% else %}
-            <h3>{{ forloop.counter }}.	
+            <h3>{{ forloop.counter }}.
           {% endif %}
         {% include 'comment' %}
         </div>

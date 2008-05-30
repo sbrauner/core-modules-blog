@@ -277,6 +277,7 @@ Blog.handlePosts = function( request , thePost , user ){
             }
 
 	    comment.url = Blog.fixCommentURL( comment.url );
+            comment.isAdmin = user && user.isAdmin ? true : false;
 
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
