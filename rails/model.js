@@ -6,6 +6,10 @@ ActiveRecord.Base = function( obj ){
     this.collectionName = null;
     if ( obj && isObject( obj ) )
         Object.extend( this , obj );
+
+    
+    if ( this._beforeCreate && isFunction( this[this._beforeCreate] ) )
+        this[ this._beforeCreate ].call( this );
 };
 
 ActiveRecord.Base.prototype._isModel = true;
@@ -19,6 +23,7 @@ ActiveRecord.Base.prototype.setConstructor = function( cons ){
     this.theCons = cons;
     db[ this.collectionName ].setConstructor( cons );
 };
+
 // ---------
 // save/update/etc... stuff
 // ---------
@@ -73,14 +78,30 @@ ActiveRecord.Base.prototype.find_by_sql = function( sql ){
 }
 
 ActiveRecord.Base.prototype.__notFoundHandler = function( n ){
+    
+    var find = false;
+    var create = false;
+    
     if ( n.startsWith( "find_or_create_by" ) ){
+        find = true;
+        create = true;
+        n = n.substring( 18 );
+    }
+    else if ( n.startsWith( "find_by" ) ){
+        find = true;
+        n = n.substring( 8 );
+    }
+    
+    if ( find ){
         var s = n.substring( 18 );
         return function( z ){
             var options = { conditions : {} };
             options.conditions[s] = z;
             var res = this.find( "first" , options );
-            if ( res )
+
+            if ( res || ! create )
                 return res;
+
             res = new this.theCons();
             res[s] = z;
             return res;
@@ -288,8 +309,8 @@ function before_update(){
     SYSOUT( "ignoring before_update" );
 }
 
-function before_create(){
-    SYSOUT( "ignoring before_create" );
+function before_create( name ){
+    this._beforeCreate = name;
 }
 
 function before_destroy(){
