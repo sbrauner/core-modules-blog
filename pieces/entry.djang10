@@ -24,7 +24,7 @@ dateline - Text appearing before the date field.  Defaults to "".
 {% if post.author %}
   {{ post.author }}
 {% endif %}
-{% if post.commentsEnabled %}
+{% if post.commentsEnabled or post.getComments.length %}
   &#151; <a href="{{ post.name }}#comments">
     {% if post.comments.length %}
       {{ post.comments.length }}
