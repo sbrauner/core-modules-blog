@@ -81,19 +81,20 @@ ActiveRecord.Base.prototype.__notFoundHandler = function( n ){
     
     var find = false;
     var create = false;
+
+    var s = null;
     
     if ( n.startsWith( "find_or_create_by" ) ){
         find = true;
         create = true;
-        n = n.substring( 18 );
+        s = n.substring( 18 );
     }
     else if ( n.startsWith( "find_by" ) ){
         find = true;
-        n = n.substring( 8 );
+        s = n.substring( 8 );
     }
     
     if ( find ){
-        var s = n.substring( 18 );
         return function( z ){
             var options = { conditions : {} };
             options.conditions[s] = z;
