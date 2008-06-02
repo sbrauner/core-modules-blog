@@ -293,7 +293,7 @@ Blog.handlePosts = function( request , thePost , user ){
 
             // So we set an ADDITIONAL field in the request that marks that we
             // succeeded!
-            request.postSuccess = true;
+            request.postSuccess = comment.cid;
 
             return "Comment Saved";
         }
