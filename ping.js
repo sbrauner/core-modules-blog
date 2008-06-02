@@ -1,5 +1,5 @@
 /**
- * Weblogs Ping 
+ * Weblogs Ping
  *
  * Specification: http://www.xmlrpc.com/weblogsCom
  *
@@ -17,7 +17,7 @@ Blog.pingService = [
     {url: 'rpc.weblogs.com', port: 80, path: '/RPC2'},
     {url: 'www.pheedo.com', port: 80, path: '/api/rpc'},
 ];
-    
+
 Blog.ping = function(articleUrl) {
     t = fork( Blog.pingSync , articleUrl );
     t.start();
@@ -26,21 +26,21 @@ Blog.ping = function(articleUrl) {
 Blog.pingSync = function(articleUrl) {
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
     if (!articleUrl || articleUrl.length == 0) articleUrl = siteUrl;
-    
+
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
 
         SYSOUT('Pinging: ' + service.url);
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
         var response = null;
-	try {
-	    response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
-	}
-	catch ( e ){
-	    log.blog.ping( "couldn't ping : " + tojson( service ) + " because of " + e );
-	    return;
-	}
-        
+        try {
+            response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
+        }
+        catch ( e ){
+            log.blog.ping( "couldn't ping : " + tojson( service ) + " because of " + e );
+            return;
+        }
+
         if (!response) {
             SYSOUT('Got empty response');
         } else {
@@ -62,7 +62,7 @@ Blog.pingSync = function(articleUrl) {
                         }
                         message = message.replace(/&#32;/g, ' ');
                     }
-                    
+
                 })
                 SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
             }
