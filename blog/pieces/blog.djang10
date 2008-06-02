@@ -11,8 +11,7 @@
 
       <form id="" class="search" name="">
         <p>
-          <input class="text" type="text" name="q" value="" /><br />
-          <input class="submit" type="submit" value="Search">
+          <input class="text" type="text" size="20" name="q" value="" /> <input class="submit" type="submit" value="Search">
         </p>
       </form>
 
@@ -38,17 +37,15 @@
     {% endif %}
   {% endblock %}
 
-  <div class="blog-content">
     {% block content %}
       Welcome to the blog.  There are no posts, yet.
     {% endblock %}
-  </div>
 </div>
 
 </div>
 
 <div id="blog-footer">
-Powered by 10gen.
+  <p>Powered by 10gen.</p>
 </div>
 
 {% block pagefooter %}

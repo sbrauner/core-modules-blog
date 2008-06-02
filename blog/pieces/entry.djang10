@@ -11,15 +11,21 @@ dateline - Text appearing before the date field.  Defaults to "".
 
 {% endcomment %}
 
+<h1>
+{% if mainpage %}
+  <a href="{{ post.name }}">{{ post.title }}</a>
+{% else %}
+ {{ post.title }}
+{% endif %}
+</h1>
 
-<div class="date-circle">{{ post.ts|date:"j" }}<br />{{ post.ts|date:"b"|upper }}</div>
-<h1><a href="{{ post.name }}">{{ post.title }}</a></h1>
+<p class="post-date">{{ post.ts|date:"j M Y" }}</p>
 <p class="byline">
 {% if post.author %}
-  {{ post.author }},
+  {{ post.author }}
 {% endif %}
 {% if post.commentsEnabled %}
-  <a href="{{ post.name }}#comments">
+  &#151; <a href="{{ post.name }}#comments">
     {% if post.comments.length %}
       {{ post.comments.length }}
     {% else %}
@@ -36,7 +42,7 @@ dateline - Text appearing before the date field.  Defaults to "".
 
 {% if post.commentsEnabled and post.comments.length %}
   {% if not mainpage %}
-    <p style="padding-bottom: 0; "><a href="#comment-form">Add a Comment</a></p>
+    <p><a href="#comment-form">Add a Comment</a></p>
   {% endif %}
 {% endif %}
 

@@ -12,9 +12,9 @@ date_format - format string for date
 {% endcomment %}
 
 {% if c.url %}
-  <h3><a href="{{ c.url }}">{{ c.author }}</a></h3>
+  <a href="{{ c.url }}">{{ c.author }}</a></h3>
 {% else %}
-  <h3>{{ c.author }}</h3>
+  {{ c.author }}</h3>
 {% endif %}
 
 <div class="comment-date">

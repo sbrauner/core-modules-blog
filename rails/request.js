@@ -27,10 +27,16 @@ Rails.Params = function( request , matchingRoute ){
     
 };
 
-Rails.Params.prototype.__add = function( obj , name , value ){
+Rails.Params.prototype.include_q_ = function( name ){
+    return name in this;
+}
 
+Rails.Params.prototype.__add = function( obj , name , value ){
+    
+    SYSOUT( "adding name \"" + name + "\"" );
     var r = /^(\w+)\[(.*)\]$/.exec( name );
     if ( r ){
+        SYSOUT( "\t here " );
         var o = obj[r[1]];
         if ( ! o ){
             o = {};

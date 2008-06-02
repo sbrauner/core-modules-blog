@@ -32,6 +32,10 @@ function caches_page( name ){
     SYSOUT( "ignore caches_page [" + name + "]" );
 };
 
+ActionController.Base.prototype.layout = function( layout ){
+    this.layout = layout;
+    this.layoutSet = true;
+}
 
 
 // -----------
@@ -122,11 +126,13 @@ function ApplicationResponse( controller , method ){
 ApplicationResponse.prototype.html = function( options ){
     options = options || {};
 
+    // did we get an iter block
     if ( arguments.length > 0 && 
          isFunction( arguments[ arguments.length - 1 ] ) ){
         return arguments[arguments.length-1].call( this );
     }
-    var blah = this.requestThis;
+    
+    // find the view
 
     if ( ! local.app.views )
         throw "no views directory";
@@ -134,7 +140,7 @@ ApplicationResponse.prototype.html = function( options ){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
-    var viewName = Rails.unmangleName( this.method );
+    var viewName = Rails.unmangleName( options.action || this.method );
     
     var template = 
         local.app.views[ this.controller.shortName ][ viewName + ".html" ] || 
@@ -158,15 +164,21 @@ ApplicationResponse.prototype.html = function( options ){
     }
 
     
-    // layout
+    // layout setup
 
     var layout = null;
-    if ( local.app.views.layouts ){
+    if ( this.controller.layoutSet )
+        layout = this.controller.layout;
+    else if ( local.app.views.layouts ){
         layout = 
             local.app.views.layouts[ this.controller.shortName + ".html" ] || 
             local.app.views.layouts.application || 
             local.app.views.layouts["application.html"];
     }
+
+
+    // execute
+    var blah = this.requestThis;
 
     if ( layout && ( options.layout == null || options.layout ) ){
         
