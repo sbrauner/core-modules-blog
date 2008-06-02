@@ -45,7 +45,10 @@ log.debug( "file:" + request.file );
 
 var theFile = openFile( request.file || "/");
 
-
+if(isRestricted(theFile)) {
+    response.setResponseCode( 403 );
+    return;
+}
 
 if ( method == "PROPFIND" ){
 
@@ -137,7 +140,13 @@ else if ( method == "MOVE" ){
     to = to.replace( /\/~~.webdav/ , "" );
     log.debug( "c:" + to );
 
-    theFile.renameTo( openFile( to ) );
+    var toFile = openFile( to );
+    
+    if(isRestricted(toFile)) {
+        response.setResponseCode( 403 );
+        return;
+    }
+    theFile.renameTo( toFile );
     
 }
 else if ( method == "LOCK" ){
@@ -208,6 +217,9 @@ function propfind( msg , uri , f , depth ){
         if ( depth > 0 ){
             var children = f.listFiles();
             for ( var i=0; i<children.length; i++ ){
+                if(isRestricted(children[i]))
+                    continue;
+
                 var nextURI = uri;
                 if ( ! nextURI.endsWith( "/" ) )
                     nextURI += "/";
@@ -249,6 +261,9 @@ function lock( file ){
     return { obj : prop , token : token };
 }
 
+function isRestricted(f) {
+    return ".git" == f.getName() || ".gitignore" == f.getName();
+}
 
 %>
 

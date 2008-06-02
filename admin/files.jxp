@@ -140,6 +140,8 @@ else if (theFile)
 
 request.ns = "admin._files";
 request.action = "filessearch";
+request.sortcol = "uploadDate";
+request.sortdir = "-1";
 core.admin.table();
 
 %>
