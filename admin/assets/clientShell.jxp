@@ -208,7 +208,7 @@ loader.insert({
 
                 if(msg.category != 'response-noret'){
                     var ret = obj["$"];
-                    if(obj instanceof Function) ret = string(ret.toString());
+                    if(ret instanceof Function) ret = string(ret.toString());
                     else ret = string(dojo.toJson(ret));
                     s += ret;
                 }
