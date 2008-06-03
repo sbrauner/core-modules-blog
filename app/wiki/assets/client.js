@@ -9,6 +9,8 @@ var homeKeySelector = { alt: false, keys: 72 };
 var searchKeySelectorWebKit = { alt: true, keys: 83 };
 var homeKeySelectorWebKit = { alt: true, keys: 72 };
 
+var textFocus = false;
+
 clientLoader.insert({
     require: ['event','dom'],
     base: '/@@/yui/current/',
@@ -24,7 +26,7 @@ clientLoader.insert({
                 }
                 searchKeyListener.enable();
             }
-            
+
             if (YAHOO.env.ua.webkit) {
                 homeKeyListener = new YAHOO.util.KeyListener(document, homeKeySelectorWebKit, handleHomeKeyPress);
             } else {
@@ -33,12 +35,14 @@ clientLoader.insert({
             homeKeyListener.enable();
         });
     }
-});    
+});
 
 var handleSearchKeyPress = function() {
+    if(document.getElementById("searchtext") && textFocus) return;
     window.location = 'search';
 }
 
 var handleHomeKeyPress = function() {
+    if(document.getElementById("searchtext") && textFocus) return;
     window.location = 'Main';
 }
