@@ -4,9 +4,9 @@ if(wikiPage.getDisplayName == null){
    log.app.wiki.fatal("Horrible breakage!! db.wiki constructor is " + db.wiki.getConstructor() + "; wiki page is " + tojson(wikiPage));
 }
 
-if (request.edit) 
+if (request.edit)
     head.push('<script type="text/javascript">isEditPage = true;</script>');
-else 
+else
     head.push('<script type="text/javascript">isEditPage = false;</script>');
 
 head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>');
@@ -15,11 +15,14 @@ head.addRSS( ( routes ? routes.currentRoot() : "/wiki" )  + "/rss" );
 
 if( !request.edit )
     head.push('<script type="text/javascript" src="assets/client.js"></script>');
-if (!app.wiki.config.readOnly) 
+if (!app.wiki.config.readOnly)
     head.push('<script type="text/javascript" src="assets/clientedit.js"></script>');
 
 %>
 <% htmlheader('Wiki | ' + wikiPage.getDisplayName()); %>
+
+<div class="search"><form action="search"><input type="text" id="searchtext" name="text" onfocus="textFocus=true" onblur="textFocus=false" /><input type="submit" value="Search" /></form></div>
+
 <div id="wiki">
     <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>
     <% if (wikiPageHistoricalVersion) { %>
