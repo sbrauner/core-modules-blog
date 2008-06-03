@@ -32,6 +32,10 @@ function caches_page( name ){
     SYSOUT( "ignore caches_page [" + name + "]" );
 };
 
+ActionController.Base.prototype.layout = function( layout ){
+    this.layout = layout;
+    this.layoutSet = true;
+}
 
 
 // -----------
@@ -40,36 +44,38 @@ function caches_page( name ){
 
 ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
-    var f = this[matchingRoute.action];
-    if ( ! f ){
-        print( "can't find [" + matchingRoute.action + "] in [" + this.className + "]" );
-        return;
-    }
+    //
+    // the function may or may not be there.  if its not, its the same as
+    //  def blah
+    //  end
+    var f = this[matchingRoute.action]; 
     
     var appResponse = new ApplicationResponse( this , matchingRoute.action );
 
     // --- setup scope
     
-    var funcScope = f.getScope( true );
-
-    funcScope.render_text = function(s){
-        print( s );
-        appResponse.anythingRendered = true;
-    };
-    
-    funcScope.respond_to = function( b ){
-        b.call( appResponse.requestThis , appResponse );
-    };
-
-    funcScope.redirect_to = function( thing ){
-        appResponse.anythingRendered = true;
-        print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
-        return true;
-    };
-    
-    funcScope.render = function( options ){
-        appResponse.html( options );
-        appResponse.anythingRendered = true;
+    if ( f ){
+        var funcScope = f.getScope( true );
+        
+        funcScope.render_text = function(s){
+            print( s );
+            appResponse.anythingRendered = true;
+        };
+        
+        funcScope.respond_to = function( b ){
+            b.call( appResponse.requestThis , appResponse );
+        };
+        
+        funcScope.redirect_to = function( thing ){
+            appResponse.anythingRendered = true;
+            print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
+            return true;
+        };
+        
+        funcScope.render = function( options ){
+            appResponse.html( options );
+            appResponse.anythingRendered = true;
+        }
     }
     
     // --- invoke action
@@ -84,7 +90,8 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
             return aroundFilters[aroundFiltersPos++].call( appResponse.requestThis , go );
         }
         
-        f.call( appResponse.requestThis );
+        if ( f )
+            f.call( appResponse.requestThis );
         
         if ( ! appResponse.anythingRendered ){
             appResponse.html();
@@ -122,11 +129,13 @@ function ApplicationResponse( controller , method ){
 ApplicationResponse.prototype.html = function( options ){
     options = options || {};
 
+    // did we get an iter block
     if ( arguments.length > 0 && 
          isFunction( arguments[ arguments.length - 1 ] ) ){
         return arguments[arguments.length-1].call( this );
     }
-    var blah = this.requestThis;
+    
+    // find the view
 
     if ( ! local.app.views )
         throw "no views directory";
@@ -134,7 +143,7 @@ ApplicationResponse.prototype.html = function( options ){
     if ( ! local.app.views[ this.controller.shortName ] )
         throw "no view directory for : " + this.controller.shortName;
    
-    var viewName = Rails.unmangleName( this.method );
+    var viewName = Rails.unmangleName( options.action || this.method );
     
     var template = 
         local.app.views[ this.controller.shortName ][ viewName + ".html" ] || 
@@ -158,15 +167,21 @@ ApplicationResponse.prototype.html = function( options ){
     }
 
     
-    // layout
+    // layout setup
 
     var layout = null;
-    if ( local.app.views.layouts ){
+    if ( this.controller.layoutSet )
+        layout = this.controller.layout;
+    else if ( local.app.views.layouts ){
         layout = 
             local.app.views.layouts[ this.controller.shortName + ".html" ] || 
             local.app.views.layouts.application || 
             local.app.views.layouts["application.html"];
     }
+
+
+    // execute
+    var blah = this.requestThis;
 
     if ( layout && ( options.layout == null || options.layout ) ){
         

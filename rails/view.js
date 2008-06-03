@@ -54,12 +54,15 @@ ActionView.Base.render = function( options ){
     
     if ( pieceName.endsWith( ".html.erb" ) )
         pieceName = pieceName.substring( 0 , pieceName.length - 9 );
-
-    var p = local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ];
+    
+    var p = 
+        local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".html" ] ||
+        local.app.views[ controllerName ][ ( options.partial ? "_" : "" ) + pieceName + ".rhtml" ];
+    
     if  ( ! p )
         throw "couldn't find [" + name + "]";
     
-
+    
     // START TOTAL GUESS
     if ( options.object ){
         SYSOUT( "options.object : " + options.object );
@@ -72,7 +75,13 @@ ActionView.Base.render = function( options ){
 }
 
 
-ActionView.Base.form_for = function( what , options ){
+ActionView.Base.form_for = function( what , myThing , options ){
+    if ( myThing && ! options && isObject( myThing ) &&
+         ( myThing.url ) ){
+        options = myThing;
+        myThing = null;
+    }
+
     options = options || {};
     
     var frm = arguments[ arguments.length - 1 ];
@@ -87,11 +96,11 @@ ActionView.Base.form_for = function( what , options ){
         what = Rails.findModel( what );
     }
 
-    print( "\n<form action='/" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
+    print( "\n<form action='" + Rails.routes.getLinkFor( options.url || myController.shortName ) );
     if ( what._id )
         print( "/" + what._id );
 
-    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='post'>\n" );
+    print( "' class='new_" + what.collectionName + "' id='new_" + what.collectionName + "' method='get'>\n" );
 
     var newThing = what;
     if ( isFunction( what ) ){
@@ -114,6 +123,18 @@ ActionView.Base.form_tag = function( url , options , cont ){
     print( "<form action=\"" + url + "\">" );
     cont.call( this );
     print( "</form>" );
+}
+
+ActionView.Base.check_box_tag = function( name , checkedValue , startChecked ){
+    var html = "<input type='checkbox' name='" + name + "' value='" + checkedValue + "' ";
+    if ( startChecked )
+        html += " checked ";
+    html += " >";
+    return html;
+}
+
+ActionView.Base.button_to_function = function( name , js ){
+    return "<a href='#' onclick='" + js + "'>" + name + "</a>";
 }
 
 ActionView.Base.submit_tag = function( name ){

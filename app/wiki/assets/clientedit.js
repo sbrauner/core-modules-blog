@@ -100,11 +100,13 @@ clientEditLoader.insert({
 });
 
 var handleEditKeyPress = function() {
+    if(document.getElementById("searchtext") && textFocus) return;
     // redirect to edit page
     window.location = window.location + "?edit=true";
 }
 
 var handleRenameKeyPress = function(e, obj) {
+    if(document.getElementById("searchtext") && textFocus) return;
     document.getElementById('rename_popup').style.display = 'block';
     renameDialog.show();
     editKeyListener.disable();
@@ -121,6 +123,7 @@ var handleRenameKeyPress = function(e, obj) {
 }
 
 var handleDeleteKeyPress = function(e, obj) {
+    if(document.getElementById("searchtext") && textFocus) return;
     document.getElementById('delete_popup').style.display = "block";
     deleteDialog.show();
     editKeyListener.disable();

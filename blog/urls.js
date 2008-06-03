@@ -277,9 +277,23 @@ Blog.handlePosts = function( request , thePost , user ){
             }
 
 	    comment.url = Blog.fixCommentURL( comment.url );
+            comment.isAdmin = user && user.isAdmin ? true : false;
 
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
+
+            // On success, we blank out these fields so that they don't get
+            // repopulated in the form
+            // FIXME: This doesn't actually work! It just appends parameters to
+            // the request!
+            request.txt = "";
+            request.email = "";
+            request.yourname = "";
+            request.url = "";
+
+            // So we set an ADDITIONAL field in the request that marks that we
+            // succeeded!
+            request.postSuccess = true;
 
             return "Comment Saved";
         }

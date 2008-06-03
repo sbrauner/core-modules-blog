@@ -25,14 +25,29 @@ RailsURI.prototype.toString = function(){
     return "{RailsURI : " + this.pieces + "}";
 };
 
-Rails.Route = function(){
+Rails.Route = function( uriMatched , uriMine ){
     this.controller = null;
     this.action = "index";
+    
+    this._uriMatched  = uriMatched;
+    this._uriMine  = uriMine;
 };
+
+Rails.Route.prototype.amIBetter = function( other ){
+    if ( ! other )
+        return true;
+
+    return this._diffs() < other._diffs();
+};
+
+Rails.Route.prototype._diffs = function(){
+    return Math.abs( this._uriMatched.pieces.length - 
+                     this._uriMine.pieces.length );
+}
 
 Rails.Route.prototype.toString = function(){
     return "( Route controller:" + this.controller + " action:" + this.action + ")";
-}
+};
 
 Rails.InternalRoute = function( uri , options ){
     this.uri = uri;
@@ -71,7 +86,7 @@ Rails.InternalRoute.prototype.match = function( request , other ){
     if ( other.pieces.length > this.ruri.pieces.length )
         return null;
     
-    var theRoute = new Rails.Route();
+    var theRoute = new Rails.Route( this.ruri , other );
     if ( this.options )
         for ( var foo in this.options )
             theRoute[foo] = this.options[foo];
@@ -240,23 +255,43 @@ ActionController.Routing.Routes.draw = function( f ){
 ActionController.Routing.Routes.prototype.find = function( request ){
     var state = new RailsURI( request.getURI() );
     log.rails.routes.info( "incoming : " + state );
+    
+    var best = null;
+
     for ( var i=0; i<this._routes.length; i++){
         var route = this._routes[i];
         var theRoute = route.match( request , state );
         if ( ! theRoute )
             continue;
+        
         log.rails.routes.info( "match " + route + " : " + theRoute );
-        return theRoute;
+
+        if ( theRoute.amIBetter( best ) )
+            best = theRoute;
     }
     
+    if ( best )
+        return best;
+
     if ( request.getURI() == "/" )
         return this._home.match( request , state );
-
+    
     return null;
 };
 
 
 ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
+    var l = this._getLinkFor( thing );
+
+    if ( l.startsWith( "/" ) || 
+         l.startsWith( "http://" ) ||
+         l.startsWith( "https://" ) )
+        return l;
+
+    return "/" + l;
+}
+
+ActionController.Routing.Routes.prototype._getLinkFor = function( thing ){
     
     if ( ! thing )
         return "/NULL";
@@ -267,15 +302,13 @@ ActionController.Routing.Routes.prototype.getLinkFor = function( thing ){
     if ( thing.collectionName )
         return "/" + thing.collectionName + "s/" + thing._id;
 
-    var link = "/" + ( myController.shortName || thing.controller ) ;
+    var link = "/" + ( thing.controller || myController.shortName );
     if ( thing.action )
         link += "/" + thing.action;
 
     if ( thing.id )
         link += "/" + thing.id;
     
-    SYSOUT( tojson( thing ) );
-
     return link;
     
 };

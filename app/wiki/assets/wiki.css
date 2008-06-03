@@ -73,6 +73,10 @@ pre {
     width: 100%;
 }
 
+.wiki .search {
+    float: right;
+}
+
 .content p {
 	margin: 1em 0 0 0;
 	padding: 0;
