@@ -262,7 +262,7 @@ function lock( file ){
 }
 
 function isRestricted(f) {
-    return ".git" == f.getName() || ".gitignore" == f.getName();
+    return ".git" == f.getName();
 }
 
 %>
