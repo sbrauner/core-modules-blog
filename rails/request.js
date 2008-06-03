@@ -1,6 +1,6 @@
 
 Rails.requestFix = function( request , theRoute ){
-
+    
     request.request_uri = request.getURI();
     request.host_with_port = request.getHeader( "Host" );
     
@@ -16,6 +16,7 @@ Rails.requestFix = function( request , theRoute ){
     }
 
     cookies = request.getCookies() || {}
+    DOMAIN_NAME = "http://" + request.getHeader( "Host" ) + "/";
 };
 
 Rails.Params = function( request , matchingRoute ){

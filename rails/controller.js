@@ -44,36 +44,38 @@ ActionController.Base.prototype.layout = function( layout ){
 
 ActionController.Base.prototype.dispatch = function( request , response , matchingRoute ){
 
-    var f = this[matchingRoute.action];
-    if ( ! f ){
-        print( "can't find [" + matchingRoute.action + "] in [" + this.className + "]" );
-        return;
-    }
+    //
+    // the function may or may not be there.  if its not, its the same as
+    //  def blah
+    //  end
+    var f = this[matchingRoute.action]; 
     
     var appResponse = new ApplicationResponse( this , matchingRoute.action );
 
     // --- setup scope
     
-    var funcScope = f.getScope( true );
-
-    funcScope.render_text = function(s){
-        print( s );
-        appResponse.anythingRendered = true;
-    };
-    
-    funcScope.respond_to = function( b ){
-        b.call( appResponse.requestThis , appResponse );
-    };
-
-    funcScope.redirect_to = function( thing ){
-        appResponse.anythingRendered = true;
-        print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
-        return true;
-    };
-    
-    funcScope.render = function( options ){
-        appResponse.html( options );
-        appResponse.anythingRendered = true;
+    if ( f ){
+        var funcScope = f.getScope( true );
+        
+        funcScope.render_text = function(s){
+            print( s );
+            appResponse.anythingRendered = true;
+        };
+        
+        funcScope.respond_to = function( b ){
+            b.call( appResponse.requestThis , appResponse );
+        };
+        
+        funcScope.redirect_to = function( thing ){
+            appResponse.anythingRendered = true;
+            print( "<script>window.location = \"" + Rails.routes.getLinkFor( thing ) + "\";</script>" );
+            return true;
+        };
+        
+        funcScope.render = function( options ){
+            appResponse.html( options );
+            appResponse.anythingRendered = true;
+        }
     }
     
     // --- invoke action
@@ -88,7 +90,8 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
             return aroundFilters[aroundFiltersPos++].call( appResponse.requestThis , go );
         }
         
-        f.call( appResponse.requestThis );
+        if ( f )
+            f.call( appResponse.requestThis );
         
         if ( ! appResponse.anythingRendered ){
             appResponse.html();

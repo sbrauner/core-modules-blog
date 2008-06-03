@@ -1,7 +1,14 @@
 
 // this is what rails init starts
-
 var useGlobal = globals;
+
+                    
+if ( ! File.open( "app" ).exists() ){
+    SYSOUT( "not using an app - not starting" );
+    return;
+}
+
+
 
 logger = function(){
     return log;
@@ -117,7 +124,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 assert( thing.setFile );
                 
                 log.rails.init.model.info(  thing.collectionName );
-                assert( thing.collectionName == model.collectionName );
+                assert( thing.collectionName == model.collectionName , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
                 model.find();
             }
             

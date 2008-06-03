@@ -11,6 +11,7 @@ User.Perm = Class.create(Util.URLTree, {
      *     {boolean} closed Whether to "fail-closed" or not.
      */
     initialize: function(args){
+        args = args || {};
         Util.URLTree.call(this);
         var def = true;
         if(args.closed) def = false;
