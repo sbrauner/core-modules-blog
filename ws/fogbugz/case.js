@@ -20,6 +20,10 @@ ws.FogBugz.Case.prototype.setProject = function( project ){
     this.sProject = project;
 };
 
+ws.FogBugz.Case.prototype.setArea = function( area ){
+    this.sArea = area;
+};
+
 
 ws.FogBugz.Case.prototype.upsert = function( f ){
     
