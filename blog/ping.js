@@ -15,7 +15,7 @@ Blog.pingService = [
     {url: 'rpc.technorati.com', port: 80, path: '/rpc/ping'},
     {url: 'blogsearch.google.com', port: 80, path: '/ping/RPC2'},
     {url: 'rpc.weblogs.com', port: 80, path: '/RPC2'},
-    {url: 'www.pheedo.com', port: 80, path: '/api/rpc'},
+    {url: 'www.pheedo.com', port: 80, path: '/api/rpc/'},
 ];
     
 Blog.ping = function(articleUrl) {
