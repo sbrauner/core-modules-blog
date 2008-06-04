@@ -24,29 +24,33 @@ Blog.ping = function(articleUrl) {
 }
 
 Blog.pingSync = function(articleUrl) {
+    
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
-    if (!articleUrl || articleUrl.length == 0) articleUrl = siteUrl;
+    if (!articleUrl || articleUrl.length == 0) {
+         articleUrl = siteUrl;
+    }
 
     // cycle through all of the defined ping services
     Blog.pingService.forEach( function(service) {
 
-        SYSOUT('Pinging: ' + service.url);
+        log.blog.ping.info('Pinging: ' + service.url + ":" + service.port + service.path + " url = " + articleUrl);
+        
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
         var response = null;
         try {
             response = client.methodCall('weblogUpdates.ping', [siteName, siteUrl, articleUrl]);
         }
         catch ( e ){
-            log.blog.ping( "couldn't ping : " + tojson( service ) + " because of " + e );
+            log.blog.ping.error( "Exception : couldn't ping : " + tojson( service ) + " because of " + e );
             return;
         }
 
         if (!response) {
-            SYSOUT('Got empty response');
+            log.blog.ping.inerrorfo('Got empty response');
         } else {
             if (response.isFault) {
                 // we got a fault
-                SYSOUT('Fault: (' + response.faultValue + ') ' + response.faultString);
+                log.blog.ping.error('Fault: (' + response.faultValue + ') ' + response.faultString);
             } else {
                 var flerror;
                 var message;
@@ -64,7 +68,8 @@ Blog.pingSync = function(articleUrl) {
                     }
 
                 })
-                SYSOUT('Success: ' + message + ' (flerror: ' + flerror + ')');
+                log.blog.ping.info('Success: ' + service.url + ":" + service.port + service.path + " url = " + articleUrl 
+                        + " :: "+ message + ' (flerror: ' + flerror + ')');
             }
         }
     });
