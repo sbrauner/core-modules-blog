@@ -29,10 +29,14 @@ ws.xmlrpc.Client = function(host, port, path) {
  * Makes an XML-RPC method call to the configured host:port/path
  */
 ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
-    if (!methodName) return; // this should really throw an exception
+    
+    if (!methodName) {
+        return; // this should really throw an exception
+    }
 
     var content = '<?xml version="1.0"?>\n';
     var callObject = { methodName : methodName, params: [] };
+    
     if (parameters) {
         // process each passed in parameter in the parameters array, and convert to the proper type
         for (var i in parameters) {
@@ -64,7 +68,9 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
         return this._processResponse(this.xmlHTTPRequest.responseText);
     } else {
         // there's a lower level issue, so fail
-        log.ws.xmlrpc("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText);
+        log.ws.xmlrpc("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText 
+            + ' : ' + this.xmlHTTPRequest.headers
+            + ' : ' + this.xmlHTTPRequest.responseText);
     }
 };
 
