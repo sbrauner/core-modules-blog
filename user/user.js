@@ -38,6 +38,16 @@ User.prototype.isAdmin = function(){
     return this.hasPermission( "admin" );
 };
 
+/**
+ *  @return copy of array of permissions. Can be empty.
+ */
+User.prototype.getPermissions = function(){	
+	if (!this.permissions) {
+		return [];
+	}
+	
+	return new Array(this.permissions);
+};
 
 User.prototype.hasPermission = function( perm ){
     if ( ! this.permissions )
