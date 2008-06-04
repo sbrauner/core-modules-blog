@@ -495,13 +495,27 @@ xml.Node.prototype.getAllByTagName = function( tag  , lst ){
 
     if ( this.localName == tag )
         lst.add( this );
-
+    
     for ( var i=0; i<this.elements.length; i++){
         this.elements[i].getAllByTagName( tag , lst );
     }
     
     return lst;
 };
+
+xml.Node.prototype.getSingleChild = function( tag ){
+    var n = null;
+    
+    for ( var i=0; i<this.elements.length; i++){
+        if ( this.elements[i].localName == tag ){
+            if ( n )
+                throw "more than 1 '" + tag + "'";
+            n = this.elements[i];
+        }
+    }
+    
+    return n;
+}
 
 xml.Node.prototype.toString = function(){
     return "Node:" + this.localName;
