@@ -32,13 +32,18 @@
   </tr>
 
   <tr>
-    <th>Branch or Tag:</th>
-    <td><%= __instance__.getGitBranch() %></td>
+    <th>Current Branch or Tag:</th>
+    <td><%= __instance__.getCurrentGitBranch() %></td>
   </tr>
 
   <tr>
     <th>Environment Name:</th>
     <td><%= __instance__.getEnvironmentName() %></td>
+  </tr>
+
+  <tr>
+    <th>DB Host:</th>
+    <td><%= db.getConnectPoint() %></td>
   </tr>
 
 </table>
