@@ -10,6 +10,8 @@ ws.FogBugz = function( url , email , password ){
     this.password = password;
 };
 
+__path__.core();
+
 ws.FogBugz.prototype.log = log.ws.fogbugz;
 
 // ---- login/logout
@@ -100,96 +102,6 @@ ws.FogBugz.prototype.search = function( q , cols , max ){
 }
 
 
-ws.FogBugz.ALL_COLUMNS = {
-    c  : true ,
-    dtClosed  : true ,
-    dtDue  : true ,
-    dtFixFor  : true ,
-    dtLastUpdated  : true ,
-    dtLastView  : true ,
-    dtOpened  : true ,
-    dtResolved  : true ,
-    fForwarded  : true ,
-    fOpen  : true ,
-    fReplied  : true ,
-    fScoutStopReporting  : true ,
-    fSubscribed  : true ,
-    hrsCurrEst  : true ,
-    hrsElapsed  : true ,
-    hrsOrigEst  : true ,
-    ixArea  : true ,
-    ixBug  : true , 
-    ixBugEventLastView  : true ,
-    ixBugEventLatest  : true ,
-    ixBugEventLatestText  : true ,
-    ixCategory  : true ,
-    ixDiscussTopic  : true ,
-    ixFixFor  : true ,
-    ixGroup  : true ,
-    ixMailbox  : true ,
-    ixPersonAssignedTo  : true ,
-    ixPersonClosedBy  : true ,
-    ixPersonLastEditedBy  : true ,
-    ixPersonOpenedBy  : true ,
-    ixPersonResolvedBy  : true ,
-    ixPriority  : true ,
-    ixProject  : true ,
-    ixRelatedBugs  : true ,
-    ixStatus  : true ,
-    sArea  : true ,
-    sCategory  : true ,
-    sComputer  : true ,
-    sCustomerEmail  : true ,
-    sEmailAssignedTo  : true ,
-    sFixFor  : true ,
-    sLatestTextSummary  : true ,
-    sPersonAssignedTo  : true ,
-    sPriority  : true ,
-    sProject  : true ,
-    sReleaseNotes  : true ,
-    sScoutDescription  : true ,
-    sScoutMessage  : true ,
-    sStatus  : true ,
-    sTicket  : true ,
-    sTitle  : true ,
-    sVersion : true
-};
-
-ws.FogBugz.ALL_COLUMNS_STRING = ws.FogBugz.ALL_COLUMNS.keySet().join( "," );
-
-ws.FogBugz.Case = function( xml ){
-    this.id = -1;
-    if ( xml ){
-        this.id = xml.attributes.ixBug;
-        for ( var i=0; i<xml.elements.length; i++ ){
-            var e = xml.elements[i];
-            if ( e.textString )
-                this[ e.localName ] = e.textString;
-        }
-    }
-};
-
-ws.FogBugz.Case.prototype.setTitle = function( title ){
-    this.sTitle = title;
-};
 
 
-ws.FogBugz.Case.prototype.setProject = function( project ){
-    this.sProject = project;
-};
-
-
-ws.FogBugz.Case.prototype.upsert = function( f ){
-    
-};
-
-ws.FogBugz.Case.prototype.toString = function(){
-    var s =  "[ FogBugz Case " + this.id + " " + this.sProject + ":" + this.sTitle + "\n";
-    
-    s += "\t status:" + this.ixStatus + "\n";
-    s += "\t priority:" + this.ixPriority + "\n";
-    s += "\t assigned to:" + this.sEmailAssignedTo + "\n";
-    
-    s += "]";
-    return s;
-}
+__path__["case"]();
