@@ -1,65 +1,48 @@
 
 core.content.xml();
 
-ws.FogBugz = function( url , email , password ){
+ws.FogBugz = function( url , email , password , token ){
     this.url = url;
     if ( ! this.url.endsWith( "?" ) )
         this.url += "?";
 
     this.email = email;
     this.password = password;
+    
+    if ( token ){
+        this._token = token;
+        this._passedInToken = true;
+    }
 };
 
 __path__.core();
+__path__.apibase();
 
 ws.FogBugz.prototype.log = log.ws.fogbugz;
 
-// ---- login/logout
-
-ws.FogBugz.prototype._command = function( cmd , params ){
-    var url = this.url + "cmd=" + cmd;
+ws.FogBugz.prototype.listProjects = function(){
     
-    for ( var k in params )
-        url += "&" + k + "=" + escape( params[k] );
+    var projects = {};
     
-    if ( this._token )
-        url += "&token=" + this._token;
+    var res = this._command( "listAreas" );
+    res.getAllByTagName( "area" ).forEach( 
+        function( a ){
+            var areaName = a.getSingleChild( "sArea" ).textString;
+            
+            var projectName = a.getSingleChild( "sProject" ).textString;
+            
+            var p = projects[ projectName ];
+            if ( ! p ){
+                p = new ws.FogBugz.Project( projectName );
+                projects[ projectName ] = p;
+            }
+            p.areas.add( areaName );
+        }
+    );
 
-    this.log( url );
-    
-    var x = new XMLHttpRequest( "GET" , url );
-    if ( ! x.send() )
-        throw "error";
-
-    var dom = xml.parseDomFromString( x.responseText );
-    dom._raw = x.responseText;
-    return dom;
+    return projects;
 }
 
-ws.FogBugz.prototype._login = function(){
-    if ( this._token )
-        return this._token;
-    
-    var res = this._command( "logon" , { email : this.email , password : this.password } );
-    var tokenNode = res.getAllByTagName( "token" );
-
-    if ( tokenNode.length == 0 )
-        throw "no token node";
-
-    if ( tokenNode.length > 1 )
-        throw "why are there more than 1 token node";
-    
-    tokenNode = tokenNode[0];
-    this._token = tokenNode.textString;
-    return tokenNode.textString;
-};
-
-ws.FogBugz.prototype.done = function(){
-    if ( ! this._token )
-        return;
-    
-    this._command( "logoff" , {} );
-}
 
 // -- main api ---
 /** from fogbugz api
@@ -102,6 +85,5 @@ ws.FogBugz.prototype.search = function( q , cols , max ){
 }
 
 
-
-
 __path__["case"]();
+__path__["project"]();
