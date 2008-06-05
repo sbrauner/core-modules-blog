@@ -484,7 +484,13 @@ xml = {
     __domToJson: function(node){
         var o = {};
         if(node.elements.length == 0 && node.text.length == 1){
-            o[node.localName] = [node.text[0]];
+            var s = node.text[0];
+            o[node.localName] = [s];
+            s._props = {};
+            for(var key in node.attributes){
+                var a = node.attributes[key];
+                s._props[key] = a.value;
+            }
             return o;
         }
 
@@ -498,6 +504,13 @@ xml = {
                 o[key] = j[key];
             }
         });
+        if(Object.keys(node.attributes).length > 0){
+            o._props = {};
+            for(var key in node.attributes){
+                var a = node.attributes[key];
+                o._props[key] = a.value;
+            }
+        }
         var n = {};
         n[node.localName] = [o];
         return n;
