@@ -69,7 +69,7 @@ ws.xmlrpc.Client.prototype.methodCall = function(methodName, parameters) {
     } else {
         // there's a lower level issue, so fail
         log.ws.xmlrpc("Error: " + this.xmlHTTPRequest.status + ': ' + this.xmlHTTPRequest.statusText 
-            + ' : ' + this.xmlHTTPRequest.headers
+            + ' : ' + this.xmlHTTPRequest.header
             + ' : ' + this.xmlHTTPRequest.responseText);
     }
 };

@@ -51,10 +51,10 @@ if ( u && (request.action == "save" || request['save.x'] || request.save)){
     }
 }
 
-var allRoles = adminperm.getRoles().toArray();
+var allRoles = (allowModule && allowModule.admin ) ? allowModule.admin.permissions.getRoles().toArray() : [] ;
 var rolesMap = {};
 allRoles.forEach(function(z){ rolesMap[z.name] = true; });
-u.permissions.forEach(function(z){
+u.getPermissions().forEach(function(z){
    if(!rolesMap[z]){
        rolesMap[z] = true;
        allRoles.push({name: z});

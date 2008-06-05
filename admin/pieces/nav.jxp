@@ -14,7 +14,7 @@ var sectionTree = core.admin.data.sectiontree();
     <div id="navcontainer">
       <ul>
         <li>
-          <a href="/" id="admininfo"><%= db.getName() %></a>
+          <a href="/" id="admininfo"><%= db.getName() %> : <%= __instance__.getEnvironmentName() %> : <%= __instance__.getCurrentGitBranch() %> </a>
         </li>
       </ul>
     </div>

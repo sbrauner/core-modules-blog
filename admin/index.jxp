@@ -25,7 +25,14 @@ if ( sectionName == "" || sectionName.match( /^index/ ) )
     sectionName = "welcome";
 
 var allowed = _openAccess;
-if( ! allowed && ( user && adminperm && adminperm.allowed(user, request, sectionName) ) )
+
+/*
+ *  check to see if the site set permissioning for the admin module.  if not, make a dummy that returns false as this is 
+ *  testing for non-admin users
+ */
+var perm = (allowModule && allowModule.admin) ? allowModule.admin.permissions : { allowed : function() { return false; }};
+	
+if( ! allowed && user && perm.allowed(user, request, sectionName) )
     allowed = true;
 
 if ( ! allowed && user && user.isAdmin() ){

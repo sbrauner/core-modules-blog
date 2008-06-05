@@ -111,20 +111,18 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 if ( ! model._isModel )
                     continue;
                 
-                model.prototype.setFile( z.filename );
-                model.prototype.setConstructor( model );
+                model.setConstructor( model );
                 
                 Rails.models.add( model );
                 useGlobal.putExplicit( name , model );
                 
                 assert( model.find );
-                assert( model.collectionName );
+                assert( model.getCollectionName() );
                 
                 var thing = new model();
-                assert( thing.setFile );
                 
-                log.rails.init.model.info(  thing.collectionName );
-                assert( thing.collectionName == model.collectionName , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
+                log.rails.init.model.info( model.getCollectionName );
+                assert( thing.getCollectionName() == model.getCollectionName() , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
                 model.find();
             }
             

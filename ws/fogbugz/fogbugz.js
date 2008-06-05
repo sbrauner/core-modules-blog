@@ -1,63 +1,48 @@
 
 core.content.xml();
 
-ws.FogBugz = function( url , email , password ){
+ws.FogBugz = function( url , email , password , token ){
     this.url = url;
     if ( ! this.url.endsWith( "?" ) )
         this.url += "?";
 
     this.email = email;
     this.password = password;
+    
+    if ( token ){
+        this._token = token;
+        this._passedInToken = true;
+    }
 };
+
+__path__.core();
+__path__.apibase();
 
 ws.FogBugz.prototype.log = log.ws.fogbugz;
 
-// ---- login/logout
-
-ws.FogBugz.prototype._command = function( cmd , params ){
-    var url = this.url + "cmd=" + cmd;
+ws.FogBugz.prototype.listProjects = function(){
     
-    for ( var k in params )
-        url += "&" + k + "=" + escape( params[k] );
+    var projects = {};
     
-    if ( this._token )
-        url += "&token=" + this._token;
+    var res = this._command( "listAreas" );
+    res.getAllByTagName( "area" ).forEach( 
+        function( a ){
+            var areaName = a.getSingleChild( "sArea" ).textString;
+            
+            var projectName = a.getSingleChild( "sProject" ).textString;
+            
+            var p = projects[ projectName ];
+            if ( ! p ){
+                p = new ws.FogBugz.Project( projectName );
+                projects[ projectName ] = p;
+            }
+            p.areas.add( areaName );
+        }
+    );
 
-    this.log( url );
-    
-    var x = new XMLHttpRequest( "GET" , url );
-    if ( ! x.send() )
-        throw "error";
-
-    var dom = xml.parseDomFromString( x.responseText );
-    dom._raw = x.responseText;
-    return dom;
+    return projects;
 }
 
-ws.FogBugz.prototype._login = function(){
-    if ( this._token )
-        return this._token;
-    
-    var res = this._command( "logon" , { email : this.email , password : this.password } );
-    var tokenNode = res.getAllByTagName( "token" );
-
-    if ( tokenNode.length == 0 )
-        throw "no token node";
-
-    if ( tokenNode.length > 1 )
-        throw "why are there more than 1 token node";
-    
-    tokenNode = tokenNode[0];
-    this._token = tokenNode.textString;
-    return tokenNode.textString;
-};
-
-ws.FogBugz.prototype.done = function(){
-    if ( ! this._token )
-        return;
-    
-    this._command( "logoff" , {} );
-}
 
 // -- main api ---
 /** from fogbugz api
@@ -100,96 +85,5 @@ ws.FogBugz.prototype.search = function( q , cols , max ){
 }
 
 
-ws.FogBugz.ALL_COLUMNS = {
-    c  : true ,
-    dtClosed  : true ,
-    dtDue  : true ,
-    dtFixFor  : true ,
-    dtLastUpdated  : true ,
-    dtLastView  : true ,
-    dtOpened  : true ,
-    dtResolved  : true ,
-    fForwarded  : true ,
-    fOpen  : true ,
-    fReplied  : true ,
-    fScoutStopReporting  : true ,
-    fSubscribed  : true ,
-    hrsCurrEst  : true ,
-    hrsElapsed  : true ,
-    hrsOrigEst  : true ,
-    ixArea  : true ,
-    ixBug  : true , 
-    ixBugEventLastView  : true ,
-    ixBugEventLatest  : true ,
-    ixBugEventLatestText  : true ,
-    ixCategory  : true ,
-    ixDiscussTopic  : true ,
-    ixFixFor  : true ,
-    ixGroup  : true ,
-    ixMailbox  : true ,
-    ixPersonAssignedTo  : true ,
-    ixPersonClosedBy  : true ,
-    ixPersonLastEditedBy  : true ,
-    ixPersonOpenedBy  : true ,
-    ixPersonResolvedBy  : true ,
-    ixPriority  : true ,
-    ixProject  : true ,
-    ixRelatedBugs  : true ,
-    ixStatus  : true ,
-    sArea  : true ,
-    sCategory  : true ,
-    sComputer  : true ,
-    sCustomerEmail  : true ,
-    sEmailAssignedTo  : true ,
-    sFixFor  : true ,
-    sLatestTextSummary  : true ,
-    sPersonAssignedTo  : true ,
-    sPriority  : true ,
-    sProject  : true ,
-    sReleaseNotes  : true ,
-    sScoutDescription  : true ,
-    sScoutMessage  : true ,
-    sStatus  : true ,
-    sTicket  : true ,
-    sTitle  : true ,
-    sVersion : true
-};
-
-ws.FogBugz.ALL_COLUMNS_STRING = ws.FogBugz.ALL_COLUMNS.keySet().join( "," );
-
-ws.FogBugz.Case = function( xml ){
-    this.id = -1;
-    if ( xml ){
-        this.id = xml.attributes.ixBug;
-        for ( var i=0; i<xml.elements.length; i++ ){
-            var e = xml.elements[i];
-            if ( e.textString )
-                this[ e.localName ] = e.textString;
-        }
-    }
-};
-
-ws.FogBugz.Case.prototype.setTitle = function( title ){
-    this.sTitle = title;
-};
-
-
-ws.FogBugz.Case.prototype.setProject = function( project ){
-    this.sProject = project;
-};
-
-
-ws.FogBugz.Case.prototype.upsert = function( f ){
-    
-};
-
-ws.FogBugz.Case.prototype.toString = function(){
-    var s =  "[ FogBugz Case " + this.id + " " + this.sProject + ":" + this.sTitle + "\n";
-    
-    s += "\t status:" + this.ixStatus + "\n";
-    s += "\t priority:" + this.ixPriority + "\n";
-    s += "\t assigned to:" + this.sEmailAssignedTo + "\n";
-    
-    s += "]";
-    return s;
-}
+__path__["case"]();
+__path__["project"]();

@@ -19,8 +19,36 @@
     }
 %>
 
-<b>Created</b> : <%= __instance__.getWhenCreated() %><br>
-<b>Num Requests</b> : <%= __instance__.getNumRequests() %><br>
+<table>
+
+  <tr>
+    <th>Created:</th>
+    <td><%= __instance__.getWhenCreated() %></td>
+  </tr>
+
+  <tr>
+    <th>Num Request:</th>
+    <td><%= __instance__.getNumRequests() %></td>
+  </tr>
+
+  <tr>
+    <th>Current Branch or Tag:</th>
+    <td><%= __instance__.getCurrentGitBranch() %></td>
+  </tr>
+
+  <tr>
+    <th>Environment Name:</th>
+    <td><%= __instance__.getEnvironmentName() %></td>
+  </tr>
+
+  <tr>
+    <th>DB Host:</th>
+    <td><%= db.getConnectPoint() %></td>
+  </tr>
+
+</table>
+<hr>
+
 <form>
   <input type="submit" name="action" value="Reset Scope">
 </form>
