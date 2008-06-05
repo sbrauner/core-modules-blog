@@ -79,7 +79,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
             
             try {
                 z.func();
-                log.rails.init.model.info( "loaded : " + z.func );
+                log.rails.init.model.info( "loaded : " + z.filename );
                 z._loaded = true;
             }
             catch ( e if ( pass + 1 < numPasses ) ){
@@ -119,10 +119,12 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 assert( model.getCollectionName() );
                 
                 var thing = new model();
-                
-                log.rails.init.model.info( model.getCollectionName() );
+                assert( thing.name );
+
                 assert( thing.getCollectionName() == model.getCollectionName() , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
-                model.find();
+                assert( model.find );
+
+                log.rails.init.model.info( "Collection Name : " + model.getCollectionName() );
             }
             
         }

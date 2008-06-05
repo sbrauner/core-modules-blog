@@ -16,11 +16,11 @@ module ActiveRecord
     end
 
     def self.getSingularName
-      return name.toLowerCase();
+      return @_className.toLowerCase();
     end
 
     def self.getCollectionName
-      return name.toLowerCase() + "s";
+      return @_className.toLowerCase() + "s";
     end
     
     # callback setups
