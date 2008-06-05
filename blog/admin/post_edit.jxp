@@ -1,4 +1,5 @@
 <%
+core.ext.getlist();
 head.addCSS("NOCDN/@@/yui/current/container/assets/skins/sam/container.css");
 head.addCSS("NOCDN/@@/yui/current/button/assets/skins/sam/button.css");
 head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>');
@@ -220,7 +221,7 @@ function confirmExit() {
 //    if ( ! newPost ) return;
 
     var t = document.getElementById( "title" ).value;
-    t = t.replace( /[^a-zA-Z0-9]+/g , "_" ).toLowerCase();
+      t = t.replace( /[^a-zA-Z0-9]+/g , <%= tojson(Ext.getlist(allowModule, 'blog', 'slugReplaceChar') || '-') %> ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
 
