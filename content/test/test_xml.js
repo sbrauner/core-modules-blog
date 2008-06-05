@@ -178,3 +178,29 @@ catch(e) {
     print(e);
 }
 assert(e);
+
+
+// JSON test
+var s = "<abc>text</abc>";
+print(tojson(xml.parseDomFromString(s)));
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(j.abc == "text");
+
+var s = "<abc><def>text</def><ghi>more text</ghi></abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(Object.keys(j.abc).length == 2);
+assert(j.abc.def == "text");
+assert(j.abc.ghi == "more text");
+
+var s = "<abc><def>word1</def><def>word2</def></abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(Object.keys(j.abc).length == 1);
+assert(j.abc.length == 2);
+assert(j.abc[0] == "word1");
+assert(j.abc[1] == "word2");
+
+
+
