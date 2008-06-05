@@ -484,7 +484,7 @@ xml = {
     __domToJson: function(node){
         var o = {};
         if(node.elements.length == 0 && node.text.length == 1){
-            o[node.localName] = node.text[0];
+            o[node.localName] = [node.text[0]];
             return o;
         }
 
@@ -492,16 +492,14 @@ xml = {
             var j = xml.__domToJson(c);
             var key = Object.keys(j)[0];
             if(key in o){
-                if(! (o[key] instanceof Array))
-                    o[key] = [o[key]];
-                o[key].push(j[key]);
+                o[key].push(j[key][0]);
             }
             else {
                 o[key] = j[key];
             }
         });
         var n = {};
-        n[node.localName] = o;
+        n[node.localName] = [o];
         return n;
     },
 
