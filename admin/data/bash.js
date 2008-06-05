@@ -93,7 +93,13 @@ Object.extend(admin.data.Bash.prototype, {
         var cmd = files ? files[0] : "";
         files = files.slice(1) || [];
         this._validate(files);
-        var foo = sysexec('git ' + cmd + ' ' + files.join(' '));
+        var env = {};
+        env.GIT_AUTHOR_NAME = user.name;
+        env.GIT_COMMITTER_NAME = user.name;
+        env.GIT_AUTHOR_EMAIL = user.email;
+        env.GIT_COMMITTER_EMAIL = user.email;
+
+        var foo = sysexec('git ' + cmd + ' ' + files.join(' '), "", env);
 
         return foo;
     },
