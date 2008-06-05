@@ -50,7 +50,7 @@ ActionController.Base.prototype.dispatch = function( request , response , matchi
     //  end
     var f = this[matchingRoute.action]; 
     
-    var appResponse = new ApplicationResponse( this , matchingRoute.action );
+    appResponse = new ApplicationResponse( this , matchingRoute.action );
 
     // --- setup scope
     
@@ -127,6 +127,8 @@ function ApplicationResponse( controller , method ){
 };
 
 ApplicationResponse.prototype.html = function( options ){
+    appResponse.anythingRendered = true;
+
     options = options || {};
 
     // did we get an iter block
