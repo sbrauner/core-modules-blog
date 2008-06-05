@@ -27,6 +27,10 @@ ActionView.Base.content_for = function( name , func ){
 
 
 ActionView.Base.render = function( options ){
+    
+    if ( ! appResponse.anythingRendered ){
+        return appResponse.html( options );
+    }
 
     if ( ! options )
         throw "are you allowed to pass render nothing?";
@@ -39,6 +43,8 @@ ActionView.Base.render = function( options ){
         name = options;
     else if ( options.partial )
         name = options.partial;
+    else if ( options.action )
+        name = options.action;
     else
         throw "cannot render [" + tojson( options ) + "]";
     
@@ -71,6 +77,7 @@ ActionView.Base.render = function( options ){
     // END TOTAL GUESS (as if the rest isn't)
         
     p.apply( this );
+    appResponse.anythingRendered = true;
     return "";
 }
 
