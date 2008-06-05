@@ -105,7 +105,6 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 if ( ! ( model && isObject( model ) ) )
                     continue;
                 
-                log.rails.init.model.info( "Added Object With Name : " + name + " | " + model.keySet() );
                 useGlobal.putExplicit( name , model );
                 
                 if ( ! model._isModel )
@@ -121,7 +120,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 
                 var thing = new model();
                 
-                log.rails.init.model.info( model.getCollectionName );
+                log.rails.init.model.info( model.getCollectionName() );
                 assert( thing.getCollectionName() == model.getCollectionName() , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
                 model.find();
             }
@@ -139,13 +138,15 @@ Rails.findModel = function( thing ){
 
     if ( isString( thing ) ){
         for ( var i=0; i<Rails.models.length; i++){
-
+            
             var m = Rails.models[i];
-
+            
             if ( m.shortName == thing ||
-                 m.collectionName == thing ||
-                 m.collectionName == thing + "s" )
+                 m.getCollectionName() == thing ||
+                 m.getSingularName() == thing )
                 return m;
+            
+            
         }
     }
     

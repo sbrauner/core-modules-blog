@@ -3,11 +3,7 @@ core.db.sql();
 ActiveRecord = {};
 
 ActiveRecord.Base = function( obj ){
-    if ( obj && isObject( obj ) )
-        Object.extend( this , obj );
-    
-    if ( this._beforeCreate && isFunction( this[this._beforeCreate] ) )
-        this[ this._beforeCreate ].call( this );
+    throw "should not be here - see activerecord.rb";
 };
 
 core.rails.activeRecord();
@@ -98,7 +94,11 @@ ActiveRecord.Base.__notFoundHandler = function( n ){
             if ( res || ! create )
                 return res;
 
-            res = new this.theCons();
+            var c = this;
+            
+            res = {};
+            res.setConstructor( this , true );
+
             res[s] = z;
             return res;
         }
@@ -303,10 +303,6 @@ function before_save(){
 
 function before_update(){
     SYSOUT( "ignoring before_update" );
-}
-
-function before_create( name ){
-    this._beforeCreate = name;
 }
 
 function before_destroy(){
