@@ -6,11 +6,12 @@ ActiveRecord.Base = function( obj ){
     this.collectionName = null;
     if ( obj && isObject( obj ) )
         Object.extend( this , obj );
-
     
     if ( this._beforeCreate && isFunction( this[this._beforeCreate] ) )
         this[ this._beforeCreate ].call( this );
 };
+
+core.rails.activeRecord();
 
 ActiveRecord.Base.prototype._isModel = true;
 
