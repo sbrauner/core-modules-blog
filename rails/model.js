@@ -3,7 +3,6 @@ core.db.sql();
 ActiveRecord = {};
 
 ActiveRecord.Base = function( obj ){
-    this.collectionName = null;
     if ( obj && isObject( obj ) )
         Object.extend( this , obj );
     
@@ -15,14 +14,9 @@ core.rails.activeRecord();
 
 ActiveRecord.Base.prototype._isModel = true;
 
-ActiveRecord.Base.prototype.setFile = function( filename ){
-    this.singularName = filename.replace( /\.rb$/ , "" );
-    this.collectionName = this.singularName + "s";
-};
-
-ActiveRecord.Base.prototype.setConstructor = function( cons ){
+ActiveRecord.Base.setConstructor = function( cons ){
     this.theCons = cons;
-    db[ this.collectionName ].setConstructor( cons );
+    db[ this.getCollectionName() ].setConstructor( cons );
 };
 
 // ---------
@@ -30,15 +24,15 @@ ActiveRecord.Base.prototype.setConstructor = function( cons ){
 // ---------
 
 
-ActiveRecord.Base.prototype.sum = function( col ){
+ActiveRecord.Base.sum = function( col ){
     SYSOUT( "sum not working yet" );
     return -2;
 };
 
-ActiveRecord.Base.prototype.find = function( type , options ){
-    assert( this.collectionName );
+ActiveRecord.Base.find = function( type , options ){
+    assert( this.getCollectionName() );
     
-    var c = db[ this.collectionName ];
+    var c = db[ this.getCollectionName() ];
     
     var filters = {};
     
@@ -73,12 +67,12 @@ ActiveRecord.Base.prototype.find = function( type , options ){
     return this._cleanCursor( c.find( filters ) || [] );
 };
 
-ActiveRecord.Base.prototype.find_by_sql = function( sql ){
+ActiveRecord.Base.find_by_sql = function( sql ){
     SYSOUT( "find_by_sql doesn't work" );
     return [];
 }
 
-ActiveRecord.Base.prototype.__notFoundHandler = function( n ){
+ActiveRecord.Base.__notFoundHandler = function( n ){
     
     var find = false;
     var create = false;
@@ -119,7 +113,7 @@ ActiveRecord.Base.prototype._checkTS = function( name ){
 
 ActiveRecord.Base.prototype.save = function(){
 
-    var columns = Rails.schema.tables[this.collectionName].columns;
+    var columns = Rails.schema.tables[this.getCollectionName()].columns;
     
     var removeId = this.id == this._id;
     if ( removeId )
@@ -151,7 +145,7 @@ ActiveRecord.Base.prototype.save = function(){
             this[c] = parseInt( this[c] );
     }
 
-    db[this.collectionName].save( this );
+    db[this.getCollectionName()].save( this );
     
     if ( removeId )
         this.id = this._id;
@@ -169,7 +163,7 @@ ActiveRecord.Base.prototype.destroy = function(){
     if ( ! this._id )
         return true;
 
-    db[this.collectionName].remove( { _id : this._id } );
+    db[this.getCollectionName()].remove( { _id : this._id } );
     return true;
 };
 
@@ -184,8 +178,8 @@ ActiveRecord.Base.prototype.count = function( options ){
 ActiveRecord.Base.prototype.text_area = function( name ){
     var html =
         "<textarea " +
-        " id=\"" + this.singularName + "_" + name + "\" " +
-        " name=\"" + this.singularName + "[" + name + "]\" " +
+        " id=\"" + this.getSingularName() + "_" + name + "\" " +
+        " name=\"" + this.getSingularName() + "[" + name + "]\" " +
         " cols=\"40\" rows=\"20\" >";
     if ( this[name] )
         html += this[name];
@@ -193,11 +187,11 @@ ActiveRecord.Base.prototype.text_area = function( name ){
     return html;
 };
 
-ActiveRecord.Base.prototype.text_field = function( name ){
+ActiveRecord.Base.text_field = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.singularName + "_" + name + "\" " +
-        " name=\"" + this.singularName + "[" + name + "]\" " +
+        " id=\"" + this.getSingularName() + "_" + name + "\" " +
+        " name=\"" + this.getSingularName() + "[" + name + "]\" " +
         " size=\"30\" type=\"text\" ";
     if ( this[name] )
         html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
@@ -205,11 +199,11 @@ ActiveRecord.Base.prototype.text_field = function( name ){
     return html;
 };
 
-ActiveRecord.Base.prototype.password_field = function( name ){
+ActiveRecord.Base.password_field = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.singularName + "_" + name + "\" " +
-        " name=\"" + this.singularName + "[" + name + "]\" " +
+        " id=\"" + this.getSingularName() + "_" + name + "\" " +
+        " name=\"" + this.getSingularName() + "[" + name + "]\" " +
         " size=\"30\" type=\"password\" ";
     if ( this[name] )
         html += " value=\"" + this[name].replace( /\"/g , "&quot;" ) + "\" ";
@@ -217,11 +211,11 @@ ActiveRecord.Base.prototype.password_field = function( name ){
     return html;
 };
 
-ActiveRecord.Base.prototype.check_box = function( name ){
+ActiveRecord.Base.check_box = function( name ){
     var html =
         "<input " +
-        " id=\"" + this.singularName + "_" + name + "\" " +
-        " name=\"" + this.singularName + "[" + name + "]\" " +
+        " id=\"" + this.getSingularName() + "_" + name + "\" " +
+        " name=\"" + this.getSingularName() + "[" + name + "]\" " +
         " value=\"1\" type=\"checkbox\" ";
     if ( this[name] )
         html += " selected ";
@@ -229,8 +223,8 @@ ActiveRecord.Base.prototype.check_box = function( name ){
     return html;
 };
 
-ActiveRecord.Base.prototype.datetime_select = function( name ){
-    var colName = this.collectionName;
+ActiveRecord.Base.datetime_select = function( name ){
+    var colName = this.getCollectionName();
     var html = "";
 
     var start = function( num ){
@@ -267,30 +261,30 @@ ActiveRecord.Base.prototype.datetime_select = function( name ){
     return html;
 };
 
-ActiveRecord.Base.prototype.submit = function( name ){
+ActiveRecord.Base.submit = function( name ){
     return "<input " +
-        " id=\"" + this.singularName + "_" + submit + "\" " +
+        " id=\"" + this.getSingularName() + "_" + submit + "\" " +
         " name=\"commit\" " +
         " value=\"" + name + "\" type=\"submit\" />";
 };
 
 
-ActiveRecord.Base.prototype.paginate = function( options ){
-    return this._cleanCursor( db[ this.collectionName ].find() ) || [];
+ActiveRecord.Base.paginate = function( options ){
+    return this._cleanCursor( db[ this.getCollectionName() ].find() ) || [];
 }
 
-ActiveRecord.Base.prototype.build_search_conditions = function( options ){
+ActiveRecord.Base.build_search_conditions = function( options ){
     SYSOUT( "don't know how to build_search_conditions" );
     return "";
 }
 
-ActiveRecord.Base.prototype._cleanCursor = function( cursor ){
+ActiveRecord.Base._cleanCursor = function( cursor ){
     var a = cursor.toArray();
     a.forEach( this._cleanOne );
     return a;
 }
 
-ActiveRecord.Base.prototype._cleanOne = function( o ){
+ActiveRecord.Base._cleanOne = function( o ){
     if ( ! o )
         return o;
 
