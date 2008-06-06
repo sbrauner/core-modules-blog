@@ -471,12 +471,51 @@ xml = {
                 log.error("FATAL: " + msg);
             }
         };
-        
-        
+
+
         this.parseSaxFromString(handler, content);
-        
+
         return handler.root;
-    }
+    },
+    parseJsonFromString: function( content ){
+        var x = xml.parseDomFromString( content );
+        return xml.__domToJson(x);
+    },
+    __domToJson: function(node){
+        var o = {};
+        if(node.elements.length == 0 && node.text.length == 1){
+            var s = node.text[0];
+            o[node.localName] = [s];
+            s._props = {};
+            for(var key in node.attributes){
+                var a = node.attributes[key];
+                s._props[key] = a.value;
+            }
+            return o;
+        }
+
+        node.elements.forEach(function(c){
+            var j = xml.__domToJson(c);
+            var key = Object.keys(j)[0];
+            if(key in o){
+                o[key].push(j[key][0]);
+            }
+            else {
+                o[key] = j[key];
+            }
+        });
+        if(Object.keys(node.attributes).length > 0){
+            o._props = {};
+            for(var key in node.attributes){
+                var a = node.attributes[key];
+                o._props[key] = a.value;
+            }
+        }
+        var n = {};
+        n[node.localName] = [o];
+        return n;
+    },
+
 };
 
 xml.Node = function( localName , qName , uri ){
@@ -495,13 +534,27 @@ xml.Node.prototype.getAllByTagName = function( tag  , lst ){
 
     if ( this.localName == tag )
         lst.add( this );
-
+    
     for ( var i=0; i<this.elements.length; i++){
         this.elements[i].getAllByTagName( tag , lst );
     }
     
     return lst;
 };
+
+xml.Node.prototype.getSingleChild = function( tag ){
+    var n = null;
+    
+    for ( var i=0; i<this.elements.length; i++){
+        if ( this.elements[i].localName == tag ){
+            if ( n )
+                throw "more than 1 '" + tag + "'";
+            n = this.elements[i];
+        }
+    }
+    
+    return n;
+}
 
 xml.Node.prototype.toString = function(){
     return "Node:" + this.localName;

@@ -1,4 +1,5 @@
 core.core.file();
+core.git.repo();
 
 admin.data.Bash = function(){
     this._pwd = "/";
@@ -93,7 +94,9 @@ Object.extend(admin.data.Bash.prototype, {
         var cmd = files ? files[0] : "";
         files = files.slice(1) || [];
         this._validate(files);
-        var foo = sysexec('git ' + cmd + ' ' + files.join(' '));
+        var env = git.Repo.getEnv(user);
+
+        var foo = sysexec('git ' + cmd + ' ' + files.join(' '), "", env);
 
         return foo;
     },

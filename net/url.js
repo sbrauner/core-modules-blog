@@ -76,7 +76,7 @@ URL.prototype.toString = function(){
     else
         var str = this.path;
 
-    var encodeURIComponent = URL.escape_queryargs;
+//    var encodeURIComponent = URL.escape_queryargs;
     if(this.args.length > 0){
         str += '?';
 

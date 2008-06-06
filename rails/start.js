@@ -79,7 +79,7 @@ for ( var pass=1; pass<=numPasses; pass++ ){
             
             try {
                 z.func();
-                log.rails.init.model.info( "loaded : " + z.func );
+                log.rails.init.model.info( "loaded : " + z.filename );
                 z._loaded = true;
             }
             catch ( e if ( pass + 1 < numPasses ) ){
@@ -105,27 +105,26 @@ for ( var pass=1; pass<=numPasses; pass++ ){
                 if ( ! ( model && isObject( model ) ) )
                     continue;
                 
-                log.rails.init.model.info( "Added Object With Name : " + name + " | " + model.keySet() );
                 useGlobal.putExplicit( name , model );
                 
                 if ( ! model._isModel )
                     continue;
                 
-                model.prototype.setFile( z.filename );
-                model.prototype.setConstructor( model );
+                model.setConstructor( model );
                 
                 Rails.models.add( model );
                 useGlobal.putExplicit( name , model );
                 
                 assert( model.find );
-                assert( model.collectionName );
+                assert( model.getCollectionName() );
                 
                 var thing = new model();
-                assert( thing.setFile );
-                
-                log.rails.init.model.info(  thing.collectionName );
-                assert( thing.collectionName == model.collectionName , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
-                model.find();
+                assert( thing.name );
+
+                assert( thing.getCollectionName() == model.getCollectionName() , "colleciton name dosn't match [" + thing.collectionName + " != " + model.collectionName  + " ]" );
+                assert( model.find );
+
+                log.rails.init.model.info( "Collection Name : " + model.getCollectionName() );
             }
             
         }
@@ -141,13 +140,15 @@ Rails.findModel = function( thing ){
 
     if ( isString( thing ) ){
         for ( var i=0; i<Rails.models.length; i++){
-
+            
             var m = Rails.models[i];
-
+            
             if ( m.shortName == thing ||
-                 m.collectionName == thing ||
-                 m.collectionName == thing + "s" )
+                 m.getCollectionName() == thing ||
+                 m.getSingularName() == thing )
                 return m;
+            
+            
         }
     }
     

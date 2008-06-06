@@ -1,8 +1,19 @@
 core.core.file();
 
 git.Repo = function(){
-
 };
+
+git.Repo.getEnv = function(user){
+        // We pass this environment on commit and pull commands.
+        var env = {};
+
+        env.GIT_AUTHOR_NAME = user.name;
+        env.GIT_COMMITTER_NAME = user.name;
+        env.GIT_AUTHOR_EMAIL = user.email;
+        env.GIT_COMMITTER_EMAIL = user.email;
+        return env;
+};
+
 
 
 Object.extend(git.Repo.prototype, {
@@ -19,17 +30,6 @@ Object.extend(git.Repo.prototype, {
 
         return foo;
     },
-    _gitEnv: function(user){
-        // We pass this environment on commit and pull commands.
-        var env = {};
-
-        env.GIT_AUTHOR_NAME = user.name;
-        env.GIT_COMMITTER_NAME = user.name;
-        env.GIT_AUTHOR_EMAIL = user.email;
-        env.GIT_COMMITTER_EMAIL = user.email;
-        return env;
-    },
-
     _init: function(){
         print(scope.getRoot());
         return this._exec("init");
@@ -182,7 +182,7 @@ Object.extend(git.Repo.prototype, {
         // The reason is that when we're doing a pull, we might make a merge
         // commit. We need the right information in the environment when
         // that happens.
-        var ret = sysexec( "git pull" , "" , this._gitEnv(u) );
+        var ret = sysexec( "git pull" , "" , git.Repo.getEnv(u) );
         ret.cmd = "git pull";
         ret.parsed = this._parsePull(ret);
         return ret;
@@ -368,7 +368,7 @@ Object.extend(git.Repo.prototype, {
 
         files.forEach( function( z ){ cmd += " " + z; } );
         log.git.repo.debug("committing; git command: " + cmd);
-        var foo = sysexec( cmd , msg , this._gitEnv(u) );
+        var foo = sysexec( cmd , msg , git.Repo.getEnv(u) );
         foo.cmd = cmd;
         return foo;
     },
@@ -449,8 +449,8 @@ Object.extend(git.Repo.prototype, {
             else {
                 var exec = statlines[i].match(/#\s+(.+)$/);
                 if (!exec) {
-                	log.admingit("repo.js : _parseStatus() : Error : failed to parse " + statlines[i]);
-                	return null;
+                        log.admingit("repo.js : _parseStatus() : Error : failed to parse " + statlines[i]);
+                        return null;
                 }
                 file = {name: exec[1]};
             }

@@ -178,3 +178,39 @@ catch(e) {
     print(e);
 }
 assert(e);
+
+
+// JSON test
+var s = "<abc>text</abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(j.abc.length == 1);
+assert(j.abc[0] == "text");
+
+var s = "<abc><def>text</def><ghi>more text</ghi></abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(Object.keys(j.abc[0]).length == 2);
+assert(j.abc[0].def[0] == "text");
+assert(j.abc[0].ghi[0] == "more text");
+
+var s = "<abc><def>word1</def><def>word2</def></abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(Object.keys(j.abc).length == 1);
+assert(j.abc[0].def.length == 2);
+assert(j.abc[0].def[0] == "word1");
+assert(j.abc[0].def[1] == "word2");
+
+var s = "<abc foo='bar'/>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(j.abc.length == 1);
+assert(j.abc[0]._props.foo == "bar");
+
+var s = "<abc foo='bar'>words</abc>";
+var j = xml.parseJsonFromString(s);
+assert(Object.keys(j).length == 1);
+assert(j.abc.length == 1);
+assert(j.abc[0]._props.foo == "bar");
+assert(j.abc[0] == "words");
