@@ -1,3 +1,4 @@
+<% var opts = arguments[0] || {}; %>
 <html>
   <head>
     <title>Login</title>
@@ -6,7 +7,7 @@
 
     <center>
       <h3> Please Login </h3>
-      <% core.user.html.login(); %>
+      <% core.user.html.login(opts); %>
     </center>
     
   </body>
