@@ -157,7 +157,13 @@ if(request.save == "true"){
     if(session.user == null)
         // DBRef breakage; the user isn't really on this site?
         return;
-    session.push(request.mode, request.command, tojson(res));
+// Originally we intended to serialize the history so we could show the user
+// what they were doing and the last few lines of command-response,
+// but that isn't too helpful since there's lots of history and tojson'ing
+    // it is pretty slow. Plus, we sometimes get buffer overflows.
+//    session.push(request.mode, request.command, tojson(res));
+
+    session.push(request.mode, request.command, "");
     db.shell.sessions.save(session);
 }
 %>
