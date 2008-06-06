@@ -31,6 +31,7 @@ var login = User.findMyLocation();
 </script>
 
 <div ? user >
+  <div ? (conf.reason) class="notice"><%= conf.reason %></div>
   <div class="notice">You are already logged in as <strong><%= user.name %> (<%= user.email %>)</strong>.<br/><br/>If you would like to log in as another user, please <a href="<%= login %>/logout?to=<%= escape( request.getURL() ) %>">log out</a> first.</div>
 </div>
 
