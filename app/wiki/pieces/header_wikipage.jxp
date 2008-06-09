@@ -21,9 +21,10 @@ if (!app.wiki.config.readOnly)
 %>
 <% htmlheader('Wiki | ' + wikiPage.getDisplayName()); %>
 
+<div id="wiki">
+
 <div class="search"><form action="search"><input type="text" id="searchtext" name="text" onfocus="textFocus=true" onblur="textFocus=false" /><input type="submit" value="Search" /></form></div>
 
-<div id="wiki">
     <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>
     <% if (wikiPageHistoricalVersion) { %>
         <div class="historydate">Version as of <%= wikiPageHistoricalVersion.ts %></div>
