@@ -145,7 +145,6 @@ if(Ext.getlist(allowModule, 'admin', 'permissions') && ! user.isAdmin()){
             for(var subkey in Object.extend({}, subtree)){
                 var url = key+"/"+subkey;
                 if(!adminperm.allowed(user, null, url)){
-                    log("Can't go to " + url);
                     delete subtree[subkey];
                 }
                 else {
