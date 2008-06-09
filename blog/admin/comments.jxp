@@ -1,11 +1,19 @@
 <h4>Comment Management</h4>
 <%
+core.net.ipaddr();
+var blocked=[];
+var notblocked=[];
 
 function mungeCursor( cursor ){
     var a = [];
     cursor.forEach( function(z){
 	z.getComments().forEach( function(c){
 	    a.add( { comment : c , post : z } );
+            if(!blocked.contains(c.ip) && !notblocked.contains(c.ip)) {
+                var b = db.blog.blocked.findOne({ip: c.ip});
+                if(b) blocked.push(c.ip);
+                else notblocked.push(c.ip);
+            }
 	} );
     } );
     return a;
@@ -15,6 +23,13 @@ var action = request.action || "recent";
 
 var all = null;
 var sortFunction = null;
+if( action == "Block") {
+    if(net.isIPAddr(request.ipx)) {
+        db.blog.blocked.save({ ip : request.ipx });
+    }
+   action = "recent";
+}
+
 if ( action == "recent" ){
     var cursor = db.blog.posts.find( null , { name : true , title : true , ts : 1 , comments : true } );
     cursor.sort( { ts : -1 } ).limit( 100 );
@@ -51,7 +66,7 @@ if ( sortFunction )
     <td>
     <%= z.comment.text %>
     </td>
-    <td><%= z.comment.ip %></td>
+    <td><%= z.comment.ip %><%= blocked.contains(z.comment.ip) ? '<span style="color:red">Blocked</span>' : '<form method="POST"><input type="hidden" name="ipx" value="'+z.comment.ip+'" /><input type="submit" name="action" value="Block" /></form>' %></td>
   </tr>
 <% lastId = z.post._id; } ); %>
 
