@@ -23,7 +23,7 @@ if (!app.wiki.config.readOnly)
 
 <div id="wiki">
 
-<div class="search"><form action="search"><input class="text" type="text" id="searchtext" name="text" onfocus="textFocus=true" onblur="textFocus=false" /><input class="submit" type="submit" value="Search" /></form></div>
+<div class="search"><form action="search"><input class="text" type="text" id="searchtext" name="text" onfocus="textFocus=true" onblur="textFocus=false" /><input class="submit" type="submit" value="Search Wiki" /></form></div>
 
     <h1><%= app.wiki.WikiController.getCookieCrumb(wikiPage) %></h1>
     <% if (wikiPageHistoricalVersion) { %>
