@@ -297,9 +297,9 @@ if(g.showRef("origin/"+branch).parsed.rev != g.showRef("heads/"+branch).parsed.r
   <input type="hidden" name="toBeDetermined" />
   <input type="hidden" name="toBeFilename" />
     <tr class="white-top">
-      <td class="left"><img src="NOCDN/~~/admin/assets/images/transparent.gif" width="14" height="1"></td>
+      <td class="left"><img src="NOCDN/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
       <td class="middle">&nbsp;</td>
-      <td class="right"><img src="NOCDN/~~/admin/assets/images/transparent.gif" width="14" height="1"></td>
+      <td class="right"><img src="NOCDN/~~/admin/assets/img/transparent.gif" width="14" height="1"></td>
     </tr>
 <%
 log(tojson(parsed));
