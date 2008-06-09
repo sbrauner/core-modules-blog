@@ -145,7 +145,7 @@ Blog.handleRequest = function( request , arg ){
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
         uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '');
         uri = uri.replace(/^.rss\b/ , "/" );
-        uri = uri.replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
+        uri = uri.replace(/\/$/, '').replace(/^\//, '').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
         Blog.log.debug("base URI: [" + uri + "]" );
         Blog.log.debug("pageNumber: " + pageNumber);
@@ -159,6 +159,12 @@ Blog.handleRequest = function( request , arg ){
             if ( ! entry && uri.match( /\/\d\d\d\d\/\d\d?\// ) ){
                 searchCriteria.name = new RegExp( uri.substring( uri.lastIndexOf( "/" ) ) + "$" );
                 entry = db.blog.posts.findOne(searchCriteria);
+            }
+            if ( ! entry && uri.match( /-/ )){
+                // Some old posts were changed to have underscores in the
+                // slug instead of hyphens. If we didn't find a page using the
+                // given slug, try replacing the hyphens with underscores.
+                searchCriteria.name = searchCriteria.name.replace(/-/g, "_");
             }
 
             if (entry) {
