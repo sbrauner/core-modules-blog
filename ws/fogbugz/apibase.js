@@ -5,7 +5,8 @@ ws.FogBugz.prototype._command = function( cmd , params ){
     var url = this.url + "cmd=" + cmd;
     
     for ( var k in params )
-        url += "&" + k + "=" + escape( params[k] );
+        if ( params[k] )
+            url += "&" + k + "=" + escape( params[k] );
     
     if ( this._token )
         url += "&token=" + this._token;

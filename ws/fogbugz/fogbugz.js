@@ -43,6 +43,20 @@ ws.FogBugz.prototype.listProjects = function(){
     return projects;
 }
 
+ws.FogBugz.prototype.listPeople = function(){
+    var res = this._command( "listPeople" );
+
+    var all = [];
+
+    res.getAllByTagName( "person" ).forEach(
+        function(z){
+            var p = new ws.FogBugz.Person( z );
+            all.add( p );
+        }
+    );
+    
+    return all;
+}
 
 // -- main api ---
 /** from fogbugz api
@@ -84,6 +98,13 @@ ws.FogBugz.prototype.search = function( q , cols , max ){
 
 }
 
+ws.FogBugz.prototype.save = function( theCase ){
+    this._login();
+    
+    var r = this._command( theCase.ixBug ? "edit" : "new" , theCase );
+    print( tojson( r ) );
+}
 
 __path__["case"]();
+__path__["person"]();
 __path__["project"]();

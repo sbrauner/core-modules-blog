@@ -20,7 +20,9 @@ User.Perm = Class.create(Util.URLTree, {
     },
     /**
      *  @param {User} user The user to check permissions for.
-     *  @param {AppRequest} request The request itself.
+     *  @param {AppRequest} request The request itself. Sometimes null,
+     *         if we just want to check whether the user could conceivably
+     *         access this URL.
      *  @param {String} uri The relative URI to check permissions for.
      *  @return true if the user has permission to access this, false otherwise
      */
