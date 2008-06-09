@@ -7,6 +7,7 @@
 // <a href="/admin/target">PrettyName</a>
 // If tree[key].$, then the link instead goes to
 // <a href="/admin/<%= tree[key].$ %>/target instead
+core.ext.getlist();
 var tree = {
     'statistics' : {
         'usage': 'Usage',
@@ -119,4 +120,42 @@ for(var key in allowModule){
     }
 
 }
+
+// Remove sections that user can't access
+if(Ext.getlist(allowModule, 'admin', 'permissions') && ! user.isAdmin()){
+    var adminperm = Ext.getlist(allowModule, 'admin', 'permissions');
+    for(var key in Object.extend({}, tree)){
+        var obj = tree[key];
+        if(typeof obj == "string"){
+            if(! adminperm.allowed(user, null, obj)){
+                delete tree[key];
+            }
+        }
+        else if(typeof obj == "boolean"){
+            // pass: too much work
+            // tree[key] == false, the magical third level of menu
+            // We'd have to know if every key after this failed or something
+        }
+        else{
+            // typeof obj == "object"; we have a second menu of levels
+            // we can prune the whole subtree if it doesn't contain a single
+            // allowed thing
+            var subtree = obj;
+            var pass = false;
+            for(var subkey in Object.extend({}, subtree)){
+                var url = key+"/"+subkey;
+                if(!adminperm.allowed(user, null, url)){
+                    log("Can't go to " + url);
+                    delete subtree[subkey];
+                }
+                else {
+                    pass = true;
+                }
+            }
+            if(! pass)
+                delete tree[key];
+        }
+    }
+}
+
 return {tree: tree, reverse: reverse};
