@@ -62,18 +62,18 @@ Blog.handleRequest = function( request , arg ){
     with ( result ){
         // define a standard search, which restricts pages/posts to entries that are live, and publishDate earlier than now
 
-		// ensure that the root of the matched route is removed from the URI so we can place the
-		// blog anywhere we want on our site.
+                // ensure that the root of the matched route is removed from the URI so we can place the
+                // blog anywhere we want on our site.
 
-		if (routes && routes.currentRoot() && routes.currentRoot().length > 1) {
-			uri = uri.substring(routes.currentRoot().length);
-		}
+                if (routes && routes.currentRoot() && routes.currentRoot().length > 1) {
+                        uri = uri.substring(routes.currentRoot().length);
+                }
 
         // find any paging instructions in the url
         page = uri.match(/\/page\/([0-9]*)$/);
         if (page) {
             pageNumber = parseInt( page[1] );
-	    pageNumber = Math.max( 1, pageNumber ); // make sure we can't go below 1
+            pageNumber = Math.max( 1, pageNumber ); // make sure we can't go below 1
             //pageNumber = Math.min( pageNumber, 20 );
 
             // don't forget to strip out the page from the processed uri
@@ -144,7 +144,7 @@ Blog.handleRequest = function( request , arg ){
         // process the URL
         // strip out the .html and leading and trailing slash if it exists (for MovableType URL migration)
         uri = uri.replace(/\.(jxp|html)$/, '').replace(/index$/, '');
-	uri = uri.replace(/^.rss\b/ , "/" );
+        uri = uri.replace(/^.rss\b/ , "/" );
         uri = uri.replace(/\/$/, '').replace(/^\//, '').replace(/-/g, '_').replace( /^(\d\d\d\d)\/0(\d)/ , "$1/$2" );
 
         Blog.log.debug("base URI: [" + uri + "]" );
@@ -271,12 +271,12 @@ Blog.handlePosts = function( request , thePost , user ){
 
             comment.ts = new Date();
             comment.text = request.txt;
-	    comment.ip = request.getRemoteIP();
+            comment.ip = request.getRemoteIP();
             if(db.blog.blocked.find({ ip: comment.ip }).length() > 0) {
                 return "System error: KP37-6";
             }
 
-	    comment.url = Blog.fixCommentURL( comment.url );
+            comment.url = Blog.fixCommentURL( comment.url );
             comment.isAdmin = user && user.isAdmin ? true : false;
 
             thePost.addComment( comment );
@@ -308,12 +308,12 @@ Blog.handlePosts = function( request , thePost , user ){
 
 Blog.fixCommentURL = function( url ){
     if ( ! url )
-	return null;
+        return null;
 
     if ( url.startsWith( "http://" ) ||
-	 url.startsWith( "https://" ) ||
-	 url.startsWith( "/" ) )
-	return url;
+         url.startsWith( "https://" ) ||
+         url.startsWith( "/" ) )
+        return url;
 
     return "http://" + url;
 }
