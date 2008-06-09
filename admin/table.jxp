@@ -68,6 +68,12 @@ var top = request.ns == null;
 var rows;
 var max = (request.all) ? rows.length+1 : top?1000:(request.max ? parseInt(request.max) : 100);
 
+
+/* ------------------------------------------------------
+   get the paging info and only return the necessary rows
+   ------------------------------------------------------ */
+
+
 // dbprofile
 if(request.action == "searchprofile") {
     var searchObj = {};
@@ -128,10 +134,11 @@ else if(request.action == "search" || request.action == "userssearch" || request
         }
     }
 
+    var start = (currentPage - 1)*rowsPerPage;
     if(top)
-        rows = collection.find(searchobj).sort(mySort).toArray();
+        rows = collection.find(searchobj).sort(mySort).skip(start).limit(rowsPerPage).toArray();
     else
-        rows = collection.find(searchobj).sort(mySort).toArray();
+        rows = collection.find(searchobj).sort(mySort).skip(start).limit(rowsPerPage).toArray();
 }
 else if(request.action == "eval") {
     try {
@@ -155,16 +162,15 @@ else {
     }
     else {
         collection = db[request.ns.substring( request.ns.indexOf('.')+1 )]; // remove db name from the str
-        rows = collection.find().toArray();
+
+        var start = (currentPage - 1)*rowsPerPage;
+        rows = collection.find().skip(start).limit(rowsPerPage).toArray();
     }
 }
 /* if this is a log, the rows should be in the opposite order */
 if(request.reverse)
     rows.reverse();
 
-/* ------------------------------------------------------
-   get the paging info and only return the necessary rows
-   ------------------------------------------------------ */
 if(top) {
     var numrows = 0;
     for(var i=0; i<rows.length; i++) {
@@ -175,13 +181,18 @@ if(top) {
     totalNumPages = Math.floor((numrows - 1) / rowsPerPage ) + 1;
 }
 else {
-    totalNumPages = Math.floor((rows.length - 1) / rowsPerPage) + 1;
+    if(request.ns)
+        var numrows = count(request.ns.substring(request.ns.indexOf(".")+1), searchobj);
+    else
+        numrows = rows.length;
+    totalNumPages = Math.floor((numrows - 1) / rowsPerPage) + 1;
 }
 
 if(currentPage > totalNumPages && totalNumPages > 0)
     currentPage = totalNumPages;
 
 var start = (currentPage - 1)*rowsPerPage;
+
 
 /* if this is all collections, indices will be listed as rows. */
 if(top) {
@@ -196,9 +207,9 @@ if(top) {
     }
     rows = urow;
 }
-else {
+/*else {
     rows = rows.splice(start, rowsPerPage);
-}
+}*/
 
 
 var dbTable = { rows: [] };

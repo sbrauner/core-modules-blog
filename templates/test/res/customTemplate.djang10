@@ -1,0 +1,3 @@
+{% load customTags %}
+
+{{ "123456"|myRev:"cow" }}

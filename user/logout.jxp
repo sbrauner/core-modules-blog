@@ -19,7 +19,12 @@ if ( u && hash && u.tokens ) {
 response.removeCookie( "username" );
 response.removeCookie( "userhash" );
 
-response.setResponseCode( 301 );
-response.setHeader( "Location", request.to || "/" );
+if ( request.getHeader( "Authorization" ) && request.getHeader( "Authorization" ).match( /Digest/ ) ){
+    Auth.digest.reject( request , response );
+}
+else {
+    response.setResponseCode( 301 );
+    response.setHeader( "Location", request.to || "/" );
+}
 
 %>

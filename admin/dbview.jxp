@@ -306,6 +306,7 @@ function createIndex() {
 
     var _createIndex = function() {
         doCommand(newIndex);
+        refreshTable();
         this.hide();
     }
 

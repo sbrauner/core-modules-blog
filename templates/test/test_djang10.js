@@ -18,10 +18,14 @@ core.templates.test.res.includer(c);
 
 //Test loadTemplate
 djang10.loadTemplate("includee")();
+log(buffer.replace(/\s/g,"") )//== "mooABCmoo")
+buffer = "";
+
+
+
+djang10.addModuleRoot("/core/templates/test/res");
+djang10.loadTemplate("customTemplate")();
+log(buffer.replace(/\s/g,"") )//== "mooABCmoo")
+buffer = "";
 
 print = oldPrint;
-
-log(buffer.replace(/\s/g,"") )//== "mooABCmoo")
-
-
-
