@@ -56,6 +56,7 @@ tab.dbview( tab.find().sort({ts:-1}) );
 core.content.html2();
 core.net.url();
 core.util.db();
+core.db.db();
 
 function htmltable(specs) {
     this.specs = specs;
@@ -174,7 +175,7 @@ function htmltable(specs) {
         }
         core.content.pieces.tableHeader({th: th, colspan: displaycolnames.length, search: this.specs.searchable, current_search: searchtxt});
 
-        var dbResult = cursor.toArray();
+        var dbResult = cursor;
 
         var hasIsLink = false;
         this.specs.cols.forEach( function( z ){
@@ -184,12 +185,14 @@ function htmltable(specs) {
 
 
         var rows = [];
-        count = 0;
-        for(var i=0; i< dbResult.length; i++) {
-            var obj = dbResult[i];
+        var knut = 0;
+        var dbArray = [];
+        while(dbResult.hasNext()) {
+            var obj = dbResult.next();
+            dbArray.push(obj);
             if( this.filter && !this.filter(obj) ) continue;
 
-            rows[count] = {};
+            rows[knut] = {};
             if(!colnames) break;
             for( var c in colnames ) {
 
@@ -198,12 +201,13 @@ function htmltable(specs) {
                 var cssClassName = this.specs.cols[c].cssClassName;
 
                 if(cssClassName) {
-                    rows[count][colnames[c]].className = cssClassName;
+                    rows[knut][colnames[c]].className = cssClassName;
                 }
 
-                rows[count][colnames[c]] = { value: "" };
+                rows[knut][colnames[c]] = { value: "" };
+
                 {
-                    var linkToDetails =  ( isLink || ( c == "0" && ! hasNext ) )  && (this.specs.detail || this.specs.detailUrl);
+                    var linkToDetails =  ( isLink || ( c == "0" ) )  && (this.specs.detail || this.specs.detailUrl);
                     if( linkToDetails ) {
                         var post = obj;
                         var fieldUrl;
@@ -211,42 +215,43 @@ function htmltable(specs) {
                         if( this.specs.detailUrl ) fieldUrl = this.specs.detailUrl + obj._id;
                         else fieldUrl = this.specs.detail(obj);
 
-                        rows[count][colnames[c]].value += '<a href="' + fieldUrl + '">';
+                        rows[knut][colnames[c]].value += '<a href="' + fieldUrl + '">';
                     }
                     var viewMethod = this.specs.cols[c].view;
                     var fieldDisplay = viewMethod ? viewMethod(fieldValue, obj) : fieldValue;
-                    rows[count][colnames[c]].value += fieldDisplay || ( linkToDetails ? "(go to)" : "" );
-                    if( linkToDetails ) rows[count][colnames[c]].value += "</a>";
+                    rows[knut][colnames[c]].value += fieldDisplay || ( linkToDetails ? "(go to)" : "" );
+                    if( linkToDetails ) rows[knut][colnames[c]].value += "</a>";
                 }
             }
-            count++;
+            knut++;
         }
 
         if ( this.specs.actions && this.specs.actions.length != 0){
             var acts = "";
             colnames.push( "actions" );
             th.push({ heading: "Actions" });
-            for(var count=0; count<rows.length; count++) {
+            for(var knut=0; knut<rows.length; knut++) {
                 for ( var i=0; i<this.specs.actions.length; i++ ){
-                    obj = dbResult[count];
+                    obj = dbArray[knut];
                     var action = this.specs.actions[i];
                     acts += "<form method='post'>" ;
                     acts += "<input type='hidden' name='_id' value='" + obj._id + "'>" ;
                     acts += "<input type='submit' name='action' value='" + action.name + "'>" ;
                     acts += "</form>" ;
                 }
-                rows[count]["actions"] = ({value: acts});
+                rows[knut]["actions"] = ({value: acts});
                 acts = "";
             }
         }
 
         var table = { rows: rows };
-        totalNumPages = Math.floor((table.rows.length - 1) / rowsPerPage) + 1;
+        totalNumPages = Math.floor((count(this.specs.ns.getName()) - 1) / rowsPerPage) + 1;
         if(currentPage > totalNumPages && totalNumPages > 0)
             currentPage = totalNumPages;
 
         var start = (currentPage - 1)*rowsPerPage;
-        table.rows = table.rows.splice(start, rowsPerPage);
+        if(table.rows.length > rowsPerPage)
+            table.rows = table.rows.splice(start, rowsPerPage);
 
         table.totalNumPages = totalNumPages;
         table.currentPage = currentPage;
