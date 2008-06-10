@@ -80,7 +80,12 @@ Mail.SMTP = function( addr , server , username , password , ssl , port ){
     this._props.setProperty( "mail.smtp.port" , this.port );
 
     this._props.setProperty( "mail.smtp.socketFactory.port" , this.port );
-    this._props.setProperty( "mail.smtp.socketFactory.class" , "javax.net.ssl.SSLSocketFactory" );
+    
+    // only if we want SSL should we use SSL...
+    if (ssl) { 
+	    this._props.setProperty( "mail.smtp.socketFactory.class" , "javax.net.ssl.SSLSocketFactory" );
+    }
+    
     this._props.setProperty( "mail.smtp.socketFactory.fallback" , "false" );
     
     this._session = javaStatic( "ed.util.MailUtil" , "createSession" , this._props , this.username , this.password );
