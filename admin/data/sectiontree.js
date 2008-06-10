@@ -32,6 +32,8 @@ var tree = {
  // remove for now until we get this sorted
 
  /*   'docs': '/admin/docs', */
+    
+    'instance stats' : '/admin/thisinstance' ,
 };
 
 // Maps jxp names to sections
