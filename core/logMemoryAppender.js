@@ -4,29 +4,29 @@
 MemoryAppender = {};
 
 MemoryAppender.create = function(){
-    
+
     var cache = {};
     var options = { max : 100 };
     var all = [];
 
     var append = function( loggerName , date , level , msg , throwable , thread ){
-        
+
         var lst = cache[ loggerName ];
         if ( ! lst ){
-            lst = new Array( javaCreate( "java.util.LinkedList" ) );
+            lst = Array.createLinkedList();
             cache[ loggerName ] = lst;
         }
 
-	var obj = LogUtil.createObject( loggerName , date , level , msg , throwable , thread );
-	
+        var obj = LogUtil.createObject( loggerName , date , level , msg , throwable , thread );
+
         lst.push( obj );
         if ( lst.length > options.max  )
             lst.shift();
 
-	all.push( obj );
+        all.push( obj );
         if ( lst.length > options.max * 5 )
             lst.shift();
-	
+
     };
 
     append.cache = cache;
@@ -34,7 +34,7 @@ MemoryAppender.create = function(){
     append.all = all;
 
     append.isMemoryAppender = true;
-    
+
     return javaCreate( "ed.log.JSAppender" , append );
 };
 
@@ -42,7 +42,7 @@ MemoryAppender.create = function(){
 MemoryAppender.find = function( logger ){
     if ( ! logger )
         return null;
-    
+
     if ( logger.appenders ){
         for ( var i=0; i<logger.appenders.length; i++ ){
             var a = logger.appenders[i];
