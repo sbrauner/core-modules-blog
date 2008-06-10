@@ -52,7 +52,7 @@ function clean( s ){
             <link><%= url %></link>
             <pubDate><%= page.lastEdit.webFormat() %></pubDate>
             <author><%= lastEdit && lastEdit.user ? lastEdit.user.name :  "none"  %></author>
-            <description><%= lastEdit ? clean( lastEdit.diff ) : ""  %></description>
+            <description><%= lastEdit ? clean( lastEdit.diff.toString() ) : ""  %></description>
         </item>
         <% } %>
 
