@@ -31,7 +31,7 @@ Search = {
     getIndexName : function( weight ){
         var idx = "_searchIndex";
         if ( weight && weight > 0 && weight != 1 )
-            idx += "_" + weight;
+            idx += "_" + weight.toString().replace( /\./g , "_" );
         return idx;
     } ,
 

@@ -281,8 +281,8 @@ Auth = {
 
         } ,
 
-        reject : function ( req , res , name ){
-            core.user.html.loginForce();
+        reject : function ( req , res , name , args ){
+            core.user.html.loginForce(args);
         }
     }
 

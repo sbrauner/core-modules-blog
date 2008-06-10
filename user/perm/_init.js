@@ -1,11 +1,12 @@
 core.util.urltree();
-/** User.Perm: permissions object.
+/** @class User.Perm: permissions object.
  *  Grants or denies permission to access URLs.
  *  The interface for a permission object is the method allowed(user, request[, uri]).
  *  This method returns true or false.
  */
 User.Perm = Class.create(Util.URLTree, {
     /**
+     *  @scope User.Perm
      *  @constructor
      *  @param {Object} args Configuration attributes.
      *     {boolean} closed Whether to "fail-closed" or not.
@@ -19,7 +20,9 @@ User.Perm = Class.create(Util.URLTree, {
     },
     /**
      *  @param {User} user The user to check permissions for.
-     *  @param {AppRequest} request The request itself.
+     *  @param {AppRequest} request The request itself. Sometimes null,
+     *         if we just want to check whether the user could conceivably
+     *         access this URL.
      *  @param {String} uri The relative URI to check permissions for.
      *  @return true if the user has permission to access this, false otherwise
      */

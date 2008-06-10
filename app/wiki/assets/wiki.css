@@ -73,8 +73,9 @@ pre {
     width: 100%;
 }
 
-.wiki .search {
+#wiki .search {
     float: right;
+	padding: 0 0 1em 1em;
 }
 
 .content p {

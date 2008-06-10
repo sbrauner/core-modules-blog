@@ -1,8 +1,8 @@
 
 ws.FogBugz.Case = function( xml ){
-    this.id = -1;
+    this.ixBug = null;
     if ( xml ){
-        this.id = xml.attributes.ixBug;
+        this.ixBug = xml.attributes.ixBug;
         for ( var i=0; i<xml.elements.length; i++ ){
             var e = xml.elements[i];
             if ( e.textString )
@@ -25,8 +25,8 @@ ws.FogBugz.Case.prototype.setArea = function( area ){
 };
 
 
-ws.FogBugz.Case.prototype.upsert = function( f ){
-    
+ws.FogBugz.Case.prototype.setDescription = function( desc ){
+    this.sEvent = desc;
 };
 
 ws.FogBugz.Case.prototype.toString = function(){
@@ -34,7 +34,7 @@ ws.FogBugz.Case.prototype.toString = function(){
     
     s += "\t status:" + this.ixStatus + "\n";
     s += "\t priority:" + this.ixPriority + "\n";
-    s += "\t assigned to:" + this.sEmailAssignedTo + "\n";
+    s += "\t assigned to:" + this.sPersonAssignedTo + "\n";
     
     s += "]";
     return s;

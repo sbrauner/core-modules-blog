@@ -60,6 +60,10 @@ u.getPermissions().forEach(function(z){
        allRoles.push({name: z});
    }
 });
+if(! rolesMap.admin){
+   rolesMap.admin = true;
+   allRoles.push({name: 'admin'});
+}
 print.setFormObject( u );
 %>
 <!-- Heading and links-table Links -->
