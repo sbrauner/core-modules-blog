@@ -49,11 +49,6 @@ function mapUrlToJxpFileCore( uri , request , response ){
 
 };
 
-/*
- *  "enhance" the db object and the base colletion prototyps to add functionality
- */
-core.core.db.db(db);
-core.core.db.dbcollection(db);
 
 core.core.log();
 
