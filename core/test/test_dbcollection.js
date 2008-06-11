@@ -128,3 +128,5 @@ assert(db.test_db.getIndexes().length() == 2);
 
 db.test_db.dropIndexes();
 assert(db.test_db.getIndexes().length() == 0);  
+
+db.test_db.find();

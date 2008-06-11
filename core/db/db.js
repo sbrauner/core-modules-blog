@@ -1,19 +1,17 @@
 /**
- *  Enhancement library for DB Collection objects
- *
- *  DB object is expected to be passed in - the collection prototypes will be enhanced
+ *  API for the DB  class
  *
  *  possible @TODO - gt, lt, lte, gte
  *  
  * @fileOverview db.js - 10gen Database  Enhancement
- * @name 10gen Database  API Enhancement
+ * @name 10gen Database DB Object API
  */
  
  /**
   * Database  utility API - adds functionality to standard native 10gen database connection
  *  @class 10gen Database Utility API
  */
-var DBUtilityFunctions = function(){};
+var DB = function(){};
 
 /**
   Create a new collection in the database.  Normally, collection creation is automatic.  You would
@@ -42,7 +40,7 @@ var DBUtilityFunctions = function(){};
  * @param {Object} options Object with options for call.  Options are listed above.
  * @return SOMETHING_FIXME
 */
-DBUtilityFunctions.prototype.createCollection = function(name, opt) {
+DB.prototype.createCollection = function(name, opt) {
     var options = opt || {};
     var cmd = { create: name, capped: options.capped, size: options.size, max: options.max };
     var res = this._dbCommand(cmd);
@@ -54,7 +52,7 @@ DBUtilityFunctions.prototype.createCollection = function(name, opt) {
  *  Returns the current profiling level of this database
  *  @return SOMETHING_FIXME or null on error
  */
- DBUtilityFunctions.prototype.getProfilingLevel  = function() { 
+ DB.prototype.getProfilingLevel  = function() { 
     var res = this._dbCommand( { profile: -1 } );
     return res ? res.was : null;
 }
@@ -73,7 +71,7 @@ DBUtilityFunctions.prototype.createCollection = function(name, opt) {
  *  @param {String} level Desired level of profiling
  *  @return SOMETHING_FIXME or null on error
  */
-DBUtilityFunctions.prototype.setProfilingLevel = function(level) {
+DB.prototype.setProfilingLevel = function(level) {
     
     if (level < 0 || level > 2) { 
         throw { dbSetProfilingException : "input level " + level + " is out of range [0..2]" };        
@@ -110,7 +108,7 @@ DBUtilityFunctions.prototype.setProfilingLevel = function(level) {
  * @return result of your function, or null if error
  * 
  */
-DBUtilityFunctions.prototype.dbEval = function(jsfunction) {
+DB.prototype.dbEval = function(jsfunction) {
     var cmd = { $eval: jsfunction };
     if( arguments.length > 1 ) {
 		cmd.args = arguments.slice(1);
@@ -163,7 +161,7 @@ DBUtilityFunctions.prototype.dbEval = function(jsfunction) {
      keyf is a function which takes an object and returns the desired key.  set either key or keyf (not both).
  * </p>
 */
-DBUtilityFunctions.prototype.group = function(parmsObj) {
+DB.prototype.group = function(parmsObj) {
 	
 	var groupFunction = function() {
 	    var parms = args[0];
@@ -211,7 +209,7 @@ DBUtilityFunctions.prototype.group = function(parmsObj) {
 
 /* Run the specified database "command" object.
 */
-DBUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
+DB.prototype._dbCommand = function( cmdObj ) {
     return this.$cmd.findOne(cmdObj);
 }
 
@@ -219,6 +217,6 @@ var mydb  = arguments[0];
 
 if (!mydb) throw "Error : no db object passed to enhance.";
 
-Object.extend( mydb , DBUtilityFunctions.prototype );
+Object.extend( mydb , DB.prototype );
 
 return null;
