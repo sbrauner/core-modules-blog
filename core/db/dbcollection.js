@@ -13,21 +13,14 @@
  */
  var DBCollectionUtilityFunctions = function(){}
 
-/* Run the specified database "command" object.
-*/
-DBCollectionUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
-    return this.getDB().$cmd.findOne(cmdObj);
-}
-
-
 /**
- *  <p>Delete all indexes on the specified collection.</p>
+ *  <p>Drop all indexes on the specified collection.</p>
  * 
  *  <p>Note : alpha: space is not reclaimed</p>
  *
  * @return SOMETHING_FIXME
  */
-DBCollectionUtilityFunctions.prototype.deleteIndexes = function() {
+DBCollectionUtilityFunctions.prototype.dropIndexes = function() {
     var res = this._dbCommand( { deleteIndexes: this.getName(), index: "*" } );
     if( res && res.ok && res.ok == 1 ) {
         this.getDB().system.indexes.remove( { ns: this.getFullName() } );
@@ -40,7 +33,7 @@ DBCollectionUtilityFunctions.prototype.deleteIndexes = function() {
 }
 
 /**
- * <p>Delete one index.</p>
+ * <p>Drop a specified index.</p>
  *
  * <p>
  * Name is the name of the index in the system.indexes name field. (Run db.system.indexes.find() to
@@ -51,7 +44,7 @@ DBCollectionUtilityFunctions.prototype.deleteIndexes = function() {
  * @param {String} name of index to delete.
  * @return SOMETHING_FIXME
  */
- DBCollectionUtilityFunctions.prototype.deleteIndex =  function(index) {
+ DBCollectionUtilityFunctions.prototype.dropIndex =  function(index) {
     assert(index);
     
     if ( ! isString( index ) && isObject( index ) )
@@ -102,18 +95,6 @@ DBCollectionUtilityFunctions.prototype.clean = function() {
 
 
 /**
- *  Utility to associate a class with a table
- */
-DBCollectionUtilityFunctions.prototype.associate = function(cls) {
-	cls.find = this.find;
-	cls.findOne = this.findOne;
-	cls.save = this.save;
-	cls.remove = this.remove;
-	cls.prototype.save = function(){ this.save(this); };
-}
-
-
-/**
  *  <p>
  *  count # of objects in a collection
  * </p>
@@ -136,6 +117,13 @@ DBCollectionUtilityFunctions.prototype.count = function(query) {
 	}
    return this.getDB().dbEval(countFunction, this.getName(), query);
 }
+
+/* Run the specified database "command" object.
+*/
+DBCollectionUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
+    return this.getDB().$cmd.findOne(cmdObj);
+}
+
 
 
 //  TODO - ADD GROUP?
