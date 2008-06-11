@@ -74,6 +74,11 @@ DBUtilityFunctions.prototype.createCollection = function(name, opt) {
  *  @return SOMETHING_FIXME or null on error
  */
 DBUtilityFunctions.prototype.setProfilingLevel = function(level) {
+    
+    if (level < 0 || level > 2) { 
+        throw { dbSetProfilingException : "input level " + level + " is out of range [0..2]" };        
+    }
+    
     if (level) {
 	// if already exists does nothing
 		this.createCollection("system.profile", { capped: true, size: 128 * 1024 } );
@@ -134,7 +139,7 @@ DBUtilityFunctions.prototype.dbEval = function(jsfunction) {
  *  </p>
  * 
  *  <code>
-     dbutil.group(
+     db.group(
        {
          ns: "coll",
          key: { a:true, b:true },
