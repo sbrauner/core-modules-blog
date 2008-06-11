@@ -10,22 +10,10 @@
  */
  
  /**
-  * Database utility API - adds functionality to standard native 10gen database connection
- *  @class 10gen Database Utility API
- */
- 
- /**
   * Database  utility API - adds functionality to standard native 10gen database connection
  *  @class 10gen Database Utility API
  */
 var DBUtilityFunctions = function(){};
-
-
-/* Run the specified database "command" object.
-*/
-DBUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
-    return this.$cmd.findOne(cmdObj);
-}
 
 /**
   Create a new collection in the database.  Normally, collection creation is automatic.  You would
@@ -54,7 +42,8 @@ DBUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
  * @param {Object} options Object with options for call.  Options are listed above.
  * @return SOMETHING_FIXME
 */
-DBUtilityFunctions.prototype.createCollection = function(name, options) {
+DBUtilityFunctions.prototype.createCollection = function(name, opt) {
+    var options = opt || {};
     var cmd = { create: name, capped: options.capped, size: options.size, max: options.max };
     var res = this._dbCommand(cmd);
     return res;
@@ -65,7 +54,7 @@ DBUtilityFunctions.prototype.createCollection = function(name, options) {
  *  Returns the current profiling level of this database
  *  @return SOMETHING_FIXME or null on error
  */
- DBUtilityFunctions.prototype.getDBProfilingLevel  = function() { 
+ DBUtilityFunctions.prototype.getProfilingLevel  = function() { 
     var res = this._dbCommand( { profile: -1 } );
     return res ? res.was : null;
 }
@@ -84,7 +73,7 @@ DBUtilityFunctions.prototype.createCollection = function(name, options) {
  *  @param {String} level Desired level of profiling
  *  @return SOMETHING_FIXME or null on error
  */
-DBUtilityFunctions.prototype.setDBProfilingLevel = function(level) {
+DBUtilityFunctions.prototype.setProfilingLevel = function(level) {
     if (level) {
 	// if already exists does nothing
 		this.createCollection("system.profile", { capped: true, size: 128 * 1024 } );
@@ -215,7 +204,11 @@ DBUtilityFunctions.prototype.group = function(parmsObj) {
     return this.dbEval(groupFunction, parms);
 }
 
-
+/* Run the specified database "command" object.
+*/
+DBUtilityFunctions.prototype._dbCommand = function( cmdObj ) {
+    return this.$cmd.findOne(cmdObj);
+}
 
 var mydb  = arguments[0];
 
