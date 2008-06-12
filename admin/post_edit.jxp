@@ -78,7 +78,7 @@ if ( request.action == "save" ) {
         thePost.categories = request.getParameters('categories') || [];
 
 	if (request.new_categories) {
-	    request.new_categories.split('[,]').forEach( function( newName ){
+	    request.new_categories.split(/[,]/).forEach( function( newName ){
 		newName = newName.trim();
 		if ( newName.length == 0 )
 		    return;
