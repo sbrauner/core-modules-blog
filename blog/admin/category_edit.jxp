@@ -35,7 +35,7 @@ if ( request.action == "save" ) {
 	    }
     }
 } else if (request.action == 'delete') {
-    if (db.blog.categories.remove(category)) {
+    if (db.blog.categories.remove({_id: category})) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "categories" );
     } else {

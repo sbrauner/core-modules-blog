@@ -24,7 +24,7 @@ if(request.banip){
 if(request.action == "unban" && request._id){
     if(banip = db.forum.banned_ips.findOne({_id: request._id})){
         print("Unbanning IP " + banip.ip);
-        db.forum.banned_ips.remove(banip);
+        db.forum.banned_ips.remove({_id: banip._id});
     }
 }
 

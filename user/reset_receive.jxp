@@ -13,7 +13,7 @@ if(request.newpw){
     var u = reset.user;
     u.setPassword(request.newpw);
     db.users.save(u);
-    User.Reset.remove(reset);
+    User.Reset.remove({_id: reset._id});
 
     htmlheader("Password changed");
    %>

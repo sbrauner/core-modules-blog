@@ -34,7 +34,7 @@ if(db.users.find(search).length() != 1){
         var deleteOthers = function(u){
             log("considering " + tojson(u));
             if(u._id != user._id){
-                db.users.remove(u);
+                db.users.remove({_id: u._id});
             }
         }
         db.users.find({name: user.name}).forEach(deleteOthers);

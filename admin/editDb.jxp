@@ -33,9 +33,9 @@ if ( request.action == "deletefile" ){
             tbd = tbd.next;
         }
         for(var i=chunk.length-1; i>=0; i--)
-            db._chunks.remove(chunk[i]);
+            db._chunks.remove({_id: chunk[i]._id});
 
-        db._files.remove(file);
+        db._files.remove({_id: file._id});
     }
 }
 /*else if(request.action == "createidx") {
