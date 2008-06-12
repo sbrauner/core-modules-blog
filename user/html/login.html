@@ -1,19 +1,19 @@
 <%
 var conf = arguments[0] || {};
 var login = User.findMyLocation();
+var toURL = login + '/doLogin?to=' + escape( conf.to || request.getURL() );
 %>
 <script src="/~~/ui/js/md5.js"></script>
 <script>
 
-  var url = "<%= login %>/doLogin?to=<%= escape( conf.to || request.getURL() ) %>";
   var prefix = "<%= md5( SERVER_HOSTNAME + (new Date()).roundMinutes( 7 ) ) %>";
   var area = "<%= "11" == request.getCookie( "__sudo" ) ? "admin" : db.getName() %>";
 
-  function processLoginForm( frm ){
+  function processLoginForm( frm, toURL ){
 
     if ( ! frm ) frm = document.getElementById( "login_form" );
 
-    var u = url;
+    var u = toURL;
     if ( u.indexOf( "?" ) < 0 ) u += "?";
     u += "&prefix=" + prefix;
     u += "&username=" + frm.login_user.value;
@@ -37,7 +37,8 @@ var login = User.findMyLocation();
 
 <div ? ( ! user ) id="login">
 
-    <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this )" class="edit login">
+    <form id="login_form" method="POST" action="/goaway" onSubmit="return processLoginForm( this , <%= content.HTML.escape(tojson(toURL)) %>)" class="edit login">
+
         <fieldset class="login">
             <legend>Login</legend>
             <table>
