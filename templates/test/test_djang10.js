@@ -23,7 +23,7 @@ buffer = "";
 
 
 
-djang10.addTemplateTagsRoot("/core/templates/test/res");
+djang10.addModuleRoot("/core/templates/test/res");
 djang10.loadTemplate("customTemplate")();
 log(buffer.replace(/\s/g,"") )//== "mooABCmoo")
 buffer = "";
