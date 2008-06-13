@@ -46,7 +46,7 @@ User.prototype.getPermissions = function(){
         return [];
     }
 
-    return this.permissions.slice();
+    return this.permissions.slice(0);
 };
 
 User.prototype.hasPermission = function( perm ){
