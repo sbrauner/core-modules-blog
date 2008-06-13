@@ -30,7 +30,7 @@ t.save( o );
 assert( Search.search( t , "content" , { min : 1 } ).length == 1 );
 assert( Search.search( t , "content" , { min : 10 } ).length == 2 );
 
-t.remove(o);
+t.remove( { _id: o._id } );
 
 // nested indexing
 var OPTIONS = { title: 1, posts: {text: 1}};
@@ -49,7 +49,7 @@ Search.fixTable(t, OPTIONS);
 assert( Search.search( t, "text", {min: 1}). length == 1);
 assert( Search.search( t, "go", {min: 1}). length == 0);
 
-t.remove(o);
+t.remove( { _id: o._id } );
 
 // nested indexing with funny weights
 var OPTIONS = { title: 1, posts: {text: 0.2}};
@@ -68,7 +68,7 @@ Search.fixTable(t, OPTIONS);
 assert( Search.search( t, "text", {min: 1}). length == 1);
 assert( Search.search( t, "go", {min: 1}). length == 0);
 
-t.remove(o);
+t.remove( {_id: o._id } );
 
 // HTML stripping
 var WEIGHTS = { title: 1, posts: {text: 0.2}};
