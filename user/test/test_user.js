@@ -55,7 +55,7 @@ assertException(function(){ db.users.save(u2); });
 
 // 2. An object which is not in the DB
 
-db.users.remove(u2);
+db.users.remove( {_id: u2._id } );
 delete u2._id;
 
 if(u2.uniqueness_hash) delete u2.uniqueness_hash;

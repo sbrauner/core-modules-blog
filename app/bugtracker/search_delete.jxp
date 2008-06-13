@@ -8,5 +8,5 @@ if(s.user._id != user._id){
     throw Error("Can't delete other people's searches");
 }
 
-db.bugtracker.searches.remove(s);
+db.bugtracker.searches.remove({_id: s._id});
 %>

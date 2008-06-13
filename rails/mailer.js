@@ -1,5 +1,0 @@
-
-ActionMailer = {}
-ActionMailer.Base = function(){
-
-};

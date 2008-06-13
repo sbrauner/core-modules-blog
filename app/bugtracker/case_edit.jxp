@@ -30,7 +30,7 @@ else {
 }
 
 if (request.action == "Delete"){
-    db.bugtracker.cases.remove(feature);
+    db.bugtracker.cases.remove({_id: feature._id});
     response.setResponseCode(301);
     response.setHeader("Location", "./");
     return;

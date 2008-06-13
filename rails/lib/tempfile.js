@@ -1,4 +1,0 @@
-
-Tempfile = function(){
-    
-};
