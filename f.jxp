@@ -20,6 +20,12 @@ log.f.debug( id );
 if ( id )
     file = db._files.findOne( { _id : CrID( id ) } );
 
+if ( ! file && request.name ){
+    var cursor = db._files.find( { filename : request.name } ).sort( { uploadDate : -1 } ).limit(1);
+    if ( cursor.hasNext() )
+	file = cursor.next();
+}
+
 if ( ! file ){
     response.setResponseCode( 404 );
     return;
