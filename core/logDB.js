@@ -6,9 +6,16 @@ core.core.mail();
 BasicDBAppender = {};
 
 BasicDBAppender.create = function(){
-
-    createCollection( "_logs" , {size:1000000, capped:true} );
-
+    
+    try {
+        createCollection( "_logs" , {size:1000000, capped:true} );
+    }
+    catch ( e ){
+        SYSOUT( "error creating _logs db - db logging off" );
+        SYSOUT( scope.currentException() );
+        return null;
+    }
+    
     var append = function( loggerName , date , level , msg , throwable , thread ){
         var now = new Date();
         var lvl = level.toString();
