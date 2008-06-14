@@ -13,7 +13,9 @@ content.WikiParser = function(device) {
     this.texdevice = { 
 
 	header: function(title) { 
-	    return "\\documentclass[12pt]{article}\n\\title{" +
+	    return "\\documentclass[12pt]{article}\n" + 
+	    "\\usepackage{graphicx}\n" + 
+	    "\\title{" +
 	    (title || "no title") +
 	    "}\n\\date{}\n\\begin{document}\n\\maketitle\n"; 
 	},
@@ -48,6 +50,14 @@ content.WikiParser = function(device) {
 	_table: function(wikiobj) { 
 	    print("\n\n_TABLE " + this.colAligns.c + "\n\n");
 	    wikiobj.outp = wikiobj.outp.replace(/~~~~~42/, this.colAligns.c);
+	},
+
+	fileTag: function(wikiobj,fileobj) 
+	{ 
+	    // epstopdf myfig.eps
+	    var fpath = "tmp/" + fileobj.filename;
+	    fileobj.writeToLocalFile(fpath);
+	    return '\\includegraphics[width=0.8\\textwidth]{' + fpath + '}\n';
 	},
 
 	footer: function() { return "\\end{document}\n"; },
@@ -108,6 +118,12 @@ content.WikiParser = function(device) {
 	_tr: function() { return "</tr>"; },
 	td: function() { return "<td>$1</td>"; },
 	_table: function(wikiobj) { },
+
+	// /~~/f?id=4852c3b3796c7a2e00fa2526&maxY=160&maxX=300
+	fileTag: function(wikiobj,fileobj) 
+	{
+	    return '<img src="/~~/f?id=' + fileobj._id + '">';
+	},
 
 	p: "<p>\n",
 
@@ -221,6 +237,22 @@ content.WikiParser.prototype._line = function(str) {
     var newLevel = 0;
 
     if( trimmed.length == 0 ) { this.outp += this.d.p; return; }
+
+    /* <file id="name"> must be on a line by itself, for now */
+    if( trimmed.startsWith("<file ") ) { 
+	var m = trimmed.match(/name="(.*)"/);
+	if( m && m.length >= 2 ) { 
+	    var fn = m[1];
+	    var file = db._files.findOne({filename:fn});
+	    if( file ) {
+		this.outp += this.d.fileTag(this, file);
+	    }
+	    else 
+		this.outp += "?";
+	}
+	return;
+    }
+
     if( trimmed == "</nowiki>" ) { this.noWiki = 0; return; }
     if( trimmed == "</nohtml>" ) { this.noHtml = 0; return; }
     if( trimmed == "</prenh>" ) { this.noWiki = 0; this.noHtml=0; this.outp+=this.d._pre; this.preMode = 0; return; }

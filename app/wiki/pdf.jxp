@@ -63,5 +63,4 @@ response.afterSendingCall( cleanup );
 response.setHeader("Content-Type", "application/pdf");
 response.sendFile(pdf);
 
-
 %>
