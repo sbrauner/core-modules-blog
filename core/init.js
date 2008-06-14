@@ -52,7 +52,11 @@ function mapUrlToJxpFileCore( uri , request , response ){
 
 core.core.log();
 
-if ( ! MemoryAppender.find( log ) )
+if ( ! MemoryAppender.find( log ) ){
     log.appenders.push( MemoryAppender.create() );
-if ( ! BasicDBAppender.find( log ) )
-    log.appenders.push( BasicDBAppender.create() );
+}
+if ( ! BasicDBAppender.find( log ) ){
+    var dba = BasicDBAppender.create();
+    if ( dba )
+        log.appenders.push( dba );
+}
