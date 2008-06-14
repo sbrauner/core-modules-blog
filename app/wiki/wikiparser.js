@@ -8,11 +8,11 @@
        programmer extensions auto-link "core.module();" statements in the wiki.
 */
 
-content.WikiParser = function(device) {
-
+content.WikiParser = function(device, resultopts) {
     this.texdevice = { 
 
 	header: function(title) { 
+	    if( resultopts.stitching ) return '% next wiki document ' + resultopts.stitching + '\n';
 	    return "\\documentclass[12pt]{article}\n" + 
 	    "\\usepackage{graphicx}\n" + 
 	    "\\title{" +
@@ -30,10 +30,20 @@ content.WikiParser = function(device) {
 
 	p: "\n\n",
 
+	// links (a=anchor)
         a1:'$2',
         a2:'$1',
         a3:'$2',
         a4:'$1',
+	fwd1:function(s,a,b){
+	    if( resultopts ) resultopts.stitch = a;
+	    return '';
+	},
+	fwd2:function(s,a){
+	    if( resultopts ) resultops.stitchopts = a;
+	    return '';
+	},
+	bwd1:'', bwd2:'',
 
         bold: "\\textbf{$1}",
 	italics: "\\emph{$1}",
@@ -48,7 +58,7 @@ content.WikiParser = function(device) {
 	_tr: function() { this.colAligns.done = true; return "\\\\\n "; },
 	td: function() { if( !this.colAligns.done ) this.colAligns.c += "l "; return " & $1"; },
 	_table: function(wikiobj) { 
-	    print("\n\n_TABLE " + this.colAligns.c + "\n\n");
+	    //print("\n\n_TABLE " + this.colAligns.c + "\n\n");
 	    wikiobj.outp = wikiobj.outp.replace(/~~~~~42/, this.colAligns.c);
 	},
 
@@ -60,7 +70,9 @@ content.WikiParser = function(device) {
 	    return '\\includegraphics[width=0.8\\textwidth]{' + fpath + '}\n';
 	},
 
-	footer: function() { return "\\end{document}\n"; },
+	footer: function() { 
+	    return resultopts.stitch ? '\n' : "\\end{document}\n"; 
+	}, 
 
 	escape: function(s) {
 	    // html tags:
@@ -131,6 +143,10 @@ content.WikiParser = function(device) {
         a2:'<a href="$1">$1</a>',
         a3:'<a href="$1">$2</a>',
         a4:'<a href="$1">$1</a>',
+        fwd1:'Next: <a href="$1">$2</a>',
+        fwd2:'Next: <a href="$1">$1</a>',
+        bwd1:'Prev: <a href="$1">$2</a>',
+        bwd2:'Prev: <a href="$1">$1</a>',
 
         bold: "<strong>$1</strong>",
 	italics: "<em>$1</em>",
@@ -183,10 +199,24 @@ content.WikiParser = function(device) {
     this.link = [
         { r: /\[\[([^|\[]+)\|([^\[]+)\]\]/g , s: this.d.a1 }, // [[link|pretty text]]
         { r: /\[\[([^\[]+)\]\]/g , s: this.d.a2 }, // [[link]]
+
+	// forward chapter links [[fwd}}
+	// pdf mode uses these to chain together pages
+	// \\? is because of tex pre-escaping brace
+        { r: /\[\[(.+?)\|(.+?)\\?\}\\?\}/g , s: this.d.fwd1 }, // [[link|pretty text}}
+	//        { r: /\[\[([^|\[]+)\|([^\[]+)\\?\}\\?\}/g , s: this.d.fwd1 }, // [[link|pretty text}}
+        { r: /\[\[(.+?)\\?\}\\?\}/g , s: this.d.fwd2 }, // [[link}}
+
+	// backward chapter links [[fwd}}
+	// pdf mode doesn't display as it assumes everything is stiched together
+	{ r: /\\?\{\\?\{([^|\[]+)\|([^\[]+)\]\]/g , s: this.d.bwd1 }, // [[link|pretty text}}
+	{ r: /\\?\{\\?\{([^\[]+)\]\]/g , s: this.d.bwd2 }, // [[link}}
+
         // FIXME: this following regexp doesn't eat trailing spaces, because
         // the name part matches "anything which isn't a bracket"; probably
         // this is correct, because a name-part can have spaces in it.
         { r: /\[\s*([^ \[]+\/[^ \[]+) +([^\[]+)\s*\]/g , s: this.d.a3 }, // [http://zzz name]
+
         // If there was anything after trailing space, it would match the above
         // regexp, so match up to "anything which isn't a space or a bracket".
         { r: /\[\s*([^\[]+\/[^ \[]+)\s*\]/g , s: this.d.a4 }, // [http://zzz]
@@ -310,11 +340,9 @@ content.WikiParser.prototype._line = function(str) {
     }
 
     // links
-    if( str.match(/\[/) ) {
-//	log.wiki.error("line2:prefixRE:" + this.prefixRE);
+    if( str.match(/\[/) || str.match(/\]/) ) {
         if( this.prefixRE ) { 
 	    str = str.replace(this.prefixRE, '[[');
-//	    log.wiki.error("postreplace2:" + str);
 	}
         str = content.WikiParser._repl(this.link, str);
     }

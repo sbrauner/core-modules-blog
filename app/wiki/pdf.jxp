@@ -1,15 +1,32 @@
 <%
-/* Generate PDF from wiki markup
+/* Generate PDF from wiki markup.
+   On a wiki url add "?pdf=1" to exec this.
+   Add "&debug=1" to debug.
 */
 
 core.core.file();
 
-var doc = wikiPage.getParsedText();
+//var doc = wikiPage.getParsedText();
 
 var root = ("/tmp/"+Math.random()).replace(/\./, '_')
 var fn = root + ".tex";
 
-var s = wikiPage.getParsedText("tex");
+var s = "";
+var pg = wikiPage;
+var resultops = {};
+while( 1 ) {
+    s += pg.getParsedText("tex", resultops);
+    if( resultops.stitch ) { 
+	if( request.debug ) print( "  Stitch " + resultops.stitch + '\n' ); 
+	//pg = new app.wiki.WikiPage(resultops.stitch);
+	pg = db.wiki.findOne( { name : resultops.stitch } );
+	resultops.stitching = resultops.stitch;
+	resultops.stitch = null;
+	if( request.debug ) print("new resultops var:" + tojson(resultops)+'\n');
+    }
+    else
+	break;
+}
 
 var texfile = File.create(s);
 
