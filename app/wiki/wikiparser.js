@@ -40,7 +40,8 @@ content.WikiParser = function(device, resultopts) {
 	    return '';
 	},
 	fwd2:function(s,a){
-	    if( resultopts ) resultops.stitchopts = a;
+	    if( resultopts ) 
+		resultopts.stitchopts = a;
 	    return '';
 	},
 	bwd1:'', bwd2:'',
