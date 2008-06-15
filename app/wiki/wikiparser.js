@@ -266,7 +266,10 @@ content.WikiParser.prototype._line = function(str) {
     var trimmed = str.trim();
     var newLevel = 0;
 
-    if( trimmed.length == 0 ) { this.outp += this.d.p; return; }
+    if( trimmed.length == 0 ) { 
+	this.outp += this.preMode ? '\n' : this.d.p; 
+	return; 
+    }
 
     /* <file id="name"> must be on a line by itself, for now */
     if( trimmed.startsWith("<file ") ) { 
