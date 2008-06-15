@@ -267,9 +267,12 @@ content.WikiParser.prototype._line = function(str) {
     var newLevel = 0;
 
     if( trimmed.length == 0 ) { 
-	this.outp += this.preMode ? '\n' : this.d.p; 
+	if( !this.lastWasHdr )
+	    this.outp += this.preMode ? '\n' : this.d.p; 
 	return; 
     }
+
+    this.lastWasHdr = null;
 
     /* <file id="name"> must be on a line by itself, for now */
     if( trimmed.startsWith("<file ") ) { 
@@ -331,7 +334,9 @@ content.WikiParser.prototype._line = function(str) {
 
     // ==headers==
     if( str.match(/^=.*[^=]+=/) ) {
+	var old = str;
         str = content.WikiParser._repl(this.h, str);
+	this.lastWasHdr = str != old;
     }
 
     // raw urls - disabled, see above

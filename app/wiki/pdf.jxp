@@ -20,6 +20,10 @@ while( 1 ) {
 	if( request.debug ) print( "  Stitch " + resultops.stitch + '\n' ); 
 	//pg = new app.wiki.WikiPage(resultops.stitch);
 	pg = db.wiki.findOne( { name : resultops.stitch } );
+	if( pg == null ) { 
+	    print("Error: couldn't find wiki page to stitch: '" + resultops.stitch + "'");
+	    return;
+	}
 	resultops.stitching = resultops.stitch;
 	resultops.stitch = null;
 	if( request.debug ) print("new resultops var:" + tojson(resultops)+'\n');
