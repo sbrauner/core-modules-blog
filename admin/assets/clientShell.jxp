@@ -596,7 +596,7 @@ function doRun(el, value, save){
         responsetype = responsetype + "-noret";
     }
 
-    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&mode=" + shellMode + "&command=" + escape( usr ).replace( /\+/ , "%2B" );
+    var url = "/admin/_shell?id=" + shellId + "&save="+ save + "&mode=" + shellMode + "&command=" + escape( usr ).replace( /\+/g , "%2B" );
 
     loadDocAsync( url , function(res){
         res = res.replace( /(^\s+|\s+$)/g , "" );
