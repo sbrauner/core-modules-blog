@@ -1,9 +1,3 @@
-<h1>x</h1>
-<h1>x</h1>
-<h1>x</h1>
-<h1>x</h1>
-<h1>todo: Fix header</h1>
-
 <% 
 /* 
  * doc.jxp - documentation tool. 
@@ -19,7 +13,7 @@ pre {margin: 8px}
 </style>
 <pre>
 <%
-    var expand = request.expand;
+    var expand = request.expand!=0;
 
     // print the path to the file we are viewing with links up the dir tree
     function breadcrumbs(f) { 
@@ -36,7 +30,7 @@ pre {margin: 8px}
 	print("</b> &nbsp; ");
 
 	if( !f.endsWith('/') ) {
-	    if( expand ) { %><a href="?f=<%=f%>">collapse</a> <% } else { %><a href="?f=<%=f%>&expand=1">expand</a> <% }
+	    if( expand ) { %><a href="?f=<%=f%>&expand=0">collapse</a> <% } else { %><a href="?f=<%=f%>&expand=1">expand</a> <% }
 	    print("\n");
 	}
 	else print("\n");
