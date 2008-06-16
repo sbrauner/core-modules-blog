@@ -1,5 +1,5 @@
 <%
-
+JSON = core.content.json();
 var shellId = request.id;
 if ( ! shellId ){
     print( "no shellId :(" );
@@ -144,7 +144,14 @@ finally{
     print = oldprint;
 }
 
-res = { $ : res, $printed : buffer.getBuffer(), $exception : exc,
+var garbage = tojson(res);
+if(! JSON.check(garbage)){
+    // res doesn't tojson into actual JSON
+    buffer.termCommand("warn", {$message: "Returned object did not convert to valid JSON. Returning wrapped object."});
+    res = {"not_json" : garbage};
+}
+
+var res = { $ : res, $printed : buffer.getBuffer(), $exception : exc,
         $scope: Object.extend({}, theScope), $pwd: theScope.sh.pwd().out.trim()};
 print( tojson( res ) );
 
