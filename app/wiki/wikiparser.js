@@ -13,12 +13,25 @@ content.WikiParser = function(device, resultopts) {
 
 	header: function(title) { 
 	    if( resultopts.stitching ) return '% next wiki document ' + resultopts.stitching + '\n';
+	    print("TITLE:" + title + ":\n");
 	    return "\\documentclass[12pt]{article}\n" + 
 	    "\\usepackage{graphicx}\n" + 
-	    "\\title{" +
-	    (title || "no title") +
+	    "\\usepackage{listings,color}\n" +
+	    "\\lstloadlanguages{Java}\n" + 
+    //	    "\\lstset{language=Java,showstringspaces=false,breaklines=true}\n" +
+	    "\\lstset{language=Java,showstringspaces=false,breaklines=true,basicstyle=\\ttfamily\\small}\n" +
+
+	    "\\title{" + 
+	        	    (title.replace(/_/g,'\\_') || "no title") +
 	    "}\n\\date{}\n\\begin{document}\n\\maketitle\n"; 
 	},
+
+	code: 
+	/*function(a,b,c) {
+	    print("a:" + a + " b:" + b + " c:" + c + '\n');
+	    return "\\texttt{TEMP}";
+	},*/
+	"\\texttt{$1}",
 
 	h: [
 	    "\\part{$1}",
@@ -52,7 +65,8 @@ content.WikiParser = function(device, resultopts) {
 	ul: "\\begin{itemize}", _ul: "\\end{itemize}\n",
 	li: '\\item $2',
 
-	pre: "\\begin{verbatim}\n", _pre: "\\end{verbatim}\n",
+	//pre: "\\begin{verbatim}\n", _pre: "\\end{verbatim}\n",
+	pre: "\\begin{lstlisting}\n", _pre: "\\end{lstlisting}\n",
 
 	colAligns: { c: "", done: false },
 	tr: "$1",
@@ -119,6 +133,8 @@ content.WikiParser = function(device, resultopts) {
     this.htmldevice = { 
 
 	header: function() { return ""; },
+
+	code: "<code>$1</code>",
 
 	h: [
 	    "<h1>$1</h1>",
@@ -230,6 +246,7 @@ content.WikiParser = function(device, resultopts) {
         ];
 
     this.basics = [
+        { r: /\\?%([^%\\]+)\\?%/g, s: this.d.code },
         { r: /'''(.+?)'''/g , s: this.d.bold }, // '''bold'''
         { r: /''(.+?)''/g , s: this.d.italics }, // ''italics''
     ];
