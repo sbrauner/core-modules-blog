@@ -3,7 +3,7 @@
     var _openAccess = false;
 
 // AJAX functions that do not require headers/footers
-var ajaxFunctions = [ "showTable", "table", "editCron", "blog/autosave" ];
+var ajaxFunctions = [ "showTable", "table", "editCron", "blog/autosave", "doc" ];
 
 _openAccess =
     request.getURI().match( /^.admin\/doc$/ ) &&
