@@ -195,6 +195,9 @@ loader.insert({
                             if(shellMode == 'js')
                                 updatePrompt();
                         }
+                        else if(p.$command == "warn"){
+                            s += "<span class=\"warning\"><pre>" + HTMLEscape(p.$message) + "</pre></span><br/>";
+                        }
                     }
                 }
                 if(obj.$scope && ! replay){
