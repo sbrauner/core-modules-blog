@@ -52,3 +52,5 @@ User.abort = function(msg){
     htmlfooter();
     throw Exception.Quiet(msg);
 }
+
+core.content.regexp();

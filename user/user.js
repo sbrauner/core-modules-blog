@@ -129,7 +129,7 @@ User.find = function( thing , theTable ){
 
     var u = { length: function(){ return 0; } }; // or DBCursor to db.users
     if ( thing.match( /@/ ) )
-        u = theTable.find( { email : thing } );
+        u = theTable.find( { email : content.RegExp.literal(thing, 'i') } );
 
     if ( u.length() == 0 )
         u = theTable.find( { name : thing } );
