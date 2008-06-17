@@ -29,10 +29,10 @@ function mapUrlToJxpFileCore( uri , request , response ){
          ) ){
         if ( uri.match(/assets/) ){
             var idx = uri.indexOf( "/admin" );
-            return "/~~" + uri.substring( idx );
+            return "/~~/modules" + uri.substring( idx );
         }
         else {
-            return "~~/admin/index.jxp";
+            return "/~~/modules/admin/index.jxp";
         }
     }
 
