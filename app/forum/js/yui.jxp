@@ -6,7 +6,7 @@ app.Forum.js = {};
 app.Forum.js.addDragAndDrop = function(tableid, numrows, numcols) {
 
      head.push('<script type="text/javascript" src="/@@/yui/current/yuiloader/yuiloader-beta.js"></script>'+
-     '<script type="text/javascript" src="/@@/yui/current/yahoo-min.js?_yuiversion=2.5.0"></script>'+
+     '<script type="text/javascript" src="/@@/yui/current/yahoo/yahoo-min.js?_yuiversion=2.5.0"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/dom/dom-min.js?_yuiversion=2.5.0"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/event/event-min.js?_yuiversion=2.5.0"></script>'+
      '<script type="text/javascript" src="/@@/yui/current/animation/animation-min.js?_yuiversion=2.5.0"></script>'+
