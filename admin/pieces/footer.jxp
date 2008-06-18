@@ -1,7 +1,0 @@
-<% core.admin.pieces.navLeftClose(); %>
-<div class="onecolumn">
-<p class="footer">10gen Admin | <%= Date() %></p>
-</div>
-</body>
-</html>
-<!-- <%= SERVER_HOSTNAME %> -->
