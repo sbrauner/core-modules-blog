@@ -13,7 +13,9 @@ threaded.data.Reply = function(){
 
 threaded.data.Reply.sort = function(ary){
     ary = ary.filter(function(u){return u});
-    return ary.sort( function (a, b) { return b.ts - a.ts; });
+    return ary.slice().sort( function(a, b) {
+        return a.ts - b.ts;
+    });
 };
 
 threaded.data.Reply.prototype.decoratorsRender = function(part, options){
