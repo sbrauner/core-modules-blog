@@ -29,6 +29,15 @@ var JSON = {
      */
     _BRACKETS : /(?:^|:|,)(?:\s*\[)+/g,
     /**
+     * Final step in the validation.  Regex used to test the string left after
+     * all previous replacements for invalid characters.
+     * @property _INVALID
+     * @type {RegExp}
+     * @static
+     * @private
+     */
+    _INVALID  : /^[\],:{}\s]*$/,
+    /**
      * Four step determination whether a string is valid JSON.  In three steps,
      * escape sequences, safe values, and properly placed open square brackets
      * are replaced with placeholders or removed.  Then in the final step, the
@@ -39,10 +48,6 @@ var JSON = {
      * @static
      */
     isValid : function (str) {
-        if (!YAHOO.lang.isString(str)) {
-            return false;
-        }
-
         return this._INVALID.test(str.
                 replace(this._ESCAPES,'@').
                 replace(this._VALUES,']').
