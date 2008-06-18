@@ -156,10 +156,23 @@ content.WikiParser = function(device, resultopts) {
 
 	p: "<p>\n",
 
-        a1:'<a href="$1">$2</a>',
-        a2:'<a href="$1">$1</a>',
-        a3:'<a href="$1">$2</a>',
-        a4:'<a href="$1">$1</a>',
+        a1:'<a href="$1">$2</a>',  // [[wikipagename|description]]
+        a2:'<a href="$1">$1</a>',  // [[wikipagename]]
+
+        //a3:'<a href="$1">$2</a>',  // [http://foo description]
+	a3: function(m,link,desc) { 
+	    return "<a " + 
+	    (link.indexOf("10gen") < 0 ? 'class="external-link" ' : '') +
+	    'href="' + link + '">' + desc + '</a>';
+	},
+
+        //a4:'<a href="$1">$1</a>',  // [http://foo]
+	a4: function(m,link) { 
+	    return "<a " + 
+	    (link.indexOf("10gen") < 0 ? 'class="external-link" ' : '') +
+	    'href="' + link + '">' + link + '</a>';
+	},
+
         fwd1:'Next: <a href="$1">$2</a>',
         fwd2:'Next: <a href="$1">$1</a>',
         bwd1:'Prev: <a href="$1">$2</a>',
