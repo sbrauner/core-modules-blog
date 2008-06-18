@@ -1,17 +1,55 @@
+/* JSON.isValid from YUI YAHOO.lang.JSON, code licensed under a BSD license */
+
 var JSON = {
-    check: function(text){
-    // JSON validity check from json.org/json2.js
-    // We need something like this because our "eval" will return null for
-    // undefined variables, so we can't just use eval to check for barewords.
-    // (FF pukes on undefined barewords, which is probably the right thing.)
-        if (/^[\],:{}\s]*$/.
-            test(text.replace( /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
-                 replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-            replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-        return true;
-    }
-    return false;
-}
+    /**
+     * First step in the validation.  Regex used to replace all escape
+     * sequences (i.e. "\\", etc) with '@' characters (a non-JSON character).
+     * @property _ESCAPES
+     * @type {RegExp}
+     * @static
+     * @private
+     */
+    _ESCAPES : /\\["\\\/bfnrtu]/g,
+    /**
+     * Second step in the validation.  Regex used to replace all simple
+     * values with ']' characters.
+     * @property _VALUES
+     * @type {RegExp}
+     * @static
+     * @private
+     */
+    _VALUES  : /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+    /**
+     * Third step in the validation.  Regex used to remove all open square
+     * brackets following a colon, comma, or at the beginning of the string.
+     * @property _BRACKETS
+     * @type {RegExp}
+     * @static
+     * @private
+     */
+    _BRACKETS : /(?:^|:|,)(?:\s*\[)+/g,
+    /**
+     * Four step determination whether a string is valid JSON.  In three steps,
+     * escape sequences, safe values, and properly placed open square brackets
+     * are replaced with placeholders or removed.  Then in the final step, the
+     * result of all these replacements is checked for invalid characters.
+     * @method isValid
+     * @param str {String} JSON string to be tested
+     * @return {boolean} is the string safe for eval?
+     * @static
+     */
+    isValid : function (str) {
+        if (!YAHOO.lang.isString(str)) {
+            return false;
+        }
+
+        return this._INVALID.test(str.
+                replace(this._ESCAPES,'@').
+                replace(this._VALUES,']').
+                replace(this._BRACKETS,''));
+    },
+
+
 };
 
 return JSON;
