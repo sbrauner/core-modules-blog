@@ -80,14 +80,28 @@ Blog.handleRequest = function( request , arg ){
             uri = uri.replace( /\/page\/[0-9]*/ , '');
         }
 
+        var extraFields = allowModule.blog.extraFields;
+        var useQuery = false;
+
         if (request.q)
             posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
         else if (request.category) {
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
             isCategorySearch = true;
         }
+        else if(extraFields){
+            var query = {};
+            for(var key in extraFields){
+                if(extraFields[key].searchFunction)
+                    extraFields[key].searchFunction(request, query);
+            }
+            if(Object.keys(query).length > 0){
+                posts = db.blog.posts.find( query ).sort({ts: -1}).toArray();
+                useQuery = true;
+            }
+        }
 
-        if (request.q || request.category) {
+        if (request.q || request.category || useQuery) {
             var now = new Date();
             // We filter dontSearch posts out of search results but not category
             // searches. This was the result of a debate between me and Paul;
