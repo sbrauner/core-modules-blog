@@ -337,7 +337,7 @@ else {
 
 </h2>
 
-<a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="/images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
+<a href="thread_rss.jxp?id=<%= thread._id %>" class="rss"><img src="images/feed-icon16x16.png?lm=1203477029000" class="feed"></a>
 
 <%
 var even = false;
