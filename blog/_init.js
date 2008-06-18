@@ -11,7 +11,6 @@ __path__.ping();
 /*
  *  initialize djang10 framework and add our default templates
  */
-var djang10 = core.templates.djang10();
 djang10.addTemplateRoot(core.blog.pieces);
 
 /**
