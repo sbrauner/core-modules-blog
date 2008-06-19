@@ -1,9 +1,10 @@
 
 if(request.newdoc) {
     if(request.js)
-        javaStatic("ed.doc.Generate", "toDB", request.js);
+        javaStatic("ed.doc.Generate", "JSToDb", request.js);
     else if(request.java)
-        javaStatic("ed.doc.Generate", "toDB", request.java);
+//        javaStatic("ed.doc.Generate", "JavadocToDb", request.java);
+        javaStatic("ed.doc.Generate", "JavadocArgHelper", request.java);
     else
         return;
 }
