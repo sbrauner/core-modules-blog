@@ -1,6 +1,0 @@
-<%
-    if(app.Forum.Controller.bannedUser(user, request)){
-        core.app.forum.html.error("You have been banned!");
-        throw Exception.Quiet("banned");
-    }
-%>

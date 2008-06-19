@@ -1,8 +1,0 @@
-<% if (sectionHeader) sectionHeader(); %>
-
-<ul>
-  <li><a href="user_edit">Edit a user</a></li>
-  <li><a href="banned">Show banned users/IPs</a></li>
-</ul>
-
-<% if (sectionFooter) sectionFooter(); %>
