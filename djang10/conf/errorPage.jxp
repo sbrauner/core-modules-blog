@@ -1,4 +1,0 @@
-<html>
- <body>
- FRAMEWORK ERROR : <%= arguments[0] %>
-                       </body></html>
