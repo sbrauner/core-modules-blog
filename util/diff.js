@@ -79,7 +79,7 @@ Util.Diff = {
         for(var i=1; i< a.length; i++) {
             for(var j=1; j< b.length; j++) {
                 var obj = Util.Diff.diff(a[i], b[j]);
-                if(obj == null) {
+                if(obj == null || !c || !c[i-1] || !c[i]) {
                     return ["oops, something went wrong diffing the array."];
                 }
                 if ( Object.keys(obj).length == 0)
@@ -92,7 +92,6 @@ Util.Diff = {
         function printDiff(c, x, y, i, j) {
             if (i > 0 && j > 0 && x[i] == y[j]) {
                 printDiff(c, x, y, i-1, j-1);
-//                dArr.push({});
             }
             else {
                 if (j > 0 && (i == 0 || (i > 0 && j > 0 && c[i][j-1] >= c[i-1][j]))) {
@@ -118,14 +117,12 @@ Util.Diff = {
 
     diffBool : function( a, b ) {
         if(a == b) return 0;
-        if(a) return { add : true, remove: false};
-        return { add : false, remove: true};
+        return { add : a, remove: b};
     },
-
 
     diffObj : function( a , b ){
         var d = {};
-        var valid_type = ["string", "number", "boolean"];
+        var valid_type = ["string", "number", "boolean", "objectid"];
         var valid_instance = ["Array", "Object", "Date"];
         for(var prop in a){
             if(! (prop in b) ){
@@ -134,7 +131,10 @@ Util.Diff = {
             }
             else if(typeof a[prop] == typeof b[prop] && valid_type.contains(typeof a[prop])){
                 var diffy = Util.Diff.diffFunc[typeof a[prop]](a[prop], b[prop]);
-                if(diffy && ((typeof diffy == "number" && diffy != 0) || (typeof diffy == "string" && diffy != ""))) {
+                if(diffy && ((typeof diffy == "number" && diffy != 0)
+                             || (typeof diffy == "string" && diffy != "")
+                             || (typeof diffy == "object" && Object.keys(diffy).length > 0)
+                            )) {
                     d[prop] = {change: diffy};
                 }
             }
@@ -217,6 +217,7 @@ Util.Diff = {
 Util.Diff.diffFunc = { "string" : Util.Diff.diffStr,
                        "number" : Util.Diff.diffInt,
                        "boolean" : Util.Diff.diffBool,
+                       "objectid" : Util.Diff.diffBool,
                        "Object" : Util.Diff.diffObj,
                        "Array" : Util.Diff.diffArray,
                        "Date" : Util.Diff.diffDate
