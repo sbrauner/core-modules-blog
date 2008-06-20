@@ -83,3 +83,37 @@ var l = c.setURL("http://localhost:2008/blog/posts/").execute(function(){
 assert(l.hostname == "localhost");
 assert(l.port == 2008);
 assert(l.toString() == "http://localhost:2008/~~/f.jxp?id=deadbeefdeadbeefdeadbeef&maxX=154&maxY=115");
+
+
+var thisUrl = function(){
+    return LocalURL().toString();
+};
+
+var hahaUrl = function(){
+    return LocalURL('/haha').toString();
+};
+
+core.testing.client();
+var c = new testing.Client();
+c.setAnswer('value');
+var hostname = 'http://www.clusterstock.com';
+var currentURL = hostname + '/rss?category=foo';
+var l = c.setURL(currentURL).execute(thisUrl);
+
+assert(l == currentURL);
+
+var l = c.execute(hahaUrl);
+
+assert(l == hostname+'/haha');
+hostname = hostname + ':8080';
+var currentURL = hostname+'/rss?category=foo';
+c.setURL(currentURL);
+
+var l = c.execute(thisUrl);
+
+assert(l == currentURL);
+
+var l = c.execute(hahaUrl);
+
+assert(l == hostname + '/haha');
+

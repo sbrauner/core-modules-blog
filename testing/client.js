@@ -85,12 +85,15 @@ testing.Client.prototype.execute = function(f){
     // them
     this.redirects = [];
     var answer = this.answer || 'output';
+
+    // Explicitly pollute the global namespace
     request = this.getRequest(this.url.toString());
     response = this.getResponse();
     head = Object.extend([], {addScript: function() {},
                               addCSS: function() {} });
     jxp = {};
-    val = Ext.redirect(function(){
+
+    var val = Ext.redirect(function(){
         try{
             return f();
         }

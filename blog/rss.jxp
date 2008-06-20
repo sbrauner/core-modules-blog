@@ -60,17 +60,18 @@ for(var key in extraFields){
     if(tmp){ title = tmp; break; }
 }
 
-if(!title && request.category){
-    title = siteName + ": " + request.category;
+if(!title && requestResult.category && requestResult.category.label){
+    title = siteName + ": " + requestResult.category.label;
 }
 if(! title) title = siteName;
 
+var link = LocalURL(request.getURL().replace(/^\/rss\/?/, '/')).toString();
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
     <channel>
         <title><%= title %></title>
-        <link><%= LocalURL(request.getURL()).toString() %></link>
+        <link><%= link %></link>
         <language>en-us</language>
         <pubDate><%= now.webFormat() %></pubDate>
         <lastBuildDate><%= now.webFormat() %></lastBuildDate>
