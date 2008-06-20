@@ -16,7 +16,7 @@ function Post(name, title) {
     this.categories = new Array();
 };
 
-Post.prototype.SEARCH_FIELDS = { title : 1 , author : 1  , content : .2  };
+Post.prototype.SEARCH_FIELDS = { title : 1 , author : 1  , content : .2, excerpt : .2 };
 Post.prototype.SEARCH_OPTIONS = { stripHTML : true };
 
 Post.prototype.getTeaserContent = function(){
