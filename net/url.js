@@ -59,6 +59,7 @@ URL = function(s){
 LocalURL = function(path){
     // Don't call using new, bad things happen
     // Tests not yet written
+    path = path || request.getURL();
     var u = new URL(path);
     u.hostname = request.getHost();
     u.port = request.getPort();
