@@ -88,6 +88,7 @@ Blog.handleRequest = function( request , arg ){
         else if (request.category) {
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
             isCategorySearch = true;
+            category = db.blog.categories.findOne( { name: request.category } );
         }
         else if(extraFields){
             var query = {};
