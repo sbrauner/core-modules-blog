@@ -1,17 +1,26 @@
+core.core.file();
 
-if(request.newdoc) {
-    if(request.js)
-        javaStatic("ed.doc.Generate", "JSToDb", request.js);
-    else if(request.java)
-//        javaStatic("ed.doc.Generate", "JavadocToDb", request.java);
-        javaStatic("ed.doc.Generate", "JavadocArgHelper", request.java);
-    else
-        return;
+Util.Doc = {};
+
+Util.Doc.JSToDb = function(file) {
+    this.toDb("../"+file, "JSToDb");
 }
-else if(request.regen) {
+
+Util.Doc.JavadocToDb = function(file) {
+    this.toDb("../"+file, "JavadocArgHelper");
+}
+
+Util.Doc.toDb = function(file, javaFunc) {
+    javaStatic("ed.doc.Generate", javaFunc, file);
+}
+
+Util.Doc.DbToHTML = function() {
     var d = db.doc.find();
     while(d.hasNext()) {
-        var cls = d.next();
-        javaStatic("ed.doc.Generate", "toHTML", tojson(cls._index));
+        this.DbObjToHTML(d.next());
     }
+}
+
+Util.Doc.DbObjToHTML = function(obj) {
+    javaStatic("ed.doc.Generate", "toHTML", tojson(obj._index));
 }
