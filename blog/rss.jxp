@@ -65,7 +65,7 @@ if(!title && requestResult.category && requestResult.category.label){
 }
 if(! title) title = siteName;
 
-var link = LocalURL(request.getURL().replace(/^\/rss/, '')).toString();
+var link = LocalURL(request.getURL().replace(/^\/rss\/?/, '/')).toString();
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
