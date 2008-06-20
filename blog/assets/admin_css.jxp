@@ -44,6 +44,8 @@ div#post_form {
 div#post_action {
     padding: 10px 0px;
     width: 600px;
+    float: left;
+    clear: both;
 }
 
 div#post_title {
