@@ -65,12 +65,13 @@ if(!title && request.category){
 }
 if(! title) title = siteName;
 
+var link = LocalURL(request.getURL().replace(/^\/rss/, '')).toString();
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
     <channel>
         <title><%= title %></title>
-        <link><%= LocalURL(request.getURL()).toString() %></link>
+        <link><%= link %></link>
         <language>en-us</language>
         <pubDate><%= now.webFormat() %></pubDate>
         <lastBuildDate><%= now.webFormat() %></lastBuildDate>
