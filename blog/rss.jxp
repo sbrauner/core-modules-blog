@@ -60,8 +60,8 @@ for(var key in extraFields){
     if(tmp){ title = tmp; break; }
 }
 
-if(!title && request.category){
-    title = siteName + ": " + request.category;
+if(!title && requestResult.category && requestResult.category.label){
+    title = siteName + ": " + requestResult.category.label;
 }
 if(! title) title = siteName;
 
