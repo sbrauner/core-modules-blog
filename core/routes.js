@@ -189,6 +189,10 @@ Routes.prototype.find = function(submodule){
     for(var key in this){
         if( key.startsWith( "_" ) )
             continue;
+        if(this[key] == null){
+            log.warn("Invalid route : " + key);
+            continue;
+        }
 
         if(this[key] == submodule){
             return '/' + key;
