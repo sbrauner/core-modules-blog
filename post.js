@@ -3,6 +3,7 @@ core.content.search();
 core.text.text();
 core.media.image();
 core.util.timeoutcache();
+core.ext.getlist();
 
 function Post(name, title) {
     this.name = name;
@@ -136,6 +137,13 @@ Post.prototype.getComments = function() {
 };
 
 Post.prototype.presave = function(){
+    var extraFields = Ext.getlist(allowModule, 'blog', 'extraFields') || {};
+    for(var key in extraFields){
+        var weight = Ext.getlist(extraFields, key, 'searchWeight');
+        if(weight != null)
+            Post.prototype.SEARCH_FIELDS[key] = weight;
+    }
+
     Search.index( this , this.SEARCH_FIELDS , this.SEARCH_OPTIONS );
 };
 
