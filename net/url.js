@@ -199,6 +199,16 @@ URL.prototype._replaceLastPath = function(s){
     this.path = components.join('/');
 };
 
+URL.prototype.setPath = function(s){
+    var c = this.clone();
+    c._setPath(s);
+    return c;
+};
+
+URL.prototype._setPath = function(s){
+    this.path = s;
+};
+
 URL.escape_queryargs = function( s , plusIsLiteral ){
     // This temporary function is meant to be roughly equivalent to the JS
     // encodeURIComponent function, which isn't implemented yet in the appserver.
