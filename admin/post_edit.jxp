@@ -308,12 +308,30 @@ function confirmExit() {
             <div class="post_meta_field_name">Author</div>
             <div class="post_meta_field_value">
                 <select name="author" onchange="needs_save = true;">
-                    <%
-                        var cursor = db.users.find( {permissions : "admin"} );
-                        cursor.forEach( function(author) {
-                    %>
+                  <%
+// FIXME: Combine this with code in ~~/modules/admin/user.jxp
+var allRoles = (allowModule && allowModule.admin ) ? allowModule.admin.permissions.getRoles().toArray() : [] ;
+var rolesMap = {};
+allRoles.forEach(function(z){
+    rolesMap[z.name] = true;
+});
+if(! rolesMap.admin){
+    rolesMap.admin = true;
+    allRoles.push({name: 'admin'});
+}
+var allUsers = {};
+
+allRoles.forEach(function(z){
+    var cursor = db.users.find( {permissions : z.name} );
+    cursor.forEach( function(author) {
+        if(allUsers[author.name]) return;
+        allUsers[author.name] = true;
+    %>
                         <option value="<%= author.name %>" <%= thePost.author == author.name ? "selected" : "fdsa" %>><%= author.name %></option>
-                    <% }); %>
+<%  });
+});
+%>
+
                 </select>
             </div>
         </div>
