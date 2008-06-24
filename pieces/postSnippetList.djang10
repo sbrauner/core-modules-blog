@@ -10,7 +10,7 @@ posts - an array of objects from the blog.posts collection
 {% extends "blog" %}
 
 {% block content %}
-<p><a href="{{ blogDTO.getBaseURL }}">Back to main page</a></p
+<p><a href="{{ blogDTO.getBaseURL }}">Back to main page</a></p>
 
 <div class="posts-snippets-block">
   {% for post in blogDTO.getPostArray %}
