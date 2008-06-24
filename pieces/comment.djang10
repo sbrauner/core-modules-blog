@@ -29,7 +29,7 @@ date_format - format string for date
   {{ c.text }}
 
   {% if admin %}
-  <form><input type="hidden" name="cid" value="{{ c._id }}" /><input type="submit" name="action" value="delete" /></form>
+  <form><input type="hidden" name="cid" value="{{ c.cid }}" /><input type="submit" name="action" value="delete" /></form>
   {% endif %}
 </p>
 

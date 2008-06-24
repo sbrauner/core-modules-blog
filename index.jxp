@@ -23,9 +23,10 @@ var blocked = BlogUtils.isBlockedIP(request.getRemoteIP());
  */
 var isComment = (request && request.addComment == "yes");
 
-if (isComment && !blocked) {
+if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
 	blog.handlePosts(request, result.posts[0], user);
 }
+
 
 /*
  *  setup the data transfer object
