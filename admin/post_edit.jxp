@@ -310,15 +310,7 @@ function confirmExit() {
                 <select name="author" onchange="needs_save = true;">
                   <%
 // FIXME: Combine this with code in ~~/modules/admin/user.jxp
-var allRoles = (allowModule && allowModule.admin ) ? allowModule.admin.permissions.getRoles().toArray() : [] ;
-var rolesMap = {};
-allRoles.forEach(function(z){
-    rolesMap[z.name] = true;
-});
-if(! rolesMap.admin){
-    rolesMap.admin = true;
-    allRoles.push({name: 'admin'});
-}
+var allRoles = admin.getRoles('/blog/post_edit');
 var allUsers = {};
 
 allRoles.forEach(function(z){
