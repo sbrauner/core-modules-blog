@@ -1,8 +1,19 @@
 /*
+ * Blog imports
+ */
+
+core.user.user();
+core.user.auth();
+core.blog.blogDTO();
+
+
+/*
  *  Blog App Module
  */
 
 Blog = {};
+Blog.urls = core.blog.urls();
+Blog.blogUtils = core.blog.utils();
 
 __path__.post();
 __path__.category();
@@ -19,16 +30,16 @@ djang10.addTemplateRoot(core.blog.pieces);
 Blog._options = {};
 
 /**
- *  function to call right before rendering to allow the user to 
+ *  function to call right before rendering to allow the user to
  *  provide a callback to fill the model with additional data
  */
 Blog._modelCallback = __path__.modelCallbackDefault;
 
-Blog.setModelCallback = function(callback) { 
+Blog.setModelCallback = function(callback) {
     Blog._modelCallback = callback;
 }
 
-Blog.getModelCallback = function() { 
+Blog.getModelCallback = function() {
     return Blog._modelCallback;
 }
 

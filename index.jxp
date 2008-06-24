@@ -5,16 +5,13 @@
  * If we are previewing a draft, just display that post.
  */
 
-var u = core.user.user();
-core.user.auth();
 
 if ( ! user ){
     user = Auth.getUser( request );
 }
 
-var blog = core.blog.urls();
-var blogUtils = core.blog.utils();
-core.blog.blogDTO();
+var blog = Blog.urls;
+var blogUtils = Blog.blogUtils;
 
 var result = blog.handleRequest(request);
 
