@@ -63,6 +63,10 @@ for(var key in extraFields){
 if(!title && requestResult.category && requestResult.category.label){
     title = siteName + ": " + requestResult.category.label;
 }
+else if(!title && requestResult.search){
+    title = siteName + ": " + requestResult.search;
+}
+
 if(! title) title = siteName;
 
 var link = LocalURL(request.getURL().replace(/^\/rss\/?/, '/')).toString();
