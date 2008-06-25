@@ -8,6 +8,9 @@ function BlogDTO() {
     this._dateFormat = "F";
     this._baseURL = "/blog";
     this._blockedIP = null;
+    this._yourname = "";
+    this._url = "";
+    this._email = "";
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -26,6 +29,32 @@ BlogDTO.prototype.setUser = function(name) {
 
 BlogDTO.prototype.getUser = function() {
     return this._user;
+}
+
+BlogDTO.prototype.setCaptchaForm = function(r) {
+    this._yourname = r.yourname;
+    this._url = r.url;
+    this._email = r.email;
+    this._txt = r.txt;
+}
+BlogDTO.prototype.clearCaptchaForm = function() {
+    this._yourname = "";
+    this._url = "";
+    this._email = "";
+    this._txt = "";
+}
+
+BlogDTO.prototype.getYourname = function() {
+    return this._yourname;
+}
+BlogDTO.prototype.getUrl = function() {
+    return this._url;
+}
+BlogDTO.prototype.getEmail = function() {
+    return this._email;
+}
+BlogDTO.prototype.getTxt = function() {
+    return this._txt;
 }
 
 BlogDTO.prototype.setCategories = function(catArr) {
