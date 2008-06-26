@@ -451,3 +451,5 @@ function preview(path) {
 
 <div id="myMarkedUpContainer" class="yui-skin-sam">
 </div>
+
+<% return thePost; %>
