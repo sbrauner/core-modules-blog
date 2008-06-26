@@ -22,6 +22,7 @@ Template to display commenting section
            {% if blogDTO.getUser %}
               <div id="comment-form-name">{{ blogDTO.getCommentFormName|default:"Comment as " }}{{ blogDTO.getUser.name }}</div>
            {% else %}
+              {{ blogDTO.getCommentError }}<br />
               <input class="text" id="yourname" name="yourname" value="{{ blogDTO.getYourname }}" /> {{ blogDTO.getCommentAuthor|default:"Name" }}<br />
               <input class="text" id="email" name="email" value="{{ blogDTO.getEmail }}" /> {{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
               <input class="text" id="url" name="url" value="{{ blogDTO.getUrl }}" /> {{ blogDTO.getCommentUrl|default:"URL" }}<br />

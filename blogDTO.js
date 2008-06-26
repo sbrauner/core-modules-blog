@@ -11,6 +11,7 @@ function BlogDTO() {
     this._yourname = "";
     this._url = "";
     this._email = "";
+    this._commentError = "";
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -36,12 +37,14 @@ BlogDTO.prototype.setCaptchaForm = function(r) {
     this._url = r.url;
     this._email = r.email;
     this._txt = r.txt;
+    this._commentError = "Captcha incorrect."
 }
 BlogDTO.prototype.clearCaptchaForm = function() {
     this._yourname = "";
     this._url = "";
     this._email = "";
     this._txt = "";
+    this._commentError = "";
 }
 
 BlogDTO.prototype.getYourname = function() {
@@ -55,6 +58,9 @@ BlogDTO.prototype.getEmail = function() {
 }
 BlogDTO.prototype.getTxt = function() {
     return this._txt;
+}
+BlogDTO.prototype.getCommentError = function() {
+    return this._commentError;
 }
 
 BlogDTO.prototype.setCategories = function(catArr) {
