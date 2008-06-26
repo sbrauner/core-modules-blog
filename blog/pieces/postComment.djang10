@@ -2,19 +2,6 @@
 
 Template to display commenting section
 
-Required parameters:
-comments_enabled
-user
-
-Optional parameters:
-comments_open_header
-comment_form_name
-comment_author
-comment_email
-comment_url
-comment_text
-captcha_message
-
 {% endcomment %}
 
 {% if not blogDTO.getBlockedIP %}
@@ -35,11 +22,11 @@ captcha_message
            {% if blogDTO.getUser %}
               <div id="comment-form-name">{{ blogDTO.getCommentFormName|default:"Comment as " }}{{ blogDTO.getUser.name }}</div>
            {% else %}
-              <input class="text" id="yourname" name="yourname" value="" /> {{ blogDTO.getCommentAuthor|default:"Name" }}<br />
-              <input class="text" id="email" name="email" value="" /> {{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
-              <input class="text" id="url" name="url" value="" /> {{ blogDTO.getCommentUrl|default:"URL" }}<br />
+              <input class="text" id="yourname" name="yourname" value="{{ blogDTO.getYourname }}" /> {{ blogDTO.getCommentAuthor|default:"Name" }}<br />
+              <input class="text" id="email" name="email" value="{{ blogDTO.getEmail }}" /> {{ blogDTO.getCommentEmail|default:"Email Address"}}<br />
+              <input class="text" id="url" name="url" value="{{ blogDTO.getUrl }}" /> {{ blogDTO.getCommentUrl|default:"URL" }}<br />
            {% endif %}
-           <textarea rows="20" id="txt" name="txt"></textarea><br />
+           <textarea rows="20" id="txt" name="txt">{{ blogDTO.getTxt }}</textarea><br />
            {% if not blogDTO.getUser %}
              <div id="comments-open-captcha">
 		<div><img src="NOCDN/~~/user/captchaIMG.jxp" vspace="10"></div>
