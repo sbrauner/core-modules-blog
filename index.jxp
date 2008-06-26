@@ -19,19 +19,26 @@ var result = blog.handleRequest(request);
 var blocked = BlogUtils.isBlockedIP(request.getRemoteIP());
 
 /*
+ *  setup the data transfer object
+ */
+var blogDTO = new BlogDTO();
+
+/*
  *  if we are adding a comment, handle it and pray that the comment gets added
  */
 var isComment = (request && request.addComment == "yes");
 
 if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
-	blog.handlePosts(request, result.posts[0], user);
+    var r = blog.handlePosts(request, result.posts[0], user);
+    if(r == "Comment Saved") {
+        blogDTO.clearCaptchaForm();
+    }
+    else {
+        blogDTO.setCaptchaForm(request);
+    }
 }
 
 
-/*
- *  setup the data transfer object
- */
-var blogDTO = new BlogDTO();
 
 blogDTO.setUser(user);
 blogDTO.setCategories(blogUtils.getCategories());

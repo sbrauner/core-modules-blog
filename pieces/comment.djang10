@@ -28,7 +28,7 @@ date_format - format string for date
 <p>
   {{ c.text }}
 
-  {% if admin %}
+  {% if user.isAdmin %}
   <form><input type="hidden" name="cid" value="{{ c.cid }}" /><input type="submit" name="action" value="delete" /></form>
   {% endif %}
 </p>
