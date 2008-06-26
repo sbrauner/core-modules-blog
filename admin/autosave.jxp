@@ -1,4 +1,14 @@
 <%
+// AJAX handler to save a copy of a post to blog.drafts.
+// If we're autosaving a "real" blog post, we save a copy with all the relevant
+// information, and associate it with the post by marking the draft with a 
+// post_id field which has the ID of the post.
+// Then we print the id of the new draft so that the browser knows what draft 
+// they're editing.
+//
+// If we're autosaving a draft, we just resave the draft with the updated info.
+// We still add a post_id field which doesn't have any meaning, and then we
+// tell the browser about this field just to be consistent. FIXME.
 
 core.blog.ping();
 core.blog.post();
@@ -19,7 +29,7 @@ if (id) {
         newPost = false;
     }
     else {
-        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) });
+        foundPost = db.blog.drafts.findOne({ post_id : ObjId(id) }) || db.blog.drafts.findOne({ _id: ObjId(id) });
         if(foundPost) {
             thePost = foundPost;
             newPost = false;

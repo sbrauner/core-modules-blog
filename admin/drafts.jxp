@@ -1,6 +1,7 @@
 Drafts
 
 <%
+// This is wrong; it will link to editing the post rather than the draft
 if(request.action == "Delete") {
     db.blog.drafts.remove({ _id : request._id });
 }

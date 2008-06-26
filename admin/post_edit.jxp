@@ -28,10 +28,8 @@ if (id) {
         foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
         if (foundPost) {
             thePost = foundPost;
-            newPost = false;
-            db.blog.drafts.remove({ _id : ObjId(id) });
+            newPost = true;
         }
-        id = null;
     }
 }
 
@@ -127,7 +125,11 @@ if ( request.action == "save" ) {
             log.blog("Saved new post: "+tojson(thePost));
         }
 
+
+        db.blog.drafts.remove({ _id : ObjId(id) }); // in case this is a draft
+        if(thePost.post_id) delete thePost.post_id; // in case this is a draft
         db.blog.posts.save( thePost );
+        newPost = false; // in case we're saving something for the first time
 
         id = thePost._id;
         justSaved=true;
