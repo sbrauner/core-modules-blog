@@ -326,15 +326,20 @@ function fixComments() {
     });
 }
 
-if ( db ) {
+
+Blog.fixDB = function(){
     db.blog.posts.ensureIndex( { ts : 1 } );
     db.blog.posts.ensureIndex( { categories : 1 } );
     db.blog.posts.ensureIndex( { name : 1 } );
 
     db.blog.posts.setConstructor( Post );
     db.blog.drafts.setConstructor( Post );
-
+    
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_FIELDS );
-
+    
     //fixComments();
+}
+
+if ( db ){
+    Blog.fixDB();
 }
