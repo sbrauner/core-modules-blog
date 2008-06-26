@@ -28,7 +28,7 @@ if (id) {
         foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
         if (foundPost) {
             thePost = foundPost;
-            newPost = true;
+            newPost = true; // We don't support deleting drafts, even of existing posts
         }
     }
 }
