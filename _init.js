@@ -48,14 +48,14 @@ Blog.getModelCallback = function() {
  *  @param {path object} root path to search (ex. __path__.blog.templates)
  */
 Blog.addTemplateRoot = function(root) {
-	djang10.addTemplateRoot(root);
+        djang10.addTemplateRoot(root);
 }
 
 /**
  *  Returns the routes object for blog.  Used by apps to set routing delegation.
  */
 Blog.getRoutes = function() {
-	return Blog.routes;
+        return Blog.routes;
 }
 
 /**
@@ -63,7 +63,7 @@ Blog.getRoutes = function() {
  *   @param {string} templateName name of template to find.  Do not include extension
  */
 Blog.getTemplate = function(templateName) {
-	return djang10.loadTemplate(templateName);
+        return djang10.loadTemplate(templateName);
 }
 
 /*
@@ -71,4 +71,5 @@ Blog.getTemplate = function(templateName) {
  */
 core.core.routes();
 Blog.routes = new Routes();
+Blog.routes.add("rss", "/~~/blog/rss.jxp");
 Blog.routes.setDefault("/~~/blog/index.jxp");
