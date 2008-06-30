@@ -186,10 +186,10 @@ var buttons = function(){ %>
 };
 
 
-var clientMeta = function(priority){
+var clientMeta = function(order){
     if(!Blog.extraFields) return;
     for(var extraFieldName in Blog.extraFields){
-        if (Blog.extraFields[extraFieldName].priority == priority){
+        if (Blog.extraFields[extraFieldName].order == order){
 
             %>
         <div class="post_meta_field">
