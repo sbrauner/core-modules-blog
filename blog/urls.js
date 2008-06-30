@@ -86,7 +86,8 @@ Blog.handleRequest = function( request , arg ){
         if (request.q)
             posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
         else if (request.category) {
-            posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).toArray();
+            // FIXME : need to fix search paging, then replace this
+            posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).limit(200).toArray();
             isCategorySearch = true;
             category = db.blog.categories.findOne( { name: request.category } );
         }
@@ -97,7 +98,8 @@ Blog.handleRequest = function( request , arg ){
                     extraFields[key].searchFunction(request, query);
             }
             if(Object.keys(query).length > 0){
-                posts = db.blog.posts.find( query ).sort({ts: -1}).toArray();
+                // FIXME : need to fix search paging, then replace this
+                posts = db.blog.posts.find( query ).sort({ts: -1}).limit(200).toArray();
                 useQuery = true;
             }
         }
