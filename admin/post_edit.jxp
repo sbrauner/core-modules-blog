@@ -412,6 +412,16 @@ function autosave() {
     }
 
     categories = categories.join("&");
+    var extraFields = "";
+<% if(allowModule && allowModule.blog && allowModule.blog.extraFields){
+    var fields = allowModule.blog.extraFields;
+    for(var key in fields){
+        print("extraFields += '&extra_"+key+"=' + document.editForm.extra_"+key
+              +".value;");
+    }
+} %>
+
+
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
          "&name="+encodeURIComponent(document.getElementById("name").value)+
@@ -421,7 +431,7 @@ function autosave() {
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
          "&suppressImage="+document.getElementById("suppressImage").checked+
          "&new_categories="+document.getElementById("new_categories").value+
-         "&"+categories, "autosave", function(response) {
+         "&"+categories + extraFields, "autosave", function(response) {
         id = response;
         var now = new Date();
         if(!response.match(/\S+/) || response.match(/\S+/)[0].length != 24){

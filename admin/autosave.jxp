@@ -77,6 +77,18 @@ thePost.live = parseBool( request.live );
 thePost.commentsEnabled = parseBool(request.commentsEnabled);
 thePost.suppressImage = parseBool( request.suppressImage );
 
+for(var key in request){
+    if(key.startsWith('extra_')){
+        var value = request[key];
+        var localName = key.replace(/^extra_/, '');
+        if(allowModule && allowModule.blog && allowModule.blog.extraFields &&
+           allowModule.blog.extraFields[localName]){
+            value = allowModule.blog.extraFields[localName].parseFunction(value);
+        }
+        thePost[localName] = value;
+    }
+}
+
 /*if ( Blog.extraFields ){
     for ( var extraFieldName in Blog.extraFields ){
 	var extraVal = request[ "extra_" + extraFieldName ];
