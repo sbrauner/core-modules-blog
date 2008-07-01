@@ -84,7 +84,7 @@ Blog.handleRequest = function( request , arg ){
         var useQuery = false;
 
         if (request.q)
-            posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } } );
+            posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } , ignoreRelevancy : arg.ignoreRelevancy} );
         else if (request.category) {
             // FIXME : need to fix search paging, then replace this
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).limit(200).toArray();
