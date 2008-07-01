@@ -1,7 +1,7 @@
 /*
  * utilities for blog processsing
  */
-core.blog.post();
+core.modules.blog.post();
 
  BlogUtils = {};
 

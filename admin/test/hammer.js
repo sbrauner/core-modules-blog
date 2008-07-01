@@ -1,6 +1,6 @@
 
 core.db.db();
-core.blog.urls();
+core.modules.blog.urls();
 
 request = {};
 
@@ -17,7 +17,7 @@ request = {};
     };
 
 for(var i=1; i<=162; i++) {
-    var post = core.blog.admin.post_edit();
+    var post = core.modules.blog.admin.post_edit();
     db.blog.postCount.save({id: post._id});
 
     // comments

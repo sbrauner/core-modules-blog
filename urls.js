@@ -1,7 +1,7 @@
 
-core.blog.post();
-core.blog.category();
-core.blog.missingpage();
+core.modules.blog.post();
+core.modules.blog.category();
+core.modules.blog.missingpage();
 core.content.search();
 
 Blog.log = log.app.blog;

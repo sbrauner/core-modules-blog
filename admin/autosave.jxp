@@ -10,9 +10,9 @@
 // We still add a post_id field which doesn't have any meaning, and then we
 // tell the browser about this field just to be consistent. FIXME.
 
-core.blog.ping();
-core.blog.post();
-core.blog.category();
+core.modules.blog.ping();
+core.modules.blog.post();
+core.modules.blog.category();
 
 var id = request.id;
 

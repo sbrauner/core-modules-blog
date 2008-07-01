@@ -4,7 +4,7 @@
 
 core.user.user();
 core.user.auth();
-core.blog.blogDTO();
+core.modules.blog.blogDTO();
 
 
 /*
@@ -12,8 +12,8 @@ core.blog.blogDTO();
  */
 
 Blog = {};
-Blog.urls = core.blog.urls();
-Blog.blogUtils = core.blog.utils();
+Blog.urls = core.modules.blog.urls();
+Blog.blogUtils = core.modules.blog.utils();
 
 __path__.post();
 __path__.category();
@@ -22,7 +22,7 @@ __path__.ping();
 /*
  *  initialize djang10 framework and add our default templates
  */
-djang10.addTemplateRoot(core.blog.pieces);
+djang10.addTemplateRoot(core.modules.blog.pieces);
 
 /**
  *   options for this usage.  Set in blog.install.js

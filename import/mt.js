@@ -5,8 +5,8 @@ var baseUrl = "http://www.alleyinsider.com";
 
 // ------
 
-core.blog.post();
-core.blog.category();
+core.modules.blog.post();
+core.modules.blog.category();
 core.content.search();
 
 db.blog.posts.ensureIndex( { name : 1 } );

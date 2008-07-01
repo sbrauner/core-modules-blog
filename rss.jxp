@@ -3,7 +3,7 @@
 <%
 var RSSTHUMBX = 154; // FIXME: blog configuration parameter
 var RSSTHUMBY = 115;
-core.blog.post();
+core.modules.blog.post();
 core.net.url();
 
 var requestResult = Blog.handleRequest(request);
