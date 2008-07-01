@@ -71,5 +71,5 @@ Blog.getTemplate = function(templateName) {
  */
 core.core.routes();
 Blog.routes = new Routes();
-Blog.routes.add("rss", "/~~/blog/rss.jxp");
-Blog.routes.setDefault("/~~/blog/index.jxp");
+Blog.routes.add("rss", "/~~/modules/blog/rss.jxp");
+Blog.routes.setDefault("/~~/modules/blog/index.jxp");

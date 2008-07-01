@@ -1,4 +1,4 @@
-<link type="text/css" rel="stylesheet" href="/~~/blog/assets/blog.css" />
+<link type="text/css" rel="stylesheet" href="/~~/modules/blog/assets/blog.css" />
 
 {% block pageheader %}
 {% endblock %}

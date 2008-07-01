@@ -225,7 +225,7 @@ tinyMCE.init({
 	external_image_list_url : "/admin/_imageList.jxp",
 	theme_advanced_buttons1_add : "separator,bramus_cssextras_classes,bramus_cssextras_ids",
 	convert_urls : false ,
-	content_css : "/~~/blog/assets/blog_post.css"
+	content_css : "/~~/modules/blog/assets/blog_post.css"
 });
 </script>
 
