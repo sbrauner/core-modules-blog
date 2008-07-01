@@ -18,12 +18,23 @@ thePost.cls = request.cls || "entry";
 thePost.author = user.name;
 var origPost;
 
+var unformat = function(thePost){
+    for(var key in thePost){
+        if(key.startsWith("_original_")){
+            thePost[key.replace(/^_original_/, '')] = thePost[key];
+	}
+    }
+}
+
 if (id) {
     foundPost = db.blog.posts.findOne( CrID( id ) );
     if (foundPost) {
         thePost = foundPost;
         newPost = false;
         origPost = Object.extend({}, thePost);
+        // We only format posts saved by post_edit, so we only unformat
+        // posts when we pull them out of the blog.posts collection.
+        unformat(thePost);
     } else {
         foundPost = db.blog.drafts.findOne( { _id : ObjId(id) } );
         if (foundPost) {
@@ -128,8 +139,25 @@ if ( request.action == "save" ) {
 
         db.blog.drafts.remove({ _id : ObjId(id) }); // in case this is a draft
         if(thePost.post_id) delete thePost.post_id; // in case this is a draft
+
+        /* Site-specific formatting */
+        // We only format posts before saving in db.blog.posts
+        Object.keys(thePost).forEach(function(key){
+            if(Ext.getlist(allowModule, 'blog', 'format', key)){
+                var format = allowModule.blog.format[key];
+                if(typeof format == "function")
+                    format = [format];
+                thePost["_original_"+key] = thePost[key];
+                var text = thePost[key];
+                format.forEach(function(z){ text = z(text); });
+                thePost[key] = text;
+            }
+        });
         db.blog.posts.save( thePost );
         newPost = false; // in case we're saving something for the first time
+
+        // Don't want them editing the formatted version
+        unformat(thePost);
 
         id = thePost._id;
         justSaved=true;
@@ -160,7 +188,6 @@ if ( request.content ) thePost.content = request.content;
 
 var categories = db.blog.categories.find().sort( { name : 1 } ).toArray( 100000 );
 categories.sort( function( a , b ){
-
     var hasA = thePost.categories.contains( a.name );
     var hasB = thePost.categories.contains( b.name );
 
