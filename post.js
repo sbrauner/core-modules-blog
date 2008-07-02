@@ -227,6 +227,34 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     return url;
 };
 
+// This gets called before saving in posts or drafts
+Post.prototype.format = function(){
+    /* Site-specific formatting */
+    var that = this;
+    Object.keys(this).forEach(function(key){
+        if(Ext.getlist(allowModule, 'blog', 'format', key)){
+            var format = allowModule.blog.format[key];
+            if(typeof format == "function")
+                format = [format];
+            that["_original_"+key] = that[key];
+            var text = that[key];
+            format.forEach(function(z){ text = z(text); });
+            that[key] = text;
+        }
+    });
+};
+
+// This gets called before loading in post_edit and nowhere else.
+// This can't be a post_load because it must not happen before rendering
+// a post in a blog.
+Post.prototype.unformat = function(){
+    for(var key in this){
+        if(key.startsWith("_original_")){
+            this[key.replace(/^_original_/, '')] = this[key];
+	}
+    }
+};
+
 
 Post.get404 = function() {
     http404Page = db.blog.posts.findOne({ name: '404' });

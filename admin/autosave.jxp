@@ -102,6 +102,7 @@ for(var key in request){
     }
 }*/
 
+thePost.format();
 db.blog.drafts.save( thePost );
 print(thePost.post_id);
 
