@@ -30,6 +30,13 @@ if( action == "Block") {
    action = "recent";
 }
 
+if ( action == "delete" ){
+    var p = db.blog.posts.findOne({ _id: request.postid });
+    p.deleteComment(request.cid);
+    db.blog.posts.save(p);
+    action = "recent";
+}
+
 if ( action == "recent" ){
     var cursor = db.blog.posts.find( null , { name : true , title : true , ts : 1 , comments : true } );
     cursor.sort( { ts : -1 } ).limit( 100 );
@@ -66,7 +73,13 @@ if ( sortFunction )
     <td>
     <%= z.comment.text %>
     </td>
-    <td><%= z.comment.ip %><%= blocked.contains(z.comment.ip) ? '<span style="color:red">Blocked</span>' : '<form method="POST"><input type="hidden" name="ipx" value="'+z.comment.ip+'" /><input type="submit" name="action" value="Block" /></form>' %></td>
+    <td><%= z.comment.ip %><%= blocked.contains(z.comment.ip) ? '<span style="color:red">Blocked</span>' : '<form method="POST"><input type="hidden" name="ipx" value="'+z.comment.ip+'" /><input type="submit" name="action" value="Block" /></form>' %>
+    <form method="POST">
+        <input type="hidden" name="cid" value="<%= z.comment.cid %>" />
+        <input type="hidden" name="postid" value="<%= z.post._id %>" />
+        <input type="submit" name="action" value="delete" />
+    </form>
+    </td>
   </tr>
 <% lastId = z.post._id; } ); %>
 
