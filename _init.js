@@ -30,6 +30,11 @@ djang10.addTemplateRoot(core.modules.blog.pieces);
 Blog._options = {};
 
 /**
+ *   default TinyMCE version to load in post_edit and category_edit
+ */
+Blog._defaultTinyMCE = 'current';
+
+/**
  *  function to call right before rendering to allow the user to
  *  provide a callback to fill the model with additional data
  */

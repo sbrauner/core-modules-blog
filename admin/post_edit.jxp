@@ -211,7 +211,7 @@ var clientMeta = function(order){
 
 %>
 
-<script type="text/javascript" src="NOCDN/@@/tinymce/current/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/@@/tinymce/<%= allowModule.blog.tinyMCEVersion %>/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 tinyMCE.init({
 	mode : "exact",
