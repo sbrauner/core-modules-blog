@@ -71,7 +71,7 @@ if ( sortFunction )
     <td><%= z.comment.author %></td>
     <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
     <td>
-    <%= z.comment.text %>
+      <%= content.HTML.escape(z.comment.text) %>
     </td>
     <td><%= z.comment.ip %><%= blocked.contains(z.comment.ip) ? '<span style="color:red">Blocked</span>' : '<form method="POST"><input type="hidden" name="ipx" value="'+z.comment.ip+'" /><input type="submit" name="action" value="Block" /></form>' %>
     <form method="POST">
