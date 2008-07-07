@@ -292,6 +292,8 @@ Post.cache = new TimeOutCache();
 
 Post.getMostPopular = function( num , articlesBack ){
 
+    articlesBack = articlesBack || 100;
+
     var key = "__mostPopular_" + num + "_" + articlesBack;
     var all = Post.cache.get( key );
     if ( all )
@@ -309,6 +311,8 @@ Post.getMostPopular = function( num , articlesBack ){
 };
 
 Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
+
+    articlesBack = articlesBack || 100;
 
     var key = "__mostCommented_" + num + "_" + articlesBack;
 
