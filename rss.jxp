@@ -45,10 +45,13 @@ function clean( s ){
 }
 
 // We add track info to the link but the guid we keep clean
+var blogURL = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
 var fixUrl = function(u){
     if(request.src)
         u = u + "?src="+request.src;
-    return u;
+    // I know we should call post.getUrl() instead of this, but it's broken when
+    // blog isn't installed at /, so I'm doing this hack instead.
+    return blogURL+u;
 };
 
 var title;
@@ -69,7 +72,8 @@ else if(!title && requestResult.search){
 
 if(! title) title = siteName;
 
-var link = LocalURL(request.getURL().replace(/^\/rss\/?/, '/')).toString();
+// This is where this page (rss.jxp) was called from.
+var link = LocalURL(request.getURL().replace(/\/rss\/?/, '/')).toString();
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
@@ -86,9 +90,9 @@ var link = LocalURL(request.getURL().replace(/^\/rss\/?/, '/')).toString();
             var post = requestResult.posts[i];
         %>
         <item>
-            <guid><%= post.getUrl(request) %></guid>
+            <guid><%= blogURL+post.name %></guid>
             <title><%= clean( post.title ) %></title>
-            <link><%= fixUrl(post.getUrl(request)) %></link>
+            <link><%= fixUrl(post.name) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
             <%
