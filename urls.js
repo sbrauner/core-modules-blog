@@ -222,6 +222,8 @@ Blog.handleRequest = function( request , arg ){
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: uri });
+                if ( ! category )
+                    category = db.blog.categories.findOne( { name: uri.toLowerCase() } );
             }
             else {
                 // this isn't a category search, so we just assume its a date search or partial url search
