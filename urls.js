@@ -181,7 +181,7 @@ Blog.handleRequest = function( request , arg ){
                 // Some old posts were changed to have underscores in the
                 // slug instead of hyphens. If we didn't find a page using the
                 // given slug, try replacing the hyphens with underscores.
-                searchCriteria.name = searchCriteria.name.replace(/-/g, "_");
+                searchCriteria.name = uri.replace(/-/g, "_");
                 entry = db.blog.posts.findOne(searchCriteria);
             }
 
