@@ -291,20 +291,27 @@ Post.getNoResults = function() {
 Post.cache = new TimeOutCache();
 
 Post.getMostPopular = function( num , articlesBack ){
-
+    
+    num = num || 10;
     articlesBack = articlesBack || 100;
 
     var key = "__mostPopular_" + num + "_" + articlesBack;
     var all = Post.cache.get( key );
     if ( all )
         return all;
-
-    all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
-    all = all.sort( function( a , b ){
-        return b.views - a.views;
-    } );
-
-    all = all.slice( 0 , num );
+    
+    all = [];
+    
+    var sortFunc = function( a , b ){
+            return b.views - a.views;
+    };
+    
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+    while ( cursor.hasNext() ){
+        all.push( cursor.next() );
+        all = all.sort( sortFunc );
+        all = all.slice( 0 , num );
+    }
 
     Post.cache.add( key , all );
     return all;
@@ -328,16 +335,18 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
     if ( daysBackToCountComments )
         sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
 
-    all = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack ).toArray();
-    all = all.sort(
-                   function( a , b ){
-                       if ( ! sinceWhen )
-                           return b.getNumComments() - a.getNumComments();
-                       return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
-                   }
-                   );
-
-    all = all.slice( 0 , num );
+    all = [];
+    var sortFunc = function( a , b ){
+        if ( ! sinceWhen )
+            return b.getNumComments() - a.getNumComments();
+        return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
+    };
+    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+    while ( cursor.hasNext() ){
+        all.push( cursor.next() );
+        all = all.sort( sortFunc );
+        all = all.slice( 0 , num );
+    }
 
     Post.cache.add( key , all );
     return all;
