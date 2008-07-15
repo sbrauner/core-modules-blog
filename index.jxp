@@ -62,6 +62,7 @@ else if ( result.isCategorySearch ) {
     template = blog.getTemplate("postSnippetList");
 }
 else if ( result.search ) {
+    blogDTO.setSearch(result.search);
     blogDTO.setPageTitle("Search Results: "+result.posts.length+(result.posts.length == 1 ? " match for " : " matches for ")+result.search);
     template = blog.getTemplate("postSnippetList");
 }

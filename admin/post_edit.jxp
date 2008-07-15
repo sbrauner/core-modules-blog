@@ -154,7 +154,7 @@ if ( request.action == "save" ) {
     }
 }
 else if (request.action == 'delete') {
-    log('Post titled "'+thePost.title+'" deleted by '+user.name);
+    Blog.log.info('Post titled "'+thePost.title+'" deleted by '+user.name);
     if (db.blog.posts.remove({_id: thePost._id})) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "posts" );

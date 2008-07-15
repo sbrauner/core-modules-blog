@@ -181,7 +181,7 @@ Blog.handleRequest = function( request , arg ){
                 // Some old posts were changed to have underscores in the
                 // slug instead of hyphens. If we didn't find a page using the
                 // given slug, try replacing the hyphens with underscores.
-                searchCriteria.name = searchCriteria.name.replace(/-/g, "_");
+                searchCriteria.name = uri.replace(/-/g, "_");
                 entry = db.blog.posts.findOne(searchCriteria);
             }
 
@@ -222,6 +222,8 @@ Blog.handleRequest = function( request , arg ){
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: uri });
+                if ( ! category )
+                    category = db.blog.categories.findOne( { name: uri.toLowerCase() } );
             }
             else {
                 // this isn't a category search, so we just assume its a date search or partial url search
@@ -268,6 +270,10 @@ Blog.handlePosts = function( request , thePost , user ){
 
         var hasYourName = request.yourname && request.yourname.trim().length != 0;
         var hasEmail = request.email && request.email.trim().length != 0;
+
+        if( thePost.commentsEnabled == false ){
+            return "Comments on this post have been closed.<br>"+content.HTML.escape(request.txt);
+        }
 
         if ( user ) {
             comment = {};

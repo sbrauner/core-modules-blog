@@ -12,6 +12,7 @@ function BlogDTO() {
     this._url = "";
     this._email = "";
     this._commentError = "";
+    this._search = "";
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -147,3 +148,6 @@ BlogDTO.prototype.getCommentText = function() { return this._commentText; }
 
 BlogDTO.prototype.setCaptchaMessage = function(msg) { this._captchaMessage = msg; }
 BlogDTO.prototype.getCaptchaMessage = function() { return this._captchaMessage; }
+
+BlogDTO.prototype.setSearch = function(s){ this._search = s; }
+BlogDTO.prototype.getSearch = function() { return this._search; }
