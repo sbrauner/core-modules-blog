@@ -271,6 +271,10 @@ Blog.handlePosts = function( request , thePost , user ){
         var hasYourName = request.yourname && request.yourname.trim().length != 0;
         var hasEmail = request.email && request.email.trim().length != 0;
 
+        if( thePost.commentsEnabled == false ){
+            return "Comments on this post have been closed.<br>"+content.HTML.escape(request.txt);
+        }
+
         if ( user ) {
             comment = {};
             comment.author = user.getDisplayName();
