@@ -11,7 +11,7 @@
 
       <form id="" class="search" name="">
         <p>
-          <input class="text" type="text" size="20" name="q" value="" /> <input class="submit" type="submit" value="Search">
+          <input class="text" type="text" size="20" name="q" value="{{ blogDTO.getSearch }}" /> <input class="submit" type="submit" value="Search">
         </p>
       </form>
 
