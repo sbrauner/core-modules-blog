@@ -26,6 +26,13 @@ if ( request.action == "save" ) {
    	    category.name = request.name;
    	    category.description = request.description;
 
+        if(request.with_user){
+            category.author = request.author; // saved as text
+        }
+        else {
+            delete category.author;
+        }
+
 	    db.blog.categories.save( category );
 
 	    if (!category._id) print( "Error saving category." );
@@ -103,5 +110,22 @@ tinyMCE.init({
             <div class="post_meta_field_name">Description</div>
             <div class="post_meta_field_value"><textarea id="description" name="description"><%= category.description || "" %></textarea></div>
         </div>
+        <div class="post_meta_field">
+          <div class="post_meta_field_name">Associated with an author?</div>
+          <div class="post_meta_field_value">
+            <input type="checkbox" name="with_user" onclick="checkboxActive(this, 'author')" <%= category.author ? 'checked' : '' %> />
+            <select name="author" id="author" <%= category.author ? '': 'disabled="true"' %>>
+              <% db.users.find().forEach(function(u){ %>
+              <option value="<%= u.name %>" <%= category.author == u.name ? 'selected="selected"': '' %>><%= u.name %></option>
+              <% }); %>
+          </select>
+          </div>
     </div>
 </form>
+<script>
+function checkboxActive(checkbox, el){
+  el = document.getElementById(el);
+  if(checkbox.checked) el.disabled = false;
+  else el.disabled = true;
+};
+</script>
