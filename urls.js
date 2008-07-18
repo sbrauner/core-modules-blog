@@ -215,15 +215,27 @@ Blog.handleRequest = function( request , arg ){
         }
         else {
             // search categories
-            searchCriteria.categories = uri;
-            entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            var catName = uri;
+            if (db.blog.categories.findOne({name: catName})) {
+                searchCriteria.categories = catName;
+                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            }
+            if (db.blog.categories.findOne({name: catName.replace(/-/g, "_")})){
+                // Some categories also have underscores in the slug, but links
+                // persist with hyphens in them; as previously, if we don't
+                // find any posts which match the category with hyphens, we
+                // try using underscores instead of hyphens.
+                catName = catName.replace(/-/g, "_");
+                searchCriteria.categories = catName;
+                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            }
 
             if (entries.length() > 0) {
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
-                category = db.blog.categories.findOne({ name: uri });
+                category = db.blog.categories.findOne({ name: catName });
                 if ( ! category )
-                    category = db.blog.categories.findOne( { name: uri.toLowerCase() } );
+                    category = db.blog.categories.findOne( { name: catName.toLowerCase() } );
             }
             else {
                 // this isn't a category search, so we just assume its a date search or partial url search
