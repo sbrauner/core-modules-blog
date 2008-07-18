@@ -9,8 +9,9 @@ core.modules.blog.post();
   *   find the most recent posts
   */
  BlogUtils.getRecentPosts = function(count) {
-	var recent = db.blog.posts.find({live: true, cls: "entry"}).sort({ts: -1}).limit(count).toArray();
- 	return recent;
+
+     var recent = db.blog.posts.find(this.liveEntry()).sort({ts: -1}).limit(count).toArray();
+     return recent;
  }
 
 /*
@@ -52,6 +53,14 @@ BlogUtils.isBlockedIP = function(ip) {
     if ( db.blog.blocked.findOne( { ip : ip } ) )
         return true;
     return false;
+}
+
+BlogUtils.liveEntry = function(obj) {
+    if(!obj) obj = {};
+    obj.live = true;
+    obj.cls = "entry";
+    obj.ts = {"$lte" : new Date()};
+    return obj;
 }
 
  return BlogUtils;

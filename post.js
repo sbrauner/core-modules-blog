@@ -304,7 +304,7 @@ Post.getNoResults = function() {
 Post.cache = new TimeOutCache();
 
 Post.getMostPopular = function( num , articlesBack ){
-    
+
     num = num || 10;
     articlesBack = articlesBack || 100;
 
@@ -312,14 +312,14 @@ Post.getMostPopular = function( num , articlesBack ){
     var all = Post.cache.get( key );
     if ( all )
         return all;
-    
+
     all = [];
-    
+
     var sortFunc = function( a , b ){
             return b.views - a.views;
     };
-    
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+
+    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
         all = all.sort( sortFunc );
@@ -354,7 +354,7 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
             return b.getNumComments() - a.getNumComments();
         return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
     };
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
         all = all.sort( sortFunc );
