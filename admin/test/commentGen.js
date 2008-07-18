@@ -1,6 +1,5 @@
-core.db.db();
 
-totalPosts = count("blog.posts");
+totalPosts = db.blog.posts.count();
 
 var posts = db.blog.posts.find().toArray();
 var i=0;

@@ -5,6 +5,10 @@ core.media.image();
 core.util.timeoutcache();
 core.ext.getlist();
 
+/** @constructor Creates a new blog post
+ * @param {string} name The URL at which the post can be found
+ * @param {string} title Post title
+ */
 function Post(name, title) {
     this.name = name;
     this.title = title;
@@ -16,13 +20,22 @@ function Post(name, title) {
     this.categories = new Array();
 };
 
+/** Fields: title, author, content, and excerpt
+ * @type Object
+ */
 Post.prototype.SEARCH_FIELDS = { title : 1 , author : 1  , content : .2, excerpt : .2 };
 Post.prototype.SEARCH_OPTIONS = { stripHTML : true };
 
+/** Get a substring of this post's content, up to the first instance of "---JUMP---".
+ * @return A substring of this post's content.
+ */
 Post.prototype.getTeaserContent = function(){
     return this.content.replace( /---JUMP---.*/m , "" );
 };
 
+/** Clean and return the full content.  Cleaning involves removing "---JUMP---" if this post's content contains the string and making sure that the size of images is not too large.
+ * @return {string} Cleaned content.
+ */
 Post.prototype.getFullContent = function(){
     var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
     html = Media.Image.giveIMGTagsURLMaxes( html );
@@ -110,7 +123,7 @@ Post.prototype.addComment = function( comment ){
 
     comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
     // Strip elements like <a href="...></a> (missing closing quote).
-    // Leaves closing elements; that sucks but hopefully the browser can handle 
+    // Leaves closing elements; that sucks but hopefully the browser can handle
     // it.
     comment.text = comment.text.replace(/<[^>]+"[^>"]+>/g, "");
     // Similarly with tags like <a href="..."</a>.
@@ -291,7 +304,7 @@ Post.getNoResults = function() {
 Post.cache = new TimeOutCache();
 
 Post.getMostPopular = function( num , articlesBack ){
-    
+
     num = num || 10;
     articlesBack = articlesBack || 100;
 
@@ -299,14 +312,14 @@ Post.getMostPopular = function( num , articlesBack ){
     var all = Post.cache.get( key );
     if ( all )
         return all;
-    
+
     all = [];
-    
+
     var sortFunc = function( a , b ){
             return b.views - a.views;
     };
-    
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+
+    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
         all = all.sort( sortFunc );
@@ -341,7 +354,7 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
             return b.getNumComments() - a.getNumComments();
         return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
     };
-    var cursor = db.blog.posts.find( { live : true , cls : "entry" } ).sort( { ts : -1 } ).limit( articlesBack );
+    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
         all = all.sort( sortFunc );
@@ -381,9 +394,9 @@ Blog.fixDB = function(){
 
     db.blog.posts.setConstructor( Post );
     db.blog.drafts.setConstructor( Post );
-    
+
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_FIELDS );
-    
+
     //fixComments();
 }
 
