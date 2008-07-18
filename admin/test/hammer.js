@@ -1,5 +1,4 @@
 
-core.db.db();
 core.modules.blog.urls();
 
 request = {};
@@ -31,8 +30,8 @@ for(var i=1; i<=162; i++) {
     }
 
     if(i%10 == 0) {
-        var count1 = count("blog.posts");
-        var count2 = count("blog.postCount");
+        var count1 = db.blog.posts.count();
+        var count2 = db.blog.postCount.count();
         log("c1: "+count1+", c2: "+count2);
         assert(count1 == count2);
     }
