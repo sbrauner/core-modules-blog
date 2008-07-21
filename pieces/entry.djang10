@@ -16,7 +16,9 @@
 
 {% comment %}
 
-Render the content of a post
+Render the content of a post.
+
+Links to category for author if any (FIXME: locate the /blog root.)
 
 Required parameters:
 post - an object from the blog.posts collection
@@ -38,7 +40,11 @@ dateline - Text appearing before the date field.  Defaults to "".
 <p class="post-date">{{ post.ts|date:"j M Y" }}</p>
 <p class="byline">
 {% if post.author %}
-  {{ post.author }}
+  {% if post.getAuthorCat %}
+    <a href="/{{ post.getAuthorCat }}">{{ post.author }}</a>
+  {% else %}
+    {{ post.author }}
+  {% endif %}
 {% endif %}
 {% if post.commentsEnabled or post.getComments.length %}
   &#151; <a href="{{ post.name }}#comments">
