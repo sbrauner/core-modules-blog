@@ -22,7 +22,6 @@ Required parameters:
 c - an object from the blog.posts collection
 
 Optional parameters:
-verb - text linking the author to the comment.  Defaults to "said:".  Could also be "ranted ", "twittered...", "espoused", etc.
 date_format - format string for date
 
 {% endcomment %}
