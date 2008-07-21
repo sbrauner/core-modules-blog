@@ -226,6 +226,7 @@ Blog.handleRequest = function( request , arg ){
             // display a preview of a post
             entries = db.blog.drafts.find( {post_id : ObjId(request.id)} );
             previewSnippet = (uri == "previewExcerpt");
+            isPage = true;
             // so that the blog doesn't think this is a search
             uri = null;
         }
