@@ -63,7 +63,7 @@ captcha_message
     <div id="comments">
       <h2>Comments</h2>
       {% for c in post.comments %}
-        <div class="container {% cycle zebra "" %}">
+        <div class="container {% cycle "zebra" "" %}">
           {% if c.isAdmin %}
             <h3 class="user-admin">{{ forloop.counter }}.
           {% else %}
