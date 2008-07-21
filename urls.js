@@ -329,6 +329,9 @@ Blog.handlePosts = function( request , thePost , user ){
             }
         }
 
+        if ( !request.txt )
+            return "Cannot post empty comment.";
+
         if ( comment ) {
 
             comment.ts = new Date();
