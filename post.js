@@ -291,6 +291,14 @@ Post.prototype.unformat = function(){
 };
 
 
+Post.prototype.getAuthorCat = function(){
+    if(!this.author) return null;
+    var cat = db.blog.categories.findOne({author: this.author});
+    if(!cat) return cat;
+    return cat.name;
+};
+
+
 Post.get404 = function() {
     http404Page = db.blog.posts.findOne({ name: '404' });
     if (!http404Page) {
