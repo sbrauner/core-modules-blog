@@ -339,6 +339,9 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.isAdmin = user && user.isAdmin ? true : false;
 
             thePost.addComment( comment );
+            if(comment.text.trim() == ''){
+                log("Got an empty comment; source was " + tojson(request.txt));
+            }
             db.blog.posts.save( thePost );
 
             // On success, we blank out these fields so that they don't get
