@@ -138,12 +138,14 @@ Post.prototype.addComment = function( comment ){
         this.comments = [];
 
     comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
+
     // Strip elements like <a href="...></a> (missing closing quote).
     // Leaves closing elements; that sucks but hopefully the browser can handle
     // it.
     comment.text = comment.text.replace(/<[^>]+"[^>"]+>/g, "");
     // Similarly with tags like <a href="..."</a>.
     comment.text = comment.text.replace(/<[^>]+</g, "<");
+
     comment.cid = ObjectID();
 
     if ( isArray( this.comments ) )

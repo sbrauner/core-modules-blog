@@ -247,7 +247,7 @@ Blog.handleRequest = function( request , arg ){
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
             }
 
-            if (entries.length() > 0) {
+            if (entries && entries.length() > 0) {
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
                 category = db.blog.categories.findOne({ name: catName });
