@@ -42,7 +42,7 @@ date_format - format string for date
 </div>
 
 <p>
-  {{ c.text }}
+  {{ c.text|linebreaksbr }}
 
   {% if user.isAdmin %}
   <form method="post"><input type="hidden" name="cid" value="{{ c.cid }}" /><input type="submit" name="action" value="delete" /></form>
