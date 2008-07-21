@@ -219,6 +219,9 @@ Blog.handleRequest = function( request , arg ){
             searchCriteria.cls = 'entry';
             if ( ! searchCriteria.categories && arg.homeCategory )
                 searchCriteria.categories = arg.homeCategory; // this shouldn't be in the generic blog code, because why would you want to put this kind of limit on the home page by default?
+
+            if ( ! searchCriteria.categories && allowModule && allowModule.blog && allowModule.blog.homeCategory )
+                searchCriteria.categories = allowModule.blog.homeCategory;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
         }
