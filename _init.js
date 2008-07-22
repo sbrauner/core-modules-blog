@@ -1,11 +1,11 @@
 /*
  * Blog imports
  */
-
+log("rerunning init");
 core.user.user();
 core.user.auth();
 core.modules.blog.blogDTO();
-
+core.core.mail();
 
 /*
  *  Blog App Module

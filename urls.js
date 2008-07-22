@@ -312,6 +312,18 @@ Blog.handlePosts = function( request , thePost , user ){
             thePost.addComment( comment );
             db.blog.posts.save( thePost );
 
+            // email the post's author that there is a new post
+            if(thePost.user) {
+                m = new Mail.Message( "Comment on blog post "+thePost.title,
+                                      "Notification: on "+comment.ts+", a comment was posted by "+
+                                      (user ? user.name : request.yourname)+
+                                      " on your blog post titled "+thePost.title+
+                                      ":\n\n"+comment.text);
+                m.addRecipient(  thePost.user.email , "to" );
+                mail = Mail.SMTP.gmail("10gen.auto@gmail.com", "jumpy171");
+                m.send( mail );
+            }
+
             // On success, we blank out these fields so that they don't get
             // repopulated in the form
             // FIXME: This doesn't actually work! It just appends parameters to

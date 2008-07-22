@@ -72,6 +72,7 @@ if ( request.action == "save" ) {
         thePost.content = request.content;
         thePost.excerpt = request.excerpt;
         thePost.ts = new Date( request.ts );
+        thePost.user = user;
         if ( request.author )
             thePost.author = request.author;
 
@@ -189,7 +190,7 @@ var buttons = function(){ %>
   <input type="button" value="Preview" onclick="preview('preview')" />
   <% if (!newPost) { %><input type="button" value="Delete" id="delete" onclick="confirmDelete();"> <% } %>
 </div>
-<% 
+<%
 };
 
 
