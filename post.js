@@ -58,12 +58,22 @@ Post.prototype.getFullContent = function(){
     return html;
 };
 
+/**
+ * Fetch some kind of content for this post.
+ * @param {boolean} full true means the full content; false means the teaser
+ * @return {string} some kind of content
+ */
 Post.prototype.getContent = function( full ){
     if ( full )
         return this.getFullContent();
     return this.getTeaserContent();
 };
 
+/**
+ * Check whether a post has a jump and whether there's any content afterwards.
+ * @return {boolean} true if there are at least 20 characters after the JUMP
+ *   marker
+ */
 Post.prototype.hasJump = function(){
 
     var idx = this.content.indexOf( "---JUMP---" );
@@ -75,6 +85,11 @@ Post.prototype.hasJump = function(){
     return ( idx + 10 ) < this.content.length;
 };
 
+/**
+ * Get the number of comments on this post made since the given time.
+ * @param {Date} when the time to check against
+ * @return {number} the number of comments made since the given Date
+ */
 Post.prototype.getNumCommentsSince = function( when ){
     if ( ! when )
         return this.getNumComments();
@@ -93,6 +108,10 @@ Post.prototype.getNumCommentsSince = function( when ){
     return num;
 }
 
+/**
+ * Return the number of comments that have been made on this post.
+ * @return {number} the number of comments this post has
+ */
 Post.prototype.getNumComments = function(){
     if ( !this.comments )
         return 0;
@@ -108,6 +127,9 @@ Post.prototype.getNumComments = function(){
     return numComments;
 };
 
+/**
+ * Delete comment with the given id from this post.
+ */
 Post.prototype.deleteComment = function(cid){
     var l = log.blog.post.deleteComment;
     l.debug( cid );
@@ -132,6 +154,10 @@ Post.prototype.deleteComment = function(cid){
     delete this.comments[cid];
 };
 
+/**
+ * Add the given comment to this post.
+ * @param {Comment} comment a comment
+ */
 Post.prototype.addComment = function( comment ){
 
     if ( ! this.comments )
@@ -154,6 +180,10 @@ Post.prototype.addComment = function( comment ){
         this.comments[comment.cid.toString()] = comment;
 };
 
+/**
+ * Get this post's comments as an array.
+ * @return {Array} this post's comments
+ */
 Post.prototype.getComments = function() {
     if ( ! this.comments )
         return [];
@@ -173,6 +203,10 @@ Post.prototype.getComments = function() {
     return this.comments;
 };
 
+/**
+ * Presave hook for Posts.
+ * Indexes this post for searching.
+ */
 Post.prototype.presave = function(){
     var extraFields = Ext.getlist(allowModule, 'blog', 'extraFields') || {};
     for(var key in extraFields){
@@ -184,6 +218,12 @@ Post.prototype.presave = function(){
     Search.index( this , this.SEARCH_FIELDS , this.SEARCH_OPTIONS );
 };
 
+/**
+ * Gets a suitable excerpt for this post.
+ * Tries the excerpt field of this post, then tries taking a snippet of the
+ * content.
+ * @return {string} some text appropriate as an excerpt for the post
+ */
 Post.prototype.getExcerpt = function(){
     if ( this.excerpt )
         return this.excerpt;
@@ -195,6 +235,11 @@ Post.prototype.getExcerpt = function(){
     return Text.snippet( foo );
 };
 
+/**
+ * Gets the URL for the post assuming the blog is installed at /.
+ * FIXME: needs to use getBaseURL() or whatever it's called.
+ * @return {string} a url suitable for accessing this post
+ */
 Post.prototype.getUrl = function( r ){
     if ( ! r && request )
         r = request;
@@ -205,6 +250,11 @@ Post.prototype.getUrl = function( r ){
     return u;
 };
 
+/**
+ * Get the next post, matching filter if any, from this one.
+ * "Next" means slightly older.
+ * @return {Post} a post object
+ */
 Post.prototype.getNextPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
     if ( filter )
@@ -220,6 +270,11 @@ Post.prototype.getNextPost = function( filter ){
     return null;
 };
 
+/**
+ * Get the previous post, matching filter if any, from this one.
+ * "Previous" means slightly younger.
+ * @return {Post} a post object
+ */
 Post.prototype.getPreviousPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
     if ( filter )
@@ -234,6 +289,14 @@ Post.prototype.getPreviousPost = function( filter ){
     return null;
 };
 
+/**
+ * Get a URL for a thumbnail of the first image referred to in this post.
+ * If maxX and maxY are given, the URL will perform server-side
+ * scaling.
+ * @param {number} maxX the number of pixels wide this image should be
+ * @param {number} maxY the number of pixels high this image should be
+ * @return {string} a URL which will fetch this image
+ */
 Post.prototype.getFirstImageSrc = function( maxX , maxY ){
     if ( ! this.content )
         return null;
@@ -265,6 +328,12 @@ Post.prototype.getFirstImageSrc = function( maxX , maxY ){
 };
 
 // This gets called before saving in posts or drafts
+/**
+ * Translate user-friendly plaintext into HTML in a site-specific way.
+ * This method consults the allowModule.blog.format object to find translation
+ * methods, saves the original plaintext in special fields, and replaces that
+ * plaintext with the result of the translations.
+ */
 Post.prototype.format = function(){
     /* Site-specific formatting */
     var that = this;
@@ -281,9 +350,13 @@ Post.prototype.format = function(){
     });
 };
 
-// This gets called before loading in post_edit and nowhere else.
+// This gets called during loading in post_edit and nowhere else.
 // This can't be a post_load because it must not happen before rendering
 // a post in a blog.
+/**
+ * This "untranslates" the content of a blog by restoring the plaintext fields
+ * and replacing the formatted HTML versions.
+ */
 Post.prototype.unformat = function(){
     for(var key in this){
         if(key.startsWith("_original_")){
@@ -292,7 +365,11 @@ Post.prototype.unformat = function(){
     }
 };
 
-
+/**
+ * Gets the category for the author who wrote this post, if any.
+ * @return the category name for the category that this post's author is
+ *   associated with, if any, or none otherwise
+ */
 Post.prototype.getAuthorCat = function(){
     if(!this.author) return null;
     var cat = db.blog.categories.findOne({author: this.author});
@@ -300,7 +377,10 @@ Post.prototype.getAuthorCat = function(){
     return cat.name;
 };
 
-
+/**
+ * Get the 404 page, or create one if one does not exist.
+ * @return {Post}
+ */
 Post.get404 = function() {
     http404Page = db.blog.posts.findOne({ name: '404' });
     if (!http404Page) {
@@ -314,6 +394,10 @@ Post.get404 = function() {
     return http404Page;
 };
 
+/**
+ * Get the No Results page, or create one if one does not exist.
+ * @return {Post}
+ */
 Post.getNoResults = function() {
     noResultsPage = db.blog.posts.findOne({ name: 'no_results' });
     if (!noResultsPage) {
@@ -327,8 +411,17 @@ Post.getNoResults = function() {
     return noResultsPage;
 };
 
+/**
+ * Cache for various costly operations.
+ */
 Post.cache = new TimeOutCache();
 
+/**
+ * Get the most popular posts, based on the number of views.
+ * @param {number} num the number of posts to return
+ * @param {number} articlesBack how many of the most recent posts to consider
+ * @return {Array} an array of Post objects
+ */
 Post.getMostPopular = function( num , articlesBack ){
 
     num = num || 10;
@@ -356,6 +449,14 @@ Post.getMostPopular = function( num , articlesBack ){
     return all;
 };
 
+/**
+ * Get the most commented-on posts.
+ * @param {number} num the number of posts to return
+ * @param {number} articlesBack how many of the most recent posts to consider
+ * @param {number} daysBackToCountComments how recent comments have to be to
+ *   "count", specified as a number of days ago
+ * @return {Array} an array of Post objects
+ */
 Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
 
     articlesBack = articlesBack || 100;
