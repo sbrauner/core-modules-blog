@@ -1,13 +1,13 @@
 
 /**
 *      Copyright (C) 2008 10gen Inc.
-*  
+*
 *    Licensed under the Apache License, Version 2.0 (the "License");
 *    you may not use this file except in compliance with the License.
 *    You may obtain a copy of the License at
-*  
+*
 *       http://www.apache.org/licenses/LICENSE-2.0
-*  
+*
 *    Unless required by applicable law or agreed to in writing, software
 *    distributed under the License is distributed on an "AS IS" BASIS,
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -351,14 +351,13 @@ Blog.handlePosts = function( request , thePost , user ){
             db.blog.posts.save( thePost );
 
             // email the post's author that there is a new post
-            if(thePost.user) {
+            if(mail && thePost.comment_notify && thePost.user) {
                 m = new Mail.Message( "Comment on blog post "+thePost.title,
                                       "Notification: on "+comment.ts+", a comment was posted by "+
                                       (user ? user.name : request.yourname)+
                                       " on your blog post titled "+thePost.title+
                                       ":\n\n"+comment.text);
                 m.addRecipient(  thePost.user.email , "to" );
-                mail = Mail.SMTP.gmail("10gen.auto@gmail.com", "jumpy171");
                 m.send( mail );
             }
 
