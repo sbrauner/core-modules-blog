@@ -1,12 +1,12 @@
 <% /**
 *      Copyright (C) 2008 10gen Inc.
-*  
+*
 *    Licensed under the Apache License, Version 2.0 (the "License");
 *    you may not use this file except in compliance with the License.
 *    You may obtain a copy of the License at
-*  
+*
 *       http://www.apache.org/licenses/LICENSE-2.0
-*  
+*
 *    Unless required by applicable law or agreed to in writing, software
 *    distributed under the License is distributed on an "AS IS" BASIS,
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -82,7 +82,7 @@ if ( sortFunction )
 <% var lastId = null; all.forEach( function(z){ %>
   <tr>
     <td>
-      <nobr><a ? ( lastId != z.post._id ) href="/<%= z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
+      <nobr><a ? ( lastId != z.post._id ) href="/blog/<%= z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
     </td>
     <td><%= z.comment.author %></td>
     <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
