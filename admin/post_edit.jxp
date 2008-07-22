@@ -74,10 +74,17 @@ if ( request.action == "save" ) {
         if ( ! thePost.name || ( request.name && ! thePost.live ) ) {
 
 	    if ( thePost.cls == "entry" ){
-		if ( request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
+            // request.name might not get passed if the field is disabled
+            // For example, say you save a draft as live without a title, and
+            // then edit the draft; because the post is live, the "name" field
+            // is disabled.
+		if ( request.name && request.name.match( /^.?\d\d\d\d\/\d\d?\// ) )
 		    thePost.name = request.name;
-    		else
-		    thePost.name = thePost.ts.getFullYear() + "/" + (thePost.ts.getMonth()+1) + "/" + request.name;
+                else {
+		    thePost.name = thePost.ts.getFullYear() + "/" + (thePost.ts.getMonth()+1) + "/";
+                    if ( request.name ) thePost.name += request.name;
+                    else thePost.name += request.title.replace( /[^a-zA-Z0-9]+/g , Ext.getlist(allowModule, 'blog', 'slugReplaceChar') || '-' ).toLowerCase()
+                }
 	    }
 	    else {
 		thePost.name = request.name;
