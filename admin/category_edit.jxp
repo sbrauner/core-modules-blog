@@ -39,11 +39,21 @@ if ( request.action == "save" ) {
       	print("<p>Error saving: label/name is blank?<p>");
     } else {
         category.label = request.label;
-   	    category.name = request.name;
-   	    category.description = request.description;
+        category.name = request.name;
+        category.description = request.description;
 
         if(request.with_user){
-            category.author = request.author; // saved as text
+            var c = db.blog.categories.find({author: request.author});
+            var others = c.toArray().filter(function(cat){ return cat._id != category._id; });
+
+            if(others.length != 0){
+                print("<p>Error: This user is also associated with the following categories: <ul>");
+                others.forEach(function(c){ print("<li>"+c.label+"</li>"); });
+                print("</ul>");
+                delete category.author;
+            }
+            else
+                category.author = request.author; // saved as text
         }
         else {
             delete category.author;

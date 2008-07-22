@@ -36,7 +36,11 @@ Blog._addFilters = function( searchCriteria , filter ){
     }
 };
 
-/* keep track of all pages that wind up as 404's */
+/**
+ * Keep track of all pages that wind up as 404's.
+ * 404 data is kept in the blog.missingpages collection. This handler makes note
+ * whenever a page is hit but not found.
+ */
 Blog.handleMissingUri = function(uri) {
     var missingPage = new MissingPage(uri);
     db.blog.missingpages.update( missingPage , { $inc : { num : 1 } } , { upsert : true , ids : false } );
@@ -49,6 +53,34 @@ Blog.handleMissingUri = function(uri) {
 
 };
 
+/**
+ * Main handler for blog requests.
+ *
+ * @param {Request} request the request to handle
+ * @param {Object} arg the arguments, including the following fields:<dl>
+ *   <dt>homeCategory</dt><dd>The category to use if no category is present.</dd>
+ *   <dt>filter</dt><dd>An object to use as filters for search results.</dd>
+ *   <dt>ignoreRelevancy</dt><dd>A boolean, true if we want to sort search results by date.</dd>
+ *   <dt>uri</dt><dd>The URI to process (overrides the request).</dd>
+ * </dl>
+ *
+ * @return {Object} result an object containing the following fields: <dl>
+ *   <dt>posts</dt><dd>An array of Post objects.</dd>
+ *   <dt>isPage</dt><dd>A boolean, true if this request was a direct fetch for one blog post.</dd>
+ *   <dt>isCategorySearch</dt><dd>A boolean, true if this request was a category search.</dd>
+ *   <dt>isDateSearch</dt><dd>A boolean. (Currently never set.)</dd>
+ *   <dt>baseSearch</dt><dd>FIXME</dd>
+ *   <dt>hasPrevious</dt><dd>A boolean, true if this request was paginated and a previous page is available.</dd>
+ *   <dt>hasNext</dt><dd>A boolean, true if this request was paginated and a next page is available.</dd>
+ *   <dt>category</dt><dd>The category that this request eventually found.</dd>
+ *   <dt>search</dt><dd>FIXME: Same value as baseSearch.</dd>
+ *   <dt>previewSnippet</dt><dd>A boolean, true if this request is looking to preview a snippet for a post.</dd>
+ *   <dt>pageNumber</dt><dd>A number representing the page of results the request is for.</dd>
+ *   <dt>pageSize</dt><dd>A number representing the number of results per page.</dd>
+ *   <dt>searchTerm</dt><dd>The string the request was searching for.</dd>
+ *   <dt>uri</dt><dd>The URI this request was for.</dd>
+ * </dl>
+ */
 Blog.handleRequest = function( request , arg ){
     if (!arg) arg = {};
 
@@ -287,6 +319,15 @@ Blog.handleRequest = function( request , arg ){
     return result;
 };
 
+/**
+ * Handle POST requests on a single post. Adding/deleting a comment happens
+ * here.
+ * @param {Request} request the request
+ * @param {Post} thePost the post object which is being POSTed to.
+ * @param {User} user the user object making the POST
+ *
+ * @return {String} a response suitable for sharing with the user
+ */
 Blog.handlePosts = function( request , thePost , user ){
 
     if ( user && user.isAdmin() && request.action == "delete" ) {
