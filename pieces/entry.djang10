@@ -1,6 +1,24 @@
 {% comment %}
+      Copyright (C) 2008 10gen Inc.
+  
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+{% endcomment %}
 
-Render the content of a post
+{% comment %}
+
+Render the content of a post.
+
+Links to category for author if any.
 
 Required parameters:
 post - an object from the blog.posts collection
@@ -22,7 +40,11 @@ dateline - Text appearing before the date field.  Defaults to "".
 <p class="post-date">{{ post.ts|date:"j M Y" }}</p>
 <p class="byline">
 {% if post.author %}
-  {{ post.author }}
+  {% if post.getAuthorCat %}
+    <a href="{{ blogDTO.getBaseURL }}/category?category={{ post.getAuthorCat }}">{{ post.author }}</a>
+  {% else %}
+    {{ post.author }}
+  {% endif %}
 {% endif %}
 {% if post.commentsEnabled or post.getComments.length %}
   &#151; <a href="{{ post.name }}#comments">
@@ -45,4 +67,3 @@ dateline - Text appearing before the date field.  Defaults to "".
     <p><a href="#comment-form">Add a Comment</a></p>
   {% endif %}
 {% endif %}
-

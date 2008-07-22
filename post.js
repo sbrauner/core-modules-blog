@@ -1,4 +1,20 @@
 
+/**
+*      Copyright (C) 2008 10gen Inc.
+*  
+*    Licensed under the Apache License, Version 2.0 (the "License");
+*    you may not use this file except in compliance with the License.
+*    You may obtain a copy of the License at
+*  
+*       http://www.apache.org/licenses/LICENSE-2.0
+*  
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS,
+*    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*    See the License for the specific language governing permissions and
+*    limitations under the License.
+*/
+
 core.content.search();
 core.text.text();
 core.media.image();
@@ -122,12 +138,14 @@ Post.prototype.addComment = function( comment ){
         this.comments = [];
 
     comment.text = comment.text.replace(/<{1}?(?=\/?(a|i|b|strong|em|table|tr|th|td)( |>))/g,"##&##").replace(/<[^>]+>/g," ").replace(/##&##/g,"<");
+
     // Strip elements like <a href="...></a> (missing closing quote).
     // Leaves closing elements; that sucks but hopefully the browser can handle
     // it.
     comment.text = comment.text.replace(/<[^>]+"[^>"]+>/g, "");
     // Similarly with tags like <a href="..."</a>.
     comment.text = comment.text.replace(/<[^>]+</g, "<");
+
     comment.cid = ObjectID();
 
     if ( isArray( this.comments ) )
@@ -272,6 +290,14 @@ Post.prototype.unformat = function(){
             this[key.replace(/^_original_/, '')] = this[key];
 	}
     }
+};
+
+
+Post.prototype.getAuthorCat = function(){
+    if(!this.author) return null;
+    var cat = db.blog.categories.findOne({author: this.author});
+    if(!cat) return cat;
+    return cat.name;
 };
 
 
