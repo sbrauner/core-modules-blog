@@ -74,7 +74,7 @@ if ( result.previewSnippet ) {
     template = blog.getTemplate("postSnippetList");
 }
 else if ( result.isCategorySearch ) {
-    blogDTO.setPageTitle("Category Search Results: "+request.category);
+    blogDTO.setPageTitle("Category Search Results: "+result.category.label);
     template = blog.getTemplate("postSnippetList");
 }
 else if ( result.search ) {
