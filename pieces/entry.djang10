@@ -41,7 +41,7 @@ dateline - Text appearing before the date field.  Defaults to "".
 <p class="byline">
 {% if post.author %}
   {% if post.getAuthorCat %}
-    <a href="/{{ post.getAuthorCat }}">{{ post.author }}</a>
+    <a href="{{ blogDTO.getBaseURL }}/category?category={{ post.getAuthorCat }}">{{ post.author }}</a>
   {% else %}
     {{ post.author }}
   {% endif %}
