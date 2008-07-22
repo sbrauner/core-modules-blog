@@ -18,7 +18,7 @@
 
 Render the content of a post.
 
-Links to category for author if any (FIXME: locate the /blog root.)
+Links to category for author if any.
 
 Required parameters:
 post - an object from the blog.posts collection
