@@ -19,17 +19,27 @@
 
 db = connect("test-autosave");
 
+db.blog.drafts.remove({});
+db.blog.posts.remove({});
+
+allowModule = { blog: { } };
+admin = {getRoles: function(){
+    return [{name: 'author'}];
+} };
+routes = {find: function(){ return "/blog"; }};
+
+
 core.testing.client();
 
-core.ext.buffer();
-print = Ext.buffer();
-
-var autoSaveRequest = function(n, i){
+var autoSaveRequest = function(n, i, id){
     var request = {};
 
-    request.id = "";
+    request.id = id;
     request["title"] = "Post "+n;
     request.name = "post_"+n;
+    request.cls = "entry";
+    request.ts = new Date();
+    request.author = "Some Guy";
     request.content = "This is the #"+n+" post, being saved the #"+i+" time";
     request.excerpt = "Hi guys; I'm on the internet!";
     if(i%10 == 0) request.categories = "_feature";
@@ -40,14 +50,27 @@ var autoSaveRequest = function(n, i){
     request.new_categories = "";
     request.comment_notify = false;
 
+    request.action = "save";
+
     return request;
 };
 
 for(var n=1; n<=162; n++) {
-    for(var i = 0; i < 4; i++) {
+    var id = "";
+    for(var i = 0; i < 4000; i++) {
         var t = new testing.Client();
-        t.addArgs(autoSaveRequest(n, i));
-        t.withPermission('author', core.modules.blog.admin.autosave);
+        t.setURL("http://localhost:8080/admin/blog/test/fury");
+        t.addArgs(autoSaveRequest(n, i, id));
+        if(i % 100){
+            var id = t.withPermission('author', core.modules.blog.admin.autosave);
+        }
+        else {
+            var txt = t.withPermission('author', core.modules.blog.admin.post_edit);
+            var id = /<input type="hidden" name="id" value="([^"]+)"/.exec(txt)[1];
+        }
+            if(db.blog.drafts.validate().valid != true){
+                print("We're doomed; post " + n + ", draft " + i);
+            }
     }
 }
 
