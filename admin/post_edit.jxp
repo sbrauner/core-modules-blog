@@ -95,7 +95,6 @@ if ( request.action == "save" ) {
         thePost.content = request.content;
         thePost.excerpt = request.excerpt;
         thePost.ts = new Date( request.ts );
-        log("comment notify: "+request.comment_notify);
         thePost.comment_notify = (request.comment_notify == "on");
         thePost.user = user;
         if ( request.author )

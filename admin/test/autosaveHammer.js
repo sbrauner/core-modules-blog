@@ -28,7 +28,6 @@ admin = {getRoles: function(){
 } };
 routes = {find: function(){ return "/blog"; }};
 
-
 core.testing.client();
 
 var autoSaveRequest = function(n, i, id){
@@ -57,20 +56,21 @@ var autoSaveRequest = function(n, i, id){
 
 for(var n=1; n<=162; n++) {
     var id = "";
-    for(var i = 0; i < 4000; i++) {
+    for(var i = 1; i < 4001; i++) {
         var t = new testing.Client();
         t.setURL("http://localhost:8080/admin/blog/test/fury");
         t.addArgs(autoSaveRequest(n, i, id));
         if(i % 100){
-            var id = t.withPermission('author', core.modules.blog.admin.autosave);
+            id = t.withPermission('author', core.modules.blog.admin.autosave);
+            if(i%50 == 0) print("id: "+id);
         }
         else {
             var txt = t.withPermission('author', core.modules.blog.admin.post_edit);
-            var id = /<input type="hidden" name="id" value="([^"]+)"/.exec(txt)[1];
+            id = /<input type="hidden" name="id" value="([^"]+)"/.exec(txt)[1]; //"
+            print("really saved id: "+id);
         }
-            if(db.blog.drafts.validate().valid != true){
-                print("We're doomed; post " + n + ", draft " + i);
-            }
+
+        assert(db.blog.drafts.validate().valid);
     }
 }
 
