@@ -414,6 +414,7 @@ Blog.handlePosts = function( request , thePost , user ){
             // So we set an ADDITIONAL field in the request that marks that we
             // succeeded!
             request.postSuccess = comment.cid;
+            request.postSuccessNumber = thePost.getNumComments();
 
             return "Comment Saved";
         }
