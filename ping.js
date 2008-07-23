@@ -1,12 +1,12 @@
 /**
 *      Copyright (C) 2008 10gen Inc.
-*  
+*
 *    Licensed under the Apache License, Version 2.0 (the "License");
 *    you may not use this file except in compliance with the License.
 *    You may obtain a copy of the License at
-*  
+*
 *       http://www.apache.org/licenses/LICENSE-2.0
-*  
+*
 *    Unless required by applicable law or agreed to in writing, software
 *    distributed under the License is distributed on an "AS IS" BASIS,
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,17 @@
 */
 
 /**
- * Weblogs Ping
+ * Service to automatically ping weblogs when a new blog post or page is created.
  *
  * Specification: http://www.xmlrpc.com/weblogsCom
  *
- * @author Dana Spiegel (dana@10gen.com)
- * @created Feb 9, 2007
- * @updated Feb 9, 2007
 **/
 
 core.ws.xmlrpc.client();
 
+/** A list of pinging services. Includes Feedburner, Technorati, Google Blogsearch, Weblogs, and Pheedo.
+ * @type Array
+ */
 Blog.pingService = [
     {url: 'ping.feedburner.com', port: 80, path: '/'},
     {url: 'rpc.technorati.com', port: 80, path: '/rpc/ping'},
@@ -34,13 +34,20 @@ Blog.pingService = [
     {url: 'www.pheedo.com', port: 80, path: '/api/rpc/'},
 ];
 
+/** Forks a new process to tell the services listed in Blog.pingService about a given url.
+ * @param {string} articleUrl the url of the article of which to inform feed services
+ */
 Blog.ping = function(articleUrl) {
     t = fork( Blog.pingSync , articleUrl );
     t.start();
 }
 
+/**
+ * Pings all of the services listed in Blog.pingService about the given URL.
+ * @param {string} url URL of which to inform services
+ */
 Blog.pingSync = function(articleUrl) {
-    
+
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
     if (!articleUrl || articleUrl.length == 0) {
          articleUrl = siteUrl;
@@ -50,7 +57,7 @@ Blog.pingSync = function(articleUrl) {
     Blog.pingService.forEach( function(service) {
 
         log.blog.ping.info('Pinging: ' + service.url + ":" + service.port + service.path + " url = " + articleUrl);
-        
+
         var client = new ws.xmlrpc.Client(service.url, service.port, service.path);
         var response = null;
         try {
@@ -84,7 +91,7 @@ Blog.pingSync = function(articleUrl) {
                     }
 
                 })
-                log.blog.ping.info('Success: ' + service.url + ":" + service.port + service.path + " url = " + articleUrl 
+                log.blog.ping.info('Success: ' + service.url + ":" + service.port + service.path + " url = " + articleUrl
                         + " :: "+ message + ' (flerror: ' + flerror + ')');
             }
         }

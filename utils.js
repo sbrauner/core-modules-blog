@@ -1,12 +1,12 @@
 /**
 *      Copyright (C) 2008 10gen Inc.
-*  
+*
 *    Licensed under the Apache License, Version 2.0 (the "License");
 *    you may not use this file except in compliance with the License.
 *    You may obtain a copy of the License at
-*  
+*
 *       http://www.apache.org/licenses/LICENSE-2.0
-*  
+*
 *    Unless required by applicable law or agreed to in writing, software
 *    distributed under the License is distributed on an "AS IS" BASIS,
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,18 @@
 *    limitations under the License.
 */
 
-/*
- * utilities for blog processsing
- */
 core.modules.blog.post();
 
+
+/**
+ * Utilities for blog processsing.
+ * @namespace
+ */
  BlogUtils = {};
 
- /*
-  *   find the most recent posts
+/**
+  *   Finds the most recent live posts.
+  * @param {number} count the number of posts to find
   */
  BlogUtils.getRecentPosts = function(count) {
 
@@ -30,10 +33,10 @@ core.modules.blog.post();
      return recent;
  }
 
-/*
- *  find the categories
- */
-
+ /**
+  *  Finds the categories used in a blog.
+  * @return {Array} the categories in alphabetical order
+  */
  BlogUtils.getCategories = function() {
 	var categories = db.blog.categories.find().sort({label: 1}).toArray();
 
@@ -55,6 +58,10 @@ core.modules.blog.post();
 	return categories;
  }
 
+ /**
+  * Returns an array of the blog's pages, not including the 404 and No Results pages.
+  * @return {Array} the blog's pages
+  */
 BlogUtils.getPages = function(count) {
     var pages = db.blog.categories.find({cls: "page"}).sort({ts: 1}).toArray();
     return pages.filter(function(p) {
@@ -64,6 +71,10 @@ BlogUtils.getPages = function(count) {
     });
 }
 
+/** Checks if a given IP has been blocked.
+ * @param {string} ip IP to check
+ * @return {boolean} if the IP is blocked
+ */
 BlogUtils.isBlockedIP = function(ip) {
     if(!ip && request) ip = request.getRemoteIP();
     if ( db.blog.blocked.findOne( { ip : ip } ) )
@@ -71,6 +82,10 @@ BlogUtils.isBlockedIP = function(ip) {
     return false;
 }
 
+/** Creates or augments an object representing a live, posted blog entry.
+ * @param {Object} [obj={}] key/value pairs to match entries against
+ * @return {Object} criteria for a post that is live, an entry (versus a page), and has been published
+ */
 BlogUtils.liveEntry = function(obj) {
     if(!obj) obj = {};
     obj.live = true;

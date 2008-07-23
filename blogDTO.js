@@ -1,12 +1,12 @@
 /**
 *      Copyright (C) 2008 10gen Inc.
-*  
+*
 *    Licensed under the Apache License, Version 2.0 (the "License");
 *    you may not use this file except in compliance with the License.
 *    You may obtain a copy of the License at
-*  
+*
 *       http://www.apache.org/licenses/LICENSE-2.0
-*  
+*
 *    Unless required by applicable law or agreed to in writing, software
 *    distributed under the License is distributed on an "AS IS" BASIS,
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,9 @@
 *    limitations under the License.
 */
 
+/** Initializes a new data transfer object for the blog, used extensively with the templates.
+ * @constructor
+ */
 function BlogDTO() {
     this._user = null;
     this._recentPostArray = [];
@@ -41,14 +44,21 @@ function BlogDTO() {
 
 };
 
+/** Sets the user using the global user object.
+ */
 BlogDTO.prototype.setUser = function(name) {
 	this._user = user;
 }
 
+/** Returns the user.
+ */
 BlogDTO.prototype.getUser = function() {
     return this._user;
 }
 
+/** Fills out the captcha form given an HTTP request.
+ * @param {HTTPRequest} r request from which to find arguments
+ */
 BlogDTO.prototype.setCaptchaForm = function(r) {
     this._yourname = r.yourname;
     this._url = r.url;
@@ -56,6 +66,7 @@ BlogDTO.prototype.setCaptchaForm = function(r) {
     this._txt = r.txt;
     this._commentError = "Captcha incorrect."
 }
+
 BlogDTO.prototype.clearCaptchaForm = function() {
     this._yourname = "";
     this._url = "";

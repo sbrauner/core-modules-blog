@@ -7,12 +7,19 @@ core.user.auth();
 core.modules.blog.blogDTO();
 core.core.mail();
 
-/*
+/**
  *  Blog App Module
  */
-
 Blog = {};
+
+/**
+ * Handles HTTP requests to the blog module
+ */
 Blog.urls = core.modules.blog.urls();
+
+/**
+ * Utilities for fetching various types of posts.
+ */
 Blog.blogUtils = core.modules.blog.utils();
 
 __path__.post();
@@ -40,10 +47,15 @@ Blog._defaultTinyMCE = 'current';
  */
 Blog._modelCallback = __path__.modelCallbackDefault;
 
+/** Sets the model callback, which can be used to provide data for site-specific sections.
+ * @param {function} callback callback function
+ */
 Blog.setModelCallback = function(callback) {
     Blog._modelCallback = callback;
 }
 
+/** Retreives the model callback function.
+ */
 Blog.getModelCallback = function() {
     return Blog._modelCallback;
 }
@@ -58,6 +70,7 @@ Blog.addTemplateRoot = function(root) {
 
 /**
  *  Returns the routes object for blog.  Used by apps to set routing delegation.
+ * @return {Routes} the routes the blog is using
  */
 Blog.getRoutes = function() {
         return Blog.routes;
@@ -66,6 +79,7 @@ Blog.getRoutes = function() {
 /**
  *   Finds a template.  Searches the _templatesRoots array starting at the beginning
  *   @param {string} templateName name of template to find.  Do not include extension
+ *   @return {djang10Template} a template with a given name
  */
 Blog.getTemplate = function(templateName) {
         return djang10.loadTemplate(templateName);
