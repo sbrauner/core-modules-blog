@@ -153,8 +153,8 @@ if ( request.action == "save" ) {
             log.blog("Saved new post: "+tojson(thePost));
         }
 
-
-        db.blog.drafts.remove({ _id : ObjId(id) }); // in case this is a draft
+        if(id)
+            db.blog.drafts.remove({ _id : ObjId(id) }); // in case this is a draft
         if(thePost.post_id) delete thePost.post_id; // in case this is a draft
 
         // format before saving in db.posts or db.drafts
