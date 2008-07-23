@@ -69,6 +69,8 @@ else {
 if ( sortFunction )
     all = all.sort( sortFunction );
 
+if(!blogDTO) blogDTO = new BlogDTO();
+
 %>
 <table>
   <tr>
@@ -82,7 +84,7 @@ if ( sortFunction )
 <% var lastId = null; all.forEach( function(z){ %>
   <tr>
     <td>
-      <nobr><a ? ( lastId != z.post._id ) href="/blog/<%= z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
+      <nobr><a ? ( lastId != z.post._id ) href="<%= blogDTO.getBaseURL() + '/' + z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
     </td>
     <td><%= z.comment.author %></td>
     <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
