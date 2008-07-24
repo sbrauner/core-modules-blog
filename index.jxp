@@ -71,6 +71,9 @@ if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
         session.postSuccess = null; // FIXME: session workaround
         delete session.postSuccess;
     }
+    if(r){
+        blogDTO.setCommentError(r);
+    }
 }
 
 
