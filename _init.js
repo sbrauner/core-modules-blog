@@ -8,7 +8,8 @@ core.modules.blog.blogDTO();
 core.core.mail();
 
 /**
- *  Blog App Module
+ * Blog App Module
+ * @class
  */
 Blog = {};
 
