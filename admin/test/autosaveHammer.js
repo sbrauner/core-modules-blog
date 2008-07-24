@@ -54,15 +54,22 @@ var autoSaveRequest = function(n, i, id){
     return request;
 };
 
-for(var n=1; n<=162; n++) {
+// Fill in 1000 blog posts
+for(var n=0; n< 1000; n++){
+    var t = new testing.Client();
+    t.setURL("http://localhost:8080/admin/blog/test/fury");
+    t.addArgs(autoSaveRequest(n, 0, ""));
+    t.withPermission('author', core.modules.blog.admin.post_edit);
+}
+
+for(var n=1001; n<=1562; n++) {
     var id = "";
-    for(var i = 1; i < 4001; i++) {
+    for(var i = 1; i < 48; i++) {
         var t = new testing.Client();
         t.setURL("http://localhost:8080/admin/blog/test/fury");
         t.addArgs(autoSaveRequest(n, i, id));
-        if(i % 100){
+        if(i % 10){
             id = t.withPermission('author', core.modules.blog.admin.autosave);
-            if(i%50 == 0) print("id: "+id);
         }
         else {
             var txt = t.withPermission('author', core.modules.blog.admin.post_edit);
