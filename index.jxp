@@ -47,11 +47,13 @@ if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
         blogDTO.clearCaptchaForm();
         session.postMessage = r;
         session.postSuccess = request.postSuccess;
-        var pageSize = Ext.getlist(allowModule, 'blog', 'commentsPerPage') || result.pageSize;
-        var newPage = Math.ceil(request.postSuccessNumber / pageSize);
+        var pageSize = Ext.getlist(allowModule, 'blog', 'commentsPerPage');
         var uri = request.getURI();
-        if(result.pageNumber != newPage){
-            uri = uri.replace(/(\/page\/\d+)?$/, '/page/'+newPage);
+        if(pageSize){
+            var newPage = Math.ceil(request.postSuccessNumber / pageSize);
+            if(result.pageNumber != newPage){
+                uri = uri.replace(/(\/page\/\d+)?$/, '/page/'+newPage);
+            }
         }
         // FIXME: figure out which args to keep (the GET args) and keep them
         var u = new URL(uri).toString();
