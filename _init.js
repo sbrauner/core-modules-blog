@@ -6,6 +6,8 @@ core.user.user();
 core.user.auth();
 core.modules.blog.blogDTO();
 core.core.mail();
+core.net.url();
+core.ext.getlist();
 
 /**
  * Blog App Module
