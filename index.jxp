@@ -63,6 +63,14 @@ if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
     else {
         blogDTO.setCaptchaForm(request);
     }
+    if(session.postMessage){
+        r = session.postMessage;
+        session.postMessage = null; // FIXME: session workaround
+        delete session.postMessage;
+        request.postSuccess = session.postSuccess;
+        session.postSuccess = null; // FIXME: session workaround
+        delete session.postSuccess;
+    }
 }
 
 
