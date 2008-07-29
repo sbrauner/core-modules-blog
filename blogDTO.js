@@ -40,7 +40,6 @@ function BlogDTO() {
     this._commentEmail = null;
     this._commentURL = null;
     this._commentText = null;
-    this._captchaMessage = null;
 
 };
 
@@ -64,7 +63,7 @@ BlogDTO.prototype.setCaptchaForm = function(r) {
     this._url = r.url;
     this._email = r.email;
     this._txt = r.txt;
-    this._commentError = "Captcha incorrect."
+    this._commentError = "Captcha incorrect."; // FIXME: use commentError
 }
 
 /**
