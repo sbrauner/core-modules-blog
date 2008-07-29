@@ -32,6 +32,9 @@ function BlogDTO() {
     this._email = "";
     this._commentError = "";
     this._search = "";
+    this._currentPage = 1;
+    this._numPages = 1;
+    this._uri = "";
 
     // optional config strings
     this._commentsOpenHeader = null;
@@ -53,6 +56,35 @@ BlogDTO.prototype.setUser = function(name) {
  */
 BlogDTO.prototype.getUser = function() {
     return this._user;
+}
+
+    BlogDTO.setUpPaging = function(r, pageSize) {
+        pageSize = pageSize || 30;
+    this._uri = r.getURI();
+    page = this._uri.match(/\/page\/([0-9]*)$/);
+    if(page) { // currentPage defaults to 1
+        this._currentPage = parseInt(page[1]);
+    }
+    this._numPages = Math.ceil(db.blog.posts.find().count() / pageSize);
+}
+
+BlogDTO.prototype.isFirstPage = function() {
+    return this._currentPage == 1;
+}
+
+BlogDTO.prototype.isLastPage = function() {
+    return this._currentPage == this._numPages;
+}
+
+BlogDTO.prototype.getPrevPageLink = function() {
+    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage-1));
+}
+
+BlogDTO.prototype.getNextPageLink = function() {
+    if(this._uri.indexOf("/page/") == -1) {
+        return this._uri + (this._uri.endsWith("/") ? "" : "/") + "page/2";
+    }
+    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage+1));
 }
 
 /** Fills out the comment fields given an unsuccessful HTTP request.

@@ -26,7 +26,7 @@ if ( ! user ){
 var blog = Blog.urls;
 var blogUtils = Blog.blogUtils;
 
-var result = blog.handleRequest(request);
+var result = blog.handleRequest(request, {limit : Ext.getlist(allowModule, 'blog', 'postsPerPage')});
 
 /* check that the ip isn't blocked */
 var blocked = BlogUtils.isBlockedIP(request.getRemoteIP());
@@ -76,12 +76,11 @@ if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
     }
 }
 
-
-
 blogDTO.setUser(user);
 blogDTO.setCategories(blogUtils.getCategories());
 blogDTO.setBaseURL(routes.find(Blog.routes));
 blogDTO.setBlockedIP(blocked);
+blogDTO.setUpPaging(request, Ext.getlist(allowModule, 'blog', 'postsPerPage'));
 
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
