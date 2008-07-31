@@ -176,12 +176,19 @@ Blog.handleRequest = function( request , arg ){
             var postResults = 0;
             var pageStart = (pageNumber - 1) * pageSize;
             var pageEnd = Math.min(pageNumber * pageSize, posts.length);
-
             Blog.log.debug("posts: " + posts.length);
 
             posts = posts.filter( function( z ) {
-                    postResults++
+                postResults++;
                     return postResults > pageStart && postResults <= pageEnd;
+            });
+
+            if( arg.ignoreRelevancy )
+                posts = posts.sort(function( x, y ){
+                    // FORCE sorting by descending timestamp, since we get
+                    // from the Search code clumps which were indexed using
+                    // terms of different weights.
+                    return y.ts - x.ts;
                 });
 
             Blog.log.debug("pageStart: " + pageStart + " pageEnd " + pageEnd );
