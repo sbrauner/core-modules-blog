@@ -377,8 +377,10 @@ Blog.handlePosts = function( request , thePost , user ){
             }
         }
 
-        if ( !request.txt )
+        if ( !request.txt ){
+            log("Got an empty comment from " + tojson(request));
             return "Cannot post empty comment.";
+        }
 
         if ( comment ) {
 
