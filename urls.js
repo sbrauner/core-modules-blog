@@ -366,14 +366,17 @@ Blog.handlePosts = function( request , thePost , user ){
             if ( !Captcha )
                 core.user.captcha();
 
-            if ( Captcha.valid( request ) ) {
+            var problem = Captcha.problem( request );
+
+            if ( ! problem ) {
                 comment = {};
                 comment.author = request.yourname;
                 comment.email = request.email;
                 comment.url = request.url;
             }
             else {
-                return "invalid captcha response : " + request.captcha;
+                log.captcha.debugsai( problem + ": " + request.getRemoteIP() + " " + tojson(request));
+                return problem;
             }
         }
 
