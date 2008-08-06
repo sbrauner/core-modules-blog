@@ -14,6 +14,6 @@
 *    limitations under the License.
 */
 
-if(allowModule && allowModule.blog)
-    allowModule.blog.tinyMCEVersion = allowModule.blog.tinyMCEVersion || Blog._defaultTinyMCE;
+if(siteScope.allowModule && siteScope.allowModule.blog)
+    siteScope.allowModule.blog.tinyMCEVersion = siteScope.allowModule.blog.tinyMCEVersion || Blog._defaultTinyMCE;
 
