@@ -64,10 +64,19 @@ if ( request.action == "save" ) {
 
     thePost.cls = request.cls || "entry";
 
-    if( !request.title ||
-        request.title.trim().length == 0 ||
-        request.content.trim().length == 0 ) {
-      	print("<p>Error saving: name/content is blank?<p>");
+    if( thePost.isFieldFrozen('title') && request.title ){
+        print("<p>Error saving: title is frozen</p>");
+    }
+    else if( request.title && request.title.trim().length == 0 ||
+       ( !thePost.isFieldFrozen('title') && !request.title )){
+        print("<p>Error saving: title is missing</p>");
+    }
+    else if( thePost.isFieldFrozen('content') && request.content ){
+        print("<p>Error saving: content is frozen</p>");
+    }
+    else if( (! thePost.isFieldFrozen('content') && ! request.content ) ||
+        ( request.content && request.content.trim().length == 0 ) ){
+      	print("<p>Error saving: content is blank?</p>");
     }
     else {
 
@@ -92,7 +101,8 @@ if ( request.action == "save" ) {
     	}
 
         thePost.title = request.title;
-        thePost.content = request.content;
+        if( ! thePost.isFieldFrozen('content') )
+            thePost.content = request.content;
         thePost.excerpt = request.excerpt;
         thePost.ts = new Date( request.ts );
         thePost.comment_notify = (request.comment_notify == "on");
@@ -311,7 +321,7 @@ function confirmExit() {
     <div id="post_form">
       <% buttons(); %>
     <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange(); needs_save = true;" ></div>
-    <div id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content"><%= thePost.content %></textarea></div>
+    <div id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content" <%= thePost.isFieldFrozen("content") ? 'disabled="disabled"' : ''%>><%= thePost.content %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
         <% clientMeta(0); %>

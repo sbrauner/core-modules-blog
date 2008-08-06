@@ -34,6 +34,7 @@ function Post(name, title) {
     this.content = "";
     this.views = 0;
     this.categories = new Array();
+    this._frozen = {};
 };
 
 Post.prototype._dontEnum = true;
@@ -58,6 +59,31 @@ Post.prototype.getFullContent = function(){
     var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
     html = Media.Image.giveIMGTagsURLMaxes( html );
     return html;
+};
+
+/**
+ * Check whether a field of this post is frozen.
+ * @param {string} field the name of the field to check
+ * @return {boolean} true if this field is frozen
+ */
+Post.prototype.isFieldFrozen = function(field){
+    return field in this._frozen;
+};
+
+/**
+ * Mark a field as frozen.
+ * @param {string} field the name of the field to freeze
+ */
+Post.prototype.freezeField = function(field){
+    this._frozen[field] = true;
+};
+
+/**
+ * Mark a field as no longer frozen.
+ * @param {string} field the name of the field to unfreeze
+ */
+Post.prototype.unfreezeField = function(field){
+    delete this._frozen[field];
 };
 
 /**
