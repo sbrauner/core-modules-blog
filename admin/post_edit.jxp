@@ -472,7 +472,7 @@ function autosave() {
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
          "&name="+encodeURIComponent(document.getElementById("name").value)+
-         "&content="+encodeURIComponent(tinyMCE.activeEditor.getContent())+
+         "&content="+encodeURIComponent(tinyMCE.get('content').getContent())+
          "&excerpt="+encodeURIComponent(document.getElementById("excerpt").value)+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
