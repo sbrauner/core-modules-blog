@@ -58,7 +58,7 @@ if (id) {
 
 var justSaved = false;
 
-Blog.extraFields = siteScope.allowModule.blog.extraFields;
+Blog.extraFields = allowModule.blog.extraFields;
 
 if ( request.action == "save" ) {
 
@@ -92,7 +92,7 @@ if ( request.action == "save" ) {
                 else {
 		    thePost.name = thePost.ts.getFullYear() + "/" + (thePost.ts.getMonth()+1) + "/";
                     if ( request.name ) thePost.name += request.name;
-                    else thePost.name += request.title.replace( /[^a-zA-Z0-9]+/g , Ext.getlist(siteScope.allowModule, 'blog', 'slugReplaceChar') || '-' ).toLowerCase()
+                    else thePost.name += request.title.replace( /[^a-zA-Z0-9]+/g , Ext.getlist(allowModule, 'blog', 'slugReplaceChar') || '-' ).toLowerCase()
                 }
 	    }
 	    else {
@@ -182,7 +182,7 @@ if ( request.action == "save" ) {
         if ( request.getHost().match( /www/ ) && thePost.live && ! thePost.haveIPinged ){
             // ping blogging services
             print( "Pinging Services<br>" );
-            if ( request.getHost().match( /^www\./ ) && siteScope.allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
+            if ( request.getHost().match( /^www\./ ) && allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
                 Blog.ping(siteUrl + '/' + thePost.name);
             }
             thePost.haveIPinged = true;
@@ -247,9 +247,9 @@ var clientMeta = function(order){
 
 %>
 
-<script type="text/javascript" src="NOCDN/@@/tinymce/<%= siteScope.allowModule.blog.tinyMCEVersion %>/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/@@/tinymce/<%= allowModule.blog.tinyMCEVersion %>/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
-tinyMCE.init({
+var config = {
 	mode : "exact",
 	elements : "content",
 	width: "645",
@@ -269,7 +269,10 @@ tinyMCE.init({
 	theme_advanced_buttons1_add : "separator,bramus_cssextras_classes,bramus_cssextras_ids",
 	convert_urls : false ,
 	content_css : "/~~/modules/blog/assets/blog_post.css"
-});
+};
+tinyMCE.init(config);
+config.elements = 'excerpt';
+tinyMCE.init(config);
 </script>
 
 <script language="javascript" type="text/javascript">
@@ -289,7 +292,7 @@ function confirmExit() {
 //    if ( ! newPost ) return;
 
     var t = document.getElementById( "title" ).value;
-      t = t.replace( /[^a-zA-Z0-9]+/g , <%= tojson(Ext.getlist(siteScope.allowModule, 'blog', 'slugReplaceChar') || '-') %> ).toLowerCase();
+      t = t.replace( /[^a-zA-Z0-9]+/g , <%= tojson(Ext.getlist(allowModule, 'blog', 'slugReplaceChar') || '-') %> ).toLowerCase();
     document.getElementById( "name" ).value = t;
   };
 
@@ -460,8 +463,8 @@ function autosave() {
 
     categories = categories.join("&");
     var extraFields = "";
-<% if(siteScope.allowModule && siteScope.allowModule.blog && siteScope.allowModule.blog.extraFields){
-    var fields = siteScope.allowModule.blog.extraFields;
+<% if(allowModule && allowModule.blog && allowModule.blog.extraFields){
+    var fields = allowModule.blog.extraFields;
     for(var key in fields){
         print("extraFields += '&extra_"+key+"=' + document.editForm.extra_"+key
               +".value;");
@@ -473,7 +476,7 @@ function autosave() {
          "title="+document.getElementById("title").value+
          "&name="+encodeURIComponent(document.getElementById("name").value)+
          "&content="+encodeURIComponent(tinyMCE.get('content').getContent())+
-         "&excerpt="+encodeURIComponent(document.getElementById("excerpt").value)+
+         "&excerpt="+encodeURIComponent(tinyMCE.get("excerpt").getContent())+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
          "&suppressImage="+document.getElementById("suppressImage").checked+
@@ -505,7 +508,7 @@ function preview(path) {
         setTimeout('preview("'+path+'")', 1000);
     }
     else {
-        window.open('<%=siteScope.routes.find(Blog.routes) ? siteScope.routes.find(Blog.routes) : "" %>/'+path+'?id='+id, '_blank');
+        window.open('<%=routes.find(Blog.routes) ? routes.find(Blog.routes) : "" %>/'+path+'?id='+id, '_blank');
         firstSave = true;
         saved = false;
     }
