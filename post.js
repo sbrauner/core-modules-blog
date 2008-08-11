@@ -35,6 +35,7 @@ function Post(name, title) {
     this.views = 0;
     this.categories = new Array();
     this._frozen = {};
+    this._free = {};
 };
 
 Post.prototype._dontEnum = true;
@@ -84,6 +85,31 @@ Post.prototype.freezeField = function(field){
  */
 Post.prototype.unfreezeField = function(field){
     delete this._frozen[field];
+};
+
+/**
+ * Check whether a field of this post is freeform.
+ * @param {string} field the name of the field to check
+ * @return {boolean} true if this field is freeform
+ */
+Post.prototype.isFieldFreeform = function(field){
+    return field in this._free;
+};
+
+/**
+ * Mark a field as freeform.
+ * @param {string} field the name of the field to mark
+ */
+Post.prototype.markFieldFreeform = function(field){
+    this._free[field] = true;
+};
+
+/**
+ * Mark a field as no longer freeform.
+ * @param {string} field the name of the field to mark
+ */
+Post.prototype.unmarkFieldFreeform = function(field){
+    delete this._free[field];
 };
 
 /**
