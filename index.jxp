@@ -77,7 +77,11 @@ if ((isComment && !blocked) || (request.action == "delete" && user.isAdmin())) {
 }
 
 blogDTO.setUser(user);
-blogDTO.setCategories(blogUtils.getCategories());
+if(result.isPage){
+    blogDTO.setCategories(result.posts[0].categories.map(function(c){
+        return db.blog.categories.findOne({name: c});
+    }));
+}
 blogDTO.setBaseURL(routes.find(Blog.routes));
 blogDTO.setBlockedIP(blocked);
 blogDTO.setUpPaging(request, Ext.getlist(allowModule, 'blog', 'postsPerPage'));
