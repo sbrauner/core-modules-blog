@@ -29,4 +29,8 @@ var reverse = {
     'post_edit': 'posts',
     'category_edit': 'categories',
 };
-return {tree: tree, reverse: reverse};
+
+var restore = {
+    'post_edit': 'posts',
+};
+return {tree: tree, reverse: reverse, restore: restore};
