@@ -20,3 +20,4 @@ if(allowModule && allowModule.blog){
 else if(siteScope.allowModule && siteScope.allowModule.blog)
     siteScope.allowModule.blog.tinyMCEVersion = siteScope.allowModule.blog.tinyMCEVersion || Blog._defaultTinyMCE;
 
+core.ext.getlist();
