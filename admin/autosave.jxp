@@ -42,6 +42,7 @@ if (id) {
     if (foundPost) {
         thePost = foundPost;
         thePost.post_id = ObjId(id);
+        thePost._id = CrID();
         newPost = false;
     }
     else {
