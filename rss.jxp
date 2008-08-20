@@ -22,7 +22,9 @@ var RSSTHUMBY = 115;
 core.modules.blog.post();
 core.net.url();
 
-var requestResult = Blog.handleRequest(request);
+var requestResult = Blog.handleRequest(request, {
+    filter: { $where: function(){ return ! obj.dontRSS; } }
+});
 var now = new Date();
 
 function clean( s ){
