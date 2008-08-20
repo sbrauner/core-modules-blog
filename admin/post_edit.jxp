@@ -45,7 +45,7 @@ if (id) {
         thePost.unformat();
         if (foundPost) {
             thePost = foundPost;
-            newPost = true; // We don't support deleting drafts, even of existing posts
+            newPost = false; 
         }
     }
 }
@@ -191,7 +191,14 @@ if ( request.action == "save" ) {
 else if (request.action == 'delete') {
                                    // FIXME: siteScope?
     Blog.log.info('Post titled "'+thePost.title+'" deleted by '+user.name);
-    if (db.blog.posts.remove({_id: thePost._id})) {
+    log("in delete: "+db.blog.drafts.findOne({_id : thePost._id}));
+    if (db.blog.posts.findOne({_id: thePost._id}) ) {
+        var ok = db.blog.posts.remove({_id: thePost._id});
+    }
+    else {
+        var ok = db.blog.drafts.remove({_id: thePost._id});
+    }
+    if (ok) {
         response.setResponseCode( 302 );
         response.setHeader( "Location" , "posts" );
     }
