@@ -16,8 +16,6 @@
 
 <link type="text/css" rel="stylesheet" href="/~~/modules/blog/assets/blog.css" />
 
-{% autoescape off %}
-
 {% block pageheader %}
 {% endblock %}
 
@@ -69,4 +67,3 @@
 {% block pagefooter %}
 {% endblock %}
 
-{% endautoescape %}

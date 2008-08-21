@@ -59,7 +59,7 @@ dateline - Text appearing before the date field.  Defaults to "".
 </p>
 
 <div class="entry-content">
-  {{ post.content }}
+  {{ post.content | safe }}
 </div>
 
 {% if post.commentsEnabled and post.comments.length %}
