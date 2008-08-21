@@ -46,9 +46,7 @@ captcha_message
     <p><a href="{{ blogDTO.getBaseURL }}">Back to main page</a></p>
   {% endif %}
 
-{% if not post %}
-  {% set post = blogDTO.getPost %}
-{% endif %}
+{% with post|default:blogDTO.getPost as post %}
 
 <div id="post-{{ post._id }}" class="post">
   <div id="entry-{{ post._id }}">
@@ -80,4 +78,5 @@ captcha_message
     </div>
   {% endif %}
 </div>
+{% endwith %}
 {% endblock %}
