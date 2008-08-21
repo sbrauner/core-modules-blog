@@ -150,6 +150,15 @@ BlogDTO.prototype.getCommentError = function() {
 }
 
 /**
+ * Set the comment error for a post. This should probably be called
+ * "comment message".
+ * @param {string} error the error for the post
+ */
+BlogDTO.prototype.setCommentError = function(error) {
+    this._commentError = error;
+};
+
+/**
  * Sets the categories for a post.
  * @param {Array} catArr array of the post's categories
  */
