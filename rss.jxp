@@ -91,7 +91,7 @@ else if(!title && requestResult.search){
 if(! title) title = siteName;
 
 // This is where this page (rss.jxp) was called from.
-var link = LocalURL(request.getURL().replace(/\/rss\/?/, '/')).toString();
+var link = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
