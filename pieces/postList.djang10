@@ -29,7 +29,7 @@ Optional parameters:
 
 
 {% block content %}
-{% set mainpage = "1" %}
+{% with "1" as mainpage %}
 <div class="posts-block">
   {% for post in blogDTO.getPostArray %}
     <div id="post-{{ post._id }}" class="post">
@@ -45,5 +45,5 @@ Optional parameters:
   <a href="{{ blogDTO.getNextPageLink }}">Next &gt;&gt;</a>
 {% endif %}
 
-
+{% endwith %}
 {% endblock %}
