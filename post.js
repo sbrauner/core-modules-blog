@@ -298,6 +298,10 @@ Post.prototype.getUrl = function( r ){
     if ( ! r && request )
         r = request;
 
+    // FIXME: Hack for phantom posts. Blog module shouldn't care, but this
+    // is really the most elegant fix.
+    if ( this.name.startsWith('http://') ) return this.name;
+
     var u = r ? "http://" + r.getHeader( "Host" ) : "";
     u += "/" + this.name;
 
