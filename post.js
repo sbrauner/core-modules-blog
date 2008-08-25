@@ -280,13 +280,13 @@ Post.prototype.presave = function(){
  */
 Post.prototype.getExcerpt = function(){
     if ( this.excerpt )
-        return this.excerpt;
+        return djang10.mark_safe( this.excerpt );
 
     var foo = this.getTeaserContent();
     if ( foo == null )
         return null;
 
-    return Text.snippet( foo );
+    return djang10.mark_safe( Text.snippet( foo ) );
 };
 
 /**
