@@ -465,6 +465,8 @@ var needs_save = false;
 
 //autosave every 60 seconds
 function autosave() {
+    setTimeout(autosave, 60000);
+    if(! needs_save) return;
     var cat = document.getElementsByName("categories");
     var categories = [];
     for(var i in cat) {
@@ -505,7 +507,6 @@ function autosave() {
         saved = true;
         needs_save = false;
     });
-    setTimeout(autosave, 60000);
 }
 
 setTimeout(autosave, 60000);
