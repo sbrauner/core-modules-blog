@@ -50,7 +50,7 @@ Post.prototype.SEARCH_OPTIONS = { stripHTML : true };
  * @return A substring of this post's content.
  */
 Post.prototype.getTeaserContent = function(){
-    return this.content.replace( /---JUMP---.*/m , "" );
+    return djang10.mark_safe( this.content.replace( /---JUMP---.*/m , "" ) );
 };
 
 /** Clean and return the full content.  Cleaning involves removing "---JUMP---" if this post's content contains the string and making sure that the size of images is not too large.
@@ -59,7 +59,7 @@ Post.prototype.getTeaserContent = function(){
 Post.prototype.getFullContent = function(){
     var html = this.content.replace( /---JUMP---[\r\n]*/ , "" );
     html = Media.Image.giveIMGTagsURLMaxes( html );
-    return html;
+    return djang10.mark_safe( html );
 };
 
 /**
