@@ -284,12 +284,15 @@ tinyMCE.init(config);
 <% } %>
 config.elements = 'excerpt';
 tinyMCE.init(config);
-</script>
 
-<script language="javascript" type="text/javascript">
+function isDirty(){
+    var contentMCE = tinyMCE.get('content');
+    var excerptMCE = tinyMCE.get('excerpt');
+    return needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
+}
 
 function confirmExit() {
-    if(needs_save) {
+    if(isDirty()) {
         if(confirm("Would you like to save your draft before exiting?")) {
             autosave();
         }
@@ -466,7 +469,7 @@ var needs_save = false;
 //autosave every 60 seconds
 function autosave() {
     setTimeout(autosave, 60000);
-    if(! needs_save) return;
+    if(! isDirty()) return;
     var cat = document.getElementsByName("categories");
     var categories = [];
     for(var i in cat) {
