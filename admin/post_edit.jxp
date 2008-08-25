@@ -23,6 +23,8 @@ head.push('<script type="text/javascript" src="/@@/yui/current/element/element-b
 head.push('<script type="text/javascript" src="/@@/yui/current/button/button-min.js"></script>');
 head.push('<script type="text/javascript" src="/@@/yui/current/container/container-min.js"></script>');
 
+tinyMCEVersion = allowModule.blog.tinyMCEVersion || Blog._defaultTinyMCE;
+
 core.util.diff();
 
 var id = request.id;
@@ -254,7 +256,7 @@ var clientMeta = function(order){
 
 %>
 
-<script type="text/javascript" src="NOCDN/@@/tinymce/<%= allowModule.blog.tinyMCEVersion %>/tiny_mce.js"></script>
+<script type="text/javascript" src="NOCDN/@@/tinymce/<%= tinyMCEVersion %>/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
 var config = {
 	mode : "exact",
