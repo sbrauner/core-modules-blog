@@ -266,8 +266,12 @@ Blog.handleRequest = function( request , arg ){
         }
         else if (uri.match(/^preview/)) {
             // display a preview of a post
-            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} );
+            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} ).sort({ts: -1 });
             previewSnippet = (uri == "previewExcerpt");
+
+            // preview triggers an autosave; we only want to see the most up-to-date
+            entries.limit(1);
+
             isPage = true;
             // so that the blog doesn't think this is a search
             uri = null;
