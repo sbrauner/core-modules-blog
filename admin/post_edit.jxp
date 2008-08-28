@@ -105,6 +105,16 @@ if ( request.action == "save" ) {
         if( ! thePost.isFieldFrozen('content') )
             thePost.content = request.content;
         thePost.excerpt = request.excerpt;
+
+        //
+        //  @TODO ethan
+        // emergency fix because tinyMCE is putting <p> tags around the 
+        // excerpts, causing formatting problems.  Something for Ethan to fix. - geir
+        //
+        if (thePost.excerpt.startsWith("<p>") && thePost.excerpt.endsWith("</p>")) {
+            thePost.excerpt = thePost.excerpt.substring(3, thePost.excerpt.length - 4);
+        }
+
         thePost.ts = new Date( request.ts );
         thePost.comment_notify = (request.comment_notify == "on");
         thePost.user = user;
