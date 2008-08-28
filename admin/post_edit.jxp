@@ -298,7 +298,7 @@ tinyMCE.init(config);
 function isDirty(){
     var contentMCE = tinyMCE.get('content');
     var excerptMCE = tinyMCE.get('excerpt');
-    return needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
+    return force_dirty || needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
 }
 
 function confirmExit() {
@@ -475,6 +475,7 @@ allRoles.forEach(function(z){
 var id<%= id ? ' = "'+id+'"' : '' %>;
 var saved = false;
 var needs_save = false;
+var force_dirty = false;
 
 //autosave every 60 seconds
 function autosave() {
@@ -519,6 +520,7 @@ function autosave() {
         document.getElementById("draft_id").value = id;
         saved = true;
         needs_save = false;
+        force_dirty = false;
     });
 }
 
@@ -528,6 +530,7 @@ var firstSave = true;
 function preview(path) {
     // we have to wait until the async save is complete
     if( !saved ) {
+        force_dirty = true;  // ensure that even if not dirty a draft is saved because preview relies on it
         if( firstSave ) autosave();
         firstSave = false;
         setTimeout('preview("'+path+'")', 1000);
