@@ -270,6 +270,13 @@ Post.prototype.presave = function(){
     }
 
     Search.index( this , this.SEARCH_FIELDS , this.SEARCH_OPTIONS );
+
+    if(Ext.getlist(allowModule, 'blog', 'stripExcerptPTag') &&
+       this.excerpt.startsWith("<p>") &&
+       this.excerpt.endsWith("</p>")) {
+        this.excerpt = this.excerpt.substring(3, this.excerpt.length - 4);
+    }
+
 };
 
 /**
