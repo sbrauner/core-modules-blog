@@ -289,7 +289,7 @@ tinyMCE.init(config);
 function isDirty(){
     var contentMCE = tinyMCE.get('content');
     var excerptMCE = tinyMCE.get('excerpt');
-    return force_dirty || needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
+    return needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
 }
 
 function confirmExit() {
@@ -521,8 +521,13 @@ var firstSave = true;
 function preview(path) {
     // we have to wait until the async save is complete
     if( !saved ) {
-        force_dirty = true;  // ensure that even if not dirty a draft is saved because preview relies on it
-        if( firstSave ) autosave();
+        // ensure that even if not dirty a draft is saved because preview relies on it
+        if( firstSave ){
+            // This happens on the first preview after page load
+            // "Save" triggers a new page load
+            needs_save = true;
+            autosave();
+        }
         firstSave = false;
         setTimeout('preview("'+path+'")', 1000);
     }
