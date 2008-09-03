@@ -437,8 +437,13 @@ Post.prototype.unformat = function(){
  */
 Post.prototype.getAuthorCat = function(){
     if(!this.author) return null;
+
+    var key = '__authorCat_'+this.author;
+    var cat = Post.cache.get( key );
+    if( cat ) return cat;
     var cat = db.blog.categories.findOne({author: this.author});
     if(!cat) return cat;
+    Post.cache.add( key , cat.name );
     return cat.name;
 };
 
