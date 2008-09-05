@@ -58,14 +58,14 @@ BlogDTO.prototype.getUser = function() {
     return this._user;
 }
 
-    BlogDTO.setUpPaging = function(r, pageSize) {
-        pageSize = pageSize || 30;
+BlogDTO.setUpPaging = function(r, pageSize) {
+    pageSize = pageSize || 30;
     this._uri = r.getURI();
     page = this._uri.match(/\/page\/([0-9]*)$/);
     if(page) { // currentPage defaults to 1
         this._currentPage = parseInt(page[1]);
     }
-    this._numPages = Math.ceil(db.blog.posts.find().count() / pageSize);
+    this._numPages = Math.ceil(BlogUtils.getLivePosts().length / pageSize);
 }
 
 BlogDTO.prototype.isFirstPage = function() {

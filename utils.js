@@ -29,8 +29,17 @@ core.modules.blog.post();
   */
  BlogUtils.getRecentPosts = function(count) {
 
-     var recent = db.blog.posts.find(this.liveEntry()).sort({ts: -1}).limit(count).toArray();
+     var recent = db.blog.posts.find(BlogUtils.liveEntry()).sort({ts: -1}).limit(count).toArray();
      return recent;
+ }
+
+/**
+  * Find all live posts
+  */
+ BlogUtils.getLivePosts = function() {
+
+     var live = db.blog.posts.find(BlogUtils.liveEntry()).toArray();
+     return live;
  }
 
  /**
