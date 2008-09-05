@@ -171,6 +171,10 @@ if ( request.action == "save" ) {
 
         // format before saving in db.posts or db.drafts
         thePost.format();
+        if( Ext.getlist( allowModule, 'blog', 'callbacks', 'postEdit' ) ){
+            allowModule.blog.callbacks.postEdit( thePost , user );
+        }
+
         db.blog.posts.save( thePost );
         newPost = false; // in case we're saving something for the first time
 
@@ -195,6 +199,9 @@ else if (request.action == 'delete') {
                                    // FIXME: siteScope?
     Blog.log.info('Post titled "'+thePost.title+'" deleted by '+user.name);
     log("in delete: "+db.blog.drafts.findOne({_id : thePost._id}));
+    if( Ext.getlist( allowModule, 'blog', 'callbacks', 'postDelete' ) ){
+        allowModule.blog.callbacks.postDelete( thePost , user );
+    }
     if (db.blog.posts.findOne({_id: thePost._id}) ) {
         var ok = db.blog.posts.remove({_id: thePost._id});
     }

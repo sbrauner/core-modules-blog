@@ -272,6 +272,7 @@ Post.prototype.presave = function(){
     Search.index( this , this.SEARCH_FIELDS , this.SEARCH_OPTIONS );
 
     if(Ext.getlist(allowModule, 'blog', 'stripExcerptPTag') &&
+        this.excerpt &&
        this.excerpt.startsWith("<p>") &&
        this.excerpt.endsWith("</p>")) {
         this.excerpt = this.excerpt.substring(3, this.excerpt.length - 4);
@@ -437,8 +438,13 @@ Post.prototype.unformat = function(){
  */
 Post.prototype.getAuthorCat = function(){
     if(!this.author) return null;
+
+    var key = '__authorCat_'+this.author;
+    var cat = Post.cache.get( key );
+    if( cat ) return cat;
     var cat = db.blog.categories.findOne({author: this.author});
     if(!cat) return cat;
+    Post.cache.add( key , cat.name );
     return cat.name;
 };
 
