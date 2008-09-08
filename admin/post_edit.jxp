@@ -268,11 +268,11 @@ var clientMeta = function(order){
 <script language="javascript" type="text/javascript">
 var config = {
 	mode : "exact",
-	elements : "content",
+	elements : "excerpt",
 	width: "645",
 	height: "500",
 	theme : "advanced",
-	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
+        plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",//,bramus_cssextras",
 	theme_advanced_buttons2_add: "separator,forecolor,backcolor",
 	theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
 	theme_advanced_buttons3_add_before : "tablecontrols,separator",
@@ -287,11 +287,12 @@ var config = {
 	convert_urls : false ,
 	content_css : "/~~/modules/blog/assets/blog_post.css"
 };
+tinyMCE.init(config);
 <% if( ! thePost.isFieldFrozen('content') ){ %>
+config.plugins += ",bramus_cssextras";
+config.elements = 'content';
 tinyMCE.init(config);
 <% } %>
-config.elements = 'excerpt';
-tinyMCE.init(config);
 
 function isDirty(){
     var contentMCE = tinyMCE.get('content');
@@ -352,7 +353,7 @@ function confirmExit() {
         <% clientMeta(0); %>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
-            <div class="post_meta_field_value">
+            <div class="post_meta_field_value" style="margin: 0px;">
               <textarea id="excerpt" name="excerpt" onkeypress="needs_save = true;"><%= thePost.excerpt || "" %></textarea>
               <input type="button" value="Preview Excerpt" onclick="preview('previewExcerpt')" />
             </div>
