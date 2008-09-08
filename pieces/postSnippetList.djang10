@@ -36,4 +36,13 @@ posts - an array of objects from the blog.posts collection
   {% endfor %}
 </div>
 
+<div class="clearboth">
+{% if not blogDTO.isFirstPage %}
+  <a href="{{ blogDTO.getPrevPageLink }}">&lt;&lt; Previous</a>
+{% endif %}
+{% if not blogDTO.isLastPage %}
+  <a class="floatright" href="{{ blogDTO.getNextPageLink }}">Next &gt;&gt;</a>
+{% endif %}
+</div>
+
 {% endblock %}
