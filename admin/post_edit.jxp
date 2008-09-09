@@ -245,12 +245,14 @@ var buttons = function(){ %>
 <%
 };
 
-
+var usedFields = {};
 var clientMeta = function(order){
     if(!Blog.extraFields) return;
     for(var extraFieldName in Blog.extraFields){
         var field = Blog.extraFields[extraFieldName];
         if ( field.applies && ! field.applies( thePost ) ) continue;
+
+        usedFields[ extraFieldName ] = field;
         if (field.order == order){
 
             %>
@@ -494,13 +496,11 @@ function autosave() {
 
     categories = categories.join("&");
     var extraFields = "";
-<% if(allowModule && allowModule.blog && allowModule.blog.extraFields){
-    var fields = allowModule.blog.extraFields;
-    for(var key in fields){
+<% for (key in usedFields){
         print("extraFields += '&extra_"+key+"=' + document.editForm.extra_"+key
               +".value;");
     }
-} %>
+%>
 
 
     ajax((id ? "id="+id+"&" : "") +
