@@ -249,11 +249,13 @@ var buttons = function(){ %>
 var clientMeta = function(order){
     if(!Blog.extraFields) return;
     for(var extraFieldName in Blog.extraFields){
-        if (Blog.extraFields[extraFieldName].order == order){
+        var field = Blog.extraFields[extraFieldName];
+        if ( field.applies && ! field.applies( thePost ) ) continue;
+        if (field.order == order){
 
             %>
         <div class="post_meta_field">
-            <div class="post_meta_field_name"><%= Blog.extraFields[ extraFieldName ].niceName || extraFieldName %></div>
+            <div class="post_meta_field_name"><%= field.niceName || extraFieldName %></div>
             <div class="post_meta_field_value"><input name="extra_<%= extraFieldName %>" size="30" value="<%= thePost[ extraFieldName ] || "" %>"/></div>
         </div>
 <%
