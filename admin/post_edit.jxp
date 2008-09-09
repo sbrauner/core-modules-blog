@@ -295,9 +295,13 @@ tinyMCE.init(config);
 <% } %>
 
 function isDirty(){
-    var contentMCE = tinyMCE.get('content');
-    var excerptMCE = tinyMCE.get('excerpt');
-    return needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
+<% if( ! thePost.isFieldFrozen('content') ){ %>
+    var contentMCE = tinyMCE.get('content').isDirty();
+<% } else { %>
+    var contentMCE = false;
+<% } %>
+    var excerptMCE = tinyMCE.get('excerpt').isDirty();
+    return needs_save || contentMCE || excerptMCE;
 }
 
 function confirmExit() {
