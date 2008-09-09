@@ -501,7 +501,9 @@ function autosave() {
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
          "&name="+encodeURIComponent(document.getElementById("name").value)+
+<% if(! thePost.isFieldFrozen('content')){ %>
          "&content="+encodeURIComponent(tinyMCE.get('content').getContent())+
+<% } %>
          "&excerpt="+encodeURIComponent(tinyMCE.get("excerpt").getContent())+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+

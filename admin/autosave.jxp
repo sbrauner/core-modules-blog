@@ -56,7 +56,8 @@ if (id) {
 if (!thePost.post_id) thePost.post_id = ObjId();
 
 thePost.title = request.title;
-thePost.content = decodeURIComponent(request.content);
+if(request.content) // Could be frozen -- FIXME -- more bulletproof
+    thePost.content = decodeURIComponent(request.content);
 thePost.excerpt = decodeURIComponent(request.excerpt);
 thePost.ts = new Date( request.ts );
 if ( request.author )
