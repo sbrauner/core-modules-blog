@@ -478,7 +478,6 @@ allRoles.forEach(function(z){
 var id<%= id ? ' = "'+id+'"' : '' %>;
 var saved = false;
 var needs_save = false;
-var force_dirty = false;
 
 //autosave every 60 seconds
 function autosave() {
@@ -525,7 +524,6 @@ function autosave() {
         document.getElementById("draft_id").value = id;
         saved = true;
         needs_save = false;
-        force_dirty = false;
     });
 }
 
