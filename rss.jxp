@@ -92,6 +92,8 @@ if(! title) title = siteName;
 
 // This is where this page (rss.jxp) was called from.
 var link = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
+
+var excerptOnly = allowModule && allowModule.blog && allowModule.blog.rss && allowModule.blog.rss.excerptOnly;
 %>
 
 <% response.setHeader( "Content-Type" , "text/xml;charset=utf-8"); %>
@@ -118,7 +120,7 @@ var link = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
             //content = post.getExcerpt();
 
             %>
-            <description> <%= clean( post.getFullContent() ) %> </description>
+            <description> <%= (excerptOnly || post.excerptOnly) ? clean( post.getExcerpt() ) : clean( post.getFullContent() ) %> </description>
             <% var imgSRC = post.getFirstImageSrc( RSSTHUMBX, RSSTHUMBY ); %>
             <% if(imgSRC){ %>
             <media:thumbnail url="<%= clean((LocalURL(imgSRC)).toString()) %>"/>
