@@ -17,6 +17,19 @@
 <?xml version="1.0"?>
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
 <%
+/**
+ * Handler for requests for RSS feeds.
+ *
+ * Boils down into a call to Blog.handleRequest(), so arguments like ?category=
+ * or ?q= can be passed to this URL.
+ * ?src is treated specially, with it being appended to each story in the RSS
+ * feed. This way you can do a primitive sort of analytics.
+ *
+ * We exclude posts that have a dontRSS field set, and default to showing full
+ * content for each RSS item, but show excerpts for posts with excerptOnly 
+ * fields. A site can also specify that all RSS posts should only show excerpts
+ * using allowModule.blog.rss.excerptOnly.
+ */
 var RSSTHUMBX = 154; // FIXME: blog configuration parameter
 var RSSTHUMBY = 115;
 core.modules.blog.post();
@@ -72,6 +85,8 @@ var fixUrl = function(u){
     return blogURL+u;
 };
 
+// Try to to find a title for this RSS feed. Consult fields with searchTitle
+// functions, default to just the sitename.
 var title;
 var extraFields = (allowModule && allowModule.blog && allowModule.blog.extraFields) ? allowModule.blog.extraFields : {};
 for(var key in extraFields){
@@ -93,6 +108,7 @@ if(! title) title = siteName;
 // This is where this page (rss.jxp) was called from.
 var link = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
 
+// Check if we should only show excerpts for all rss items.
 var excerptOnly = allowModule && allowModule.blog && allowModule.blog.rss && allowModule.blog.rss.excerptOnly;
 %>
 
