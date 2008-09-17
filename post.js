@@ -441,11 +441,12 @@ Post.prototype.getAuthorCat = function(){
 
     var key = '__authorCat_'+this.author;
     var cat = Post.cache.get( key );
-    if( cat ) return cat;
+    if( cat != null ) return cat;
     var cat = db.blog.categories.findOne({author: this.author});
-    if(!cat) return cat;
-    Post.cache.add( key , cat.name );
-    return cat.name;
+    if( cat != null ) cat = cat.name;
+    else cat = false;
+    Post.cache.add( key , cat );
+    return cat;
 };
 
 /**
