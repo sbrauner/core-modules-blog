@@ -20,6 +20,7 @@ core.modules.blog.post();
 /**
  * Utilities for blog processsing.
  * @namespace
+ * @docmodule module.blog.utils
  */
  BlogUtils = {};
 

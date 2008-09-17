@@ -16,6 +16,7 @@
 
 /** Initializes a new data transfer object for the blog, used extensively with the templates.
  * @constructor
+ * @docmodule module.blog.dto
  */
 function BlogDTO() {
     this._user = null;

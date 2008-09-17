@@ -24,6 +24,7 @@ core.ext.getlist();
 /** @constructor Creates a new blog post
  * @param {string} name The URL at which the post can be found
  * @param {string} title Post title
+ * @docmodule module.blog.post
  */
 function Post(name, title) {
     this.name = name;
