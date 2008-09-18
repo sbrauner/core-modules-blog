@@ -178,11 +178,6 @@ Blog.handleRequest = function( request , arg ){
             totalNumPosts = posts.length;
             Blog.log.debug("posts: " + posts.length);
 
-            posts = posts.filter( function( z ) {
-                postResults++;
-                return postResults > pageStart && postResults <= pageEnd;
-            });
-
             if( arg.ignoreRelevancy )
                 posts = posts.sort(function( x, y ){
                     // FORCE sorting by descending timestamp, since we get
@@ -190,6 +185,11 @@ Blog.handleRequest = function( request , arg ){
                     // terms of different weights.
                     return y.ts - x.ts;
                 });
+
+            posts = posts.filter( function( z ) {
+                postResults++;
+                return postResults > pageStart && postResults <= pageEnd;
+            });
 
             Blog.log.debug("pageStart: " + pageStart + " pageEnd " + pageEnd );
             Blog.log.debug("postResults: " + postResults);
