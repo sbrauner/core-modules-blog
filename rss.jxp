@@ -36,7 +36,8 @@ core.modules.blog.post();
 core.net.url();
 
 var requestResult = Blog.handleRequest(request, {
-    filter: { $where: function(){ return ! obj.dontRSS; } }
+// This broke at some point and I have no idea why.
+//    filter: { $where: function(){ return ! obj.dontRSS; } }
 });
 var now = new Date();
 
@@ -80,6 +81,11 @@ var blogURL = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
 var fixUrl = function(u){
     if(request.src)
         u = u + "?src="+request.src;
+
+    // Phantom-post aware :(
+    if( u.startsWith('http') )
+        return u;
+
     // I know we should call post.getUrl() instead of this, but it's broken when
     // blog isn't installed at /, so I'm doing this hack instead.
     return blogURL+u;
