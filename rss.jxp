@@ -83,7 +83,7 @@ var fixUrl = function(u){
         u = u + "?src="+request.src;
 
     // Phantom-post aware :(
-    if( u.startsWith('http') )
+    if( u.startsWith('http://') )
         return u;
 
     // I know we should call post.getUrl() instead of this, but it's broken when
@@ -132,7 +132,7 @@ var excerptOnly = allowModule && allowModule.blog && allowModule.blog.rss && all
             var post = requestResult.posts[i];
         %>
         <item>
-            <guid><%= blogURL+post.name %></guid>
+            <guid><%= post.name.startsWith('http://') ? post.name : blogURL+post.name %></guid>
             <title><%= clean( post.title ) %></title>
             <link><%= fixUrl(post.name) %></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
