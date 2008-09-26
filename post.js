@@ -329,10 +329,14 @@ Post.prototype.getNextPost = function( filter ){
 
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : -1 } );
-    cursor.limit( 1 );
+    cursor.limit( 20 );
 
-    if ( cursor.hasNext() )
-        return cursor.next();
+    while ( cursor.hasNext() ){
+        var p = cursor.next();
+        // FIXME: Phantom post hack
+        if( ! p.name.startsWith("http://") )
+            return p;
+    }
 
     return null;
 };
@@ -348,10 +352,14 @@ Post.prototype.getPreviousPost = function( filter ){
         Object.extend( s , filter );
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
-    cursor.limit( 1 );
+    cursor.limit( 20 );
 
-    if ( cursor.hasNext() )
-        return cursor.next();
+    while ( cursor.hasNext() ){
+        var p = cursor.next();
+        // FIXME: Phantom post hack
+        if( ! p.name.startsWith("http://") )
+            return p;
+    }
 
     return null;
 };
