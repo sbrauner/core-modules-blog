@@ -332,6 +332,46 @@ Blog.handleRequest = function( request , arg ){
 };
 
 /**
+ * Try to see if a comment is acceptable.
+ *
+ * This might include checking whether a captcha passed, hitting Akismet, etc.
+ *
+ * @param {Request} request   the request
+ * @return {String} a response if there's a problem, null if not
+ */
+Blog.problemPosting = function( request ){
+    if ( allowModule && allowModule.blog && allowModule.blog.allowAnonymousPosts ){
+        return null;
+    }
+
+    if ( allowModule && allowModule.blog && allowModule.blog.akismet &&
+         allowModule.blog.akismet.key ){
+        //if ( ! ( ws && ws.akismet && ws.akismet.Akismet ) )
+            core.ws.akismet.akismet();
+        var a = new ws.akismet.Akismet( allowModule.blog.akismet.key ,
+            allowModule.blog.akismet.blogUri );
+
+        var key = a.verifyKey();
+        if( ! key ){
+            return "Checking the comment with Akismet failed: invalid key."
+        }
+
+        var result = a.commentCheck( request.getRemoteIP(), request.getHeader('User-Agent'), request.yourname , request.txt , request.email, request.url );
+        if( ! result ){
+            if( allowModule.blog.akismet.failMessage )
+                return allowModule.blog.akismet.failMessage; // FIXME: mark_safe
+            return "Your comment has been rejected as spam.";
+        }
+        return null;
+    }
+
+    if ( !Captcha )
+        core.user.captcha();
+    return Captcha.problem( request );
+
+};
+
+/**
  * Handle POST requests on a single post. Adding/deleting a comment happens
  * here.
  * @param {Request} request the request
@@ -368,10 +408,8 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.user_id = user._id;
         }
         else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-            if ( !Captcha )
-                core.user.captcha();
 
-            var problem = Captcha.problem( request );
+            var problem = Blog.problemPosting( request );
 
             if ( ! problem ) {
                 comment = {};
