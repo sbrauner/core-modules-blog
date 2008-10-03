@@ -101,6 +101,7 @@ Blog.handleRequest = function( request , arg ){
         previewSnippet : null ,
 
         pageNumber : 1 ,
+        totalNumPosts : 1 ,
         pageSize : arg.limit || 30 ,
         searchTerm : request.q ,
 
@@ -112,13 +113,12 @@ Blog.handleRequest = function( request , arg ){
 
         // ensure that the root of the matched route is removed from the URI so we can place the
         // blog anywhere we want on our site.
-
         if (routes && routes.currentRoot() && routes.currentRoot().length > 1) {
             uri = uri.substring(routes.currentRoot().length);
         }
 
         // find any paging instructions in the url
-        page = uri.match(/\/page\/([0-9]*)$/);
+        page = uri.match(/\/page\/([0-9]*)/);
         if (page) {
             pageNumber = parseInt( page[1] );
             pageNumber = Math.max( 1, pageNumber ); // make sure we can't go below 1
@@ -131,8 +131,9 @@ Blog.handleRequest = function( request , arg ){
         var extraFields = allowModule.blog.extraFields;
         var useQuery = false;
 
-        if (request.q)
+        if (request.q) {
             posts = Search.search(db.blog.posts, request.q , { min : 100 , sort : { ts : -1 } , ignoreRelevancy : arg.ignoreRelevancy} );
+        }
         else if (request.category) {
             // FIXME : need to fix search paging, then replace this
             posts = db.blog.posts.find( { categories : request.category } ).sort({ ts: -1 }).limit(200).toArray();
@@ -170,18 +171,12 @@ Blog.handleRequest = function( request , arg ){
                 return z.live && z.ts <= now;
             };
             posts = posts.filter( resultFilter );
-            //sorting now done by Search
-            //posts = posts.sort( function( a , b ){ return -1 * a.ts.compareTo( b.ts ); } );
 
             var postResults = 0;
             var pageStart = (pageNumber - 1) * pageSize;
             var pageEnd = Math.min(pageNumber * pageSize, posts.length);
+            totalNumPosts = posts.length;
             Blog.log.debug("posts: " + posts.length);
-
-            posts = posts.filter( function( z ) {
-                postResults++;
-                    return postResults > pageStart && postResults <= pageEnd;
-            });
 
             if( arg.ignoreRelevancy )
                 posts = posts.sort(function( x, y ){
@@ -190,6 +185,11 @@ Blog.handleRequest = function( request , arg ){
                     // terms of different weights.
                     return y.ts - x.ts;
                 });
+
+            posts = posts.filter( function( z ) {
+                postResults++;
+                return postResults > pageStart && postResults <= pageEnd;
+            });
 
             Blog.log.debug("pageStart: " + pageStart + " pageEnd " + pageEnd );
             Blog.log.debug("postResults: " + postResults);
@@ -262,7 +262,7 @@ Blog.handleRequest = function( request , arg ){
             if ( ! searchCriteria.categories && allowModule && allowModule.blog && allowModule.blog.homeCategory )
                 searchCriteria.categories = allowModule.blog.homeCategory;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
-            entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).limit( pageSize + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+            entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
         }
         else if (uri.match(/^preview/)) {
             // display a preview of a post
@@ -281,7 +281,7 @@ Blog.handleRequest = function( request , arg ){
             var catName = uri;
             if (db.blog.categories.findOne({name: catName})) {
                 searchCriteria.categories = catName;
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
             }
             if (db.blog.categories.findOne({name: catName.replace(/-/g, "_")})){
                 // Some categories also have underscores in the slug, but links
@@ -290,7 +290,7 @@ Blog.handleRequest = function( request , arg ){
                 // try using underscores instead of hyphens.
                 catName = catName.replace(/-/g, "_");
                 searchCriteria.categories = catName;
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
             }
 
             if (entries && entries.length() > 0) {
@@ -305,7 +305,7 @@ Blog.handleRequest = function( request , arg ){
                 delete searchCriteria.categories;
 
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).limit( pageSize  + 1 ).skip( pageSize * ( pageNumber - 1 ) );
+                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
                 if (entries.length() > 0) {
                     Blog.log.debug('found matching entries for: ' + uri);
                 }
@@ -315,9 +315,10 @@ Blog.handleRequest = function( request , arg ){
         search = uri;
         baseSearch = uri;
 
+        totalNumPosts = entries.count();
         posts = entries.toArray();
         hasPrevious = pageNumber > 1;
-        hasNext = entries.length() > pageSize;
+        hasNext = Math.ceil( totalNumPosts / pageSize ) > pageNumber;
         if (posts.length > pageSize) {
             hasNext = true;
             posts.remove(pageSize);
@@ -328,6 +329,46 @@ Blog.handleRequest = function( request , arg ){
 
     }
     return result;
+};
+
+/**
+ * Try to see if a comment is acceptable.
+ *
+ * This might include checking whether a captcha passed, hitting Akismet, etc.
+ *
+ * @param {Request} request   the request
+ * @return {String} a response if there's a problem, null if not
+ */
+Blog.problemPosting = function( request ){
+    if ( allowModule && allowModule.blog && allowModule.blog.allowAnonymousPosts ){
+        return null;
+    }
+
+    if ( allowModule && allowModule.blog && allowModule.blog.akismet &&
+         allowModule.blog.akismet.key ){
+        //if ( ! ( ws && ws.akismet && ws.akismet.Akismet ) )
+            core.ws.akismet.akismet();
+        var a = new ws.akismet.Akismet( allowModule.blog.akismet.key ,
+            allowModule.blog.akismet.blogUri );
+
+        var key = a.verifyKey();
+        if( ! key ){
+            return "Checking the comment with Akismet failed: invalid key."
+        }
+
+        var result = a.commentCheck( request.getRemoteIP(), request.getHeader('User-Agent'), request.yourname , request.txt , request.email, request.url );
+        if( ! result ){
+            if( allowModule.blog.akismet.failMessage )
+                return allowModule.blog.akismet.failMessage; // FIXME: mark_safe
+            return "Your comment has been rejected as spam.";
+        }
+        return null;
+    }
+
+    if ( !Captcha )
+        core.user.captcha();
+    return Captcha.problem( request );
+
 };
 
 /**
@@ -367,10 +408,8 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.user_id = user._id;
         }
         else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
-            if ( !Captcha )
-                core.user.captcha();
 
-            var problem = Captcha.problem( request );
+            var problem = Blog.problemPosting( request );
 
             if ( ! problem ) {
                 comment = {};

@@ -16,6 +16,7 @@
 
 /** Initializes a new data transfer object for the blog, used extensively with the templates.
  * @constructor
+ * @docmodule module.blog.dto
  */
 function BlogDTO() {
     this._user = null;
@@ -58,14 +59,21 @@ BlogDTO.prototype.getUser = function() {
     return this._user;
 }
 
-BlogDTO.setUpPaging = function(r, pageSize) {
+BlogDTO.prototype.getSearchSuffix = function() {
+    if( this.getSearch() != "" ) {
+        return "?q=" + this.getSearch();
+    }
+    return "";
+}
+
+BlogDTO.setUpPaging = function(r, result, pageSize) {
     pageSize = pageSize || 30;
     this._uri = r.getURI();
-    page = this._uri.match(/\/page\/([0-9]*)$/);
+    page = this._uri.match(/\/page\/([0-9]*)\//);
     if(page) { // currentPage defaults to 1
         this._currentPage = parseInt(page[1]);
     }
-    this._numPages = Math.ceil(BlogUtils.getLivePosts().length / pageSize);
+    this._numPages = Math.ceil( result.totalNumPosts / pageSize );
 }
 
 BlogDTO.prototype.isFirstPage = function() {
@@ -77,14 +85,18 @@ BlogDTO.prototype.isLastPage = function() {
 }
 
 BlogDTO.prototype.getPrevPageLink = function() {
-    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage-1));
+    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage-1)) + this.getSearchSuffix();
 }
 
 BlogDTO.prototype.getNextPageLink = function() {
     if(this._uri.indexOf("/page/") == -1) {
-        return this._uri + (this._uri.endsWith("/") ? "" : "/") + "page/2";
+        return this._uri + ( this._uri.endsWith( "/" ) ? "" : "/" ) + "page/2/" + this.getSearchSuffix();
     }
-    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage+1));
+    return this._uri.replace(new RegExp("\\/page\\/"+this._currentPage), "/page/"+(this._currentPage+1)) + this.getSearchSuffix();
+}
+
+BlogDTO.prototype.getCurrentPage = function() {
+    return this._currentPage;
 }
 
 /** Fills out the comment fields given an unsuccessful HTTP request.

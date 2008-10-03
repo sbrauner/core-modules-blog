@@ -28,6 +28,7 @@ core.ext.getlist();
 /**
  * Blog App Module
  * @class
+ * @docmodule module.blog.blog
  */
 Blog = {};
 

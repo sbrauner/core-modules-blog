@@ -84,14 +84,14 @@ if(result.isPage){
 }
 blogDTO.setBaseURL(routes.find(Blog.routes));
 blogDTO.setBlockedIP(blocked);
-blogDTO.setUpPaging(request, Ext.getlist(allowModule, 'blog', 'postsPerPage'));
+blogDTO.setPostArray(result.posts);
+blogDTO.setUpPaging(request, result, Ext.getlist(allowModule, 'blog', 'postsPerPage'));
 
 /*
  *  now, based on what we're doing, choose a template and modify the DTO
  */
 var template = null;
 
-blogDTO.setPostArray(result.posts);
 blogDTO.setDateFormat("F");
 
 if ( result.previewSnippet ) {
@@ -104,13 +104,13 @@ else if ( result.isCategorySearch ) {
 }
 else if ( result.search ) {
     blogDTO.setSearch(result.search);
-    blogDTO.setPageTitle("Search Results: "+result.posts.length+(result.posts.length == 1 ? " match for " : " matches for ")+result.search);
+    blogDTO.setPageTitle("Search Results: "+result.totalNumPosts+(result.totalNumPosts == 1 ? " match for " : " matches for ")+result.search);
     template = blog.getTemplate("postSnippetList");
 }
 else {
     blogDTO.setDateFormat("F");
 
-    if (result.posts.length == 1) {
+    if (result.posts.length == 1 && blogDTO.getCurrentPage() == 1) {
         template = blog.getTemplate("post");
     }
     else {

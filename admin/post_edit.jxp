@@ -245,15 +245,19 @@ var buttons = function(){ %>
 <%
 };
 
-
+var usedFields = {};
 var clientMeta = function(order){
     if(!Blog.extraFields) return;
     for(var extraFieldName in Blog.extraFields){
-        if (Blog.extraFields[extraFieldName].order == order){
+        var field = Blog.extraFields[extraFieldName];
+        if ( field.applies && ! field.applies( thePost ) ) continue;
+
+        usedFields[ extraFieldName ] = field;
+        if (field.order == order){
 
             %>
         <div class="post_meta_field">
-            <div class="post_meta_field_name"><%= Blog.extraFields[ extraFieldName ].niceName || extraFieldName %></div>
+            <div class="post_meta_field_name"><%= field.niceName || extraFieldName %></div>
             <div class="post_meta_field_value"><input name="extra_<%= extraFieldName %>" size="30" value="<%= thePost[ extraFieldName ] || "" %>"/></div>
         </div>
 <%
@@ -268,11 +272,11 @@ var clientMeta = function(order){
 <script language="javascript" type="text/javascript">
 var config = {
 	mode : "exact",
-	elements : "content",
+	elements : "excerpt",
 	width: "645",
 	height: "500",
 	theme : "advanced",
-	plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu,bramus_cssextras",
+        plugins : "table,save,advhr,advlink,advimage,emotions,iespell,insertdatetime,preview,searchreplace,print,contextmenu",//,bramus_cssextras",
 	theme_advanced_buttons2_add: "separator,forecolor,backcolor",
 	theme_advanced_buttons2_add_before: "cut,copy,paste,separator,search,replace,separator",
 	theme_advanced_buttons3_add_before : "tablecontrols,separator",
@@ -287,16 +291,21 @@ var config = {
 	convert_urls : false ,
 	content_css : "/~~/modules/blog/assets/blog_post.css"
 };
+tinyMCE.init(config);
 <% if( ! thePost.isFieldFrozen('content') ){ %>
+config.plugins += ",bramus_cssextras";
+config.elements = 'content';
 tinyMCE.init(config);
 <% } %>
-config.elements = 'excerpt';
-tinyMCE.init(config);
 
 function isDirty(){
-    var contentMCE = tinyMCE.get('content');
-    var excerptMCE = tinyMCE.get('excerpt');
-    return needs_save || contentMCE.isDirty() || excerptMCE.isDirty();
+<% if( ! thePost.isFieldFrozen('content') ){ %>
+    var contentMCE = tinyMCE.get('content').isDirty();
+<% } else { %>
+    var contentMCE = false;
+<% } %>
+    var excerptMCE = tinyMCE.get('excerpt').isDirty();
+    return needs_save || contentMCE || excerptMCE;
 }
 
 function confirmExit() {
@@ -352,7 +361,7 @@ function confirmExit() {
         <% clientMeta(0); %>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Excerpt</div>
-            <div class="post_meta_field_value">
+            <div class="post_meta_field_value" style="margin: 0px;">
               <textarea id="excerpt" name="excerpt" onkeypress="needs_save = true;"><%= thePost.excerpt || "" %></textarea>
               <input type="button" value="Preview Excerpt" onclick="preview('previewExcerpt')" />
             </div>
@@ -473,7 +482,6 @@ allRoles.forEach(function(z){
 var id<%= id ? ' = "'+id+'"' : '' %>;
 var saved = false;
 var needs_save = false;
-var force_dirty = false;
 
 //autosave every 60 seconds
 function autosave() {
@@ -488,19 +496,19 @@ function autosave() {
 
     categories = categories.join("&");
     var extraFields = "";
-<% if(allowModule && allowModule.blog && allowModule.blog.extraFields){
-    var fields = allowModule.blog.extraFields;
-    for(var key in fields){
+<% for (key in usedFields){
         print("extraFields += '&extra_"+key+"=' + document.editForm.extra_"+key
               +".value;");
     }
-} %>
+%>
 
 
     ajax((id ? "id="+id+"&" : "") +
          "title="+document.getElementById("title").value+
          "&name="+encodeURIComponent(document.getElementById("name").value)+
+<% if(! thePost.isFieldFrozen('content')){ %>
          "&content="+encodeURIComponent(tinyMCE.get('content').getContent())+
+<% } %>
          "&excerpt="+encodeURIComponent(tinyMCE.get("excerpt").getContent())+
          "&live="+document.getElementById("live").value+
          "&commentsEnabled="+document.getElementById("commentsEnabled").value+
@@ -518,7 +526,6 @@ function autosave() {
         document.getElementById("draft_id").value = id;
         saved = true;
         needs_save = false;
-        force_dirty = false;
     });
 }
 

@@ -24,6 +24,7 @@ core.ext.getlist();
 /** @constructor Creates a new blog post
  * @param {string} name The URL at which the post can be found
  * @param {string} title Post title
+ * @docmodule module.blog.post
  */
 function Post(name, title) {
     this.name = name;
@@ -328,10 +329,14 @@ Post.prototype.getNextPost = function( filter ){
 
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : -1 } );
-    cursor.limit( 1 );
+    cursor.limit( 20 );
 
-    if ( cursor.hasNext() )
-        return cursor.next();
+    while ( cursor.hasNext() ){
+        var p = cursor.next();
+        // FIXME: Phantom post hack
+        if( ! p.name.startsWith("http://") )
+            return p;
+    }
 
     return null;
 };
@@ -347,10 +352,14 @@ Post.prototype.getPreviousPost = function( filter ){
         Object.extend( s , filter );
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
-    cursor.limit( 1 );
+    cursor.limit( 20 );
 
-    if ( cursor.hasNext() )
-        return cursor.next();
+    while ( cursor.hasNext() ){
+        var p = cursor.next();
+        // FIXME: Phantom post hack
+        if( ! p.name.startsWith("http://") )
+            return p;
+    }
 
     return null;
 };
@@ -441,11 +450,12 @@ Post.prototype.getAuthorCat = function(){
 
     var key = '__authorCat_'+this.author;
     var cat = Post.cache.get( key );
-    if( cat ) return cat;
+    if( cat != null ) return cat;
     var cat = db.blog.categories.findOne({author: this.author});
-    if(!cat) return cat;
-    Post.cache.add( key , cat.name );
-    return cat.name;
+    if( cat != null ) cat = cat.name;
+    else cat = false;
+    Post.cache.add( key , cat );
+    return cat;
 };
 
 /**
