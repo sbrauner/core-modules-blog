@@ -495,29 +495,13 @@ Post.cache = new TimeOutCache();
  */
 Post.getMostPopular = function( num , articlesBack ){
 
-    num = num || 10;
-    articlesBack = articlesBack || 100;
-
     var key = "__mostPopular_" + num + "_" + articlesBack;
-    var all = Post.cache.get( key );
-    if ( all )
-        return all;
-
-    all = [];
 
     var sortFunc = function( a , b ){
             return b.views - a.views;
     };
 
-    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
-    while ( cursor.hasNext() ){
-        all.push( cursor.next() );
-        all = all.sort( sortFunc );
-        all = all.slice( 0 , num );
-    }
-
-    Post.cache.add( key , all );
-    return all;
+    return Post._getMost( key , num , articlesBack , sortFunc );
 };
 
 /**
@@ -530,9 +514,27 @@ Post.getMostPopular = function( num , articlesBack ){
  */
 Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
 
-    articlesBack = articlesBack || 100;
-
     var key = "__mostCommented_" + num + "_" + articlesBack;
+
+    var sinceWhen = null;
+    if ( daysBackToCountComments )
+        sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
+
+    var sortFunc = function( a , b ){
+        if ( ! sinceWhen )
+            return b.getNumComments() - a.getNumComments();
+        return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
+    };
+
+    return Post._getMost( key , num , articlesBack , sortFunc );
+};
+
+Post._getMost = function( key , num , articlesBack , sortFunc ){
+    if ( ! key )
+        throw "need to pass a key to Post._getMost";
+    
+    num = num || 10;
+    articlesBack = articlesBack || 100;
 
     var old = [];
     var all = Post.cache.get( key , old );
@@ -542,16 +544,8 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
     if ( old[0] )
         Post.cache.add( key , old[0] );
 
-    var sinceWhen = null;
-    if ( daysBackToCountComments )
-        sinceWhen = new Date( (new Date()).getTime() - ( 1000 * 3600 * 24 * daysBackToCountComments ) );
-
     all = [];
-    var sortFunc = function( a , b ){
-        if ( ! sinceWhen )
-            return b.getNumComments() - a.getNumComments();
-        return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
-    };
+
     var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
@@ -561,7 +555,8 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
 
     Post.cache.add( key , all );
     return all;
-};
+
+}
 
 function fixComments() {
 
