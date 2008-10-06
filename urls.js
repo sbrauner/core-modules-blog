@@ -339,7 +339,7 @@ Blog.handleRequest = function( request , arg ){
  * @param {Request} request   the request
  * @return {String} a response if there's a problem, null if not
  */
-Blog.problemPosting = function( request ){
+Blog.problemPosting = function( request , comment , user ){
     if ( allowModule && allowModule.blog && allowModule.blog.allowAnonymousPosts ){
         return null;
     }
@@ -356,7 +356,7 @@ Blog.problemPosting = function( request ){
             return "Checking the comment with Akismet failed: invalid key."
         }
 
-        var result = a.commentCheck( request.getRemoteIP(), request.getHeader('User-Agent'), request.yourname , request.txt , request.email, request.url );
+        var result = a.commentCheck( request.getRemoteIP(), request.getHeader('User-Agent'), comment.author , comment.text , comment.email , comment.url );
         if( ! result ){
             if( allowModule.blog.akismet.failMessage )
                 return allowModule.blog.akismet.failMessage; // FIXME: mark_safe
@@ -367,7 +367,10 @@ Blog.problemPosting = function( request ){
 
     if ( !Captcha )
         core.user.captcha();
-    return Captcha.problem( request );
+    // For historical reasons, we don't use captchas on logged-in users.
+    if( ! user )
+        return Captcha.problem( request );
+    return "";
 
 };
 
@@ -406,21 +409,32 @@ Blog.handlePosts = function( request , thePost , user ){
             comment.email = user.email;
             comment.url = user.url;
             comment.user_id = user._id;
+
         }
         else if ( request.yourname && request.yourname.trim().length != 0 && request.email && request.email.trim().length != 0 ) {
 
-            var problem = Blog.problemPosting( request );
+            comment = {};
+            comment.author = request.yourname;
+            comment.email = request.email;
+            comment.url = request.url;
+        }
+        else
+            return "Malformed request.";
 
-            if ( ! problem ) {
-                comment = {};
-                comment.author = request.yourname;
-                comment.email = request.email;
-                comment.url = request.url;
-            }
-            else {
-                log.captcha.debugsai( problem + ": " + request.getRemoteIP() + " " + tojson(request));
-                return problem;
-            }
+        comment.ts = new Date();
+        comment.text = request.txt;
+        comment.ip = request.getRemoteIP();
+        if(db.blog.blocked.find({ ip: comment.ip }).length() > 0) {
+            return "System error: KP37-6";
+        }
+
+        comment.url = Blog.fixCommentURL( comment.url );
+        comment.isAdmin = user && user.isAdmin ? true : false;
+
+        var problem = Blog.problemPosting( request , comment , user );
+        if( problem ){
+            log.captcha.debugsai( problem + ": " + request.getRemoteIP() + " " + tojson(request));
+            return problem;
         }
 
         if ( !request.txt ){
@@ -429,17 +443,6 @@ Blog.handlePosts = function( request , thePost , user ){
         }
 
         if ( comment ) {
-
-            comment.ts = new Date();
-            comment.text = request.txt;
-            comment.ip = request.getRemoteIP();
-            if(db.blog.blocked.find({ ip: comment.ip }).length() > 0) {
-                return "System error: KP37-6";
-            }
-
-            comment.url = Blog.fixCommentURL( comment.url );
-            comment.isAdmin = user && user.isAdmin ? true : false;
-
             thePost.addComment( comment );
             if(comment.text.trim() == ''){
                 log("Got an empty comment; source was " + tojson(request.txt));
