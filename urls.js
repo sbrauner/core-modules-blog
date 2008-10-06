@@ -356,7 +356,7 @@ Blog.problemPosting = function( request , comment , user ){
             return "Checking the comment with Akismet failed: invalid key."
         }
 
-        var result = a.commentCheck( request.getRemoteIP(), request.getHeader('User-Agent'), comment.author , comment.text , comment.email , comment.url );
+        var result = a.commentCheck( comment.ip, comment.useragent, comment.author , comment.text , comment.email , comment.url );
         if( ! result ){
             if( allowModule.blog.akismet.failMessage )
                 return allowModule.blog.akismet.failMessage; // FIXME: mark_safe
@@ -424,6 +424,7 @@ Blog.handlePosts = function( request , thePost , user ){
         comment.ts = new Date();
         comment.text = request.txt;
         comment.ip = request.getRemoteIP();
+        comment.useragent = request.getHeader('User-Agent');
         if(db.blog.blocked.find({ ip: comment.ip }).length() > 0) {
             return "System error: KP37-6";
         }
