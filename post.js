@@ -236,6 +236,20 @@ Post.prototype.addComment = function( comment ){
 };
 
 /**
+ * Get the post referred to by a given comment ID.
+ * @param {string} cid   the comment ID
+ * @return {Comment} the comment with the given cid
+ */
+Post.prototype.getCommentById = function(cid){
+    var commentsArray = this.getComments();
+    for(var key in commentsArray){
+        var comment = commentsArray[key];
+        if( comment.cid == cid || comment.cid.toString() == cid )
+            return commentsArray[key];
+    }
+};
+
+/**
  * Get this post's comments as an array.
  * @return {Array} this post's comments
  */
@@ -589,6 +603,18 @@ function fixComments() {
     });
 }
 
+
+Blog.submitCommentAsSpam = function(comment){
+    var a = new ws.akismet.Akismet( allowModule.blog.akismet.key ,
+        allowModule.blog.akismet.blogUri );
+
+    var key = a.verifyKey();
+    if( ! key ){
+        return "Checking the comment with Akismet failed: invalid key."
+    }
+
+    return a.submitSpam( comment.ip, comment.useragent, comment.author, comment.text, comment.email , comment.url );
+};
 
 Blog.fixDB = function(){
     db.blog.posts.ensureIndex( { ts : 1 } );

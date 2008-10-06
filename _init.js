@@ -24,6 +24,7 @@ core.modules.blog.blogDTO();
 core.core.mail();
 core.net.url();
 core.ext.getlist();
+core.ws.akismet.akismet();
 
 /**
  * Blog App Module

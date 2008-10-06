@@ -46,8 +46,15 @@ if( action == "Block") {
    action = "recent";
 }
 
-if ( action == "delete" ){
+var akismetEnabled = Ext.getlist( allowModule, 'blog' , 'akismet' );
+
+if ( action == "delete" || action == "report as spam" ){
     var p = db.blog.posts.findOne({ _id: request.postid });
+    var comment = p.getCommentById(request.cid);
+    if( action == "report as spam" && akismetEnabled ){
+        var resp = Blog.submitCommentAsSpam( comment );
+        log("OK -- response " + resp);
+    }
     p.deleteComment(request.cid);
     db.blog.posts.save(p);
     action = "recent";
@@ -97,6 +104,13 @@ if(!blogDTO) blogDTO = new BlogDTO();
         <input type="hidden" name="postid" value="<%= z.post._id %>" />
         <input type="submit" name="action" value="delete" />
     </form>
+    <% if( akismetEnabled ){ %>
+    <form method="POST">
+        <input type="hidden" name="cid" value="<%= z.comment.cid %>" />
+        <input type="hidden" name="postid" value="<%= z.post._id %>" />
+        <input type="submit" name="action" value="report as spam" />
+    </form>
+    <% } %>
     </td>
   </tr>
 <% lastId = z.post._id; } ); %>

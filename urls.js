@@ -347,7 +347,6 @@ Blog.problemPosting = function( request , comment , user ){
     if ( allowModule && allowModule.blog && allowModule.blog.akismet &&
          allowModule.blog.akismet.key ){
         //if ( ! ( ws && ws.akismet && ws.akismet.Akismet ) )
-            core.ws.akismet.akismet();
         var a = new ws.akismet.Akismet( allowModule.blog.akismet.key ,
             allowModule.blog.akismet.blogUri );
 
