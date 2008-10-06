@@ -434,6 +434,7 @@ Blog.handlePosts = function( request , thePost , user ){
         var problem = Blog.problemPosting( request , comment , user );
         if( problem ){
             log.captcha.debugsai( problem + ": " + request.getRemoteIP() + " " + tojson(request));
+            db.blog.failed_posts.save( { post: thePost , comment: comment , reason: problem } );
             return problem;
         }
 
