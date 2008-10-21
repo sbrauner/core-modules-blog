@@ -631,4 +631,6 @@ Blog.fixDB = function(){
 
 if ( db ){
     Blog.fixDB();
+    db.createCollection('blog.failed_posts', {size: 1000000, capped: true});
 }
+
