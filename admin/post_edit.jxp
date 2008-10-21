@@ -355,7 +355,7 @@ function confirmExit() {
     <div id="post_form">
       <% buttons(); %>
     <div id="post_title"><input id="title" name="title" value='<%= (thePost.title ? thePost.title.replace( /'/g , "&apos;" ) :  "" ) %>' size="60" onChange="titleChange()" onKeyUp="titleChange(); needs_save = true;" ></div>
-    <div ?(! thePost.isFieldFrozen('content')) id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content" <%= thePost.isFieldFrozen("content") ? 'disabled="disabled"' : ''%>><%= thePost.content %></textarea></div>
+    <div ?(! thePost.isFieldFrozen('content')) id="post_body"><textarea id="content" onkeypress="needs_save = true;" name="content" <%= thePost.isFieldFrozen("content") ? 'disabled="disabled"' : ''%>><%= content.HTML.escape(thePost.content) %></textarea></div>
     <div id="post_meta">
         <h2>Post Meta</h2>
         <% clientMeta(0); %>
