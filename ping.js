@@ -47,6 +47,8 @@ Blog.ping = function(articleUrl) {
  * @param {string} url URL of which to inform services
  */
 Blog.pingSync = function(articleUrl) {
+  var siteName = siteScope ? siteScope.siteName : siteName;
+  var siteUrl = siteScope ? siteScope.siteUrl : siteUrl;
 
     // if articleUrl is empty, ping just the entire blog, instead of an individual article
     if (!articleUrl || articleUrl.length == 0) {

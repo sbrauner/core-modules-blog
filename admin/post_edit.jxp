@@ -183,15 +183,11 @@ if ( request.action == "save" ) {
 
         id = thePost._id;
         justSaved=true;
-        print( "<i>Saved.</i>" );
+        print( "<i>Saved!</i><br/>" );
 
-        if ( request.getHost().match( /www/ ) && thePost.live && ! thePost.haveIPinged ){
-            // ping blogging services
-            print( "Pinging Services<br>" );
-            if ( request.getHost().match( /^www\./ ) && allowModule.blog.ping && thePost.live && request.getHost().match( /^www\./ ) ){
-                Blog.ping(siteUrl + '/' + thePost.name);  // FIXME: siteScope?
-            }
-            thePost.haveIPinged = true;
+        if (allowModule.blog.ping && thePost.live) {
+            print( "Post is live at " + thePost.getUrl() + " - pinging blogging services");
+            Blog.ping(thePost.getUrl());
         }
     }
 }
