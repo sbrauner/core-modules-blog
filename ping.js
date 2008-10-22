@@ -27,7 +27,7 @@ core.ws.xmlrpc.client();
  * @type Array
  */
 Blog.pingService = [
-    {url: 'ping.feedburner.com', port: 80, path: '/'},
+    {url: 'ping.feedburner.google.com', port: 80, path: '/'},
     {url: 'rpc.technorati.com', port: 80, path: '/rpc/ping'},
     {url: 'blogsearch.google.com', port: 80, path: '/ping/RPC2'},
     {url: 'rpc.weblogs.com', port: 80, path: '/RPC2'},
