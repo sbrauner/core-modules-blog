@@ -61,7 +61,7 @@ if ( action == "delete" || action == "report as spam" ){
 }
 
 if ( action == "recent" ){
-    var cursor = db.blog.posts.find( null , { name : true , title : true , ts : 1 , comments : true } );
+    var cursor = db.blog.posts.find( BlogUtils.liveEntry() , { name : true , title : true , ts : 1 , comments : true } );
     cursor.sort( { ts : -1 } ).limit( 100 );
     all = mungeCursor( cursor );
     sortFunction = function(a,b){
