@@ -14,7 +14,20 @@
 *    limitations under the License.
 */ %>
 
-Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
+
+<% if (!allowModule.blog.channels) { %>
+Pages - <a href="post_edit?cls=page">new</a>
+<% } else {
+var channels = allowModule.blog.channels.slice();
+var channel = request.channel ? request.channel : request.getCookie('channel');
+channel = channel ? channel : channels[0];
+response.addCookie('channel', channel);
+%>
+Pages - <a href="post_edit?cls=page&channel=<%=channel%>">new</a><br/>
+<form action="" method="get">
+  Channel: <%=Forms.Form.select('channel', channel, channels, { onchange: 'this.form.submit()' } )%>
+</form><br/>
+<% } %>
 
 <%
 
@@ -34,6 +47,11 @@ Pages - <a href="/admin/blog/post_edit?cls=page">new</a>
         searchable: true
     });
 
-    tab.dbview( tab.find({cls:"page"}).sort({ts:-1}) );
+var query = { cls: 'page' };
+if (channel) {
+    query.channel = channel;
+}
+
+tab.dbview( tab.find(query).sort({ts:-1}) );
 
 %>

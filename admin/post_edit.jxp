@@ -31,12 +31,16 @@ var id = request.id;
 
 var newPost = true;
 var thePost = new Post();
+if (request.channel && !thePost.channel) {
+    thePost.channel = request.channel;
+}
 thePost.cls = request.cls || "entry";
 thePost.author = user.name;
 var origPost;
 
 if (id) {
-    foundPost = db.blog.posts.findOne( CrID( id ) );
+    foundPost = db.blog.posts.findOne( { _id: ObjId(id) } );
+    log("found=" + foundPost);
     if (foundPost) {
         thePost = foundPost;
         newPost = false;
@@ -336,6 +340,7 @@ function confirmExit() {
 
 
 <h1>
+    <% if (thePost.channel) { %><%=thePost.channel%>: <% } %>
 <%
   if( newPost && !justSaved )
     print( thePost.cls == "page" ? "New Page" : "New Post" );
@@ -542,7 +547,7 @@ function preview(path) {
         setTimeout('preview("'+path+'")', 1000);
     }
     else {
-        window.open('<%=routes.find(siteScope.Blog.routes) ? routes.find(siteScope.Blog.routes) : "" %>/'+path+'?id='+id, '_blank');
+        window.open('<%=thePost.getBaseUrl()%>/'+path+'?id='+id, '_blank');
         firstSave = true;
         saved = false;
     }

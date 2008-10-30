@@ -16,13 +16,26 @@
 
 <% core.content.table(); %>
 
+<% if (!allowModule.blog.channels) { %>
 Posts - <a href="post_edit">new</a>
-<p>
+<% } else {
+var channel = request.channel ? request.channel : request.getCookie('channel');
+response.addCookie('channel', channel);
+channel = channel == 'all' ? null : channel;
+var channels = allowModule.blog.channels.slice();
+channels.unshift('all');
+%>
+Posts - <a href="post_edit?channel=<%=channel ? channel : channels[1]%>">new</a><br/>
+<form action="" method="get">
+  Channel: <%=Forms.Form.select('channel', channel, channels, { onchange: 'this.form.submit()' } )%>
+</form><br/>
+<% } %>
+
 <%
 var cols = [
             { name: "title", isLink: true, searchWidth: 50 },
             { name: "author" },
-            { name: "ts", heading: "created", view: function(x){return x.toString().replace(/... EST /,' ');}}, 
+            { name: "ts", heading: "created", view: function(x){return x.format('EEE MMM d yyyy, h:mm a');}}, 
             { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>": "no"; }},
             { name: "name", isLink: true, searchable: false, view: function(x,o){ return 'edit'; }
         }
@@ -36,6 +49,16 @@ for(var key in Ext.getlist(allowModule, 'blog', 'extraFields') ){
         }});
     }
 }
+
+var query = { cls: 'entry' };
+if (allowModule.blog.channels) {
+    if (channel) {
+        query.channel = channel;
+    } else {
+        cols.unshift( { name: 'channel', searchable: false } );
+    }
+}
+
     var tab = new htmltable({
         ns: db.blog.posts,
         cols: cols,
@@ -43,5 +66,5 @@ for(var key in Ext.getlist(allowModule, 'blog', 'extraFields') ){
         searchable: true
     });
 
-    tab.dbview( tab.find({ cls: "entry" }).sort({ ts: -1 }));
+    tab.dbview( tab.find(query).sort({ ts: -1 }));
 %>

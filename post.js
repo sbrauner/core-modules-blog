@@ -325,11 +325,17 @@ Post.prototype.getUrl = function( r ){
     // is really the most elegant fix.
     if ( this.name.startsWith('http://') ) return this.name;
 
-    var u = r ? "http://" + r.getHeader( "Host" ) : "";
-    u += "/" + this.name;
-
-    return u;
+  return this.getBaseUrl() + '/' + this.name;
 };
+
+Post.prototype.getBaseUrl = function() {
+  if (!request) {
+    return '';
+  }
+  var host_parts = request.getHeader('Host').split('.');
+  var domain = host_parts[host_parts.length-2] + '.' + host_parts[host_parts.length-1];
+  return 'http://' + (this.channel ? this.channel : 'www') + '.' + domain;
+}
 
 /**
  * Get the next post, matching filter if any, from this one.
@@ -337,22 +343,27 @@ Post.prototype.getUrl = function( r ){
  * @return {Post} a post object
  */
 Post.prototype.getNextPost = function( filter ){
-    var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
-    if ( filter )
-        Object.extend( s , filter );
+  var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
+  if (this.channel) {
+    s.channel = this.channel;
+  }
 
-    var cursor = db.blog.posts.find( s );
-    cursor.sort( { ts : -1 } );
-    cursor.limit( 20 );
+  if (filter) {
+    Object.extend( s , filter );
+  }
 
-    while ( cursor.hasNext() ){
-        var p = cursor.next();
-        // FIXME: Phantom post hack
-        if( ! p.name.startsWith("http://") )
-            return p;
-    }
+  var cursor = db.blog.posts.find( s );
+  cursor.sort( { ts : -1 } );
+  cursor.limit( 20 );
 
-    return null;
+  while ( cursor.hasNext() ){
+    var p = cursor.next();
+      // FIXME: Phantom post hack
+      if( ! p.name.startsWith("http://") )
+        return p;
+  }
+
+  return null;
 };
 
 /**
@@ -362,6 +373,9 @@ Post.prototype.getNextPost = function( filter ){
  */
 Post.prototype.getPreviousPost = function( filter ){
     var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
+    if (this.channel) {
+      s.channel = this.channel;
+    }
     if ( filter )
         Object.extend( s , filter );
     var cursor = db.blog.posts.find( s );

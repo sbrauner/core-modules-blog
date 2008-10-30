@@ -241,9 +241,16 @@ Blog.handleRequest = function( request , arg ){
             }
 
             if (entry) {
-                Blog.log.debug('found a matching ' + entry.cls);
+              Blog.log.debug('found a matching ' + entry.cls);
 
-                db.blog.posts.update( { _id : entry._id } , { $inc : { views : 1 } } , { ids : false } );
+              db.blog.posts.update( { _id : entry._id } , { $inc : { views : 1 } } , { ids : false } );
+
+              var now = new Date();
+              var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              log(tojson( { author: entry.author, day: today } ));
+              db.analytics.author.update( { author: entry.author, day: today },
+                                          { $inc: { views: 1 } },
+                                          { upsert: true, ids: false } );
 
                 isPage = true;
                 posts.push( entry );
@@ -262,6 +269,7 @@ Blog.handleRequest = function( request , arg ){
             if ( ! searchCriteria.categories && allowModule && allowModule.blog && allowModule.blog.homeCategory )
                 searchCriteria.categories = allowModule.blog.homeCategory;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
+          log(tojson(searchCriteria));
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
         }
         else if (uri.match(/^preview/)) {
