@@ -15,6 +15,53 @@
 */ %>
 
 <%
+
+// TEMPORARY HACK UNTIL THEY FIX THIS CODE IN COREJS
+Forms.Form.prototype.select = function( name , value , choices , options ){
+
+    var html = "<select name='" + name + "' ";
+
+    if ( options ){
+        for ( var key in options ){
+            html += " " + key;
+            var val = options[key];
+            if ( val )
+                html += "=\"" + val + "\" ";
+        }
+    }
+    html += ">";
+    for ( var i=0; i<choices.length; i++ ){
+        var c = choices[i];
+
+        var name;
+        var val;
+
+        if ( c == null || isString( c ) || isNumber( c ) ){
+            name = c;
+            val = c;
+        }
+        else if ( isObject( c ) && c.name ){
+            name = c.name;
+            val = typeof(c.value) != 'undefined' ? c.value : ( c._id || c.name );
+        }
+        else {
+            name = c.toString();
+            val = c.toString();
+        }
+        html += "<option value='" + val + "' ";
+        if ( value == val )
+            html += " selected ";
+        html += " >";
+        html += name;
+        html += "</option>";
+    }
+    html += "</select>";
+    return html;
+}
+
+/// END TEMPORARY HACK
+
+
 head.addCSS("NOCDN/@@/yui/current/container/assets/skins/sam/container.css");
 head.addCSS("NOCDN/@@/yui/current/button/assets/skins/sam/button.css");
 head.push('<script type="text/javascript" src="/@@/yui/current/yahoo-dom-event/yahoo-dom-event.js"></script>');
@@ -60,10 +107,11 @@ if (id) {
   db.blog.drafts.remove({ post_id: ObjId(request.draft_id) });
 }
 */
-
 var justSaved = false;
 
 Blog.extraFields = allowModule.blog.extraFields;
+
+var specialCategories = BlogUtils.getSpecialCategories(thePost.channel);
 
 if ( request.action == "save" ) {
 
@@ -141,6 +189,39 @@ if ( request.action == "save" ) {
 	    } );
 	}
 
+        for (var k in specialCategories) {
+            // build a list of the categories we need to add
+            var add = [];
+            specialCategories[k].options.forEach(function(opt) {
+                    if (opt.value && opt.value != request[k]) {
+                        // but delete categories immediately
+                        thePost.removeCategory(opt.value);
+                    } else if (opt.value && opt.value == request[k]) {
+                        add.push(opt.value);
+                        // if the 'add' option is passed, add extra categories
+                        if (opt.add) {
+                            add = add.concat(opt.add);
+                        }
+                    }
+                });
+            thePost.categories = thePost.categories.concat(add);
+
+            // if it's "exclusive" then only one post can have the category at a time
+            // (e.g. _featured) so go through and remove the category from other posts
+            if (specialCategories[k].exclusive) {
+                add.forEach(function(cat) {
+                        var query = { categories: cat };
+                        if (thePost.channel) {
+                            query.channel = channel;
+                        }
+                        db.blog.posts.find(query).forEach(function(post) {
+                                post.removeCategory(cat);
+                                db.blog.posts.save(post);
+                            });
+                    });
+            }
+        }
+
 	thePost.categories = thePost.categories.unique().sort();
 
         thePost.live = parseBool( request.live );
@@ -191,7 +272,7 @@ if ( request.action == "save" ) {
 
         if (allowModule.blog.ping && thePost.live) {
             print( "Post is live at " + thePost.getUrl() + " - pinging blogging services");
-            Blog.ping(thePost.getUrl());
+            //            Blog.ping(thePost.getUrl());
         }
     }
 }
@@ -234,6 +315,10 @@ categories.sort( function( a , b ){
     var bL = b.getLabel();
     return aL.toLowerCase().compareTo( bL.toLowerCase() );
 } );
+// don't show any categories that start with _ (these are reserved for special use)
+categories = categories.filter(function(cat) {
+        return cat.name[0] != '_';
+    });
 
 
 var buttons = function(){ %>
@@ -265,6 +350,17 @@ var clientMeta = function(order){
     }
 
 };
+
+// for each special category, set a 'value' depending on which category the blog has if any
+for (var k in specialCategories) {
+    var value = '';
+    specialCategories[k].options.forEach(function(opt) {
+            if (!value && thePost.hasCategory(opt.value)) {
+                value = opt.value;
+            }
+        });
+    specialCategories[k].value = value;
+}
 
 %>
 
@@ -432,6 +528,16 @@ allRoles.forEach(function(z){
             <div class="post_meta_field_name">Notify author when a comment is added:</div>
             <div class="post_meta_field_value"><input type="checkbox" name="comment_notify" id="comment_notify" <%= thePost.comment_notify ? "checked" : "" %>/></div>
         </div>
+
+        <% for (var k in specialCategories) { %>
+        <div class="post_meta_field">
+          <div class="post_meta_field_name"><%=specialCategories[k].label%></div>
+          <div class="post_meta_field_value">
+            <%=Forms.Form.select(k, specialCategories[k].value, specialCategories[k].options)%>
+          </div>
+        </div>
+        <% } %>
+
         <% clientMeta(6); %>
         <div class="post_meta_field">
             <div class="post_meta_field_name">Categories</div>

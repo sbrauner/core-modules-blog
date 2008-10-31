@@ -332,9 +332,20 @@ Post.prototype.getBaseUrl = function() {
   if (!request) {
     return '';
   }
-  var host_parts = request.getHeader('Host').split('.');
-  var domain = host_parts[host_parts.length-2] + '.' + host_parts[host_parts.length-1];
-  return 'http://' + (this.channel ? this.channel : 'www') + '.' + domain;
+  var host = request.getHeader('Host');
+  var i = host.indexOf('.');
+  if (i == -1) { // localhost or something
+    return 'http://' + host_parts[0];
+  }
+  var domain = host.substring(i+1);
+  if (domain.indexOf('.') == -1) {
+    domain = host;
+  }
+  var subdomain = this.channel ? this.channel : 'www';
+  if (allowModule.blog.channels && allowModule.blog.channels[0] == subdomain) {
+    subdomain = 'www';
+  }
+  return 'http://' + subdomain + '.' + domain;
 }
 
 /**
@@ -468,6 +479,21 @@ Post.prototype.unformat = function(){
     }
 };
 
+Post.prototype.hasCategory = function(category) {
+  return this.categories.indexOf(category) != -1;
+};
+
+Post.prototype.addCategory = function(category) {
+  this.categories.push(category);
+};
+
+Post.prototype.removeCategory = function(category) {
+  var i = this.categories.indexOf(category);
+  if (i >= 0) {
+    this.categories.splice(i, 1);
+  }
+};
+
 /**
  * Gets the category for the author who wrote this post, if any.
  * @return the category name for the category that this post's author is
@@ -531,15 +557,17 @@ Post.cache = new TimeOutCache();
  * @param {number} articlesBack how many of the most recent posts to consider
  * @return {Array} an array of Post objects
  */
-Post.getMostPopular = function( num , articlesBack ){
+Post.getMostPopular = function( num , articlesBack, channel ){
+  var key = "__mostPopular_" + num + "_" + articlesBack;
+  if (channel) {
+    key += "_" + channel;
+  }
 
-    var key = "__mostPopular_" + num + "_" + articlesBack;
+  var sortFunc = function( a , b ){
+    return b.views - a.views;
+  };
 
-    var sortFunc = function( a , b ){
-            return b.views - a.views;
-    };
-
-    return Post._getMost( key , num , articlesBack , sortFunc );
+  return Post._getMost(key, num, articlesBack, sortFunc, channel );
 };
 
 /**
@@ -550,9 +578,12 @@ Post.getMostPopular = function( num , articlesBack ){
  *   "count", specified as a number of days ago
  * @return {Array} an array of Post objects
  */
-Post.getMostCommented = function( num , articlesBack , daysBackToCountComments ){
+Post.getMostCommented = function( num , articlesBack , daysBackToCountComments, channel ){
 
-    var key = "__mostCommented_" + num + "_" + articlesBack;
+  var key = "__mostCommented_" + num + "_" + articlesBack;
+  if (channel) {
+    key += "_" + channel;
+  }
 
     var sinceWhen = null;
     if ( daysBackToCountComments )
@@ -567,7 +598,27 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments )
     return Post._getMost( key , num , articlesBack , sortFunc );
 };
 
-Post._getMost = function( key , num , articlesBack , sortFunc ){
+Post.getCategory = function(category, num, channel) {
+  var key = "__category_"+category+"_" + num;
+  if (channel) {
+    key += "_" + channel;
+  }
+  var all = Post.cache.get( key );
+  if (all) {
+    return all;
+  }
+
+  var query = { categories: category };
+  if (channel) {
+    query.channel = channel;
+  }
+  all = db.blog.posts.find(Blog.blogUtils.liveEntry(query)).sort( { ts : -1 } ).limit( num ).toArray();
+
+  Post.cache.add( key , all );
+  return all;
+};
+
+Post._getMost = function( key , num , articlesBack , sortFunc, channel ){
     if ( ! key )
         throw "need to pass a key to Post._getMost";
 
@@ -584,7 +635,8 @@ Post._getMost = function( key , num , articlesBack , sortFunc ){
 
     all = [];
 
-    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry() ).sort( { ts : -1 } ).limit( articlesBack );
+    var query = channel ? { channel: channel } : {};
+    var cursor = db.blog.posts.find( Blog.blogUtils.liveEntry(query) ).sort( { ts : -1 } ).limit( articlesBack );
     while ( cursor.hasNext() ){
         all.push( cursor.next() );
         all = all.sort( sortFunc );

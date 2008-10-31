@@ -68,6 +68,23 @@ core.modules.blog.post();
 	return categories;
  }
 
+BlogUtils.getSpecialCategories = function(channel) {
+  var specialCategories = {};
+  if (allowModule.blog.specialCategories) {
+    if (allowModule.blog.specialCategories.all) {
+      for (var k in allowModule.blog.specialCategories.all) {
+        specialCategories[k] = allowModule.blog.specialCategories.all[k];
+      }
+    }
+    if (channel && allowModule.blog.specialCategories[channel]) {
+      for (var k in allowModule.blog.specialCategories[channel]) {
+        specialCategories[k] = allowModule.blog.specialCategories[channel][k];
+      }
+    }
+  }
+  return specialCategories;
+};
+
  /**
   * Returns an array of the blog's pages, not including the 404 and No Results pages.
   * @return {Array} the blog's pages

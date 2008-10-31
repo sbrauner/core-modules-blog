@@ -247,7 +247,6 @@ Blog.handleRequest = function( request , arg ){
 
               var now = new Date();
               var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-              log(tojson( { author: entry.author, day: today } ));
               db.analytics.author.update( { author: entry.author, day: today },
                                           { $inc: { views: 1 } },
                                           { upsert: true, ids: false } );
