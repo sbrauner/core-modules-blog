@@ -21,7 +21,7 @@ Posts - <a href="post_edit">new</a>
 <% } else {
 var channel = request.channel ? request.channel : request.getCookie('channel');
 response.addCookie('channel', channel);
-channel = channel == 'all' ? null : channel;
+channel = (channel == 'all' || !channel) ? null : channel;
 var channels = allowModule.blog.channels.slice();
 channels.unshift('all');
 %>
@@ -36,7 +36,7 @@ var cols = [
             { name: "title", isLink: true, searchWidth: 50 },
             { name: "author" },
             { name: "ts", heading: "created", view: function(x){return x.format('EEE MMM d yyyy, h:mm a');}}, 
-            { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>": "no"; }},
+            { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='" + o.getUrl() + "'>yes</a>": "no"; }},
             { name: "name", isLink: true, searchable: false, view: function(x,o){ return 'edit'; } },
 ];
 if (allowModule.blog.channels) {

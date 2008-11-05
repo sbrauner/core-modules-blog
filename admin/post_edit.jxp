@@ -445,7 +445,7 @@ function confirmExit() {
 &nbsp;<span style="font-size: 14px; color: grey;" id="autosave_ts"></span>
 </h1>
 
-<form method="post" action="post_edit.jxp" name="editForm" onsubmit="needs_save = false; return true;">
+<form method="post" action="" name="editForm" onsubmit="needs_save = false; return true;">
     <input type="hidden" name="action" value="save" id="form_action">
     <input type="hidden" name="cls" value="<%= thePost.cls %>">
     <div id="post_form">

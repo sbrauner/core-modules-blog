@@ -18,7 +18,7 @@ Drafts
 <% if (allowModule.blog.channels) {
 var channel = request.channel ? request.channel : request.getCookie('channel');
 response.addCookie('channel', channel);
-channel = channel == 'all' ? null : channel;
+channel = (channel == 'all' || !channel) ? null : channel;
 var channels = allowModule.blog.channels.slice();
 channels.unshift('all');
 %>
