@@ -321,6 +321,10 @@ Post.prototype.getUrl = function( r ){
     if ( ! r && request )
         r = request;
 
+  if (this.crosspost_channel && this.crosspost_name) {
+    return this.getBaseUrl(this.crosspost_channel) + '/' + this.crosspost_name;
+  }
+
     // FIXME: Hack for phantom posts. Blog module shouldn't care, but this
     // is really the most elegant fix.
     if ( this.name.startsWith('http://') ) return this.name;
@@ -328,10 +332,11 @@ Post.prototype.getUrl = function( r ){
   return this.getBaseUrl() + '/' + this.name;
 };
 
-Post.prototype.getBaseUrl = function() {
+Post.prototype.getBaseUrl = function(channel) {
   if (!request) {
     return '';
   }
+  channel = channel ? channel : this.channel;
   var host = request.getHeader('Host');
   var i = host.indexOf('.');
   if (i == -1) { // localhost or something
@@ -341,12 +346,19 @@ Post.prototype.getBaseUrl = function() {
   if (domain.indexOf('.') == -1) {
     domain = host;
   }
-  var subdomain = this.channel ? this.channel : 'www';
+  var subdomain = channel ? channel : 'www';
   if (allowModule.blog.channels && allowModule.blog.channels[0] == subdomain) {
     subdomain = 'www';
   }
   return 'http://' + subdomain + '.' + domain;
-}
+};
+
+Post.prototype.getCrosspost = function() {
+  if (!this.crosspost_name || !this.crosspost_channel) {
+    return null;
+  }
+  return db.blog.posts.findOne( { name: this.crosspost_name, channel: this.crosspost_channel } );
+};
 
 /**
  * Get the next post, matching filter if any, from this one.

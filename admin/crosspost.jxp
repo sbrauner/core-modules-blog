@@ -1,0 +1,78 @@
+<%
+
+post = db.blog.posts.findOne( { _id: request.id } );
+if (!post) {
+    print("No post found.");
+    return;
+}
+
+var channel_name = allowModule.blog.channels_names[post.channel] ? allowModule.blog.channels_names[post.channel] : post.channel;
+
+if (request.channel) {
+
+    var p = new siteScope.Post();
+    p.channel = request.channel;
+    p.name = post.getUrl();
+    p.title = post.title;
+    p.crosspost_id = post._id;
+    p.crosspost_name = post.name;
+    p.crosspost_channel = post.channel;
+    p.author = post.author;
+    p.freezeField('content');
+    p.markFieldFreeform('name'); // let the user edit this, don't mess with it
+    p.ts = post.ts;
+    p.excerpt = post.excerpt;
+
+    // As in post_edit, strip the excess <p>..</p> around the outside of 
+    // the post.
+    if (p.excerpt.startsWith('<p>') ){
+        p.excerpt = p.excerpt.replace(/<\/p>$/, '').replace(/^<p>/, '');
+    }
+
+    // This is real bad, should change how this works
+    p.excerpt = '<span class="partner-post"><a href="' + p.getBaseUrl() + '"><span class="from">From </span><span class="siteName">' + channel_name + '</span></a>:</span> ' + p.excerpt;
+
+    // add the categories, don't do any special categories except for _home
+    p.categories = post.categories;
+    p.categories = [];
+    post.categories.forEach(function(cat) {
+            if (cat[0] != '_' || cat == '_home') {
+                p.categories.push(cat);
+            }
+        });
+    p.live = true;
+    p.imported = true;
+    // Only excerpts on this post in RSS feeds.
+    p.excerptOnly = true;
+    db.blog.posts.save(p);
+    crosspost = p;
+}
+
+var options = [];
+allowModule.blog.channels.forEach(function(channel) {
+        if (channel != post.channel) {
+            options.push(channel);
+        }
+    });
+
+
+%>
+
+<h2>Crosspost from <%=channel_name%></h2>
+<h3><%=post.title%></h3>
+
+    <% if (error) { %>
+    <p><%=error%>
+    <% } %>
+
+<% if (crosspost) { %>
+<p>Crossposted to <%=crosspost.channel%>.</p>
+<p><a href="<%=post.getBaseUrl(crosspost.channel)%>"><%=crosspost.channel%> home page</a><br/>
+<a href="posts?channel=<%=crosspost.channel%>">edit <%=crosspost.channel%> posts</a></p>
+<% } %>
+
+<form action="" method="post">
+  <label>Crosspost to:</label>
+  <%=Forms.Form.select('channel', null, options)%>
+  <input type="submit" value="Crosspost" />
+</form>

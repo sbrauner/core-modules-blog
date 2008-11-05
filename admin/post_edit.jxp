@@ -87,7 +87,6 @@ var origPost;
 
 if (id) {
     foundPost = db.blog.posts.findOne( { _id: ObjId(id) } );
-    log("found=" + foundPost);
     if (foundPost) {
         thePost = foundPost;
         newPost = false;

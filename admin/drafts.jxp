@@ -15,6 +15,18 @@
 */ %>
 
 Drafts
+<% if (allowModule.blog.channels) {
+var channel = request.channel ? request.channel : request.getCookie('channel');
+response.addCookie('channel', channel);
+channel = channel == 'all' ? null : channel;
+var channels = allowModule.blog.channels.slice();
+channels.unshift('all');
+%>
+<br/>
+<form action="" method="get">
+  Channel: <%=Forms.Form.select('channel', channel, channels, { onchange: 'this.form.submit()' } )%>
+</form><br/>
+<% } %>
 
 <%
 // This is wrong; it will link to editing the post rather than the draft
@@ -36,6 +48,15 @@ db.blog.drafts.ensureIndex({ts : 1 });
         searchable: true
     });
 
-    tab.dbview( tab.find().sort({ts:-1}) );
+var query = {};
+if (allowModule.blog.channels) {
+    if (channel) {
+        query.channel = channel;
+    } else {
+        cols.unshift( { name: 'channel', searchable: false } );
+    }
+}
+
+tab.dbview( tab.find(query).sort({ts:-1}) );
 
 %>

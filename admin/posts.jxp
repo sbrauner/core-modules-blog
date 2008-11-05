@@ -37,12 +37,15 @@ var cols = [
             { name: "author" },
             { name: "ts", heading: "created", view: function(x){return x.format('EEE MMM d yyyy, h:mm a');}}, 
             { name: "live", searchWidth: 4, type: "boolean", view: function(x,o){ return x ? "<a href='/" + o.name + "'>yes</a>": "no"; }},
-            { name: "name", isLink: true, searchable: false, view: function(x,o){ return 'edit'; }
-        }
+            { name: "name", isLink: true, searchable: false, view: function(x,o){ return 'edit'; } },
 ];
+if (allowModule.blog.channels) {
+    cols.push( { heading: 'crosspost', name: 'crosspost_channel', searchable: false, view: function(x,o) {
+                return o.crosspost_channel ? 'from <b>' + o.crosspost_channel + '</b>' : '<a href="crosspost?id='+o._id+'">crosspost</a>';
+            }});
+}
 for(var key in Ext.getlist(allowModule, 'blog', 'extraFields') ){
     var field = allowModule.blog.extraFields[key];
-    log("ha " + key + " " + field.column);
     if(field.column){
         cols.push({name: key, searchable: true, view: function(x){
             return x;
