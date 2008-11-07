@@ -607,7 +607,7 @@ Post.getMostCommented = function( num , articlesBack , daysBackToCountComments, 
         return b.getNumCommentsSince( sinceWhen ) - a.getNumCommentsSince( sinceWhen );
     };
 
-    return Post._getMost( key , num , articlesBack , sortFunc );
+  return Post._getMost( key , num , articlesBack , sortFunc, channel );
 };
 
 Post.getCategory = function(category, num, channel) {

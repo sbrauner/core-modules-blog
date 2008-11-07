@@ -1,0 +1,77 @@
+<%
+
+    var now = new Date();
+var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+var yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+var week_ago = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+var month_ago = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+
+var stats_today = {};
+var stats_yesterday = {};
+var stats_week = {};
+var stats_month = {};
+
+function add_stats(stats, author, number) {
+    if (stats[author]) {
+        stats[author] += number;
+    } else {
+        stats[author] = number;
+    }
+}
+
+db.analytics.author.find( { day: { $gte: month_ago } } ).forEach(function(stat) {
+        add_stats(stats_month, stat.author, stat.views);
+        if (stat.day >= week_ago) {
+            add_stats(stats_week, stat.author, stat.views);
+        }
+        if (stat.day.getTime() == yesterday.getTime()) {
+            add_stats(stats_yesterday, stat.author, stat.views);
+        }
+        if (stat.day.getTime() == today.getTime()) {
+            add_stats(stats_today, stat.author, stat.views);
+        }
+    });
+
+function sort_stats(stats) {
+    var result = [];
+    for (var k in stats) {
+        result.push( { author: k, views: stats[k] } );
+    }
+    return result.sort(function(a, b) { return b.views - a.views } );
+}
+
+function stats_table(stats, heading) {
+    stats = sort_stats(stats);
+    var html = '';
+    html += '<table class="stats">';
+    html += '<tr><th colspan="2">' + heading + '</th></tr>';
+    stats.forEach(function(stat) {
+            html += '<tr><td>' + stat.author + '</td><td>' + stat.views + '</td></tr>';
+        });
+    html += '</table>';
+    return html;
+}
+
+%>
+
+<style>
+table.stats {
+float: left;
+margin-right: 20px;
+}
+
+table.stats th {
+padding: 5px;
+}
+
+table.stats td {
+padding: 3px;
+text-align: right;
+}
+</style>
+
+<h2>Pageviews by Author</h2>
+<%=stats_table(stats_today, 'Today')%>
+<%=stats_table(stats_yesterday, 'Yesterday')%>
+<%=stats_table(stats_week, 'Last 7 Days')%>
+<%=stats_table(stats_month, 'Last 30 Days')%>

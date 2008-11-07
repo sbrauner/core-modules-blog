@@ -19,7 +19,7 @@
 Pages - <a href="post_edit?cls=page">new</a>
 <% } else {
 var channels = allowModule.blog.channels.slice();
-var channel = request.channel ? request.channel : request.getCookie('channel');
+var channel = (request.channel && (request.channel == 'all' || allowModule.blog.channels.indexOf(request.channel) >= 0)) ? request.channel : request.getCookie('channel');
 channel = channel ? channel : channels[0];
 response.addCookie('channel', channel);
 %>
