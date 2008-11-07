@@ -271,7 +271,7 @@ if ( request.action == "save" ) {
 
         if (allowModule.blog.ping && thePost.live) {
             print( "Post is live at " + thePost.getUrl() + " - pinging blogging services");
-            //            Blog.ping(thePost.getUrl());
+            Blog.ping(thePost.getUrl());
         }
     }
 }

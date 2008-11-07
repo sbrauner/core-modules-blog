@@ -52,8 +52,6 @@ var query = {};
 if (allowModule.blog.channels) {
     if (channel) {
         query.channel = channel;
-    } else {
-        cols.unshift( { name: 'channel', searchable: false } );
     }
 }
 
