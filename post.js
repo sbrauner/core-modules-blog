@@ -340,7 +340,7 @@ Post.prototype.getBaseUrl = function(channel) {
   var host = request.getHeader('Host');
   var i = host.indexOf('.');
   if (i == -1) { // localhost or something
-    return 'http://' + host_parts[0];
+    return 'http://' + host;
   }
   var domain = host.substring(i+1);
   if (domain.indexOf('.') == -1) {
@@ -404,11 +404,11 @@ Post.prototype.getPreviousPost = function( filter ){
 
     if ( filter )
         Object.extend( s , filter );
-    
+
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
     cursor.limit( 1 );
-    
+
     if ( cursor.hasNext() ){
         return cursor.next();
     }
