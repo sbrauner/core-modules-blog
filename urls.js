@@ -296,7 +296,6 @@ Blog.handleRequest = function( request , arg ){
                 // try using underscores instead of hyphens.
                 catName = catName.replace(/-/g, "_");
                 searchCriteria.categories = catName;
-              log("searching: " + tojson(searchCriteria));
                 entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
             }
 
