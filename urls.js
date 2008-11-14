@@ -226,18 +226,18 @@ Blog.handleRequest = function( request , arg ){
         if ( uri.length != 0 ){
             searchCriteria.name = uri;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
-            var entry = db.blog.posts.findOne(searchCriteria);
+            var entry = Blog.PostProxy.findOne(searchCriteria);
 
             if ( ! entry && uri.match( /\/\d\d\d\d\/\d\d?\// ) ){
                 searchCriteria.name = new RegExp( uri.substring( uri.lastIndexOf( "/" ) ) + "$" );
-                entry = db.blog.posts.findOne(searchCriteria);
+                entry = Blog.PostProxy.findOne(searchCriteria);
             }
             if ( ! entry && uri.match( /-/ )){
                 // Some old posts were changed to have underscores in the
                 // slug instead of hyphens. If we didn't find a page using the
                 // given slug, try replacing the hyphens with underscores.
                 searchCriteria.name = uri.replace(/-/g, "_");
-                entry = db.blog.posts.findOne(searchCriteria);
+                entry = Blog.PostProxy.findOne(searchCriteria);
             }
 
             if (entry) {
@@ -503,5 +503,62 @@ Blog.fixCommentURL = function( url ){
 
     return "http://" + url;
 }
+
+Blog.PostProxy = {
+
+    findOne : function( filter ){
+        
+        var coll = db.blog.posts;
+        
+        try {
+            if ( filter.name )
+                return Blog.PostProxy.applyFiltersToOne( filter , coll.findOne( { name : filter.name } ) );
+        }
+        catch ( e ){
+            log.blog.postproxy.error( "can't handle : " + tojson( filter ) + " " + e );
+        }
+        
+        return db.blog.posts.findOne( filter );
+    } ,
+
+    applyFiltersToOne : function( filter , post ){
+
+        if ( ! post )
+            return null;
+
+        for ( var name in filter ){
+
+            if ( typeof( filter[name] ) == "object" ){
+
+                for ( var qualifier in filter[name] ){
+
+                    if ( qualifier == "$lt" ){
+                        if ( post[name] >= filter[name]["$lt"] ){
+                            //log( "[" + post[name] + "] >= [" + filter[name]["$lt"] + "]" );
+                            return null;
+                        }
+                    }
+                    else if ( qualifier == "$gt" ){
+                        if ( post[name] <= filter[name]["$lt"] ){
+                            //log( "[" + post[name] + "] <= [" + filter[name]["$lt"] + "]" );
+                            return null;
+                        }
+                    }
+                    else {
+                        throw "can't handle qualifier [" + qualifier + "]";
+                    }
+                    
+                }
+
+            }
+            else if ( filter[name] != post[name] ){
+                //log( "[" + filter[name] + "] != [" + post[name] + "]" );
+                return null;
+            }
+        }
+
+        return post;
+    }
+};
 
 return Blog;
