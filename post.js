@@ -395,21 +395,22 @@ Post.prototype.getNextPost = function( filter ){
  * @return {Post} a post object
  */
 Post.prototype.getPreviousPost = function( filter ){
+
     var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
+
     if (this.channel) {
       s.channel = this.channel;
     }
+
     if ( filter )
         Object.extend( s , filter );
+    
     var cursor = db.blog.posts.find( s );
     cursor.sort( { ts : 1 } );
-    cursor.limit( 20 );
-
-    while ( cursor.hasNext() ){
-        var p = cursor.next();
-        // FIXME: Phantom post hack
-        if( ! p.name.startsWith("http://") )
-            return p;
+    cursor.limit( 1 );
+    
+    if ( cursor.hasNext() ){
+        return cursor.next();
     }
 
     return null;
