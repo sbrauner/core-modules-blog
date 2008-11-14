@@ -21,7 +21,7 @@ Posts - <a href="post_edit">new</a>
 <% } else {
 var channel = (request.channel && (request.channel == 'all' || allowModule.blog.channels.indexOf(request.channel) >= 0)) ? request.channel : request.getCookie('channel');
 response.addCookie('channel', channel);
-channel = (channel == 'all' || !channel) ? null : channel;
+channel = (channel == 'all' || channel == 'null' || !channel) ? null : channel;
 var channels = allowModule.blog.channels.slice();
 channels.unshift('all');
 %>

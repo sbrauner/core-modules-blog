@@ -21,6 +21,7 @@ if (request.channel) {
     p.freezeField('content');
     p.markFieldFreeform('name'); // let the user edit this, don't mess with it
     p.ts = post.ts;
+
     p.excerpt = post.excerpt;
 
     // As in post_edit, strip the excess <p>..</p> around the outside of 
@@ -30,7 +31,12 @@ if (request.channel) {
     }
 
     // This is real bad, should change how this works
-    p.excerpt = '<span class="partner-post"><a href="' + p.getBaseUrl() + '"><span class="from">From </span><span class="siteName">' + channel_name + '</span></a>:</span> ' + p.excerpt;
+    p.excerpt = '<span class="partner-post"><a href="' + post.getBaseUrl() + '"><span class="from">From </span><span class="siteName">' + channel_name + '</span></a>:</span> ' + p.excerpt;
+
+    var image = post.getFirstImageSrc();
+    if (image) {
+        p.content = '<img src="'+image+'" alt="" />';
+    }
 
     // add the categories, don't do any special categories except for _home
     p.categories = post.categories;

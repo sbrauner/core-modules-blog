@@ -35,10 +35,19 @@ var RSSTHUMBY = 115;
 core.modules.blog.post();
 core.net.url();
 
-var requestResult = Blog.handleRequest(request, {
-// This broke at some point and I have no idea why.
-//    filter: { $where: function(){ return ! obj.dontRSS; } }
-});
+var options = {};
+if (allowModule.blog.channels) {
+    channel = allowModule.blog.getChannel(request);
+    siteName = allowModule.blog.channels_names[channel];
+    siteDescription = allowModule.blog.channels_descriptions[channel];
+    options.filter = { channel: channel };
+}
+var requestResult = Blog.handleRequest(request, options);
+
+if (allowModule.blog.getSiteDescription) {
+    siteDescription = allowModule.blog.getSiteDescription(request);
+}
+
 var now = new Date();
 
 function clean( s ){
@@ -75,21 +84,6 @@ function clean( s ){
 
     return s;
 }
-
-// We add track info to the link but the guid we keep clean
-var blogURL = LocalURL(request.getURI().replace(/\/rss\/?/, '/')).toString();
-var fixUrl = function(u){
-    if(request.src)
-        u = u + "?src="+request.src;
-
-    // Phantom-post aware :(
-    if( u.startsWith('http://') )
-        return u;
-
-    // I know we should call post.getUrl() instead of this, but it's broken when
-    // blog isn't installed at /, so I'm doing this hack instead.
-    return blogURL+u;
-};
 
 // Try to to find a title for this RSS feed. Consult fields with searchTitle
 // functions, default to just the sitename.
@@ -132,9 +126,9 @@ var excerptOnly = allowModule && allowModule.blog && allowModule.blog.rss && all
             var post = requestResult.posts[i];
         %>
         <item>
-            <guid><%= post.name.startsWith('http://') ? post.name : blogURL+post.name %></guid>
+            <guid><%=post.getUrl()%></guid>
             <title><%= clean( post.title ) %></title>
-            <link><%= fixUrl(post.name) %></link>
+            <link><%=post.getUrl()%><%=request.src ? '?src='+request.src : ''%></link>
             <pubDate><%= post.ts.webFormat() %></pubDate>
             <author><%= post.author %></author>
             <%

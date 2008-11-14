@@ -78,9 +78,6 @@ var id = request.id;
 
 var newPost = true;
 var thePost = new Post();
-if (request.channel && !thePost.channel) {
-    thePost.channel = request.channel;
-}
 thePost.cls = request.cls || "entry";
 thePost.author = user.name;
 var origPost;
@@ -99,6 +96,15 @@ if (id) {
             thePost = foundPost;
             newPost = false; 
         }
+    }
+}
+
+// make sure the post gets a valid channel
+if (allowModule.blog.channels && !thePost.channel) {
+    if (allowModule.blog.channels.indexOf(request.channel) > -1) {
+        thePost.channel = request.channel;
+    } else {
+        thePost.channel = allowModule.blog.channels[0];
     }
 }
 
