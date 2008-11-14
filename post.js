@@ -366,7 +366,7 @@ Post.prototype.getCrosspost = function() {
  * @return {Post} a post object
  */
 Post.prototype.getNextPost = function( filter ){
-  var s = { live : true , cls : "entry" , ts : { $lt : this.ts } };
+  var s = { live : true , cls : "entry" , ts : { $lt : this.ts }, crosspost_channel: null };
   if (this.channel) {
     s.channel = this.channel;
   }
@@ -379,14 +379,7 @@ Post.prototype.getNextPost = function( filter ){
   cursor.sort( { ts : -1 } );
   cursor.limit( 20 );
 
-  while ( cursor.hasNext() ){
-    var p = cursor.next();
-      // FIXME: Phantom post hack
-      if( ! p.name.startsWith("http://") )
-        return p;
-  }
-
-  return null;
+  return cursor.hasNext() ? cursor.next() : null;
 };
 
 /**
@@ -396,7 +389,7 @@ Post.prototype.getNextPost = function( filter ){
  */
 Post.prototype.getPreviousPost = function( filter ){
 
-    var s = { live : true , cls : "entry" , ts : { $gt : this.ts } };
+  var s = { live : true , cls : "entry" , ts : { $gt : this.ts }, crosspost_channel: null };
 
     if (this.channel) {
       s.channel = this.channel;
@@ -409,11 +402,7 @@ Post.prototype.getPreviousPost = function( filter ){
     cursor.sort( { ts : 1 } );
     cursor.limit( 1 );
 
-    if ( cursor.hasNext() ){
-        return cursor.next();
-    }
-
-    return null;
+    return cursor.hasNext() ? cursor.next() : null;
 };
 
 /**
