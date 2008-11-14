@@ -165,10 +165,10 @@ Blog.handleRequest = function( request , arg ){
             // the category checkbox if the dontSearch item was "on", etc.
             var resultFilter;
             if (request.q) resultFilter = function(z){
-                return z.live && z.ts <= now && ! z.dontSearch;
+                return z && z.live && z.ts <= now && ! z.dontSearch;
             };
             else resultFilter = function(z){
-                return z.live && z.ts <= now;
+                return z && z.live && z.ts <= now;
             };
             posts = posts.filter( resultFilter );
 
@@ -268,7 +268,6 @@ Blog.handleRequest = function( request , arg ){
             if ( ! searchCriteria.categories && allowModule && allowModule.blog && allowModule.blog.homeCategory )
                 searchCriteria.categories = allowModule.blog.homeCategory;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
-          log(tojson(searchCriteria));
             entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
         }
         else if (uri.match(/^preview/)) {
