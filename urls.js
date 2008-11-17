@@ -321,10 +321,9 @@ Blog.handleRequest = function( request , arg ){
         search = uri;
         baseSearch = uri;
 
-        totalNumPosts = entries.count();
         posts = entries.toArray();
         hasPrevious = pageNumber > 1;
-        hasNext = Math.ceil( totalNumPosts / pageSize ) > pageNumber;
+        hasNext = posts.length >= pageSize && entries.copy().skip( pageSize * pageNumber ).limit(1).hasNext();
         if (posts.length > pageSize) {
             hasNext = true;
             posts.remove(pageSize);
