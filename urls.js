@@ -299,7 +299,7 @@ Blog.handleRequest = function( request , arg ){
                 //entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
                 entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
             }
-
+            
             if (entries && entries.length() > 0) {
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
@@ -542,9 +542,10 @@ Blog.PostProxy = {
             ,
             toArray : function(){
                 return arr;
-            }
+            } ,
+            hasNext : hasNext
         };
-
+        
     } ,
 
     findOne : function( filter ){
