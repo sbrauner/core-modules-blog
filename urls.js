@@ -510,14 +510,6 @@ Blog.PostProxy = {
 
     find : function( criteria , sort , pageNumber , pageSize , hint ){
         
-        log( "doing query for " + tojson( criteria ) );
-        try {
-            throw 1;
-        }
-        catch ( e ){
-            scope.currentException().printStackTrace();
-        }
-        
         var q = { query : criteria };
         if ( sort ) 
             q.orderBy = sort;
