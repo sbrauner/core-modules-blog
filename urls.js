@@ -268,16 +268,15 @@ Blog.handleRequest = function( request , arg ){
             if ( ! searchCriteria.categories && allowModule && allowModule.blog && allowModule.blog.homeCategory )
                 searchCriteria.categories = allowModule.blog.homeCategory;
             Blog.log.debug( "searchCriteria : " + tojson( searchCriteria ) );
-            entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+            //entries = db.blog.posts.find( searchCriteria ).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+            entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
         }
         else if (uri.match(/^preview/)) {
             // display a preview of a post
-            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} ).sort({ts: -1 });
+            entries = db.blog.drafts.find( {post_id : ObjId(request.id)} ).sort({ts: -1 }).limit(1);
+            
             previewSnippet = (uri == "previewExcerpt");
-
-            // preview triggers an autosave; we only want to see the most up-to-date
-            entries.limit(1);
-
+            
             isPage = true;
             // so that the blog doesn't think this is a search
             uri = null;
@@ -287,16 +286,18 @@ Blog.handleRequest = function( request , arg ){
             var catName = uri;
             if (db.blog.categories.findOne({name: catName})) {
                 searchCriteria.categories = catName;
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                //entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
             }
-            if (db.blog.categories.findOne({name: catName.replace(/-/g, "_")})){
+            else if (db.blog.categories.findOne({name: catName.replace(/-/g, "_")})){
                 // Some categories also have underscores in the slug, but links
                 // persist with hyphens in them; as previously, if we don't
                 // find any posts which match the category with hyphens, we
                 // try using underscores instead of hyphens.
                 catName = catName.replace(/-/g, "_");
                 searchCriteria.categories = catName;
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                //entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
             }
 
             if (entries && entries.length() > 0) {
@@ -311,7 +312,8 @@ Blog.handleRequest = function( request , arg ){
                 delete searchCriteria.categories;
 
                 searchCriteria.name = new RegExp('^' + uri.replace(/\//g, '\\/'));
-                entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                //entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
+                entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
                 if (entries.length() > 0) {
                     Blog.log.debug('found matching entries for: ' + uri);
                 }
@@ -323,7 +325,8 @@ Blog.handleRequest = function( request , arg ){
 
         posts = entries.toArray();
         hasPrevious = pageNumber > 1;
-        hasNext = posts.length >= pageSize && entries.copy().skip( pageSize * pageNumber ).limit(1).hasNext();
+        hasNext = entries.hasNext;
+
         if (posts.length > pageSize) {
             hasNext = true;
             posts.remove(pageSize);
@@ -504,6 +507,45 @@ Blog.fixCommentURL = function( url ){
 }
 
 Blog.PostProxy = {
+
+    find : function( criteria , sort , pageNumber , pageSize , hint ){
+        
+        log( "doing query for " + tojson( criteria ) );
+        try {
+            throw 1;
+        }
+        catch ( e ){
+            scope.currentException().printStackTrace();
+        }
+        
+        var q = { query : criteria };
+        if ( sort ) 
+            q.orderBy = sort;
+        
+        if ( hint )
+            q[ "$hint" ] = hint;
+
+        var cursor = db.blog.posts.find( q );
+        
+        cursor.skip( pageSize * ( pageNumber - 1 ) );
+        cursor.limit( pageSize + 1 );
+        
+        var arr = cursor.toArray();
+        var hasNext = arr.length == pageSize + 1;
+        if ( hasNext )
+            arr.pop();
+        
+        return {
+            length : function(){
+                return arr.length;
+            }
+            ,
+            toArray : function(){
+                return arr;
+            }
+        };
+
+    } ,
 
     findOne : function( filter ){
         
