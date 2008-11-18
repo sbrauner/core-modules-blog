@@ -512,7 +512,7 @@ Blog.PostProxy = {
         
         var q = { query : criteria };
         if ( sort ) 
-            q.orderBy = sort;
+            q.orderby = sort;
         
         if ( hint )
             q[ "$hint" ] = hint;
