@@ -274,9 +274,9 @@ Blog.handleRequest = function( request , arg ){
         else if (uri.match(/^preview/)) {
             // display a preview of a post
             entries = db.blog.drafts.find( {post_id : ObjId(request.id)} ).sort({ts: -1 }).limit(1);
-            
+
             previewSnippet = (uri == "previewExcerpt");
-            
+
             isPage = true;
             // so that the blog doesn't think this is a search
             uri = null;
@@ -299,7 +299,7 @@ Blog.handleRequest = function( request , arg ){
                 //entries = db.blog.posts.find(searchCriteria).sort( { ts : -1 } ).skip( pageSize * ( pageNumber - 1 ) ).limit( pageSize );
                 entries = Blog.PostProxy.find( searchCriteria , { ts : -1 } , pageNumber , pageSize );
             }
-            
+
             if (entries && entries.length() > 0) {
                 Blog.log.debug('found matching entries for category: ' + uri);
                 isCategorySearch = true;
@@ -509,24 +509,24 @@ Blog.fixCommentURL = function( url ){
 Blog.PostProxy = {
 
     find : function( criteria , sort , pageNumber , pageSize , hint ){
-        
+
         var q = { query : criteria };
-        if ( sort ) 
+        if ( sort )
             q.orderby = sort;
-        
+
         if ( hint )
             q[ "$hint" ] = hint;
 
         var cursor = db.blog.posts.find( q );
-        
+
         cursor.skip( pageSize * ( pageNumber - 1 ) );
         cursor.limit( pageSize + 1 );
-        
+
         var arr = cursor.toArray();
         var hasNext = arr.length == pageSize + 1;
         if ( hasNext )
             arr.pop();
-        
+
         return {
             length : function(){
                 return arr.length;
@@ -537,21 +537,21 @@ Blog.PostProxy = {
             } ,
             hasNext : hasNext
         };
-        
+
     } ,
 
     findOne : function( filter ){
-        
+
         var coll = db.blog.posts;
-        
+
         try {
-            if ( filter.name )
-                return Blog.PostProxy.applyFiltersToOne( filter , coll.findOne( { name : filter.name } ) );
+            if ( filter.name && filter.channel )
+              return Blog.PostProxy.applyFiltersToOne( filter , coll.findOne( { name : filter.name, channel: filter.channel } ) );
         }
         catch ( e ){
             log.blog.postproxy.error( "can't handle : " + tojson( filter ) + " " + e );
         }
-        
+
         return db.blog.posts.findOne( filter );
     } ,
 
@@ -581,7 +581,7 @@ Blog.PostProxy = {
                     else {
                         throw "can't handle qualifier [" + qualifier + "]";
                     }
-                    
+
                 }
 
             }
