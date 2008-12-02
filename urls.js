@@ -545,8 +545,18 @@ Blog.PostProxy = {
         var coll = db.blog.posts;
 
         try {
-            if ( filter.name && filter.channel )
-              return Blog.PostProxy.applyFiltersToOne( filter , coll.findOne( { name : filter.name, channel: filter.channel } ) );
+            if ( filter.name ) {
+              var posts = db.blog.find( { name: filter.name } );
+              var result = null;
+              db.blog.find( { name: filter.name } ).forEach(
+                function(post) {
+                  var r = Blog.PostProxy.applyFiltersToOne(filter, post);
+                  if (r) {
+                    result = r;
+                  }
+                });
+              return result;
+            }
         }
         catch ( e ){
             log.blog.postproxy.error( "can't handle : " + tojson( filter ) + " " + e );
