@@ -548,7 +548,7 @@ Blog.PostProxy = {
             if ( filter.name ) {
               var posts = db.blog.find( { name: filter.name } );
               var result = null;
-              db.blog.find( { name: filter.name } ).forEach(
+              db.blog.posts.find( { name: filter.name } ).forEach(
                 function(post) {
                   var r = Blog.PostProxy.applyFiltersToOne(filter, post);
                   if (r) {
