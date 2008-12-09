@@ -14,105 +14,228 @@
 *    limitations under the License.
 */ %>
 
-<h4>Comment Management</h4>
+<h2>Comment Management</h2>
 <%
 core.net.ipaddr();
-var blocked=[];
-var notblocked=[];
 
-function mungeCursor( cursor ){
-    var a = [];
-    cursor.forEach( function(z){
-	z.getComments().forEach( function(c){
-	    a.add( { comment : c , post : z } );
-            if(!blocked.contains(c.ip) && !notblocked.contains(c.ip)) {
-                var b = db.blog.blocked.findOne({ip: c.ip});
-                if(b) blocked.push(c.ip);
-                else notblocked.push(c.ip);
-            }
-	} );
-    } );
-    return a;
+head.push('<script type="text/javascript" src="/@@/jquery/current/jquery.min.js"></script>');
+
+var akismet_enabled = Ext.getlist( allowModule, 'blog' , 'akismet' );
+
+if (request.ip == 'null') {
+    request.ip = null;
 }
 
-var action = request.action || "recent";
-
-var all = null;
-var sortFunction = null;
-if( action == "Block") {
-    if(net.isIPAddr(request.ipx)) {
-        db.blog.blocked.save({ ip : request.ipx });
+if (request.action == 'Block IP' || request.action == 'Report Spam For All' || request.action == 'Delete All') {
+    if (net.isIPAddr(request.ip)) {
+        db.blog.blocked.save({ ipx : request.ip });
     }
-   action = "recent";
 }
 
-var akismetEnabled = Ext.getlist( allowModule, 'blog' , 'akismet' );
+if (request.action == 'Unblock IP') {
+    db.blog.blocked.remove( { ipx: request.ip } );
+}
 
-if ( action == "delete" || action == "report as spam" ){
-    var p = db.blog.posts.findOne({ _id: request.postid });
-    var comment = p.getCommentById(request.cid);
-    if( action == "report as spam" && akismetEnabled ){
-        var resp = Blog.submitCommentAsSpam( comment );
-        log("OK -- response " + resp);
+function delete_comment(comment, spam) {
+    if (comment && comment.post) {
+        if (spam && akismet_enabled) {
+            var resp = Blog.submitCommentAsSpam(comment);
+            log("OK -- response " + resp);
+        }
+        comment.post.deleteComment(comment._id);
+        db.blog.posts.save(comment.post);
     }
-    p.deleteComment(request.cid);
-    db.blog.posts.save(p);
-    action = "recent";
 }
 
-if ( action == "recent" ){
-    var cursor = db.blog.posts.find( BlogUtils.liveEntry() , { name : true , title : true , ts : 1 , comments : true } );
-    cursor.sort( { ts : -1 } ).limit( 100 );
-    all = mungeCursor( cursor );
-    sortFunction = function(a,b){
-	return b.comment.ts.getTime() - a.comment.ts.getTime();
+if (request.action == 'Report Spam For All' || request.action == 'Delete All') {
+    db.blog.comments.find( { ip: request.ip } ).forEach(function(comment) {
+            delete_comment(comment, request.action == 'Report Spam For All');
+        });
+}
+
+if (request.action == 'Delete' || request.action == 'Report Spam') {
+    request.getParameters('select').forEach(function(id) {
+            var comment = db.blog.comments.findOne(id);
+            delete_comment(comment, request.action == 'Report Spam');
+        });
+}
+
+var query = {};
+if (request.ip) {
+    query['ip'] = request.ip;
+}
+
+per_page = 100;
+start = request.start ? parseInt(request.start) : 0;
+var comments = db.blog.comments.find(query).sort( { ts: -1 } ).skip(start).limit(per_page);
+count = comments.count();
+
+blocked = {};
+unblocked = {};
+function is_blocked(ip) {
+    if (blocked[ip]) {
+        return true;
     }
-    print( "<h4>Most Recent Comments</h4>" );
-}
-else {
-    throw "what is " + action;
+    if (unblocked[ip]) {
+        return false;
+    }
+    if (db.blog.blocked.findOne( { ipx: ip } )) {
+        blocked[ip] = true;
+        return true;
+    } else {
+        unblocked[ip] = true;
+        return false;
+    }
 }
 
-if ( sortFunction )
-    all = all.sort( sortFunction );
+// reusable pagination function
+function pagination(start, count, per_page) {
+    if (count <= per_page) {
+        return '';
+    }
 
-if(!blogDTO) blogDTO = new BlogDTO();
+    var html = '';
+    var page = Math.ceil(start / per_page);
+    var pages = Math.ceil(count / per_page);
+
+    var get_link = function(start, text) {
+        var uri = new URL(request.getURL()).replaceArg('start', start);
+        return '<a href="'+uri+'">'+text+'</a>';
+    };
+
+    html += '<div class="pagination">';
+    if (page > 0) {
+        html += get_link(0, '&lt;&lt; first') + ' ';
+        html += get_link(start - per_page, '&lt; prev') + ' ';
+    } else {
+        html += '&lt;&lt; first &lt; prev ';
+    }
+
+    html += (start+1) + '-' + Math.min(start+per_page, count) + ' of ' + count + ' ';
+
+    if (page < pages) {
+        html += get_link(start + per_page, '&gt; next') + ' ';
+        html += get_link((pages-1) * per_page, '&gt; &gt; last');
+    } else {
+        html += '&gt; next &gt;&gt; last';
+    }
+    html + '</div>';
+    return html;
+}
 
 %>
-<table>
+
+<form action="" method="post">
+
+<% if (request.ip) { %>
+<h3>Comments by: <%=request.ip%> (<a href="comments">cancel</a>)</h3>
+<% if (is_blocked(request.ip)) { %>
+<p><strong>This IP is blocked.</strong></p>
+<input name="action" type="submit" value="Unblock IP" />
+<% } else { %>
+<input name="action" type="submit" value="Block IP" />
+<% } %>
+<input name="action" type="submit" value="Report Spam For All" onclick="return confirm('Are you sure you want to report every comment by this IP address as spam?')" />
+<input name="action" type="submit" value="Delete All" onclick="return confirm('Are you sure you want to delete every comment by this IP address?')" />
+<% } %>
+
+<% if (!count) { return; } %>
+
+<div class="box">
+  <div><strong>With checked comments:</strong></div><br/>
+  <input name="action" type="submit" value="Delete" />
+  <input name="action" type="submit" value="Report Spam" />
+</div>
+
+<%=pagination(start, count, per_page)%>
+
+<table class="comments">
   <tr>
     <th>Post</th>
     <th>Commenter</th>
     <th>Date</th>
     <th>Comment</th>
+    <th><input type="checkbox" id="select-all" /></th>
     <th>IP</th>
   </tr>
 
-<% var lastId = null; all.forEach( function(z){ %>
+  <% comments.forEach(function(c) { %>
   <tr>
     <td>
-      <nobr><a ? ( lastId != z.post._id ) href="<%= blogDTO.getBaseURL() + '/' + z.post.name  %>"><%= z.post.title.substring( 0 , 20 ) %>...</a>
+      <% if (c.post) { %>
+      <a href="<%=c.post.getUrl()%>"><%=c.post.title%></a>
+      <% } %>
     </td>
-    <td><%= z.comment.author %></td>
-    <td><nobr><%= z.comment.ts.format( "MM/dd HH:mm" ) %></td>
+    <td class="clickable"><%=c.author %></td>
+    <td class="clickable"><nobr><%=c.ts ? c.ts.format( "MM/dd HH:mm" ) : '' %></td>
+    <td class="clickable"><%=content.HTML.escape(c.text) %></td>
+    <td><input type="checkbox" class="select-row" name="select" value="<%=c._id%>" /></td>
     <td>
-      <%= content.HTML.escape(z.comment.text) %>
-    </td>
-    <td><%= z.comment.ip %><%= blocked.contains(z.comment.ip) ? '<span style="color:red">Blocked</span>' : '<form method="POST"><input type="hidden" name="ipx" value="'+z.comment.ip+'" /><input type="submit" name="action" value="Block" /></form>' %>
-    <form method="POST">
-        <input type="hidden" name="cid" value="<%= z.comment.cid %>" />
-        <input type="hidden" name="postid" value="<%= z.post._id %>" />
-        <input type="submit" name="action" value="delete" />
-    </form>
-    <% if( akismetEnabled ){ %>
-    <form method="POST">
-        <input type="hidden" name="cid" value="<%= z.comment.cid %>" />
-        <input type="hidden" name="postid" value="<%= z.post._id %>" />
-        <input type="submit" name="action" value="report as spam" />
-    </form>
-    <% } %>
+      <a href="?ip=<%=c.ip %>"><%=c.ip%></a>
+      <%=is_blocked(c.ip) ? '<span style="color:red">Blocked</span>' : ''%>
     </td>
   </tr>
-<% lastId = z.post._id; } ); %>
+<% }); %>
 
 </table>
+
+<%=pagination(start, count, per_page)%>
+
+<div class="box">
+  <div><strong>With checked comments:</strong></div><br/>
+  <input name="action" type="submit" value="Delete" />
+  <input name="action" type="submit" value="Report Spam" />
+</div>
+
+<style>
+table.comments th {
+padding: 5px;
+}
+
+table.comments tr:hover {
+background-color: #ddd;
+}
+
+table.comments tr.checked {
+background-color: #eee;
+}
+
+table.comments td {
+padding: 3px;
+}
+
+.box {
+border: 1px solid black;
+padding: 1em;
+margin: 1em 0 1em 0;
+}
+
+.box strong {
+font-weight: bold;
+}
+</style>
+
+<script>
+$(function() {
+
+$('#select-all').click(function() {
+
+if ($(this).attr('checked')) {
+$('.select-row').attr('checked', 'checked');
+} else {
+$('.select-row').attr('checked', '');
+}
+});
+
+$('table.comments tr td.clickable').click(function() {
+var i = $(this).parent().find('input');
+i.attr('checked', i.attr('checked') ? '' : 'checked');
+});
+
+$('table.comments tr td').change(function() {
+$(this).parent().parent().attr('class', $(this).attr('checked'));
+});
+
+
+});
+</script>

@@ -186,6 +186,12 @@ Post.prototype.getNumComments = function(){
  * Delete comment with the given id from this post.
  */
 Post.prototype.deleteComment = function(cid){
+  if (!cid) {
+    return;
+  }
+
+    db.blog.comments.remove( { _id: cid } );
+
     var l = log.blog.post.deleteComment;
     l.debug( cid );
 
@@ -200,7 +206,7 @@ Post.prototype.deleteComment = function(cid){
     if ( isArray( this.comments ) ){
         l.debug( "array version" );
         this.comments = this.comments.filter( function(z){
-                return z.cid.toString() != cid.toString();
+                return z.cid && z.cid.toString() != cid.toString();
             } );
         return;
     }
@@ -227,7 +233,14 @@ Post.prototype.addComment = function( comment ){
     // Similarly with tags like <a href="..."</a>.
     comment.text = comment.text.replace(/<[^>]+</g, "<");
 
-    comment.cid = ObjectID();
+      // save a copy of the comment in the db.blog.comments collection
+      // for query-ability (this code can go away when there is a better
+      // embedded object querying api)
+      comment_obj = Object.clone(comment);
+      comment_obj.post = this;
+      db.blog.comments.save(comment_obj);
+
+      comment.cid = comment_obj._id;
 
     if ( isArray( this.comments ) )
         this.comments.push( comment );
@@ -695,6 +708,9 @@ Blog.fixDB = function(){
     Search.fixTable( db.blog.posts , Post.prototype.SEARCH_FIELDS );
 
     //fixComments();
+
+  db.blog.comments.ensureIndex( { ts: 1 } );
+  db.blog.comments.ensureIndex( { ip: 1 } );
 }
 
 if ( db ){
