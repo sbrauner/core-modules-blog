@@ -236,7 +236,10 @@ Post.prototype.addComment = function( comment ){
       // save a copy of the comment in the db.blog.comments collection
       // for query-ability (this code can go away when there is a better
       // embedded object querying api)
-      comment_obj = Object.clone(comment);
+      var comment_obj = {};
+      for (var k in comment) {
+        comment_obj[k] = comment[k];
+      }
       comment_obj.post = this;
       db.blog.comments.save(comment_obj);
 
