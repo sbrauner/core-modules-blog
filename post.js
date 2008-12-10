@@ -155,7 +155,7 @@ Post.prototype.getNumCommentsSince = function( when ){
 
     var num = 0;
     for ( var i=0; i<c.length; i++ ){
-        if ( c[i].ts < when ){
+        if ( c[i] && c[i].ts < when ){
             continue;
         }
         num++;
