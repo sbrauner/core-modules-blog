@@ -12,10 +12,8 @@
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *    See the License for the specific language governing permissions and
 *    limitations under the License.
-*/ %>
+*/
 
-<h2>Comment Management</h2>
-<%
 core.net.ipaddr();
 
 head.push('<script type="text/javascript" src="/@@/jquery/current/jquery.min.js"></script>');
@@ -51,13 +49,25 @@ if (request.action == 'Report Spam For All' || request.action == 'Delete All') {
     db.blog.comments.find( { ip: request.ip } ).forEach(function(comment) {
             delete_comment(comment, request.action == 'Report Spam For All');
         });
+    message = 'The IP ' + request.ip + ' has been banned and all of the comments from that IP have been deleted.';
+    request.ip = null;
 }
 
 if (request.action == 'Delete' || request.action == 'Report Spam') {
-    request.getParameters('select').forEach(function(id) {
+    var select = request.getParameters('select');
+    var count = 0;
+    if (select) {
+        select.forEach(function(id) {
             var comment = db.blog.comments.findOne(id);
             delete_comment(comment, request.action == 'Report Spam');
+            count++;
         });
+    }
+    if (count == 1) {
+        message = 'Successfully deleted one comment.';
+    } else {
+        message = 'Successfully deleted ' + count + ' comments.';
+    }
 }
 
 var query = {};
@@ -124,6 +134,12 @@ function pagination(start, count, per_page) {
 }
 
 %>
+
+<h2><a href="comments">Comment Management</a></h2>
+
+<% if (message) { %>
+<p class="message"><%=message%></p>
+<% } %>
 
 <form action="" method="post">
 
@@ -211,6 +227,10 @@ margin: 1em 0 1em 0;
 }
 
 .box strong {
+font-weight: bold;
+}
+
+.message {
 font-weight: bold;
 }
 </style>
