@@ -26,12 +26,12 @@ if (request.ip == 'null') {
 
 if (request.action == 'Block IP' || request.action == 'Report Spam For All' || request.action == 'Delete All') {
     if (net.isIPAddr(request.ip)) {
-        db.blog.blocked.save({ ipx : request.ip });
+        db.blog.blocked.save({ ip: request.ip });
     }
 }
 
 if (request.action == 'Unblock IP') {
-    db.blog.blocked.remove( { ipx: request.ip } );
+    db.blog.blocked.remove( { ip: request.ip } );
 }
 
 function delete_comment(comment, spam) {
@@ -89,7 +89,7 @@ function is_blocked(ip) {
     if (unblocked[ip]) {
         return false;
     }
-    if (db.blog.blocked.findOne( { ipx: ip } )) {
+    if (db.blog.blocked.findOne( { ip: ip } )) {
         blocked[ip] = true;
         return true;
     } else {
@@ -123,7 +123,7 @@ function pagination(start, count, per_page) {
 
     html += (start+1) + '-' + Math.min(start+per_page, count) + ' of ' + count + ' ';
 
-    if (page < pages) {
+    if (page < pages - 1) {
         html += get_link(start + per_page, '&gt; next') + ' ';
         html += get_link((pages-1) * per_page, '&gt; &gt; last');
     } else {
